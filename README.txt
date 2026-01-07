@@ -70,3 +70,62 @@ Step 4.1: Get Experimental Data
 Phase 5: Analysis and Documentation (Days 11-12)
     Step 5.1: Sensitivity Analysis
     Test sensitivity to parameters
+
+
+Level 2: Adding Oxide Layer to my model
+Phase1: Oxide Layer Setup   
+    Step 1.1: Create Oxide properties modules 
+        File: data/oxide_properties.py
+    Step 1.2: Extend Your Calculation Functions
+        File: calculations/oxide_permeation.py
+    Step 1.3: First Test - Oxide Only
+        Test oxide layer in isolation:
+        - Calculate flux through oxide alone
+        - Verify P¹ dependence (slope = 1.0 on log-log plot)
+        - Compare magnitude to metal flux at same conditions
+
+Phase 2: Interface Matching (Days 4-6)
+    Step 2.1: The Interface Problem Setup
+        Understanding the Physical Picture:
+            At the oxide/metal interface, you have:
+               - Left side: Oxide with molecular H₂ diffusion
+               - Right side: Metal with atomic H diffusion
+               - Interface: Where H₂ → 2H dissociation occurs
+        The key equation to solve:
+            Flux_through_oxide = Flux_into_metal
+            D_ox * K_ox * (P_up - P_interface) / t_ox = D_metal * K_s_metal * (√P_interface - √P_down) / t_metal        
+    Step 2.2: Numerical Solver Implementation
+        File: calculations/interface_solver.py
+    Step 2.3: Complete Two-Layer System
+
+
+Phase 3: Regime Classification 
+    Step 3.1: Identify Operating Regime
+    Step 3.2: Pressure Sweep with Regime Identification
+
+
+Phase 4: Validation Against Theory
+    Step 4.1: Limiting Cases Validation
+        Test 1: Very Thick Oxide
+        Test 2: Very Thin Oxide
+        Test 3: Realistic Oxide
+    Step 4.2: Create Diagnostic Plots
+        1. Flux vs Pressure (log-log)
+            - Show Level 1 model
+            - Show Level 2 model
+            - Mark regime transitions
+
+        2. Concentration Profile
+            - C(x) through oxide and metal
+            - Show discontinuity at interface
+
+        3. Resistance Analysis
+            - R_oxide and R_metal vs pressure
+            - Show crossover point
+
+Phase 5: Experimental Comparison (Days 11-13)
+    Step 5.1: Compare to Zarchy & Axtmann Data
+        - Their 304 SS data shows transition
+        - Extract transition pressure
+        - Tune oxide thickness to match
+    Step 5.2: Parameter Sensitivity
