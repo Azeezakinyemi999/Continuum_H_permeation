@@ -1,7 +1,7 @@
 Start level 1:
 Phase1: Setup and First calculation
 - step 1.1: Create project structure 
-            permeation_project/
+        |   permeation_project/
         ├── calculations/
         │   ├── permeation_calc.py
         │   └── utils.py
