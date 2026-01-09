@@ -298,8 +298,7 @@ def compare_resistances(oxide_props, metal_props, P_interface):
 
 def calculate_transition_pressure(oxide_props, metal_props):
     """
-    Estimate the pressure where oxide and metal resistances are equal.
-    This is approximately where the transition occurs.
+    Estimate the pressure where oxide and metal resistances are equal. This is approximately where the transition occurs.
     
     Parameters:
     -----------
