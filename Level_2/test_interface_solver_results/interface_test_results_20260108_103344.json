@@ -1,0 +1,55 @@
+{
+  "timestamp": "20260108_103344",
+  "test_suite": "interface_solver",
+  "test_results": [
+    {
+      "test": "interface_pressure_solutions",
+      "pressure_range": [
+        1e-10,
+        1e+28
+      ],
+      "n_points_tested": 50,
+      "all_converged": false
+    },
+    {
+      "test": "flux_continuity",
+      "max_error": 5.000000000600001,
+      "worst_case_pressure": 1e-06,
+      "passed": "False"
+    },
+    {
+      "test": "concentration_profiles",
+      "test_pressures": [
+        0.001,
+        1.0,
+        1000.0,
+        1000000.0
+      ],
+      "discontinuities": [
+        -1.6666638847361107e-26,
+        -1.663884274717262e-23,
+        1.1003894397601474e-20,
+        5.528375788144556e-15
+      ]
+    },
+    {
+      "test": "limiting_cases",
+      "all_passed": false,
+      "individual_results": [
+        [
+          "thick_oxide",
+          true
+        ],
+        [
+          "thin_oxide",
+          false
+        ]
+      ]
+    },
+    {
+      "test": "parametric_studies",
+      "studies_performed": 6,
+      "base_transition_pressure": 113008.841409006
+    }
+  ]
+}

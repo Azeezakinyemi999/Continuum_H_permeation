@@ -1,0 +1,117 @@
+{
+  "timestamp": "20260108_174344",
+  "test_suite": "interface_solver",
+  "test_results": [
+    {
+      "test": "interface_pressure_solutions",
+      "pressure_range": [
+        1e-10,
+        1e+28
+      ],
+      "n_points_tested": 50,
+      "all_converged": false
+    },
+    {
+      "test": "flux_continuity",
+      "max_error": 5.000000000600001,
+      "worst_case_pressure": 1e-06,
+      "passed": "False"
+    },
+    {
+      "test": "concentration_profiles",
+      "test_pressures": [
+        0.001,
+        1.0,
+        1000.0,
+        1000000.0
+      ],
+      "discontinuities": [
+        -1.6666638847361107e-26,
+        -1.663884274717262e-23,
+        1.1003894397601474e-20,
+        5.528375788144556e-15
+      ]
+    },
+    {
+      "test": "limiting_cases",
+      "all_passed": false,
+      "individual_results": [
+        [
+          "thick_oxide",
+          true
+        ],
+        [
+          "thin_oxide",
+          false
+        ]
+      ]
+    },
+    {
+      "test": "parametric_studies",
+      "studies_performed": 6,
+      "base_transition_pressure": 113008.841409006
+    },
+    {
+      "test": "comprehensive_oxide_analysis",
+      "parameter_sets": [
+        {
+          "D_ox": 1e-22,
+          "K_ox": 1e-22,
+          "thickness": 1e-10,
+          "label": "Ultra-low perm, 1\u00c5",
+          "color": "red"
+        },
+        {
+          "D_ox": 1e-20,
+          "K_ox": 1e-20,
+          "thickness": 6e-10,
+          "label": "Base case, 6\u00c5",
+          "color": "blue"
+        },
+        {
+          "D_ox": 1e-18,
+          "K_ox": 1e-18,
+          "thickness": 1e-09,
+          "label": "High perm, 10\u00c5",
+          "color": "green"
+        },
+        {
+          "D_ox": 1e-19,
+          "K_ox": 1e-21,
+          "thickness": 6e-10,
+          "label": "Low K, 6\u00c5",
+          "color": "orange"
+        },
+        {
+          "D_ox": 1e-21,
+          "K_ox": 1e-19,
+          "thickness": 6e-10,
+          "label": "Low D, 6\u00c5",
+          "color": "purple"
+        }
+      ],
+      "transition_pressures": [
+        2500000000000000.0,
+        900000000.0000005,
+        24.999999999999993,
+        900000000.0000005,
+        900000000.0000005
+      ],
+      "max_flux_errors": [
+        999999.0001000001,
+        599.00000006,
+        0.89999999999,
+        599.00000006,
+        599.00000006
+      ],
+      "regime_widths": [
+        2.4242424242424256,
+        2.4242424242424256,
+        2.424242424242424,
+        2.4242424242424256,
+        2.4242424242424256
+      ],
+      "fusion_relevant_fraction": 0.8
+    }
+  ]
+}
