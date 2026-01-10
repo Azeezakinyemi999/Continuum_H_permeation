@@ -196,7 +196,7 @@ def calculate_defect_path_flux(P_upstream, P_downstream, oxide_props, metal_prop
 def calculate_parallel_path_flux(P_upstream, P_downstream, oxide_props, metal_props, 
                                  defect_params):
     """
-    Calculate total hydrogen flux through oxide with defects using parallel path model.
+    Calculate total hydrogen flux through oxide with defects using parallel path model..
     
     Theory:
     -------
