@@ -110,8 +110,8 @@ def validate_sieverts_law(pressures, fluxes, tolerance = 0.01):
         Dictionary containing slope, R², and validation status
     """
     # Calculate logarithms
-    log_p = np.log10(pressures)
-    log_f = np.log10(fluxes)
+    log_p = np.log(pressures)
+    log_f = np.log(fluxes)
     
     # Linear regression
     slope, intercept, r_value, p_value, std_err = stats.linregress(log_p, log_f)
@@ -165,9 +165,9 @@ def plot_results(results, validation, save_figure=False):
                color='blue', markersize=6, linewidth=2, label='Calculated')
     
     # Add fitted line ::: flux is proportional to the sqrt of p 
-    log_p = np.log10(results['pressures'])
+    log_p = np.log(results['pressures'])
     fitted_log_flux = validation['slope'] * log_p + validation['intercept']
-    fitted_flux = 10**fitted_log_flux
+    fitted_flux = np.exp(fitted_log_flux)
     ax1.loglog(results['pressures'], fitted_flux, '--', 
                color='red', linewidth=1, alpha=0.7, label='Fitted')
     

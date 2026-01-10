@@ -75,8 +75,8 @@ def compare_with_experiment(material_name='Incoloy800', thickness=0.001):
     max_error = np.max(np.abs(relative_errors))
     
     # Calculate R² for log-log fit
-    log_model = np.log10(model_permeabilities)
-    log_exp = np.log10(exp_data['permeabilities'])
+    log_model = np.log(model_permeabilities)
+    log_exp = np.log(exp_data['permeabilities'])
     correlation = np.corrcoef(log_model, log_exp)[0, 1]
     r_squared = correlation ** 2
     
@@ -126,7 +126,7 @@ def plot_comparison(results, save_figure=False):
                  's-', color='red', markersize=6, linewidth=1, label='Model', alpha=0.7)
     
     ax1.set_xlabel('1000/T (K⁻¹)')
-    ax1.set_ylabel('Permeability (mol/m/s/Pa^0.5)')
+    ax1.set_ylabel('log Permeability (mol/m/s/Pa^0.5)')
     ax1.set_title('Permeability: Model vs Experimental')
     ax1.legend()
     ax1.grid(True, which="both", alpha=0.3)
@@ -171,8 +171,8 @@ def plot_comparison(results, save_figure=False):
     ax3.fill_between([p_min, p_max], [p_min*0.5, p_max*0.5], [p_min*1.5, p_max*1.5], 
                      alpha=0.2, color='gray', label='±50% error')
     
-    ax3.set_xlabel('Experimental P (mol/m/s/Pa^0.5)')
-    ax3.set_ylabel('Model P (mol/m/s/Pa^0.5)')
+    ax3.set_xlabel('log Experimental P (mol/m/s/Pa^0.5)')
+    ax3.set_ylabel('log Model P (mol/m/s/Pa^0.5)')
     ax3.set_title(f"Parity Plot (R² = {results['errors']['r_squared']:.4f})")
     ax3.legend()
     ax3.grid(True, which="both", alpha=0.3)

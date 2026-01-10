@@ -1,0 +1,49 @@
+================================================================================
+LEVEL 3 EXPERIMENTAL COMPARISON REPORT
+================================================================================
+
+Date: 2026-01-09 09:17:08
+Material: Incoloy 800 with Cr2O3 oxide
+
+--------------------------------------------------------------------------------
+MODEL COMPARISON SUMMARY
+--------------------------------------------------------------------------------
+
+Model                               |       R² |   MAPE (%)
+------------------------------------------------------------
+Level 1                             | -22.1583 |       86.4
+Level 2                             | -4206.3221 |      100.0
+Level 3 (1% pinhole)                | -242.5944 |       99.9
+Level 3 (fitted)                    | -40.3599 |       93.2
+
+--------------------------------------------------------------------------------
+DEFECT FRACTION FITTING RESULTS
+--------------------------------------------------------------------------------
+
+
+PINHOLE:
+  Optimal defect fraction: 49.9996%
+  R² (log scale): -40.3599
+  MAPE: 93.2%
+
+CRACK:
+  Optimal defect fraction: 49.9996%
+  R² (log scale): -3702.7572
+  MAPE: 100.0%
+
+GRAIN_BOUNDARY:
+  Optimal defect fraction: 49.9996%
+  R² (log scale): -3702.7572
+  MAPE: 100.0%
+
+================================================================================
+CONCLUSIONS
+================================================================================
+
+Best fitting defect model: pinhole
+Optimal defect fraction: 50.000%
+This is outside the expected range (0.1% - 10%) from literature.
+
+Physical interpretation:
+  - High defect fraction indicates degraded oxide
+  - Defects dominate permeation pathway

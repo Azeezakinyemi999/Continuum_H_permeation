@@ -377,7 +377,8 @@ def flux_balance_equation(P_interface, P_upstream, P_downstream, oxide_props, me
     
     return flux_oxide - flux_metal
 
-
+# Handle edge case where upstream pressure is too low
+min_pressure = 1e-20  # Minimum meaningful pressure
 def solve_interface_pressure(P_upstream, P_downstream, oxide_props, metal_props, method='brentq'):
     """
     Solve for interface pressure where oxide and metal fluxes match.

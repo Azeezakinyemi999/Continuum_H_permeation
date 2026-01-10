@@ -80,7 +80,7 @@ def test_molecular_flux_linearity():
     ax1.legend()
     
     # Slope verification plot
-    ax2.semilogx(pressures[1:], np.diff(np.log10(fluxes))/np.diff(np.log10(pressures)), 'g-')
+    ax2.semilogx(pressures[1:], np.diff(np.log(fluxes))/np.diff(np.log(pressures)), 'g-')
     ax2.axhline(y=1.0, color='r', linestyle='--', label='Expected slope = 1.0')
     ax2.set_xlabel('Pressure (Pa)')
     ax2.set_ylabel('Local slope d(log flux)/d(log P)')

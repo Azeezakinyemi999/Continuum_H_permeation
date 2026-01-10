@@ -1036,7 +1036,7 @@ def test_oxide_property_comparison():
                 in_transition.append(P)
         
         if in_transition:
-            regime_width = np.log10(max(in_transition)) - np.log10(min(in_transition))
+            regime_width = np.log(max(in_transition)) - np.log(min(in_transition))
         else:
             regime_width = 0
         regime_widths.append(regime_width)
