@@ -24,7 +24,7 @@ from calculations.oxide_permeation import molecular_diffusion_flux
 
 def calculate_defect_path_flux(P_upstream, P_downstream, oxide_props, metal_props, defect_props):
     """
-    Calculate hydrogen flux through a defect in the oxide layer.
+    Calculate hydrogen flux through a defect in the oxide layer..
     
     Theory:
     -------
