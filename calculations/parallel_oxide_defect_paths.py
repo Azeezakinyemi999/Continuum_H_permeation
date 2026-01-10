@@ -317,7 +317,7 @@ def calculate_parallel_path_flux(P_upstream, P_downstream, oxide_props, metal_pr
 
 def calculate_PRF(P_test, oxide_props, metal_props, defect_params=None, P_downstream=0):
     """
-    Calculate Permeation Reduction Factor (PRF) for defective oxide barrier.
+    Calculate Permeation Reduction Factor (PRF) for defective oxide barrier..
     
     Theory:
     -------
