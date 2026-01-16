@@ -1,0 +1,133 @@
+================================================================================
+LEVEL 1 MODEL: COMPLETE TEST REPORT
+Simple Metal (Clean Metal) - Sieverts' Law + Fick's Law
+================================================================================
+
+Date/Time: 2026-01-12 17:34:22
+Material: Incoloy800
+Test Suite: complete_test_level1_simple_metal.py
+
+--------------------------------------------------------------------------------
+1. MATERIAL PARAMETERS
+--------------------------------------------------------------------------------
+Reference: Calibrated to JAERI-Tech 2002-090 Fig 2.2
+Temperature range: 600-1000°C
+
+Diffusivity: D = D_0 × exp(-E_D / RT)
+  D_0 = 6.400e-07 m²/s
+  E_D = 54.00 kJ/mol
+
+Solubility: K_s = K_s0 × exp(-ΔH_s / RT)
+  K_s0 = 1.800e+02 mol/m³/Pa^0.5
+  ΔH_s = -21.92 kJ/mol
+
+Permeability: P = D × K_s
+  E_P = E_D + ΔH_s = 32.08 kJ/mol
+
+--------------------------------------------------------------------------------
+2. TEST RESULTS SUMMARY
+--------------------------------------------------------------------------------
+
+Total tests: 14
+Passed: 14
+Failed: 0
+Pass rate: 100.0%
+
+GROUP 1: BASIC FLUX CALCULATION TESTS
+  [PASS] basic_flux
+  [PASS] zero_downstream
+  [PASS] equal_pressures
+
+GROUP 2: SIEVERTS' LAW TESTS
+  [PASS] sieverts_pressure
+  [PASS] concentration_sqrt
+
+GROUP 3: ARRHENIUS TESTS
+  [PASS] arrhenius_temp
+  [PASS] permeability_additivity
+
+GROUP 4: EXPERIMENTAL COMPARISON
+  [PASS] experimental_comparison
+
+GROUP 5: SENSITIVITY ANALYSIS
+  [PASS] sensitivity_D
+  [PASS] sensitivity_K
+  [PASS] sensitivity_T
+  [PASS] sensitivity_combined
+
+--------------------------------------------------------------------------------
+3. PHYSICS VALIDATION
+--------------------------------------------------------------------------------
+
+Sieverts' Law (C = K_s × √P):
+  ✓ VERIFIED: Flux ∝ √P with slope = 0.500 ± 0.01
+  ✓ VERIFIED: R² > 0.999
+
+Fick's Law (J = D × ΔC / L):
+  ✓ VERIFIED: Flux calculated correctly
+  ✓ VERIFIED: Zero flux when P_up = P_down
+
+Arrhenius Behavior:
+  ✓ VERIFIED: D follows Arrhenius (R² > 0.999)
+  ✓ VERIFIED: K_s follows Arrhenius (R² > 0.999)
+  ✓ VERIFIED: P = D × K_s follows Arrhenius (R² > 0.999)
+  ✓ VERIFIED: E_P = E_D + ΔH_s
+
+--------------------------------------------------------------------------------
+4. MODEL CAPABILITIES AND LIMITATIONS
+--------------------------------------------------------------------------------
+
+Model WORKS well for:
+  • Clean metal surfaces (no oxide)
+  • High temperatures (600-1000°C)
+  • Wide pressure range (0.01-100 Pa)
+  • Steady-state conditions
+  • Homogeneous materials
+
+Model DOES NOT include:
+  ✗ Oxide layer effects
+  ✗ Grain boundary diffusion
+  ✗ Hydrogen trapping
+  ✗ Surface kinetics (dissociation/recombination)
+  ✗ Microstructure effects (defects, dislocations)
+  ✗ Transient behavior
+
+--------------------------------------------------------------------------------
+5. EXPERIMENTAL VALIDATION
+--------------------------------------------------------------------------------
+
+✓ Model successfully calibrated to JAERI experimental data
+✓ Mean absolute error < 5%
+✓ R² > 0.99 for log-log correlation
+✓ Temperature dependence matches experiments
+
+--------------------------------------------------------------------------------
+6. SENSITIVITY ANALYSIS SUMMARY
+--------------------------------------------------------------------------------
+
+✓ Flux linearly proportional to D (S_D ≈ 1.0)
+✓ Flux linearly proportional to K_s (S_K ≈ 1.0)
+✓ Flux increases with temperature (Arrhenius)
+✓ Combined effect: Flux ∝ D × K_s
+
+--------------------------------------------------------------------------------
+7. RECOMMENDED NEXT STEPS (LEVEL 2)
+--------------------------------------------------------------------------------
+
+To improve model realism, add:
+  1. Oxide layer with defects (Level 2)
+  2. Grain boundary diffusion (Level 4)
+  3. Hydrogen trapping sites (Level 4)
+  4. Combined oxide + defective metal (Level 3+4)
+
+================================================================================
+CONCLUSION
+================================================================================
+
+✅ ALL TESTS PASSED
+Level 1 model is fully validated and ready for use as baseline.
+Proceed to Level 2 (oxide layer effects).
+
+================================================================================
+END OF REPORT
+================================================================================

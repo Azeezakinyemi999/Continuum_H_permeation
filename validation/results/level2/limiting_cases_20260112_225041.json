@@ -1,0 +1,16 @@
+{
+  "test_name": "limiting_cases",
+  "results": {
+    "thick_oxide": 1e-10,
+    "thin_oxide_ratio": 3.16136925619666e-13,
+    "high_P": 9.999999999000001e-10,
+    "low_P": 9.999999999000002e-28
+  },
+  "checks": {
+    "thick_oxide_dominated": true,
+    "thin_oxide_approaches_metal": false,
+    "high_pressure_calculated": true,
+    "low_pressure_calculated": true
+  },
+  "passed": false
+}

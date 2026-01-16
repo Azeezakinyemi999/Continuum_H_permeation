@@ -1,0 +1,18 @@
+{
+  "test_name": "comparison_L1_vs_L2",
+  "material": "Incoloy800",
+  "temperature_C": 800,
+  "flux_L1": 0.03163186324849212,
+  "flux_L2": 9.999999998999998e-13,
+  "flux_ratio": 3.16136925619666e-11,
+  "P_interface": 1e-08,
+  "R_ratio": 15815931624.24606,
+  "checks": {
+    "L1_flux_positive": true,
+    "L2_flux_positive": true,
+    "oxide_reduces_flux": true,
+    "flux_ratio_reasonable": false,
+    "interface_pressure_dropped": true
+  },
+  "passed": false
+}

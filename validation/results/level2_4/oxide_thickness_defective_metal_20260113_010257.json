@@ -1,0 +1,27 @@
+{
+  "test_name": "oxide_thickness_defective_metal",
+  "thicknesses_um": [
+    0.09999999999999999,
+    0.5,
+    1.0,
+    2.0,
+    5.0,
+    10.0
+  ],
+  "fluxes": [
+    2.9999972146812634e-05,
+    5.9999997837631495e-06,
+    2.999999973072952e-06,
+    1.499999996640509e-06,
+    5.999999997852363e-07,
+    2.9999999997000004e-07
+  ],
+  "slope": -0.9999998234913708,
+  "checks": {
+    "flux_decreases_with_thickness": true,
+    "all_fluxes_positive": true,
+    "inverse_relationship": true,
+    "fit_good": true
+  },
+  "passed": true
+}

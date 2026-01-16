@@ -1,0 +1,16 @@
+{
+  "test_name": "interface_pressure_solver_basic",
+  "material": "Incoloy800",
+  "temperature_C": 800,
+  "P_interface": 1e-08,
+  "flux": 9.999999999000001e-18,
+  "flux_error": 31631863250.655304,
+  "checks": {
+    "solver_converged": false,
+    "P_interface_in_bounds": true,
+    "flux_positive": true,
+    "flux_balance_satisfied": false,
+    "all_fields_present": true
+  },
+  "passed": false
+}

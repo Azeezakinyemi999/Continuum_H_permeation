@@ -1,0 +1,13 @@
+{
+  "test_name": "L2_vs_L24_comparison",
+  "flux_L2": 0.019082276693583214,
+  "flux_L24": 0.014318001969164102,
+  "flux_ratio": 0.7503298583852318,
+  "flux_reduction_percent": 24.96701416147682,
+  "checks": {
+    "L2_flux_positive": true,
+    "L24_flux_positive": true,
+    "microstructure_affects_flux": true
+  },
+  "passed": true
+}

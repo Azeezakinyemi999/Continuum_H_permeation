@@ -1,0 +1,14 @@
+{
+  "test_name": "interface_solver_defective_metal",
+  "P_interface": 8.975682927462036e-07,
+  "flux": 2.999999973072952e-06,
+  "flux_error": 1.3898008303075423e-06,
+  "checks": {
+    "solver_converged": true,
+    "P_interface_in_bounds": true,
+    "flux_positive": true,
+    "flux_balance_satisfied": true,
+    "all_fields_present": true
+  },
+  "passed": true
+}

@@ -1,0 +1,17 @@
+{
+  "test_name": "comparison_L1_vs_L4",
+  "material": "Incoloy800",
+  "temperature_C": 800,
+  "condition": "solution_annealed",
+  "L1_flux": 0.003163186324849212,
+  "L4_flux": 0.0017722603134345432,
+  "flux_ratio": 0.5602769269429698,
+  "D_ratio": 0.5602769269429698,
+  "checks": {
+    "L1_flux_positive": true,
+    "L4_flux_positive": true,
+    "flux_ratio_reasonable": true,
+    "D_ratio_matches_flux_ratio": true
+  },
+  "passed": true
+}

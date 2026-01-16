@@ -1,0 +1,18 @@
+{
+  "test_name": "defective_metal_basic_flux",
+  "material": "Incoloy800",
+  "temperature_C": 800,
+  "condition": "solution_annealed",
+  "D_lattice": 1.5055048352621515e-09,
+  "D_eff": 8.434996225984603e-10,
+  "modification_factor": 0.5602769269429698,
+  "flux": 0.0017722603134345432,
+  "checks": {
+    "flux_positive": true,
+    "D_eff_positive": true,
+    "D_eff_differs_from_lattice": true,
+    "modification_factor_calculated": true,
+    "concentrations_valid": true
+  },
+  "passed": true
+}

@@ -1,0 +1,21 @@
+{
+  "test_name": "basic_flux_calculation",
+  "material": "Incoloy800",
+  "temperature_C": 800,
+  "P_up": 1.0,
+  "P_down": 0.0,
+  "thickness": 0.001,
+  "D": 1.5055048352621515e-09,
+  "K_s": 2101.080149834531,
+  "flux": 0.003163186324849212,
+  "C_up": 2101.080149834531,
+  "C_down": 0.0,
+  "permeability": 3.163186324849212e-06,
+  "checks": {
+    "flux_positive": true,
+    "C_up_positive": true,
+    "C_down_zero": true,
+    "permeability_match": true
+  },
+  "passed": true
+}

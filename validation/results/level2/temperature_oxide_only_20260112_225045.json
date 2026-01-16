@@ -1,0 +1,38 @@
+{
+  "test_name": "temperature_oxide_only",
+  "temperatures_C": [
+    600,
+    700,
+    800,
+    900,
+    1000
+  ],
+  "D_oxides": [
+    1e-15,
+    1e-15,
+    1e-15,
+    1e-15,
+    1e-15
+  ],
+  "K_oxides": [
+    1e-10,
+    1e-10,
+    1e-10,
+    1e-10,
+    1e-10
+  ],
+  "R_oxides": [
+    9.999999999999998e+18,
+    9.999999999999998e+18,
+    9.999999999999998e+18,
+    9.999999999999998e+18,
+    9.999999999999998e+18
+  ],
+  "checks": {
+    "D_positive": true,
+    "K_positive": true,
+    "R_decreases_with_T": true,
+    "values_realistic": true
+  },
+  "passed": true
+}

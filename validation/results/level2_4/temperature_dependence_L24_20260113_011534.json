@@ -1,0 +1,23 @@
+{
+  "test_name": "temperature_dependence_L24",
+  "temperatures_C": [
+    600,
+    700,
+    800,
+    900,
+    1000
+  ],
+  "fluxes": [
+    0.004470030977489964,
+    0.006964087632234824,
+    0.010033371853208121,
+    0.013545300693171147,
+    0.017247267327839808
+  ],
+  "E_app_kJ_mol": 31.292317588426418,
+  "checks": {
+    "flux_increases_with_T": true,
+    "arrhenius_fit_good": true
+  },
+  "passed": true
+}

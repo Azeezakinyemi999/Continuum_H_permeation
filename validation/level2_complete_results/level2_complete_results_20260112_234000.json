@@ -1,0 +1,118 @@
+{
+  "timestamp": "20260112_234000",
+  "test_suite": "Level 2: Perfect Oxide on Clean Metal",
+  "summary": {
+    "total_tests": 8,
+    "passed": 5,
+    "failed": 4
+  },
+  "test_results": {
+    "test1": {
+      "name": "Interface Pressure Solutions",
+      "passed": false,
+      "n_points": 50,
+      "pressure_range": [
+        1e-10,
+        1e+28
+      ]
+    },
+    "test2": {
+      "name": "Flux Continuity",
+      "passed": "False",
+      "max_error": 5.000000000600001,
+      "worst_case_pressure": 1e-06
+    },
+    "test3": {
+      "name": "Concentration Profiles",
+      "passed": true,
+      "test_pressures": [
+        0.001,
+        1.0,
+        1000.0,
+        1000000.0
+      ],
+      "discontinuities": [
+        -1.6666638847361107e-26,
+        -1.663884274717262e-23,
+        1.1003894397601474e-20,
+        5.528375788144556e-15
+      ]
+    },
+    "test4": {
+      "name": "Limiting Cases",
+      "passed": false,
+      "individual_results": [
+        [
+          "Thick oxide is oxide-limited",
+          true
+        ],
+        [
+          "Thin oxide approaches metal",
+          false
+        ],
+        [
+          "High permeability oxide allows metal limitation",
+          true
+        ]
+      ]
+    },
+    "test5": {
+      "name": "Transition Pressure",
+      "passed": true,
+      "P_transition": 90000.00000000003,
+      "in_fusion_range": false
+    },
+    "test6": {
+      "name": "Parametric Sensitivity",
+      "passed": true,
+      "sensitivities": {
+        "thickness": 573.6152510448657,
+        "D_ox": 3.03919538231322e-06,
+        "K_ox": 3.0391953823132193e-06,
+        "metal": 329034.456231267
+      }
+    },
+    "test7": {
+      "name": "Temperature Dependence",
+      "passed": true,
+      "temperature_range": [
+        600,
+        1000
+      ],
+      "D_range": [
+        1.0203078493318666e-13,
+        8.882436722243056e-13
+      ],
+      "K_range": [
+        1.604126955292353e-10,
+        5.876507210586736e-10
+      ]
+    },
+    "test8": {
+      "name": "Comprehensive Comparison",
+      "passed": false,
+      "n_configurations": 5,
+      "P_trans_range": [
+        24.999999999999993,
+        2500000000000000.0
+      ],
+      "fusion_relevant_fraction": 0.8
+    }
+  },
+  "conditions": {
+    "pressure_range": [
+      1e-10,
+      1e+28
+    ],
+    "standard_oxide": {
+      "D_ox": 1e-18,
+      "K_ox": 1e-20,
+      "thickness": 6e-10
+    },
+    "standard_metal": {
+      "D_metal": 1e-09,
+      "K_s_metal": 1e-20,
+      "thickness": 0.001
+    }
+  }
+}

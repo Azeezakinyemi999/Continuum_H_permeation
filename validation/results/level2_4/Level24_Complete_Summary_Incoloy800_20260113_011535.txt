@@ -1,0 +1,44 @@
+================================================================================
+LEVEL 2,4 MODEL: COMPLETE TEST REPORT
+Perfect Oxide + Defective Metal (GB Enhancement + Trapping)
+================================================================================
+
+Date/Time: 2026-01-13 01:15:35
+Material: Incoloy800
+Test Suite: complete_test_level2,4_perfect_oxide_defective_metal.py
+
+--------------------------------------------------------------------------------
+1. PHYSICS SUMMARY
+--------------------------------------------------------------------------------
+Level 2,4 combines oxide barrier with defective metal:
+
+a) Oxide Layer (Molecular Diffusion):
+   J = D_ox × K_ox × (P_up - P_int) / δ_ox
+
+b) Defective Metal Layer:
+   - GB enhancement: f_GB = 1 + χ_GB × ρ_GB
+   - Trap-limited diffusion: D_eff = D_lat / (1 + N_t/N_L × θ_t)
+   - Combined: D_total = D_lat × f_GB / (1 + trap_factor)
+
+c) Interface Coupling:
+   J_oxide = J_metal (flux balance)
+   → Solve for P_interface iteratively
+
+--------------------------------------------------------------------------------
+2. TEST RESULTS SUMMARY
+--------------------------------------------------------------------------------
+
+Total tests: 6
+Passed: 5
+Pass rate: 83.3%
+
+  [PASS] interface_solver_defective_metal
+  [PASS] L2_vs_L24_comparison
+  [PASS] grain_size_effect
+  [FAIL] trap_density_effect
+  [PASS] temperature_dependence_L24
+  [PASS] oxide_thickness_defective_metal
+
+================================================================================
+END OF REPORT
+================================================================================

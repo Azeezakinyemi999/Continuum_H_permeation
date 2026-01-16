@@ -1,0 +1,45 @@
+================================================================================
+LEVEL 2 MODEL: COMPLETE TEST REPORT
+Perfect Oxide + Perfect Metal
+================================================================================
+
+Date/Time: 2026-01-12 22:53:16
+Material: Incoloy800
+Test Suite: complete_test_level2_perfect_oxide_perfect_metal.py
+
+--------------------------------------------------------------------------------
+1. PHYSICS SUMMARY
+--------------------------------------------------------------------------------
+Level 2 models oxide-coated metal with interface coupling:
+
+a) Oxide Layer (Molecular Diffusion):
+   J = D_ox × K_ox × (P_up - P_int) / δ_ox
+
+b) Metal Layer (Sieverts' Law):
+   J = D_m × K_s × (√P_int - √P_down) / δ_m
+
+c) Interface Coupling:
+   J_oxide = J_metal (flux balance)
+   → Solve for P_interface iteratively
+
+--------------------------------------------------------------------------------
+2. TEST RESULTS SUMMARY
+--------------------------------------------------------------------------------
+
+Total tests: 9
+Passed: 3
+Pass rate: 33.3%
+
+  [FAIL] interface_solver_basic
+  [FAIL] L1_vs_L2_basic
+  [FAIL] flux_continuity_extreme
+  [PASS] concentration_profiles
+  [FAIL] limiting_cases
+  [FAIL] oxide_thickness_parametric
+  [PASS] temperature_oxide_only
+  [FAIL] temperature_L1_vs_L2
+  [PASS] oxide_type_comparison
+
+================================================================================
+END OF REPORT
+================================================================================

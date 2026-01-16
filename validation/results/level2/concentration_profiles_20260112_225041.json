@@ -1,0 +1,19 @@
+{
+  "test_name": "concentration_profiles",
+  "test_pressures": [
+    0.001,
+    1.0,
+    1000.0
+  ],
+  "discontinuities": [
+    0.0006644198820044968,
+    0.021010801498345312,
+    0.6644198820044969
+  ],
+  "checks": {
+    "all_profiles_calculated": true,
+    "discontinuity_exists": true,
+    "concentrations_positive": true
+  },
+  "passed": true
+}

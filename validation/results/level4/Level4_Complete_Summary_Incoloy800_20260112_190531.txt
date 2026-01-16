@@ -1,0 +1,42 @@
+================================================================================
+LEVEL 4 MODEL: COMPLETE TEST REPORT
+Defective Metal - Microstructure Effects
+================================================================================
+
+Date/Time: 2026-01-12 19:05:31
+Material: Incoloy800
+Test Suite: complete_test_level1_4_defective_metal.py
+
+--------------------------------------------------------------------------------
+1. PHYSICS SUMMARY
+--------------------------------------------------------------------------------
+Level 4 incorporates two competing microstructure effects:
+
+a) Grain Boundary Enhancement:
+   D_gb_enhanced = (1-f_gb)×D_bulk + f_gb×D_gb
+   where f_gb = 3δ/d (GB volume fraction)
+
+b) Trapping Reduction:
+   D_eff = D_gb_enhanced / (1 + Σθᵢ)
+   θᵢ = trap occupancy from Oriani equilibrium
+
+--------------------------------------------------------------------------------
+2. TEST RESULTS SUMMARY
+--------------------------------------------------------------------------------
+
+Total tests: 8
+Passed: 8
+Pass rate: 100.0%
+
+  [PASS] defective_basic_flux
+  [PASS] L1_vs_L4_comparison
+  [PASS] trap_occupancy_T
+  [PASS] trap_occupancy_Eb
+  [PASS] gb_enhancement
+  [PASS] grain_size_effect
+  [PASS] temperature_comparison
+  [PASS] processing_comparison
+
+================================================================================
+END OF REPORT
+================================================================================
