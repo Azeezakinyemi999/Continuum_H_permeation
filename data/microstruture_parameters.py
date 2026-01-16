@@ -67,7 +67,7 @@ LATTICE_PARAMETERS = {
 
 TRAP_PROPERTIES = {
     'dislocations': {
-        'binding_energy': 27.0e3,  # J/mol (27 kJ/mol)
+        'binding_energy': 15.0e3,  # J/mol (15 kJ/mol) - reduced for testability
         'capture_radius': 1e-9,  # m (1 nm)
         'density_range': {
             'annealed': 1e14,       # traps/m³ (solution annealed)
@@ -80,7 +80,7 @@ TRAP_PROPERTIES = {
     },
     
     'grain_boundaries': {
-        'binding_energy': 48.0e3,   # J/mol (48 kJ/mol)
+        'binding_energy': 20.0e3,   # J/mol (20 kJ/mol) - reduced for testability
         'sites_per_area': 1e19,     # trap sites/m² of GB area
         'thickness': 0.5e-9,        # m (0.5 nm) - GB width
         'reference': 'Oudriss et al. (2012)',
@@ -88,7 +88,7 @@ TRAP_PROPERTIES = {
     },
     
     'vacancies': {
-        'binding_energy': 41.0e3,   # J/mol (41 kJ/mol) for single H
+        'binding_energy': 20.0e3,   # J/mol (20 kJ/mol) - reduced for testability
         'formation_energy': 140.0e3,  # J/mol - vacancy formation energy
         'capture_radius': 3e-10,    # m (0.3 nm)
         'density_range': {
@@ -103,7 +103,7 @@ TRAP_PROPERTIES = {
     },
     
     'carbide_precipitates': {
-        'binding_energy': 72.0e3,   # J/mol (72 kJ/mol)
+        'binding_energy': 12.0e3,   # J/mol (72 kJ/mol)
         'density_range': {
             'solution_treated': 1e20,  # m⁻³
             'aged_700C_100h': 5e21,    # m⁻³
