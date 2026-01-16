@@ -276,7 +276,7 @@ def grain_boundary_density(grain_size, gb_thickness=0.5e-9, sites_per_area=1e19,
     """
     Calculate grain boundary trap density from microstructure parameters.
     
-    Theory:
+    Theory::
     -------
     Grain boundaries (GBs) are 2D defects that separate crystalline regions. The
     total GB area per unit volume depends on grain size and morphology. For 
