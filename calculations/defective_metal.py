@@ -467,7 +467,7 @@ def gb_enhancement_factor(temperature, temperature_unit='K', gb_type='HAGB', dat
     """
     Calculate grain boundary diffusion enhancement factor D_gb/D_bulk.
     
-    Theory:
+    Theory::
     -------
     Grain boundaries provide fast diffusion paths due to their more open atomic
     structure. The enhancement factor D_gb/D_bulk decreases with temperature as
