@@ -1377,236 +1377,236 @@ def calculate_gb_enhanced_diffusivity(D_bulk, temperature, grain_size,
         'temperature': temperature
     }
 
-def calculate_gb_enhanced_diffusivity(D_bulk, temperature, grain_size, 
-                                     gb_thickness=0.5e-9, gb_type='HAGB', 
-                                     model='parallel'):
-    """
-    Calculate effective diffusivity with grain boundary fast diffusion paths.
+# def calculate_gb_enhanced_diffusivity(D_bulk, temperature, grain_size, 
+#                                      gb_thickness=0.5e-9, gb_type='HAGB', 
+#                                      model='parallel'):
+#     """
+#     Calculate effective diffusivity with grain boundary fast diffusion paths.
     
-    Theory:
-    -------
-    Grain boundaries provide fast diffusion paths parallel to bulk diffusion.
-    The effective diffusivity depends on the volume fraction of GBs and their
-    enhancement factor. Two models are implemented:
+#     Theory:
+#     -------
+#     Grain boundaries provide fast diffusion paths parallel to bulk diffusion.
+#     The effective diffusivity depends on the volume fraction of GBs and their
+#     enhancement factor. Two models are implemented:
     
-    1. Parallel Path Model (simple):
-       D_eff = f_bulk×D_bulk + f_gb×D_gb
+#     1. Parallel Path Model (simple):
+#        D_eff = f_bulk×D_bulk + f_gb×D_gb
     
-    2. Hart Equation (accounts for GB connectivity):
-       More accurate for higher GB fractions (f_gb > 0.01)
+#     2. Hart Equation (accounts for GB connectivity):
+#        More accurate for higher GB fractions (f_gb > 0.01)
     
-    The GB volume fraction is:
-       f_gb = 3δ/d
+#     The GB volume fraction is:
+#        f_gb = 3δ/d
     
-    where δ is GB thickness and d is grain size.
+#     where δ is GB thickness and d is grain size.
     
-    Mathematical Derivation:
-    ------------------------
-    Parallel model assumes independent transport:
-       J_total = J_bulk + J_gb = -D_bulk×∇C×A_bulk - D_gb×∇C×A_gb
+#     Mathematical Derivation:
+#     ------------------------
+#     Parallel model assumes independent transport:
+#        J_total = J_bulk + J_gb = -D_bulk×∇C×A_bulk - D_gb×∇C×A_gb
     
-    With area fractions equal to volume fractions:
-       D_eff = (1-f_gb)×D_bulk + f_gb×D_gb
+#     With area fractions equal to volume fractions:
+#        D_eff = (1-f_gb)×D_bulk + f_gb×D_gb
     
-    Hart equation includes connectivity effects:
-       D_eff/D_bulk = 1 + [f_gb/(1-f_gb)]×[(D_gb/D_bulk-1)]/[1+2(D_gb/D_bulk-1)f_gb/(3(1-f_gb))]
+#     Hart equation includes connectivity effects:
+#        D_eff/D_bulk = 1 + [f_gb/(1-f_gb)]×[(D_gb/D_bulk-1)]/[1+2(D_gb/D_bulk-1)f_gb/(3(1-f_gb))]
     
-    This accounts for GB network percolation at high f_gb.
+#     This accounts for GB network percolation at high f_gb.
     
-    Parameters:
-    -----------
-    D_bulk : float
-        Bulk lattice diffusion coefficient [m²/s]
-        Typical: 10⁻¹² to 10⁻⁷ m²/s for H in metals
+#     Parameters:
+#     -----------
+#     D_bulk : float
+#         Bulk lattice diffusion coefficient [m²/s]
+#         Typical: 10⁻¹² to 10⁻⁷ m²/s for H in metals
     
-    temperature : float
-        Temperature [K]
-        Used to calculate GB enhancement factor
+#     temperature : float
+#         Temperature [K]
+#         Used to calculate GB enhancement factor
     
-    grain_size : float
-        Average grain diameter [m]
-        Typical ranges:
-        - Nanocrystalline: 10⁻⁹ to 10⁻⁷ m
-        - Fine grain: 10⁻⁶ to 10⁻⁵ m
-        - Coarse grain: 10⁻⁴ to 10⁻³ m
+#     grain_size : float
+#         Average grain diameter [m]
+#         Typical ranges:
+#         - Nanocrystalline: 10⁻⁹ to 10⁻⁷ m
+#         - Fine grain: 10⁻⁶ to 10⁻⁵ m
+#         - Coarse grain: 10⁻⁴ to 10⁻³ m
     
-    gb_thickness : float, optional
-        Grain boundary width [m]
-        Default: 0.5e-9 m (0.5 nm)
-        Range: 0.2-1.0 nm depending on boundary type
+#     gb_thickness : float, optional
+#         Grain boundary width [m]
+#         Default: 0.5e-9 m (0.5 nm)
+#         Range: 0.2-1.0 nm depending on boundary type
     
-    gb_type : str, optional
-        Grain boundary character:
-        - 'HAGB': High-angle grain boundary (default)
-        - 'LAGB': Low-angle grain boundary
-        - 'twin': Coherent twin boundary
-        - 'special': Special CSL boundaries
+#     gb_type : str, optional
+#         Grain boundary character:
+#         - 'HAGB': High-angle grain boundary (default)
+#         - 'LAGB': Low-angle grain boundary
+#         - 'twin': Coherent twin boundary
+#         - 'special': Special CSL boundaries
     
-    model : str, optional
-        Diffusion model:
-        - 'parallel': Simple parallel path model (default)
-        - 'hart': Hart equation with connectivity
+#     model : str, optional
+#         Diffusion model:
+#         - 'parallel': Simple parallel path model (default)
+#         - 'hart': Hart equation with connectivity
     
-    Returns:
-    --------
-    dict
-        Dictionary containing:
-        - 'D_eff': Effective diffusion coefficient [m²/s]
-        - 'D_bulk': Input bulk diffusivity [m²/s]
-        - 'D_gb': Grain boundary diffusivity [m²/s]
-        - 'f_gb': Volume fraction of grain boundaries [-]
-        - 'f_bulk': Volume fraction of bulk (1-f_gb) [-]
-        - 'enhancement_ratio': D_eff/D_bulk [-]
-        - 'gb_enhancement_factor': D_gb/D_bulk [-]
-        - 'regime': 'bulk_dominated', 'gb_dominated', or 'mixed'
-        - 'model_used': Which model was applied
-        - 'percolation_warning': True if f_gb > 0.1
+#     Returns:
+#     --------
+#     dict
+#         Dictionary containing:
+#         - 'D_eff': Effective diffusion coefficient [m²/s]
+#         - 'D_bulk': Input bulk diffusivity [m²/s]
+#         - 'D_gb': Grain boundary diffusivity [m²/s]
+#         - 'f_gb': Volume fraction of grain boundaries [-]
+#         - 'f_bulk': Volume fraction of bulk (1-f_gb) [-]
+#         - 'enhancement_ratio': D_eff/D_bulk [-]
+#         - 'gb_enhancement_factor': D_gb/D_bulk [-]
+#         - 'regime': 'bulk_dominated', 'gb_dominated', or 'mixed'
+#         - 'model_used': Which model was applied
+#         - 'percolation_warning': True if f_gb > 0.1
     
-    Raises:
-    -------
-    ValueError
-        If D_bulk ≤ 0
-        If temperature ≤ 0
-        If grain_size ≤ 0
-        If gb_thickness ≤ 0 or ≥ grain_size/2
-        If model not recognized
+#     Raises:
+#     -------
+#     ValueError
+#         If D_bulk ≤ 0
+#         If temperature ≤ 0
+#         If grain_size ≤ 0
+#         If gb_thickness ≤ 0 or ≥ grain_size/2
+#         If model not recognized
     
-    Warnings:
-    ---------
-    UserWarning
-        If f_gb > 0.1 (GB percolation threshold)
-        If f_gb > 0.5 (unphysical)
-        If enhancement ratio > 100 (may indicate error)
+#     Warnings:
+#     ---------
+#     UserWarning
+#         If f_gb > 0.1 (GB percolation threshold)
+#         If f_gb > 0.5 (unphysical)
+#         If enhancement ratio > 100 (may indicate error)
     
-    References:
-    -----------
-    1. Hart, E.W. (1957). "On the role of dislocations in bulk diffusion."
-       Acta Metall. 5, 597. DOI: 10.1016/0001-6160(57)90127-X
+#     References:
+#     -----------
+#     1. Hart, E.W. (1957). "On the role of dislocations in bulk diffusion."
+#        Acta Metall. 5, 597. DOI: 10.1016/0001-6160(57)90127-X
     
-    2. Kaur, I., Mishin, Y., Gust, W. (1995). "Fundamentals of Grain and
-       Interphase Boundary Diffusion." John Wiley & Sons.
+#     2. Kaur, I., Mishin, Y., Gust, W. (1995). "Fundamentals of Grain and
+#        Interphase Boundary Diffusion." John Wiley & Sons.
     
-    3. Divinski, S.V., Wilde, G. (2008). "Grain boundary self-diffusion in
-       polycrystalline nickel." Z. Metallkd. 99, 8-15.
-       DOI: 10.3139/146.101686
+#     3. Divinski, S.V., Wilde, G. (2008). "Grain boundary self-diffusion in
+#        polycrystalline nickel." Z. Metallkd. 99, 8-15.
+#        DOI: 10.3139/146.101686
     
-    Example:
-    --------
-    >>> result = calculate_gb_enhanced_diffusivity(
-    ...     D_bulk=1e-10,      # m²/s
-    ...     temperature=800,    # K
-    ...     grain_size=50e-6,   # 50 μm
-    ...     gb_type='HAGB',
-    ...     model='parallel'
-    ... )
-    >>> print(f"Enhancement: {result['enhancement_ratio']:.2f}×")
-    """
-    import numpy as np
-    import warnings
+#     Example:
+#     --------
+#     >>> result = calculate_gb_enhanced_diffusivity(
+#     ...     D_bulk=1e-10,      # m²/s
+#     ...     temperature=800,    # K
+#     ...     grain_size=50e-6,   # 50 μm
+#     ...     gb_type='HAGB',
+#     ...     model='parallel'
+#     ... )
+#     >>> print(f"Enhancement: {result['enhancement_ratio']:.2f}×")
+#     """
+#     import numpy as np
+#     import warnings
     
-    # Input validation
-    if D_bulk <= 0:
-        raise ValueError(f"Bulk diffusivity must be positive, got {D_bulk} m²/s")
+#     # Input validation
+#     if D_bulk <= 0:
+#         raise ValueError(f"Bulk diffusivity must be positive, got {D_bulk} m²/s")
     
-    if temperature <= 0:
-        raise ValueError(f"Temperature must be positive, got {temperature} K")
+#     if temperature <= 0:
+#         raise ValueError(f"Temperature must be positive, got {temperature} K")
     
-    if grain_size <= 0:
-        raise ValueError(f"Grain size must be positive, got {grain_size} m")
+#     if grain_size <= 0:
+#         raise ValueError(f"Grain size must be positive, got {grain_size} m")
     
-    if gb_thickness <= 0:
-        raise ValueError(f"GB thickness must be positive, got {gb_thickness} m")
+#     if gb_thickness <= 0:
+#         raise ValueError(f"GB thickness must be positive, got {gb_thickness} m")
     
-    if gb_thickness >= grain_size/2:
-        raise ValueError(f"GB thickness {gb_thickness} m cannot exceed half of grain size {grain_size/2} m")
+#     if gb_thickness >= grain_size/2:
+#         raise ValueError(f"GB thickness {gb_thickness} m cannot exceed half of grain size {grain_size/2} m")
     
-    if model not in ['parallel', 'hart']:
-        raise ValueError(f"Model must be 'parallel' or 'hart', got '{model}'")
+#     if model not in ['parallel', 'hart']:
+#         raise ValueError(f"Model must be 'parallel' or 'hart', got '{model}'")
     
-    # Calculate GB volume fraction
-    # f_gb = 3δ/d for randomly oriented grains
-    f_gb = 3 * gb_thickness / grain_size
-    f_bulk = 1.0 - f_gb
+#     # Calculate GB volume fraction
+#     # f_gb = 3δ/d for randomly oriented grains
+#     f_gb = 3 * gb_thickness / grain_size
+#     f_bulk = 1.0 - f_gb
     
-    # Check for unphysical GB fraction
-    percolation_warning = False
-    if f_gb > 0.5:
-        warnings.warn(f"GB volume fraction {f_gb:.2%} > 50% is unphysical. "
-                     "Check grain size and GB thickness values.")
-        f_gb = 0.5  # Cap at 50%
-        f_bulk = 0.5
-    elif f_gb > 0.1:
-        warnings.warn(f"GB volume fraction {f_gb:.2%} > 10%. "
-                     "GB network percolation effects become important. "
-                     "Consider using Hart model instead of parallel.")
-        percolation_warning = True
+#     # Check for unphysical GB fraction
+#     percolation_warning = False
+#     if f_gb > 0.5:
+#         warnings.warn(f"GB volume fraction {f_gb:.2%} > 50% is unphysical. "
+#                      "Check grain size and GB thickness values.")
+#         f_gb = 0.5  # Cap at 50%
+#         f_bulk = 0.5
+#     elif f_gb > 0.1:
+#         warnings.warn(f"GB volume fraction {f_gb:.2%} > 10%. "
+#                      "GB network percolation effects become important. "
+#                      "Consider using Hart model instead of parallel.")
+#         percolation_warning = True
     
-    # Get GB enhancement factor from temperature and type
-    # Import or call gb_enhancement_factor function
-    gb_result = gb_enhancement_factor(
-        temperature=temperature,
-        temperature_unit='K',
-        gb_type=gb_type
-    )
-    enhancement_factor = gb_result['enhancement_factor']
+#     # Get GB enhancement factor from temperature and type
+#     # Import or call gb_enhancement_factor function
+#     gb_result = gb_enhancement_factor(
+#         temperature=temperature,
+#         temperature_unit='K',
+#         gb_type=gb_type
+#     )
+#     enhancement_factor = gb_result['enhancement_factor']
     
-    # Calculate GB diffusivity
-    D_gb = D_bulk * enhancement_factor
+#     # Calculate GB diffusivity
+#     D_gb = D_bulk * enhancement_factor
     
-    # Calculate effective diffusivity based on model choice
-    if model == 'parallel':
-        # Simple parallel path model
-        D_eff = f_bulk * D_bulk + f_gb * D_gb
-        model_used = 'parallel'
+#     # Calculate effective diffusivity based on model choice
+#     if model == 'parallel':
+#         # Simple parallel path model
+#         D_eff = f_bulk * D_bulk + f_gb * D_gb
+#         model_used = 'parallel'
         
-    elif model == 'hart':
-        # Hart equation for GB diffusion
-        # D_eff/D_bulk = 1 + [f/(1-f)]×[(s-1)/(1+2(s-1)f/(3(1-f)))]
-        # where s = D_gb/D_bulk, f = f_gb
+#     elif model == 'hart':
+#         # Hart equation for GB diffusion
+#         # D_eff/D_bulk = 1 + [f/(1-f)]×[(s-1)/(1+2(s-1)f/(3(1-f)))]
+#         # where s = D_gb/D_bulk, f = f_gb
         
-        s = enhancement_factor  # D_gb/D_bulk
+#         s = enhancement_factor  # D_gb/D_bulk
         
-        if f_gb >= 1.0:  # Prevent division by zero
-            D_eff = D_gb
-        else:
-            numerator = (f_gb / (1 - f_gb)) * (s - 1)
-            denominator = 1 + 2 * (s - 1) * f_gb / (3 * (1 - f_gb))
-            D_eff = D_bulk * (1 + numerator / denominator)
+#         if f_gb >= 1.0:  # Prevent division by zero
+#             D_eff = D_gb
+#         else:
+#             numerator = (f_gb / (1 - f_gb)) * (s - 1)
+#             denominator = 1 + 2 * (s - 1) * f_gb / (3 * (1 - f_gb))
+#             D_eff = D_bulk * (1 + numerator / denominator)
         
-        model_used = 'hart'
+#         model_used = 'hart'
     
-    # Calculate overall enhancement ratio
-    overall_enhancement = D_eff / D_bulk
+#     # Calculate overall enhancement ratio
+#     overall_enhancement = D_eff / D_bulk
     
-    # Warn if enhancement seems too high
-    if overall_enhancement > 100:
-        warnings.warn(f"Overall enhancement {overall_enhancement:.1f}× seems unusually high. "
-                     "Check parameters, especially grain size and temperature.")
+#     # Warn if enhancement seems too high
+#     if overall_enhancement > 100:
+#         warnings.warn(f"Overall enhancement {overall_enhancement:.1f}× seems unusually high. "
+#                      "Check parameters, especially grain size and temperature.")
     
-    # Determine diffusion regime
-    if f_gb * enhancement_factor < 0.1:
-        regime = 'bulk_dominated'
-    elif f_gb * enhancement_factor > 10:
-        regime = 'gb_dominated'
-    else:
-        regime = 'mixed'
+#     # Determine diffusion regime
+#     if f_gb * enhancement_factor < 0.1:
+#         regime = 'bulk_dominated'
+#     elif f_gb * enhancement_factor > 10:
+#         regime = 'gb_dominated'
+#     else:
+#         regime = 'mixed'
     
-    return {
-        'D_eff': D_eff,
-        'D_bulk': D_bulk,
-        'D_gb': D_gb,
-        'f_gb': f_gb,
-        'f_bulk': f_bulk,
-        'enhancement_ratio': overall_enhancement,
-        'gb_enhancement_factor': enhancement_factor,
-        'regime': regime,
-        'model_used': model_used,
-        'percolation_warning': percolation_warning,
-        'grain_size': grain_size,
-        'gb_thickness': gb_thickness,
-        'gb_type': gb_type,
-        'temperature': temperature
-    }
+#     return {
+#         'D_eff': D_eff,
+#         'D_bulk': D_bulk,
+#         'D_gb': D_gb,
+#         'f_gb': f_gb,
+#         'f_bulk': f_bulk,
+#         'enhancement_ratio': overall_enhancement,
+#         'gb_enhancement_factor': enhancement_factor,
+#         'regime': regime,
+#         'model_used': model_used,
+#         'percolation_warning': percolation_warning,
+#         'grain_size': grain_size,
+#         'gb_thickness': gb_thickness,
+#         'gb_type': gb_type,
+#         'temperature': temperature
+#     }
 def combined_microstructure_model(D_lattice, temperature, microstructure_params,
                                  lattice_concentration, lattice_density):
     """
