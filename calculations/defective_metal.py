@@ -50,7 +50,7 @@ where typically Q_gb ≈ 0.6×Q_bulk
 
 Module Structure:
 -----------------
-Core Functions (7):
+Core Functions (7)::
 1. trap_occupancy() - Calculate trap site occupancy fraction
 2. grain_boundary_density() - Convert grain size to trap density
 3. gb_enhancement_factor() - Temperature-dependent GB enhancement
