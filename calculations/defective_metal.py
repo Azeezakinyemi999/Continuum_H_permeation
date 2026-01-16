@@ -82,7 +82,7 @@ Typical ranges for austenitic steels:
   - Vacancies: 40-45 kJ/mol
   - Precipitates: 60-90 kJ/mol
 
-Limitations:
+Limitations::
 ------------
 1. Assumes Oriani local equilibrium (invalid for θ > 0.9)
 2. Independent trap types (no interaction)
