@@ -122,7 +122,7 @@ def trap_occupancy(temperature, binding_energy, trap_density, lattice_density,
     """
     Calculate hydrogen trap occupancy fraction using Oriani local equilibrium model.
     
-    Theory:
+    Theory::
     -------
     At thermal equilibrium, the distribution of hydrogen between lattice sites and
     trap sites follows Fermi-Dirac statistics. For a single trap type, the 
