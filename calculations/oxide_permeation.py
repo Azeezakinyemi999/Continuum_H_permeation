@@ -281,9 +281,9 @@ def compare_resistances(oxide_props, metal_props, P_interface):
     ratio = R_oxide / R_metal
     
     # Classify regime based on resistance ratio
-    if ratio > 100:
+    if ratio > 10:
         limiting = "oxide_limited"
-    elif ratio < 0.1:
+    elif ratio < 0.5:
         limiting = "metal_limited"
     else:
         limiting = "transition_regime"
