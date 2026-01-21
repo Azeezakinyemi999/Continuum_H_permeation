@@ -521,7 +521,39 @@ def calculate_effective_diffusivity_trapping(D_lattice, temperature, trap_list,
     
     This function is path-specific in the parallel model.
     
-    [Implementation similar to original, but designed for single-path use]
+    Uses the CORRECT Oriani equilibrium model:
+        D_eff = D_lattice / (1 + Σ(N_T,i × K_i / N_L))
+    
+    where:
+        - N_T,i = trap density for trap type i [m⁻³]
+        - K_i = exp(E_b,i / RT) = equilibrium constant for trap i
+        - N_L = lattice site density [m⁻³]
+        - The term (N_T × K / N_L) represents the ratio of trapped to mobile H
+    
+    Parameters
+    ----------
+    D_lattice : float
+        Lattice diffusivity [m²/s]
+    temperature : float
+        Temperature [K]
+    trap_list : list of dict
+        Each trap: {'name': str, 'binding_energy': float [J/mol], 'density': float [m⁻³]}
+    lattice_concentration : float
+        Mobile H concentration in lattice [mol/m³]
+    lattice_density : float
+        Lattice interstitial site density [m⁻³], typically ~1e29 for FCC metals
+    
+    Returns
+    -------
+    dict with:
+        - 'D_eff': Effective diffusivity [m²/s]
+        - 'theta_total': Sum of trap occupancy fractions (for info)
+        - 'trapping_term': Sum of (N_T × K / N_L) - the actual denominator factor
+        - 'trap_contributions': List of per-trap details including trapping_contribution
+        - 'reduction_factor': D_eff / D_lattice
+        - 'dominant_trap': Name of trap with largest trapping_contribution
+        - 'mobile_fraction': Fraction of H that is mobile
+        - 'saturation_warnings': List of traps near saturation
     """
     import numpy as np
     import warnings
@@ -544,6 +576,7 @@ def calculate_effective_diffusivity_trapping(D_lattice, temperature, trap_list,
         return {
             'D_eff': D_lattice,
             'theta_total': 0.0,
+            'trapping_term': 0.0,
             'trap_contributions': [],
             'reduction_factor': 1.0,
             'dominant_trap': None,
@@ -553,6 +586,7 @@ def calculate_effective_diffusivity_trapping(D_lattice, temperature, trap_list,
     
     # Calculate trap occupancy for each trap type
     theta_total = 0.0
+    trapping_term = 0.0  # NEW: Sum of (N_T × K / N_L) for correct Oriani formula
     trap_contributions = []
     saturation_warnings = []
     
@@ -574,7 +608,8 @@ def calculate_effective_diffusivity_trapping(D_lattice, temperature, trap_list,
                 'theta': 0.0,
                 'binding_energy': trap['binding_energy'],
                 'density': 0.0,
-                'trapped_concentration': 0.0
+                'trapped_concentration': 0.0,
+                'trapping_contribution': 0.0
             })
             continue
         
@@ -590,7 +625,13 @@ def calculate_effective_diffusivity_trapping(D_lattice, temperature, trap_list,
         theta_i = result['theta']
         theta_total += theta_i
         
-        # Check for saturation
+        # Calculate the TRAPPING CONTRIBUTION using correct Oriani formula
+        # trapping_contribution = (N_T × K) / N_L
+        K_eq = result['K_equilibrium']
+        trapping_contribution = (trap['density'] * K_eq) / lattice_density
+        trapping_term += trapping_contribution
+        
+        # Check for saturation (still useful for warnings)
         if theta_i > 0.9:
             warning_msg = (f"Trap '{trap['name']}' has occupancy θ = {theta_i:.2f} > 0.9. "
                           "Approaching saturation - Oriani model may be inaccurate.")
@@ -604,40 +645,43 @@ def calculate_effective_diffusivity_trapping(D_lattice, temperature, trap_list,
             'binding_energy': trap['binding_energy'],
             'density': trap['density'],
             'trapped_concentration': result['trap_concentration'],
-            'K_equilibrium': result['K_equilibrium']
+            'K_equilibrium': K_eq,
+            'trapping_contribution': trapping_contribution  # NEW: N_T × K / N_L
         })
     
-    # Calculate effective diffusivity
-    # D_eff = D_lattice / (1 + Σθᵢ)
-    denominator = 1.0 + theta_total
+    # Calculate effective diffusivity using CORRECT Oriani formula
+    # D_eff = D_lattice / (1 + Σ(N_T,i × K_i / N_L))
+    # NOT the old wrong formula: D_eff = D_lattice / (1 + Σθᵢ)
+    denominator = 1.0 + trapping_term
     D_eff = D_lattice / denominator
     
     # Calculate derived quantities
     reduction_factor = D_eff / D_lattice
     mobile_fraction = 1.0 / denominator
     
-    # Find dominant trap
+    # Find dominant trap (now based on trapping_contribution, not theta)
     if trap_contributions:
-        dominant_trap = max(trap_contributions, key=lambda x: x['theta'])['name']
+        dominant_trap = max(trap_contributions, key=lambda x: x.get('trapping_contribution', 0))['name']
     else:
         dominant_trap = None
     
     # Issue warnings for extreme trapping
-    if theta_total > 10:
-        warnings.warn(f"Total trap occupancy Σθ = {theta_total:.1f} > 10. "
+    if trapping_term > 100:
+        warnings.warn(f"Total trapping term Σ(N_T×K/N_L) = {trapping_term:.1f} > 100. "
                      "Very strong trapping - consider using McNabb-Foster kinetic model.")
     
     if reduction_factor < 0.01:
         warnings.warn(f"Reduction factor {reduction_factor:.2e} < 0.01. "
                      "Diffusion essentially stopped - model may be inappropriate.")
     
-    # Sort trap contributions by theta (highest first)
-    trap_contributions.sort(key=lambda x: x['theta'], reverse=True)
+    # Sort trap contributions by trapping_contribution (highest first)
+    trap_contributions.sort(key=lambda x: x.get('trapping_contribution', 0), reverse=True)
     
     return {
         'D_eff': D_eff,
         'D_lattice': D_lattice,
         'theta_total': theta_total,
+        'trapping_term': trapping_term,  # NEW: The actual factor in denominator
         'trap_contributions': trap_contributions,
         'reduction_factor': reduction_factor,
         'dominant_trap': dominant_trap,

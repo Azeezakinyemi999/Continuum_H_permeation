@@ -18,8 +18,8 @@ Real metals exhibit competing microstructure effects on hydrogen transport:
 2. Trapping Reduction:
    - Defects (dislocations, vacancies, GBs) trap hydrogen
    - Reduces effective diffusivity via Oriani model
-   - D_eff = D_lattice/(1 + Σθᵢ)
-   - θᵢ = trap occupancy from local equilibrium
+   - D_eff = D_lattice / (1 + Σ(N_T,i × K_i / N_L))
+   - K_i = exp(E_b,i/RT) = equilibrium constant
 
 3. Combined Effects:
    - Sequential application: GB enhancement then trapping
@@ -30,18 +30,21 @@ Mathematical Framework:
 -----------------------
 The effective diffusivity combines both effects:
 
-    D_eff = [(1-f_gb)×D_bulk + f_gb×α×D_bulk]/(1 + Σθᵢ)
+    D_eff = [(1-f_gb)×D_bulk + f_gb×α×D_bulk] / (1 + Σ(N_T,i × K_i / N_L))
 
 where:
     f_gb = 3δ/d = grain boundary volume fraction
     α = gb_enhancement_factor(T) = D_gb/D_bulk
-    θᵢ = trap_occupancy(T, E_b,i, N_T,i, C_L)
+    N_T,i = trap density for trap type i [m⁻³]
+    K_i = exp(E_b,i/RT) = equilibrium constant for trap i
+    N_L = lattice site density [m⁻³]
     
-Oriani equilibrium for trapping:
-    θ/(1-θ) = exp(E_b/RT) × (C_L/N_L)
+Oriani equilibrium (correct form):
+    The trapping term in the denominator is:
+    Σ(N_T,i × K_i / N_L) = ratio of trapped to mobile hydrogen
     
-For dilute solutions:
-    θ ≈ (N_T/N_L) × exp(E_b/RT)
+    Critical trap density (where D_eff = D/2):
+    N_T* = N_L / K
 
 Grain boundary diffusion enhancement:
     D_gb/D_bulk = A × exp[(Q_bulk - Q_gb)/RT]
@@ -117,6 +120,9 @@ References:
    Metall. Trans. A 8, 1709-1712. DOI: 10.1007/BF02646878
 
 """
+from turtle import mode
+
+
 def trap_occupancy(temperature, binding_energy, trap_density, lattice_density, 
                    lattice_concentration):
     """
@@ -174,7 +180,7 @@ def trap_occupancy(temperature, binding_energy, trap_density, lattice_density,
     --------
     dict
         Dictionary containing:
-        - 'theta': Trap occupancy fraction (0 ≤ θ ≤ 1) [-]
+        - 'theta_T': Trap occupancy fraction (0 ≤ θ ≤ 1) [-]
         - 'K_equilibrium': Equilibrium constant [-]
         - 'approximation_used': 'low_coverage' or 'full_equation'
         - 'theta_lattice': Lattice site occupancy fraction [-]
@@ -603,22 +609,30 @@ def gb_enhancement_factor(temperature, temperature_unit='K', gb_type='HAGB', dat
     if T_kelvin < T_min or T_kelvin > T_max:
         # Check if extrapolation is reasonable (within 200K)
         if T_kelvin < T_min - 200 or T_kelvin > T_max + 200:
-            raise ValueError(f"Temperature {T_kelvin:.1f} K is too far outside data range "
-                           f"[{T_min:.1f}, {T_max:.1f}] K. Extrapolation >200K is unreliable.")
+            # Instead of raising, clamp to nearest data limit and warn.
+            warnings.warn(
+                f"Temperature {T_kelvin:.1f} K is far outside data range "
+                f"[{T_min:.1f}, {T_max:.1f}] K. Clamping to nearest data limit for interpolation."
+            )
+            interpolation_method = 'extrapolation_clamped'
+            # Use clamped temperature for interpolation
+            use_T_kelvin = min(max(T_kelvin, T_min), T_max)
         else:
             warnings.warn(f"Temperature {T_kelvin:.1f} K is outside data range "
                          f"[{T_min:.1f}, {T_max:.1f}] K. Extrapolation may be inaccurate.")
             interpolation_method = 'extrapolation_warning'
+            use_T_kelvin = T_kelvin
     else:
         interpolation_method = 'interpolation'
+        use_T_kelvin = T_kelvin
     
     # Perform interpolation in log space (physically motivated)
     # log(D_gb/D_bulk) should be linear in 1/T
     log_enhancement = np.log(data_enhancement)
     inverse_T = 1.0 / data_T_kelvin
-    
-    # Linear interpolation in log space
-    log_factor_interpolated = np.interp(1.0/T_kelvin, inverse_T[::-1], log_enhancement[::-1])
+
+    # Use possibly-clamped temperature for interpolation
+    log_factor_interpolated = np.interp(1.0/use_T_kelvin, inverse_T[::-1], log_enhancement[::-1])
     base_enhancement = np.exp(log_factor_interpolated)
     
     # Apply grain boundary type scaling
@@ -915,26 +929,34 @@ def calculate_effective_diffusivity_trapping(D_lattice, temperature, trap_list,
     reducing the effective diffusion coefficient. Using Oriani's local equilibrium
     assumption, the effective diffusivity is:
     
-        D_eff = D_lattice / (1 + Σθᵢ)
+        D_eff = D_lattice / (1 + Σ(N_T,i × K_i / N_L))
     
-    where θᵢ is the occupancy of trap type i. This assumes:
-    1. Local equilibrium between traps and lattice (fast exchange)
-    2. Independent trap types (no interaction)
-    3. Traps are immobile
+    where:
+        N_T,i = trap density for trap type i [m⁻³]
+        K_i = exp(E_b,i / RT) = equilibrium constant for trap type i [-]
+        N_L = lattice site density [m⁻³]
+    
+    This formula correctly accounts for:
+    1. Trap density N_T (more traps = stronger reduction)
+    2. Binding energy via K (stronger binding = stronger reduction)
+    3. Normalization by lattice density N_L
     
     Mathematical Derivation:
     ------------------------
-    From the effective medium approach with local equilibrium:
-        C_total = C_lattice + ΣC_trapped,i
+    From mass balance at equilibrium:
+        C_total = C_L + Σ C_T,i
+    
+    where C_L is mobile (lattice) hydrogen and C_T,i is trapped hydrogen.
+    
+    At Oriani equilibrium:
+        C_T,i / C_L = (N_T,i / N_L) × K_i
     
     The mobile fraction is:
-        f_mobile = C_lattice/C_total = 1/(1 + ΣC_trapped,i/C_lattice)
-    
-    Since C_trapped,i/C_lattice = θᵢ for each trap type:
-        f_mobile = 1/(1 + Σθᵢ)
+        f_mobile = C_L / C_total = 1 / (1 + Σ(C_T,i / C_L))
+                 = 1 / (1 + Σ(N_T,i × K_i / N_L))
     
     Therefore:
-        D_eff = D_lattice × f_mobile = D_lattice/(1 + Σθᵢ)
+        D_eff = D_lattice × f_mobile = D_lattice / (1 + Σ(N_T,i × K_i / N_L))
     
     Parameters:
     -----------
@@ -956,6 +978,7 @@ def calculate_effective_diffusivity_trapping(D_lattice, temperature, trap_list,
     lattice_concentration : float
         Hydrogen concentration in lattice sites [mol/m³]
         This is the mobile/diffusible hydrogen concentration
+        (Used for calculating trap occupancy θ for saturation warnings)
     
     lattice_density : float
         Number of interstitial lattice sites per volume [m⁻³]
@@ -966,12 +989,22 @@ def calculate_effective_diffusivity_trapping(D_lattice, temperature, trap_list,
     dict
         Dictionary containing:
         - 'D_eff': Effective diffusion coefficient [m²/s]
-        - 'theta_total': Sum of all trap occupancies [-]
-        - 'trap_contributions': List of dicts with details per trap type
+        - 'D_lattice': Input lattice diffusivity [m²/s]
+        - 'trapping_term': Σ(N_T,i × K_i / N_L), the denominator term [-]
+        - 'theta_total': Sum of trap occupancy fractions Σθᵢ (for info) [-]
+        - 'trap_contributions': List of dicts with details per trap type:
+            - 'name': Trap identifier
+            - 'theta': Trap occupancy fraction θᵢ [-]
+            - 'binding_energy': E_b [J/mol]
+            - 'density': N_T [m⁻³]
+            - 'K_equilibrium': exp(E_b/RT) [-]
+            - 'trapping_contribution': (N_T/N_L) × K, contribution to D_eff reduction [-]
+            - 'trapped_concentration': [mol/m³]
         - 'reduction_factor': D_eff/D_lattice [-]
-        - 'dominant_trap': Name of trap with highest θᵢ
+        - 'dominant_trap': Name of trap with highest contribution
         - 'mobile_fraction': Fraction of H that is mobile [-]
-        - 'saturation_warnings': List of traps approaching saturation
+        - 'saturation_warnings': List of traps approaching saturation (θ > 0.9)
+        - 'temperature': Input temperature [K]
     
     Raises:
     -------
@@ -984,32 +1017,24 @@ def calculate_effective_diffusivity_trapping(D_lattice, temperature, trap_list,
     ---------
     UserWarning
         If any trap has θᵢ > 0.9 (approaching saturation)
-        If total θ > 10 (very strong trapping, model may be inaccurate)
         If reduction factor < 0.01 (essentially no diffusion)
     
     Notes:
     ------
-    - Model assumes trap independence (no interaction between trap types)
-    - Valid for dilute H concentrations (C_H << N_lattice)
-    - For saturated traps, consider McNabb-Foster kinetic model
+    - The trapping effect scales with trap density N_T
+    - Critical trap density (where D_eff = D/2) is N_T* = N_L / K
+    - For high trap occupancy (θ > 0.9), consider McNabb-Foster kinetic model
     
     References:
     -----------
     1. Oriani, R.A. (1970). "The diffusion and trapping of hydrogen in steel."
        Acta Metallurgica 18, 147-157. DOI: 10.1016/0001-6160(70)90078-7
     
-    2. Kumnick, A.J., Johnson, H.H. (1980). "Deep trapping states for hydrogen
-       in deformed iron." Acta Metall. 28, 33-39.
-       DOI: 10.1016/0001-6160(80)90038-3
-    
-    3. Hirth, J.P. (1980). "Effects of hydrogen on the properties of iron and
-       steel." Metall. Trans. A 11, 861-890. DOI: 10.1007/BF02654700
-    
     Example:
     --------
     >>> traps = [
     ...     {'name': 'dislocations', 'binding_energy': 27e3, 'density': 1e15},
-    ...     {'name': 'grain_boundaries', 'binding_energy': 48e3, 'density': 1e23}
+    ...     {'name': 'vacancies', 'binding_energy': 48e3, 'density': 1e23}
     ... ]
     >>> result = calculate_effective_diffusivity_trapping(
     ...     D_lattice=1e-10,  # m²/s
@@ -1019,7 +1044,9 @@ def calculate_effective_diffusivity_trapping(D_lattice, temperature, trap_list,
     ...     lattice_density=1.06e29  # m⁻³
     ... )
     >>> print(f"D_eff = {result['D_eff']:.2e} m²/s")
+    >>> print(f"Trapping term = {result['trapping_term']:.2f}")
     """
+        
     import numpy as np
     import warnings
     
@@ -1051,8 +1078,71 @@ def calculate_effective_diffusivity_trapping(D_lattice, temperature, trap_list,
             'saturation_warnings': []
         }
     
-    # Calculate trap occupancy for each trap type
-    theta_total = 0.0
+    # # Calculate trap occupancy for each trap type
+    # theta_total = 0.0
+    # trap_contributions = []
+    # saturation_warnings = []
+    
+    # for i, trap in enumerate(trap_list):
+    #     # Validate trap parameters
+    #     if 'name' not in trap:
+    #         trap['name'] = f'trap_{i+1}'
+        
+    #     if 'binding_energy' not in trap or trap['binding_energy'] <= 0:
+    #         raise ValueError(f"Trap '{trap['name']}' must have positive binding_energy")
+        
+    #     if 'density' not in trap or trap['density'] < 0:
+    #         raise ValueError(f"Trap '{trap['name']}' must have non-negative density")
+        
+    #     # Skip if trap density is zero
+    #     if trap['density'] == 0:
+    #         trap_contributions.append({
+    #             'name': trap['name'],
+    #             'theta': 0.0,
+    #             'binding_energy': trap['binding_energy'],
+    #             'density': 0.0,
+    #             'trapped_concentration': 0.0
+    #         })
+    #         continue
+        
+    #     # Calculate occupancy using trap_occupancy function
+    #     result = trap_occupancy(
+    #         temperature=temperature,
+    #         binding_energy=trap['binding_energy'],
+    #         trap_density=trap['density'],
+    #         lattice_density=lattice_density,
+    #         lattice_concentration=lattice_concentration
+    #     )
+        
+    #     theta_i = result['theta']
+    #     theta_total += theta_i
+        
+    #     # Check for saturation
+    #     if theta_i > 0.9:
+    #         warning_msg = (f"Trap '{trap['name']}' has occupancy θ = {theta_i:.2f} > 0.9. "
+    #                       "Approaching saturation - Oriani model may be inaccurate.")
+    #         warnings.warn(warning_msg)
+    #         saturation_warnings.append(trap['name'])
+        
+    #     # Store contribution details
+    #     trap_contributions.append({
+    #         'name': trap['name'],
+    #         'theta': theta_i,
+    #         'binding_energy': trap['binding_energy'],
+    #         'density': trap['density'],
+    #         'trapped_concentration': result['trap_concentration'],
+    #         'K_equilibrium': result['K_equilibrium']
+    #     })
+    
+    # # Calculate effective diffusivity
+    # # D_eff = D_lattice / (1 + Σθᵢ)
+    # denominator = 1.0 + theta_total
+    # D_eff = D_lattice / denominator
+    
+    #NEW Implementation
+    R_gas = 8.314  # J/mol/K
+    trapping_term = 0.0  # This is the correct term: Σ(N_T,i × K_i / N_L)
+    theta_total = 0.0    # Keep for backwards compatibility (occupancy sum)
     trap_contributions = []
     saturation_warnings = []
     
@@ -1074,11 +1164,21 @@ def calculate_effective_diffusivity_trapping(D_lattice, temperature, trap_list,
                 'theta': 0.0,
                 'binding_energy': trap['binding_energy'],
                 'density': 0.0,
-                'trapped_concentration': 0.0
+                'trapped_concentration': 0.0,
+                'trapping_contribution': 0.0,
+                'K_equilibrium': 0.0
             })
             continue
         
-        # Calculate occupancy using trap_occupancy function
+        # Calculate equilibrium constant K_i = exp(E_b / RT)
+        K_i = np.exp(trap['binding_energy'] / (R_gas * temperature))
+        
+        # Calculate the trapping contribution for this trap type
+        # trapping_contribution_i = (N_T,i / N_L) × K_i
+        trapping_contribution_i = (trap['density'] / lattice_density) * K_i
+        trapping_term += trapping_contribution_i
+        
+        # Also calculate θ for informational purposes (still useful for saturation check)
         result = trap_occupancy(
             temperature=temperature,
             binding_energy=trap['binding_energy'],
@@ -1104,12 +1204,13 @@ def calculate_effective_diffusivity_trapping(D_lattice, temperature, trap_list,
             'binding_energy': trap['binding_energy'],
             'density': trap['density'],
             'trapped_concentration': result['trap_concentration'],
-            'K_equilibrium': result['K_equilibrium']
+            'K_equilibrium': K_i,
+            'trapping_contribution': trapping_contribution_i  # NEW: the actual term used in D_eff
         })
     
-    # Calculate effective diffusivity
-    # D_eff = D_lattice / (1 + Σθᵢ)
-    denominator = 1.0 + theta_total
+    # Calculate effective diffusivity using CORRECTED Oriani formula
+    # D_eff = D_lattice / (1 + Σ(N_T,i × K_i / N_L))
+    denominator = 1.0 + trapping_term
     D_eff = D_lattice / denominator
     
     # Calculate derived quantities
@@ -1118,7 +1219,7 @@ def calculate_effective_diffusivity_trapping(D_lattice, temperature, trap_list,
     
     # Find dominant trap
     if trap_contributions:
-        dominant_trap = max(trap_contributions, key=lambda x: x['theta'])['name']
+        dominant_trap = max(trap_contributions, key=lambda x: x['trapping_contribution'])['name']
     else:
         dominant_trap = None
     
@@ -1137,6 +1238,7 @@ def calculate_effective_diffusivity_trapping(D_lattice, temperature, trap_list,
     return {
         'D_eff': D_eff,
         'D_lattice': D_lattice,
+        'trapping_term': trapping_term,  # NEW: Σ(N_T,i × K_i / N_L)
         'theta_total': theta_total,
         'trap_contributions': trap_contributions,
         'reduction_factor': reduction_factor,
@@ -1608,7 +1710,8 @@ def calculate_gb_enhanced_diffusivity(D_bulk, temperature, grain_size,
 #         'temperature': temperature
 #     }
 def combined_microstructure_model(D_lattice, temperature, microstructure_params,
-                                 lattice_concentration, lattice_density):
+                                 lattice_concentration, lattice_density,
+                                 mode='both'):
     """
     Calculate effective diffusivity combining grain boundary and trapping effects.
     
@@ -1739,6 +1842,10 @@ def combined_microstructure_model(D_lattice, temperature, microstructure_params,
     # Initialize warnings list
     warning_list = []
     
+    # Validate mode
+    valid_modes = ['both', 'gb_only', 'trapping_only', 'none']
+    if mode not in valid_modes:
+        raise ValueError(f"mode must be one of {valid_modes}, got '{mode}'")
     # ========================================================================
     # Input Validation
     # ========================================================================
@@ -1768,114 +1875,204 @@ def combined_microstructure_model(D_lattice, temperature, microstructure_params,
         raise ValueError(f"Grain size must be positive, got {grain_size}")
     
     # ========================================================================
-    # Step 1: Calculate GB-enhanced diffusivity
+    # Handle 'none' mode - return perfect lattice
+    # ========================================================================
+    if mode == 'none':
+        return {
+            'D_eff': D_lattice,
+            'D_lattice': D_lattice,
+            'D_gb_enhanced': D_lattice,
+            'gb_enhancement': None,
+            'theta_total': 0.0,
+            'trap_details': None,
+            'overall_factor': 1.0,
+            'gb_enhancement_factor': 1.0,
+            'trapping_reduction_factor': 1.0,
+            'dominant_effect': 'none',
+            'regime': 'perfect_lattice',
+            'mode': mode,
+            'warnings': []
+        }
+    
+
+    # ========================================================================
+    # Step 1: Calculate GB-enhanced diffusivity (if needed)
     # ========================================================================
     
-    gb_result = calculate_gb_enhanced_diffusivity(
-        D_bulk=D_lattice,
-        temperature=temperature,
-        grain_size=grain_size,
-        gb_thickness=gb_thickness,
-        gb_type=gb_type,
-        model=model
-    )
-    
-    D_gb_enhanced = gb_result['D_eff']
-    f_gb = gb_result['f_gb']
+    if mode in ['both', 'gb_only']:
+        gb_result = calculate_gb_enhanced_diffusivity(
+            D_bulk=D_lattice,
+            temperature=temperature,
+            grain_size=grain_size,
+            gb_thickness=gb_thickness,
+            gb_type=gb_type,
+            model=model
+        )
+        D_gb_enhanced = gb_result['D_eff']
+        f_gb = gb_result['f_gb']
+        gb_enhancement_factor_val = D_gb_enhanced / D_lattice
+    else:
+        # trapping_only mode - no GB enhancement
+        gb_result = None
+        D_gb_enhanced = D_lattice
+        f_gb = 0.0
+        gb_enhancement_factor_val = 1.0
     
     # ========================================================================
     # Step 2: Add GB trapping to trap list if requested
     # ========================================================================
+    if mode in ['both', 'trapping_only']:    
+        if include_gb_trapping and f_gb > 0:
+            # Calculate GB trap density from microstructure
+            gb_density_result = grain_boundary_density(
+                grain_size=grain_size,
+                gb_thickness=gb_thickness,
+                sites_per_area=1e19,  # Default GB trap site density
+                grain_shape=grain_shape
+            )
+            
+            # Add GB as trap type
+            gb_trap = {
+                'name': 'grain_boundaries_auto',
+                'density': gb_density_result['trap_density'],
+                'binding_energy': 20.0e3  # J/mol (reduced for testability)
+            }
+            
+            # Check if GB already in trap list
+            gb_already_present = any(
+                'grain' in trap.get('name', '').lower() 
+                for trap in trap_list
+            )
+            
+            if not gb_already_present:
+                trap_list.append(gb_trap)
+            else:
+                msg = "GB traps already in trap_list, not adding automatically"
+                warnings.warn(msg)
+                warning_list.append(msg)
     
-    if include_gb_trapping and f_gb > 0:
-        # Calculate GB trap density from microstructure
-        gb_density_result = grain_boundary_density(
-            grain_size=grain_size,
-            gb_thickness=gb_thickness,
-            sites_per_area=1e19,  # Default GB trap site density
-            grain_shape=grain_shape
+    # ========================================================================
+    # Step 3: Calculate trapping effects (if needed)
+    # ========================================================================
+    
+    if mode in ['both', 'trapping_only']:
+        # Use D_gb_enhanced as input (which equals D_lattice if trapping_only)
+        D_input = D_gb_enhanced if mode == 'both' else D_lattice
+        
+        trap_result = calculate_effective_diffusivity_trapping(
+            D_lattice=D_input,
+            temperature=temperature,
+            trap_list=trap_list,
+            lattice_concentration=lattice_concentration,
+            lattice_density=lattice_density
         )
-        
-        # Add GB as trap type
-        gb_trap = {
-            'name': 'grain_boundaries_auto',
-            'density': gb_density_result['trap_density'],
-            'binding_energy': 20.0e3  # J/mol (reduced for testability)
-        }
-        
-        # Check if GB already in trap list
-        gb_already_present = any(
-            'grain' in trap.get('name', '').lower() 
-            for trap in trap_list
-        )
-        
-        if not gb_already_present:
-            trap_list.append(gb_trap)
-        else:
-            msg = "GB traps already in trap_list, not adding automatically"
-            warnings.warn(msg)
-            warning_list.append(msg)
-    
-    # ========================================================================
-    # Step 3: Calculate trapping effects
-    # ========================================================================
-    
-    trap_result = calculate_effective_diffusivity_trapping(
-        D_lattice=D_gb_enhanced,  # Use GB-enhanced as input
-        temperature=temperature,
-        trap_list=trap_list,
-        lattice_concentration=lattice_concentration,
-        lattice_density=lattice_density
-    )
-    
-    D_eff = trap_result['D_eff']
-    theta_total = trap_result['theta_total']
-    
-    # ========================================================================
+        D_eff = trap_result['D_eff']
+        theta_total = trap_result['theta_total']
+        trapping_reduction_factor_val = D_eff / D_input
+    else:
+        # gb_only mode - no trapping
+        trap_result = None
+        D_eff = D_gb_enhanced
+        theta_total = 0.0
+        trapping_reduction_factor_val = 1.0
+
+        # ========================================================================
     # Step 4: Analyze competing effects
     # ========================================================================
     
-    # Calculate individual factors
-    gb_enhancement_factor = D_gb_enhanced / D_lattice
-    trapping_reduction_factor = D_eff / D_gb_enhanced
+    # Calculate individual factors (use stored values that handle all modes)
     overall_factor = D_eff / D_lattice
     
-    # Determine dominant effect
-    if gb_enhancement_factor > 2.0 and trapping_reduction_factor > 0.5:
+    # Determine dominant effect based on mode
+    if mode == 'gb_only':
         dominant_effect = 'gb_enhancement'
-    elif gb_enhancement_factor < 2.0 and trapping_reduction_factor < 0.5:
+    elif mode == 'trapping_only':
         dominant_effect = 'trapping'
-    else:
-        dominant_effect = 'balanced'
+    elif mode == 'none':
+        dominant_effect = 'none'
+    else:  # mode == 'both'
+        if gb_enhancement_factor_val > 2.0 and trapping_reduction_factor_val > 0.5:
+            dominant_effect = 'gb_enhancement'
+        elif gb_enhancement_factor_val < 2.0 and trapping_reduction_factor_val < 0.5:
+            dominant_effect = 'trapping'
+        else:
+            dominant_effect = 'balanced'
     
-    # Warn if effects nearly cancel
-    if 0.8 < overall_factor < 1.25:
-        msg = (f"GB enhancement ({gb_enhancement_factor:.2f}×) and trapping "
-               f"({trapping_reduction_factor:.2f}×) nearly cancel. "
+    # Warn if effects nearly cancel (only in 'both' mode)
+    if mode == 'both' and 0.8 < overall_factor < 1.25:
+        msg = (f"GB enhancement ({gb_enhancement_factor_val:.2f}×) and trapping "
+               f"({trapping_reduction_factor_val:.2f}×) nearly cancel. "
                "Small parameter changes could significantly affect results.")
         warnings.warn(msg)
         warning_list.append(msg)
     
     # Classify combined regime
-    if gb_result['regime'] == 'gb_dominated' and theta_total < 0.1:
-        regime = 'gb_fast_diffusion'
-    elif gb_result['regime'] == 'bulk_dominated' and theta_total > 1:
-        regime = 'trap_limited'
-    elif gb_result['regime'] == 'mixed' or dominant_effect == 'balanced':
-        regime = 'competitive'
-    else:
-        regime = 'standard'
+    if mode == 'none':
+        regime = 'perfect_lattice'
+    elif mode == 'gb_only':
+        regime = gb_result['regime'] if gb_result else 'unknown'
+    elif mode == 'trapping_only':
+        regime = 'trap_limited' if theta_total > 1 else 'weak_trapping'
+    else:  # mode == 'both'
+        if gb_result['regime'] == 'gb_dominated' and theta_total < 0.1:
+            regime = 'gb_fast_diffusion'
+        elif gb_result['regime'] == 'bulk_dominated' and theta_total > 1:
+            regime = 'trap_limited'
+        elif gb_result['regime'] == 'mixed' or dominant_effect == 'balanced':
+            regime = 'competitive'
+        else:
+            regime = 'standard'
     
     # ========================================================================
     # Step 5: Compile comprehensive results
     # ========================================================================
     
     calculation_sequence = (
+        f"Mode: {mode}\n"
         f"1. Lattice D = {D_lattice:.2e} m²/s\n"
-        f"2. GB enhancement → {D_gb_enhanced:.2e} m²/s ({gb_enhancement_factor:.2f}×)\n"
-        f"3. Trapping reduction → {D_eff:.2e} m²/s ({trapping_reduction_factor:.2f}×)\n"
+        f"2. GB enhancement → {D_gb_enhanced:.2e} m²/s ({gb_enhancement_factor_val:.2f}×)\n"
+        f"3. Trapping reduction → {D_eff:.2e} m²/s ({trapping_reduction_factor_val:.2f}×)\n"
         f"4. Net effect: {overall_factor:.2f}× original"
     )
+    
+    # Build gb_enhancement dict safely
+    if gb_result is not None:
+        gb_enhancement_dict = {
+            'factor': gb_enhancement_factor_val,
+            'f_gb': f_gb,
+            'D_gb': gb_result['D_gb'],
+            'regime': gb_result['regime']
+        }
+    else:
+        gb_enhancement_dict = {
+            'factor': 1.0,
+            'f_gb': 0.0,
+            'D_gb': D_lattice,
+            'regime': 'none'
+        }
+    
+    # Build trapping dict safely
+    if trap_result is not None:
+        trapping_dict = {
+            'theta_total': theta_total,
+            'reduction_factor': trapping_reduction_factor_val,
+            'dominant_trap': trap_result['dominant_trap'],
+            'contributions': trap_result['trap_contributions']
+        }
+    else:
+        trapping_dict = {
+            'theta_total': 0.0,
+            'reduction_factor': 1.0,
+            'dominant_trap': None,
+            'contributions': []
+        }
+    
+    # Collect warnings safely
+    all_warnings = warning_list.copy()
+    if gb_result is not None:
+        all_warnings.extend(gb_result.get('warnings', []))
+    if trap_result is not None:
+        all_warnings.extend(trap_result.get('saturation_warnings', []))
     
     return {
         # Primary results
@@ -1884,24 +2081,14 @@ def combined_microstructure_model(D_lattice, temperature, microstructure_params,
         'D_gb_enhanced': D_gb_enhanced,
         
         # Component details
-        'gb_enhancement': {
-            'factor': gb_enhancement_factor,
-            'f_gb': f_gb,
-            'D_gb': gb_result['D_gb'],
-            'regime': gb_result['regime']
-        },
-        
-        'trapping': {
-            'theta_total': theta_total,
-            'reduction_factor': trapping_reduction_factor,
-            'dominant_trap': trap_result['dominant_trap'],
-            'contributions': trap_result['trap_contributions']
-        },
+        'gb_enhancement': gb_enhancement_dict,
+        'trapping': trapping_dict,
         
         # Overall analysis
         'overall_factor': overall_factor,
         'dominant_effect': dominant_effect,
         'regime': regime,
+        'mode': mode,
         
         # Diagnostic information
         'calculation_sequence': calculation_sequence,
@@ -1912,5 +2099,5 @@ def combined_microstructure_model(D_lattice, temperature, microstructure_params,
             'trap_count': len(trap_list)
         },
         
-        'warnings': warning_list + gb_result.get('warnings', []) + trap_result.get('saturation_warnings', [])
+        'warnings': all_warnings
     }
