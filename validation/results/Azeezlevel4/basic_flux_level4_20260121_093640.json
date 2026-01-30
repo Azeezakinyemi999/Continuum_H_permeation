@@ -1,0 +1,232 @@
+{
+  "params": {
+    "D": 1e-08,
+    "K_s": 0.0001,
+    "thickness": 0.001,
+    "P_up": 1.0,
+    "P_down": 0.0,
+    "temperature": 1073,
+    "params": {
+      "trap_density": 0,
+      "grain_boundary_fraction": 0,
+      "grain_size": 5e-05,
+      "grain_shape": "equiaxed",
+      "gb_type": "HAGB",
+      "trap_list": [
+        {
+          "name": "dislocations",
+          "type": "dislocations",
+          "binding_energy": 15000.0,
+          "density": 0
+        },
+        {
+          "name": "grain_boundaries",
+          "type": "grain_boundaries",
+          "binding_energy": 20000.0,
+          "density": 0
+        },
+        {
+          "name": "vacancies",
+          "type": "vacancies",
+          "binding_energy": 20000.0,
+          "density": 0
+        },
+        {
+          "name": "carbide_precipitates",
+          "type": "carbide_precipitates",
+          "binding_energy": 12000.0,
+          "density": 0
+        }
+      ]
+    },
+    "result": {
+      "flux": 1.0029728302370945e-09,
+      "C_up": 0.0001,
+      "C_down": 0.0,
+      "permeability": 1.0029728302370945e-12,
+      "D_eff": 1.0029728302370945e-08,
+      "D_lattice": 1e-08,
+      "modification_factor": 1.0029728302370944,
+      "regime_classification": {
+        "model_level": "Level 1,4",
+        "base_regime": "metal_limited",
+        "regime_hierarchy": "metal_limited/lattice_limited",
+        "regime_detail": "lattice_limited",
+        "regime_subdetail": null,
+        "classification_depth": 2,
+        "modification_factor": 1.0029728302370944,
+        "trapping_significant": false,
+        "trapping_reduction_percent": -0.29728302370943815
+      },
+      "regime": "metal_limited/lattice_limited",
+      "regime_base": "metal_limited",
+      "regime_detail": "lattice_limited",
+      "microstructure_details": {
+        "average_theta": 0.0,
+        "average_gb_enhancement": 1.0029728302370944,
+        "trap_reduction_factor": 1.0,
+        "D_variation": 0.0,
+        "dominant_effect": "balanced",
+        "method_used": "average",
+        "n_points": 10
+      },
+      "profiles": {
+        "x": [
+          0.0,
+          0.00011111111111111112,
+          0.00022222222222222223,
+          0.0003333333333333334,
+          0.00044444444444444447,
+          0.0005555555555555556,
+          0.0006666666666666668,
+          0.0007777777777777778,
+          0.0008888888888888889,
+          0.001
+        ],
+        "D": [
+          1.0029728302370945e-08,
+          1.0029728302370945e-08,
+          1.0029728302370945e-08,
+          1.0029728302370945e-08,
+          1.0029728302370945e-08,
+          1.0029728302370945e-08,
+          1.0029728302370945e-08,
+          1.0029728302370945e-08,
+          1.0029728302370945e-08,
+          1.0029728302370945e-08
+        ],
+        "C": [
+          0.0001,
+          8.888888888888889e-05,
+          7.777777777777778e-05,
+          6.666666666666667e-05,
+          5.555555555555556e-05,
+          4.4444444444444447e-05,
+          3.333333333333333e-05,
+          2.2222222222222223e-05,
+          1.1111111111111105e-05,
+          0.0
+        ],
+        "theta": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "units": {
+        "flux": "mol/m\u00b2/s",
+        "concentration": "mol/m\u00b3",
+        "permeability": "mol/m/s/Pa^0.5",
+        "diffusivity": "m\u00b2/s"
+      }
+    },
+    "expected_flux": 1e-09,
+    "checks": {
+      "flux_positive": true,
+      "matches_level1": true,
+      "lattice_limited": true
+    },
+    "check": "lattice_limited",
+    "passed": true
+  },
+  "result": {
+    "flux": 1.0029728302370945e-09,
+    "C_up": 0.0001,
+    "C_down": 0.0,
+    "permeability": 1.0029728302370945e-12,
+    "D_eff": 1.0029728302370945e-08,
+    "D_lattice": 1e-08,
+    "modification_factor": 1.0029728302370944,
+    "regime_classification": {
+      "model_level": "Level 1,4",
+      "base_regime": "metal_limited",
+      "regime_hierarchy": "metal_limited/lattice_limited",
+      "regime_detail": "lattice_limited",
+      "regime_subdetail": null,
+      "classification_depth": 2,
+      "modification_factor": 1.0029728302370944,
+      "trapping_significant": false,
+      "trapping_reduction_percent": -0.29728302370943815
+    },
+    "regime": "metal_limited/lattice_limited",
+    "regime_base": "metal_limited",
+    "regime_detail": "lattice_limited",
+    "microstructure_details": {
+      "average_theta": 0.0,
+      "average_gb_enhancement": 1.0029728302370944,
+      "trap_reduction_factor": 1.0,
+      "D_variation": 0.0,
+      "dominant_effect": "balanced",
+      "method_used": "average",
+      "n_points": 10
+    },
+    "profiles": {
+      "x": [
+        0.0,
+        0.00011111111111111112,
+        0.00022222222222222223,
+        0.0003333333333333334,
+        0.00044444444444444447,
+        0.0005555555555555556,
+        0.0006666666666666668,
+        0.0007777777777777778,
+        0.0008888888888888889,
+        0.001
+      ],
+      "D": [
+        1.0029728302370945e-08,
+        1.0029728302370945e-08,
+        1.0029728302370945e-08,
+        1.0029728302370945e-08,
+        1.0029728302370945e-08,
+        1.0029728302370945e-08,
+        1.0029728302370945e-08,
+        1.0029728302370945e-08,
+        1.0029728302370945e-08,
+        1.0029728302370945e-08
+      ],
+      "C": [
+        0.0001,
+        8.888888888888889e-05,
+        7.777777777777778e-05,
+        6.666666666666667e-05,
+        5.555555555555556e-05,
+        4.4444444444444447e-05,
+        3.333333333333333e-05,
+        2.2222222222222223e-05,
+        1.1111111111111105e-05,
+        0.0
+      ],
+      "theta": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "units": {
+      "flux": "mol/m\u00b2/s",
+      "concentration": "mol/m\u00b3",
+      "permeability": "mol/m/s/Pa^0.5",
+      "diffusivity": "m\u00b2/s"
+    }
+  },
+  "checks": {
+    "flux_positive": true,
+    "matches_level1": true,
+    "lattice_limited": true
+  }
+}

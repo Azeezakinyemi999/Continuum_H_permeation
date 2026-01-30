@@ -19,19 +19,15 @@ OXIDE_PROPERTIES = {
         # The barrier effect comes from ~100-1000x reduction, not 10^22x
         # ===================================================================
         
-        # Fixed temperature values (for initial testing at 800°C)
-        'D_ox': 1e-10,    # m²/s at 800°C (was 5e-21, too low)
-        'K_ox': 1e-15,    # mol/m³/Pa at 800°C (was 1e-22, WAY too low)
-        
         # Temperature-dependent parameters
         # D = D_0 * exp(-E_D / RT)
-        'D_ox_0': 1e-5,  # m²/s (pre-exponential) - INCREASED from 1e-15
-        'E_D_ox': 50000,  # J/mol (activation energy) - DECREASED from 80000
+        'D_ox_0': 1e-6,  # m²/s (pre-exponential) - INCREASED from 1e-15
+        'E_D_ox': 1.55e5,  # J/mol (activation energy) - DECREASED from 80000
         
         # K = K_0 * exp(-H_sol / RT)  
         # Note: For molecular H2 dissolution, H_sol is typically positive
-        'K_ox_0': 1e-3,   # mol/m³/Pa (pre-exponential) - INCREASED from 1e-20
-        'H_sol_ox': 30000,  # J/mol (solution enthalpy) - INCREASED from 20000
+        'K_ox_0': 1e-4,   # mol/m³/Pa (pre-exponential) - INCREASED from 1e-20
+        'H_sol_ox': 1.85e5,  # J/mol (solution enthalpy) - INCREASED from 20000
         
         # Geometric properties
         'thickness': 1e-6,  # m (1 μm) - INCREASED from 6Å for more realistic barrier

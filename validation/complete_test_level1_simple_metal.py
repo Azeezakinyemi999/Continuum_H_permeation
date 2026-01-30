@@ -260,8 +260,8 @@ def test_sieverts_law_pressure_dependence(material_name='Incoloy800',
     fluxes = np.array(fluxes)
     
     # Linear regression on log-log plot
-    log_P = np.log10(pressures)
-    log_flux = np.log10(fluxes)
+    log_P = np.log(pressures)
+    log_flux = np.log(fluxes)
     
     slope, intercept, r_value, p_value, std_err = stats.linregress(log_P, log_flux)
     r_squared = r_value ** 2
@@ -294,7 +294,7 @@ def test_sieverts_law_pressure_dependence(material_name='Incoloy800',
     ax.loglog(pressures, fluxes, 'o', markersize=8, label='Calculated', color='blue')
     
     # Fitted line
-    fitted_flux = 10 ** (slope * log_P + intercept)
+    fitted_flux = np.exp(slope * log_P + intercept)
     ax.loglog(pressures, fitted_flux, '--', linewidth=2, label='Fitted', color='red', alpha=0.7)
     
     ax.set_xlabel('log Upstream Pressure (Pa)', fontsize=12)

@@ -1,0 +1,179 @@
+{
+  "result_cold": {
+    "flux": 1.0149700000000003e-09,
+    "C_up": 0.0001,
+    "C_down": 0.0,
+    "permeability": 1.0149700000000003e-12,
+    "D_eff": 1.0149700000000002e-08,
+    "D_lattice": 1e-08,
+    "modification_factor": 1.0149700000000001,
+    "regime_classification": {
+      "model_level": "Level 1,4",
+      "base_regime": "metal_limited",
+      "regime_hierarchy": "metal_limited/lattice_limited",
+      "regime_detail": "lattice_limited",
+      "regime_subdetail": null,
+      "classification_depth": 2,
+      "modification_factor": 1.0149700000000001,
+      "trapping_significant": false,
+      "trapping_reduction_percent": -1.497000000000015
+    },
+    "regime": "metal_limited/lattice_limited",
+    "regime_base": "metal_limited",
+    "regime_detail": "lattice_limited",
+    "microstructure_details": {
+      "average_theta": 0.0,
+      "average_gb_enhancement": 1.01497,
+      "trap_reduction_factor": 1.0,
+      "D_variation": 0.0,
+      "dominant_effect": "balanced",
+      "method_used": "average",
+      "n_points": 10
+    },
+    "profiles": {
+      "x": [
+        0.0,
+        0.00011111111111111112,
+        0.00022222222222222223,
+        0.0003333333333333334,
+        0.00044444444444444447,
+        0.0005555555555555556,
+        0.0006666666666666668,
+        0.0007777777777777778,
+        0.0008888888888888889,
+        0.001
+      ],
+      "D": [
+        1.01497e-08,
+        1.01497e-08,
+        1.01497e-08,
+        1.01497e-08,
+        1.01497e-08,
+        1.01497e-08,
+        1.01497e-08,
+        1.01497e-08,
+        1.01497e-08,
+        1.01497e-08
+      ],
+      "C": [
+        0.0001,
+        8.888888888888889e-05,
+        7.777777777777778e-05,
+        6.666666666666667e-05,
+        5.555555555555556e-05,
+        4.4444444444444447e-05,
+        3.333333333333333e-05,
+        2.2222222222222223e-05,
+        1.1111111111111105e-05,
+        0.0
+      ],
+      "theta": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "units": {
+      "flux": "mol/m\u00b2/s",
+      "concentration": "mol/m\u00b3",
+      "permeability": "mol/m/s/Pa^0.5",
+      "diffusivity": "m\u00b2/s"
+    }
+  },
+  "result_hot": {
+    "flux": 1.0011253967943306e-09,
+    "C_up": 0.0001,
+    "C_down": 0.0,
+    "permeability": 1.0011253967943306e-12,
+    "D_eff": 1.0011253967943305e-08,
+    "D_lattice": 1e-08,
+    "modification_factor": 1.0011253967943305,
+    "regime_classification": {
+      "model_level": "Level 1,4",
+      "base_regime": "metal_limited",
+      "regime_hierarchy": "metal_limited/lattice_limited",
+      "regime_detail": "lattice_limited",
+      "regime_subdetail": null,
+      "classification_depth": 2,
+      "modification_factor": 1.0011253967943305,
+      "trapping_significant": false,
+      "trapping_reduction_percent": -0.11253967943305465
+    },
+    "regime": "metal_limited/lattice_limited",
+    "regime_base": "metal_limited",
+    "regime_detail": "lattice_limited",
+    "microstructure_details": {
+      "average_theta": 0.0,
+      "average_gb_enhancement": 1.0011253967943305,
+      "trap_reduction_factor": 1.0,
+      "D_variation": 0.0,
+      "dominant_effect": "balanced",
+      "method_used": "average",
+      "n_points": 10
+    },
+    "profiles": {
+      "x": [
+        0.0,
+        0.00011111111111111112,
+        0.00022222222222222223,
+        0.0003333333333333334,
+        0.00044444444444444447,
+        0.0005555555555555556,
+        0.0006666666666666668,
+        0.0007777777777777778,
+        0.0008888888888888889,
+        0.001
+      ],
+      "D": [
+        1.0011253967943305e-08,
+        1.0011253967943305e-08,
+        1.0011253967943305e-08,
+        1.0011253967943305e-08,
+        1.0011253967943305e-08,
+        1.0011253967943305e-08,
+        1.0011253967943305e-08,
+        1.0011253967943305e-08,
+        1.0011253967943305e-08,
+        1.0011253967943305e-08
+      ],
+      "C": [
+        0.0001,
+        8.888888888888889e-05,
+        7.777777777777778e-05,
+        6.666666666666667e-05,
+        5.555555555555556e-05,
+        4.4444444444444447e-05,
+        3.333333333333333e-05,
+        2.2222222222222223e-05,
+        1.1111111111111105e-05,
+        0.0
+      ],
+      "theta": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "units": {
+      "flux": "mol/m\u00b2/s",
+      "concentration": "mol/m\u00b3",
+      "permeability": "mol/m/s/Pa^0.5",
+      "diffusivity": "m\u00b2/s"
+    }
+  },
+  "passed": false
+}

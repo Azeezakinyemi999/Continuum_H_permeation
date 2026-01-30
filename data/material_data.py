@@ -30,17 +30,17 @@ MATERIALS = {
     # =========================================================================
     'Incoloy800': {
         # Diffusivity: D = D_0 * exp(-E_D / RT)
-        'D_0': 6.40e-07,    # m²/s
-        'E_D': 54000,       # J/mol (literature value)
+        'D_0': 5.00e-07,    # m²/s
+        'E_D': 52000,       # J/mol (literature value)
         
         # Solubility: K_s = K_s0 * exp(-H_s / RT)
         # H_s < 0 means exothermic (K_s decreases with T)
-        'K_s0': 1.80e+02,   # mol/m³/Pa^0.5
-        'H_s': -21924,      # J/mol
+        'K_s0': 1.0e-09,   # mol/m³/Pa^0.5
+        'H_s': -20000,      # J/mol
         
         # Derived: P = D * K_s = P_0 * exp(-E_p / RT)
         # P_0 = D_0 * K_s0 = 1.15e-04 mol/m/s/Pa^0.5
-        # E_p = E_D + H_s = 54000 + (-21924) = 32076 J/mol
+        # E_p = E_D + H_s = 52000 + (-20000) = 32000 J/mol
         
         # Metadata
         'reference': 'Calibrated to JAERI-Tech 2002-090 Fig 2.2',

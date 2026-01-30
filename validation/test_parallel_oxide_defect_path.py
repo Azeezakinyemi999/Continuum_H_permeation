@@ -105,7 +105,7 @@ def test_1_basic_functionality():
     
     for name, config in defect_configs.items():
         try:
-            flux = calculate_defect_path_flux(
+            flux = calculate_parallel_path_flux(
                 P_upstream, P_downstream, oxide_props, metal_props, config
             )
             results[name] = flux
@@ -115,27 +115,77 @@ def test_1_basic_functionality():
             all_passed = False
     
     # Create plot
+    # if all_passed and results:
+    #     ensure_output_dir()
+    #     fig, ax = plt.subplots(figsize=(10, 6))
+        
+    #     names = list(results.keys())
+    #     fluxes = [results[n] for n in names]
+        
+    #     colors = ['#2ecc71', '#3498db', '#e74c3c', '#9b59b6']
+    #     bars = ax.bar(names, fluxes, color=colors, edgecolor='black', linewidth=1.5)
+        
+    #     ax.set_yscale('log')
+    #     ax.set_xlabel('Defect Type', fontsize=12)
+    #     ax.set_ylabel('log Flux (mol/m²/s)', fontsize=12)
+    #     ax.set_title('Test 1: Basic Functionality - Flux by Defect Type\n(f_defect = 1%, P = 1 Pa, T = 800°C)', fontsize=14)
+    #     ax.grid(True, alpha=0.3, axis='y')
+        
+    #     # Add value labels on bars
+    #     for bar, flux in zip(bars, fluxes):
+    #         ax.text(bar.get_x() + bar.get_width()/2., flux * 1.5, 
+    #                f'{flux:.2e}', ha='center', va='bottom', fontsize=10, fontweight='bold')
+        
+    #     plt.tight_layout()
+        # Create plot comparing defect flux densities
     if all_passed and results:
         ensure_output_dir()
-        fig, ax = plt.subplots(figsize=(10, 6))
+        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
         
         names = list(results.keys())
-        fluxes = [results[n] for n in names]
+        j_defect = [results[n]['flux_defect_per_area'] for n in names]
+        j_intact = [results[n]['flux_intact_per_area'] for n in names]
+        j_total = [results[n]['flux_total'] for n in names]
         
+        # Plot 1: Flux density through each path type
+        x = np.arange(len(names))
+        width = 0.35
+        
+        bars1 = ax1.bar(x - width/2, j_defect, width, label='Defect path', 
+                       color='#e74c3c', edgecolor='black', linewidth=1.5)
+        bars2 = ax1.bar(x + width/2, j_intact, width, label='Intact oxide path',
+                       color='#3498db', edgecolor='black', linewidth=1.5)
+        
+        ax1.set_yscale('log')
+        ax1.set_xlabel('Defect Type', fontsize=12)
+        ax1.set_ylabel('Flux Density (mol/m²/s)', fontsize=12)
+        ax1.set_title('Flux Density Through Each Path\n(Before area weighting)', fontsize=12)
+        ax1.set_xticks(x)
+        ax1.set_xticklabels(names)
+        ax1.legend()
+        ax1.grid(True, alpha=0.3, axis='y')
+        
+        # Plot 2: Total flux contributions
         colors = ['#2ecc71', '#3498db', '#e74c3c', '#9b59b6']
-        bars = ax.bar(names, fluxes, color=colors, edgecolor='black', linewidth=1.5)
+        bars = ax2.bar(names, j_total, color=colors, edgecolor='black', linewidth=1.5)
         
-        ax.set_yscale('log')
-        ax.set_xlabel('Defect Type', fontsize=12)
-        ax.set_ylabel('log Flux (mol/m²/s)', fontsize=12)
-        ax.set_title('Test 1: Basic Functionality - Flux by Defect Type\n(f_defect = 1%, P = 1 Pa, T = 800°C)', fontsize=14)
-        ax.grid(True, alpha=0.3, axis='y')
+        ax2.set_yscale('log')
+        ax2.set_xlabel('Defect Type', fontsize=12)
+        ax2.set_ylabel('Total Flux (mol/m²/s)', fontsize=12)
+        ax2.set_title(f'Total Permeation Flux\nP = {P_upstream:.1e} Pa', fontsize=12)
+        ax2.grid(True, alpha=0.3, axis='y')
         
-        # Add value labels on bars
-        for bar, flux in zip(bars, fluxes):
-            ax.text(bar.get_x() + bar.get_width()/2., flux * 1.5, 
-                   f'{flux:.2e}', ha='center', va='bottom', fontsize=10, fontweight='bold')
-        
+        # After bars are created
+        for bar, flux in zip(bars, j_total):
+            ax2.annotate(f'{flux:.2e}',
+                        xy=(bar.get_x() + bar.get_width()/2., flux),
+                        xytext=(0, 5),
+                        textcoords='offset points',
+                        ha='center',
+                        va='bottom',
+                        fontsize=9,
+                        fontweight='bold')
+
         plt.tight_layout()
         plot_path = f"{OUTPUT_DIR}/test1_basic_functionality_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
         plt.savefig(plot_path, dpi=150, bbox_inches='tight')
@@ -581,8 +631,10 @@ def test_6_defect_type_comparison():
     
     ax1.set_yscale('log')
     ax1.set_xticks(x)
-    ax1.set_xticklabels(['Pinhole', 'Crack\n(α=0.1)', 'Crack\n(α=0.5)', 'GB\n(β=10)', 'GB\n(β=100)'])
+    # ax1.set_xticklabels(['Pinhole', 'Crack\n(α=0.1)', 'Crack\n(α=0.5)', 'GB\n(β=10)', 'GB\n(β=100)'])
+    ax1.set_xticklabels(names)
     ax1.set_xlabel('Defect Type', fontsize=12)
+
     ax1.set_ylabel('log Flux (mol/m²/s)', fontsize=12)
     ax1.set_title('Flux by Defect Type (f = 1%)', fontsize=12)
     ax1.legend(loc='upper right', fontsize=9)
@@ -594,7 +646,8 @@ def test_6_defect_type_comparison():
     
     ax2.set_yscale('log')
     ax2.set_xticks(x)
-    ax2.set_xticklabels(['Pinhole', 'Crack\n(α=0.1)', 'Crack\n(α=0.5)', 'GB\n(β=10)', 'GB\n(β=100)'])
+    # ax2.set_xticklabels(['Pinhole', 'Crack\n(α=0.1)', 'Crack\n(α=0.5)', 'GB\n(β=10)', 'GB\n(β=100)'])
+    x2.set_xticklabels(names)
     ax2.set_xlabel('Defect Type', fontsize=12)
     ax2.set_ylabel('log Enhancement (vs Perfect Oxide)', fontsize=12)
     ax2.set_title('Enhancement Factor by Defect Type', fontsize=12)
@@ -711,7 +764,7 @@ def test_8_dominant_path_analysis():
     oxide_props, metal_props = setup_material_properties()
     
     # Create grid
-    pressures = np.logspace(-2, 28, 100)  # 0.01 Pa to 1e22 MPa
+    pressures = np.logspace(-7, 23, 100)  # 0.01 Pa to 1e22 MPa
     defect_fractions = np.logspace(-4, 0, 100)  # 0.01% to ~100%
     
     

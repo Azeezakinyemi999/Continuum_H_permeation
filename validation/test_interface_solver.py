@@ -158,7 +158,7 @@ def test_flux_continuity():
     }
     
     # Test at various pressures
-    test_pressures = np.logspace(-6, 6, 25)
+    test_pressures = np.logspace(-7, 20, 25)
     flux_errors = []
     
     print("Checking flux continuity at interface...")

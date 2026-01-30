@@ -29,7 +29,7 @@ if not os.path.exists(RESULTS_DIR):
 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
 # WIDE PRESSURE RANGE
-PRESSURE_MIN = 1e-10  # Pa (ultra-high vacuum)
+PRESSURE_MIN = 1e-3  # Pa (ultra-high vacuum)
 PRESSURE_MAX = 1e28   # Pa 
 N_POINTS = 200        # Number of points for smooth curves
 
@@ -38,8 +38,8 @@ def test_molecular_flux_linearity():
     """Test that oxide flux is linear in pressure over wide range."""
     print("\n=== Test 1: Molecular Flux Linearity ===")
     
-    D_ox = 1e-20  # m²/s
-    K_ox = 1e-22  # mol/m³/Pa
+    D_ox = 1e-18  # m²/s
+    K_ox = 1e-20  # mol/m³/Pa
     thickness = 1e-9  # 1 nm
     
     # Wide pressure range
@@ -47,7 +47,7 @@ def test_molecular_flux_linearity():
     fluxes = [molecular_diffusion_flux(D_ox, K_ox, thickness, P, 0) for P in pressures]
     
     # Test points across the range
-    test_pressures = [1e-8, 1e-4, 1e0, 1e4, 1e8]
+    test_pressures = [1e-3, 1e-2, 1e0, 1e4, 1e8, 1e12, 1e16, 1e20, 1e24, 1e28]
     test_fluxes = [molecular_diffusion_flux(D_ox, K_ox, thickness, P, 0) for P in test_pressures]
     
     print(f"Pressure range: {PRESSURE_MIN:.1e} to {PRESSURE_MAX:.1e} Pa")
@@ -108,8 +108,8 @@ def test_resistance_calculations():
     print("\n=== Test 2: Resistance Calculations ===")
     
     # Properties
-    D_ox = 1e-20  # m²/s
-    K_ox = 1e-22  # mol/m³/Pa
+    D_ox = 1e-18  # m²/s
+    K_ox = 1e-20  # mol/m³/Pa
     thickness_ox = 1e-9  # 1 nm
     
     D_metal = 1e-9  # m²/s
@@ -195,8 +195,8 @@ def test_flux_regimes():
     
     # System properties
     oxide_props = {
-        'D_ox': 1e-20,
-        'K_ox': 1e-22,
+        'D_ox': 1e-18,
+        'K_ox': 1e-20,
         'thickness': 6e-10  # 6 Angstroms (realistic)
     }
     

@@ -1,4 +1,5 @@
 import numpy as np
+from calculations.classify_regime import classify_regime_level14
 
 def sieverts_concentration(K_s, pressure):
     """
@@ -124,10 +125,14 @@ def calculate_simple_metal_flux(D, K_s, thickness, P_up, P_down):
         'C_up': C_up,
         'C_down': C_down,
         'permeability': permeability,
+        'Diffusivity': D,
+        'solubility': K_s,
         'units': {
             'flux': 'mol/m²/s',
             'concentration': 'mol/m³',
-            'permeability': 'mol/m/s/Pa^0.5'
+            'permeability': 'mol/m/s/Pa^0.5',
+            'Diffusivity': 'm²/s',
+            'solubility': 'mol/m³/Pa^0.5'
         }
     }
 
@@ -139,7 +144,7 @@ def calculate_simple_metal_flux(D, K_s, thickness, P_up, P_down):
 def calculate_defective_metal_flux(D_lattice, K_s, thickness, P_up, P_down,
                                     temperature, microstructure_params,
                                     lattice_density=1.06e29,
-                                    method='average', n_points=10):
+                                    method='average', n_points=10, mode='both'):
     """
     Calculate hydrogen permeation flux through metal with microstructure effects.
     
@@ -264,10 +269,14 @@ def calculate_defective_metal_flux(D_lattice, K_s, thickness, P_up, P_down,
         raise ValueError(f"Temperature must be positive: {temperature} K")
     if K_s <= 0:
         raise ValueError(f"Solubility constant must be positive: {K_s}")
-    
+    # Validate method
     valid_methods = ['average', 'harmonic', 'inlet', 'outlet']
     if method not in valid_methods:
         raise ValueError(f"method must be one of {valid_methods}, got '{method}'")
+    # Validate mode
+    valid_modes = ['both', 'gb_only', 'trapping_only', 'none']
+    if mode not in valid_modes:
+        raise ValueError(f"mode must be one of {valid_modes}, got '{mode}'")
     
     # Required microstructure keys
     required_keys = ['grain_size', 'grain_shape', 'gb_type', 'trap_list']
@@ -319,13 +328,29 @@ def calculate_defective_metal_flux(D_lattice, K_s, thickness, P_up, P_down,
             temperature=temperature,
             microstructure_params=microstructure_params,
             lattice_concentration=C_local,
-            lattice_density=lattice_density
+            lattice_density=lattice_density,
+            mode=mode
         )
         
         D_array[i] = result_i['D_eff']
-        theta_array[i] = result_i['trapping']['theta_total']
-        gb_factor_array[i] = result_i['gb_enhancement']['factor']
-    
+        # Handle None cases for trapping/gb_enhancement
+        # theta_array[i] = result_i['trapping']['theta_total'] if result_i['trapping'] else 0.0
+        # gb_factor_array[i] = result_i['gb_enhancement']['factor'] if result_i['gb_enhancement'] else 1.0
+            # Handle different return structures based on mode
+        # The keys depend on what combined_microstructure_model returns
+        if 'trapping' in result_i and result_i['trapping'] is not None:
+            theta_array[i] = result_i['trapping'].get('theta_total', 0.0)
+        elif 'theta_total' in result_i:
+            theta_array[i] = result_i['theta_total']
+        else:
+            theta_array[i] = 0.0
+            
+        if 'gb_enhancement' in result_i and result_i['gb_enhancement'] is not None:
+            gb_factor_array[i] = result_i['gb_enhancement'].get('factor', 1.0)
+        elif 'gb_enhancement_factor' in result_i:
+            gb_factor_array[i] = result_i['gb_enhancement_factor']
+        else:
+            gb_factor_array[i] = 1.0
     # =========================================================================
     # Calculate Average Effective Diffusivity
     # =========================================================================
@@ -376,6 +401,12 @@ def calculate_defective_metal_flux(D_lattice, K_s, thickness, P_up, P_down,
         dominant_effect = 'trapping'
     else:
         dominant_effect = 'balanced'
+
+    # Regime classification for Level 1,4 (bare metal / defective metal)
+    regime_classification = classify_regime_level14(modification_factor)
+    regime = regime_classification.get('regime_hierarchy')
+    regime_base = regime_classification.get('base_regime')
+    regime_detail = regime_classification.get('regime_detail')
     
     # =========================================================================
     # Return Results
@@ -387,11 +418,17 @@ def calculate_defective_metal_flux(D_lattice, K_s, thickness, P_up, P_down,
         'C_up': C_up,
         'C_down': C_down,
         'permeability': permeability,
+
         
         # Level 4 specific outputs
         'D_eff': D_eff,
         'D_lattice': D_lattice,
         'modification_factor': modification_factor,
+        # Regime classification (Level 1,4)
+        'regime_classification': regime_classification,
+        'regime': regime,
+        'regime_base': regime_base,
+        'regime_detail': regime_detail,
         
         # Microstructure details
         'microstructure_details': {
@@ -425,7 +462,7 @@ def calculate_defective_metal_flux(D_lattice, K_s, thickness, P_up, P_down,
 def calculate_defective_metal_flux_sieverts(D_lattice, K_s, thickness, P_interface, P_downstream,
                                             temperature, microstructure_params,
                                             lattice_density=1.06e29,
-                                            method='average', n_points=10):
+                                            method='average', n_points=10, mode='both'):
     """
     Calculate flux through defective metal using Sieverts' law boundary conditions.
     
@@ -476,7 +513,8 @@ def calculate_defective_metal_flux_sieverts(D_lattice, K_s, thickness, P_interfa
         microstructure_params=microstructure_params,
         lattice_density=lattice_density,
         method=method,
-        n_points=n_points
+        n_points=n_points,
+        mode=mode
     )
     
     return result['flux']
