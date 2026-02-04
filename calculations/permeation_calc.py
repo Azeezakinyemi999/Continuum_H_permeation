@@ -518,3 +518,338 @@ def calculate_defective_metal_flux_sieverts(D_lattice, K_s, thickness, P_interfa
     )
     
     return result['flux']
+
+
+
+
+
+
+################################################################################
+################################################################################
+################################################################################
+# ...existing code...
+
+# =============================================================================
+# LEVEL 1+6: Simple Metal with Surface Kinetics
+# =============================================================================
+
+def calculate_simple_metal_flux_with_surface(D, K_s, thickness, P_up, P_down,
+                                              temperature, 
+                                              k_diss=None, k_recomb=None,
+                                              material_name=None,
+                                              coverage_mode='equilibrium',
+                                              forced_coverage=None):
+    """
+    Calculate hydrogen permeation flux through clean metal with surface kinetics.
+    
+    This is Level 1 + Level 6: Combines Sieverts' Law with surface dissociation
+    limitation.
+    
+    Parameters
+    ----------
+    D : float
+        Diffusion coefficient [m²/s]
+    K_s : float
+        Solubility constant [mol/m³/Pa^0.5]
+    thickness : float
+        Metal thickness [m]
+    P_up : float
+        Upstream hydrogen pressure [Pa]
+    P_down : float
+        Downstream hydrogen pressure [Pa]
+    temperature : float
+        Temperature [K]
+    k_diss : float, optional
+        Dissociation rate constant [mol/m²/s/Pa]
+    k_recomb : float, optional
+        Recombination rate constant [m⁴/mol/s]
+    material_name : str, optional
+        Material name to look up kinetics from database
+    coverage_mode : str, optional
+        Surface coverage calculation mode:
+        - 'equilibrium' (default): θ from Langmuir isotherm
+        - 'steady_state': θ from solving J_diss = J_bulk (coupled)
+        - 'forced': θ = forced_coverage (user-specified)
+    forced_coverage : float, optional
+        Fixed surface coverage θ when coverage_mode='forced'
+        
+    Returns
+    -------
+    dict
+        Dictionary containing:
+        - 'flux': Permeation flux [mol/m²/s]
+        - 'flux_sieverts': Bulk-limited flux [mol/m²/s]
+        - 'flux_dissociation': Surface-limited flux [mol/m²/s]
+        - 'SRF': Surface Reduction Factor (flux/flux_sieverts)
+        - 'theta': Surface coverage
+        - 'theta_equilibrium': Langmuir equilibrium coverage
+        - 'Da': Damköhler number
+        - 'coverage_mode': Mode used
+        - 'regime_classification': Regime info
+        - All Level 1 outputs
+        
+    Notes
+    -----
+    Coverage Mode Physics:
+    
+    1. 'equilibrium': Surface at local equilibrium with gas. At Langmuir
+       equilibrium, C_surface = K_s × √P (Sieverts' Law exactly).
+       Valid when Da >> 1.
+    
+    2. 'steady_state': Solves J_diss(θ) = J_bulk(θ) self-consistently.
+       θ adjusts so surface dissociation rate equals bulk diffusion rate.
+       Shows true surface limitation when Da ~ 1 or Da << 1.
+    
+    3. 'forced': User specifies θ directly for parametric studies.
+    
+    Examples
+    --------
+    >>> # Default equilibrium mode
+    >>> result = calculate_simple_metal_flux_with_surface(
+    ...     D=1e-9, K_s=0.1, thickness=1e-3, P_up=1e5, P_down=0,
+    ...     temperature=1073, k_diss=1e-4, k_recomb=1e-6
+    ... )
+    
+    >>> # Coupled steady-state mode
+    >>> result = calculate_simple_metal_flux_with_surface(
+    ...     D=1e-9, K_s=0.1, thickness=1e-3, P_up=1e5, P_down=0,
+    ...     temperature=1073, k_diss=1e-8, k_recomb=1e-6,  # Slow kinetics
+    ...     coverage_mode='steady_state'
+    ... )
+    
+    >>> # Forced coverage for sensitivity study
+    >>> result = calculate_simple_metal_flux_with_surface(
+    ...     D=1e-9, K_s=0.1, thickness=1e-3, P_up=1e5, P_down=0,
+    ...     temperature=1073, k_diss=1e-4, k_recomb=1e-6,
+    ...     coverage_mode='forced', forced_coverage=0.5
+    ... )
+    """
+    from calculations.surface_kinetics import calculate_surface_limited_flux
+    from calculations.classify_regime import classify_regime_level16
+    
+    # Calculate Level 1 (bulk) flux
+    result_L1 = calculate_simple_metal_flux(D, K_s, thickness, P_up, P_down)
+    flux_sieverts = result_L1['flux']
+    
+    # Calculate Level 6 (surface-limited) flux with coverage mode
+    result_L6 = calculate_surface_limited_flux(
+        D=D, K_s=K_s, thickness=thickness,
+        P_up=P_up, P_down=P_down,
+        temperature=temperature,
+        k_diss=k_diss, k_recomb=k_recomb,
+        material_name=material_name,
+        coverage_mode=coverage_mode,
+        forced_coverage=forced_coverage
+    )
+    
+    flux_surface = result_L6['flux']
+    theta = result_L6['theta']
+    theta_equilibrium = result_L6['theta_equilibrium']
+    Da = result_L6['damkohler']['Da']
+    SRF = result_L6['surface_reduction_factor']
+    
+    # The actual flux is the minimum (surface can only reduce, not enhance)
+    flux = flux_surface
+    
+    # Recalculate SRF based on actual flux
+    SRF_actual = SRF
+    
+    # Regime classification
+    regime_class = classify_regime_level16(Da=Da, theta=theta, SRF=SRF_actual)
+    
+    return {
+        # Primary outputs
+        'flux': flux,
+        'flux_sieverts': flux_sieverts,
+        'flux_dissociation': result_L6['flux_dissociation'],
+        
+        # Surface kinetics
+        'SRF': SRF_actual,
+        'theta': theta,
+        'theta_equilibrium': theta_equilibrium,
+        'Da': Da,
+        'damkohler': result_L6['damkohler'],
+        'coverage_mode': coverage_mode,
+        'solver_info': result_L6.get('solver_info'),
+        
+        # Level 1 compatibility
+        'C_up': result_L1['C_up'],
+        'C_surface': result_L6['C_surface'],
+        'C_down': result_L1['C_down'],
+        'permeability': result_L1['permeability'],
+        
+        # Regime
+        'regime_classification': regime_class,
+        'regime': regime_class['regime_hierarchy'],
+        'surface_significant': regime_class['surface_significant'],
+        
+        'units': {
+            'flux': 'mol/m²/s',
+            'concentration': 'mol/m³',
+            'permeability': 'mol/m/s/Pa^0.5'
+        }
+    }
+
+
+# =============================================================================
+# LEVEL 4+6: Defective Metal with Surface Kinetics
+# =============================================================================
+
+def calculate_defective_metal_flux_with_surface(D_lattice, K_s, thickness, P_up, P_down,
+                                                 temperature, microstructure_params,
+                                                 k_diss=None, k_recomb=None,
+                                                 material_name=None,
+                                                 lattice_density=1.06e29,
+                                                 method='average', n_points=10, mode='both',
+                                                 coverage_mode='equilibrium',
+                                                 forced_coverage=None):
+    """
+    Calculate hydrogen permeation flux through defective metal with surface kinetics.
+    
+    This is Level 4 + Level 6: Combines microstructure effects (GB + trapping)
+    with surface dissociation limitation.
+    
+    Parameters
+    ----------
+    D_lattice : float
+        Intrinsic lattice diffusion coefficient [m²/s]
+    K_s : float
+        Solubility constant [mol/m³/Pa^0.5]
+    thickness : float
+        Metal thickness [m]
+    P_up : float
+        Upstream hydrogen pressure [Pa]
+    P_down : float
+        Downstream hydrogen pressure [Pa]
+    temperature : float
+        Temperature [K]
+    microstructure_params : dict
+        Microstructure specification (grain_size, trap_list, etc.)
+    k_diss : float, optional
+        Dissociation rate constant [mol/m²/s/Pa]
+    k_recomb : float, optional
+        Recombination rate constant [m⁴/mol/s]
+    material_name : str, optional
+        Material name for kinetics lookup
+    lattice_density : float, optional
+        Lattice site density [m⁻³]
+    method : str, optional
+        D_eff averaging method
+    n_points : int, optional
+        Points for integration
+    mode : str, optional
+        'both', 'gb_only', 'trapping_only', 'none'
+    coverage_mode : str, optional
+        Surface coverage calculation mode:
+        - 'equilibrium' (default): θ from Langmuir isotherm
+        - 'steady_state': θ from solving J_diss = J_bulk (coupled)
+        - 'forced': θ = forced_coverage (user-specified)
+    forced_coverage : float, optional
+        Fixed surface coverage θ when coverage_mode='forced'
+        
+    Returns
+    -------
+    dict
+        Combined Level 4+6 results including:
+        - 'flux': Final permeation flux
+        - 'flux_L4': Level 4 (microstructure) flux
+        - 'D_eff': Effective diffusivity from microstructure
+        - 'modification_factor': D_eff/D_lattice
+        - 'SRF': Surface Reduction Factor
+        - 'theta', 'theta_equilibrium': Surface coverages
+        - 'coverage_mode': Mode used
+        - 'regime_classification': Combined regime info
+        
+    Notes
+    -----
+    The Damköhler number is calculated using D_eff (not D_lattice):
+        Da = k_diss × K_s × L / D_eff
+    
+    This correctly captures how microstructure affects the surface-bulk
+    competition: if trapping reduces D_eff, Da increases, making the
+    system more diffusion-limited (surface less important).
+    """
+    from calculations.surface_kinetics import calculate_surface_limited_flux
+    from calculations.classify_regime import classify_regime_level46
+    
+    # Calculate Level 4 (defective metal) flux
+    result_L4 = calculate_defective_metal_flux(
+        D_lattice=D_lattice, K_s=K_s, thickness=thickness,
+        P_up=P_up, P_down=P_down, temperature=temperature,
+        microstructure_params=microstructure_params,
+        lattice_density=lattice_density,
+        method=method, n_points=n_points, mode=mode
+    )
+    
+    flux_L4 = result_L4['flux']
+    D_eff = result_L4['D_eff']
+    modification_factor = result_L4['modification_factor']
+    
+    # Calculate Level 6 (surface-limited) using D_eff from Level 4
+    result_L6 = calculate_surface_limited_flux(
+        D=D_eff, K_s=K_s, thickness=thickness,
+        P_up=P_up, P_down=P_down,
+        temperature=temperature,
+        k_diss=k_diss, k_recomb=k_recomb,
+        material_name=material_name,
+        coverage_mode=coverage_mode,
+        forced_coverage=forced_coverage
+    )
+    
+    flux_surface = result_L6['flux']
+    theta = result_L6['theta']
+    theta_equilibrium = result_L6['theta_equilibrium']
+    Da = result_L6['damkohler']['Da']
+    SRF = result_L6['surface_reduction_factor']
+    
+    # The actual flux is the minimum
+    flux = flux_surface
+    
+    # Recalculate SRF
+    SRF_actual = SRF
+    
+    # Combined regime classification
+    regime_class = classify_regime_level46(
+        Da=Da, theta=theta, SRF=SRF_actual,
+        modification_factor=modification_factor
+    )
+    
+    return {
+        # Primary outputs
+        'flux': flux,
+        'flux_L4': flux_L4,
+        'flux_dissociation': result_L6['flux_dissociation'],
+        'flux_sieverts': result_L6['flux_sieverts'],
+        
+        # Level 4 outputs
+        'D_eff': D_eff,
+        'D_lattice': D_lattice,
+        'modification_factor': modification_factor,
+        'C_up': result_L4['C_up'],
+        'C_surface': result_L6['C_surface'],
+        'C_down': result_L4['C_down'],
+        'permeability': result_L4['permeability'],
+        'microstructure_details': result_L4['microstructure_details'],
+        
+        # Level 6 outputs
+        'SRF': SRF_actual,
+        'theta': theta,
+        'theta_equilibrium': theta_equilibrium,
+        'Da': Da,
+        'damkohler': result_L6['damkohler'],
+        'coverage_mode': coverage_mode,
+        'solver_info': result_L6.get('solver_info'),
+        
+        # Regime classification
+        'regime_classification': regime_class,
+        'regime': regime_class['regime_hierarchy'],
+        'surface_significant': regime_class['surface_significant'],
+        'dominant_limitation': regime_class['dominant_limitation'],
+        
+        'units': {
+            'flux': 'mol/m²/s',
+            'concentration': 'mol/m³',
+            'permeability': 'mol/m/s/Pa^0.5',
+            'diffusivity': 'm²/s'
+        }
+    }

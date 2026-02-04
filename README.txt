@@ -428,3 +428,40 @@ Create analysis notebook:
    - Component tests for models
    - System tests for integration
 
+
+
+CURRENT MODEL HIERARCHY:
+========================
+
+Level 1: Simple Metal (Sieverts' Law)
+├── Assumption: Instantaneous surface equilibrium
+├── C_surface = K_s × √P  (Sieverts' Law)
+├── J = D × K_s × (√P_up - √P_down) / L
+└── File: permeation_calc.py → calculate_simple_metal_flux()
+
+Level 2: Oxide + Metal (Interface Solver)
+├── Oxide: Molecular diffusion (Henry's Law: C = K_ox × P)
+├── Metal: Atomic diffusion (Sieverts' Law)
+├── Interface: Flux continuity solved iteratively
+└── File: interface_solver.py → solve_interface_pressure()
+
+Level 3: Defective Oxide (Parallel Paths)
+├── Intact path: Level 2 model
+├── Defect path: Pinholes, cracks, grain boundaries
+├── J_total = f_intact × J_intact + f_defect × J_defect
+└── File: parallel_oxide_defect_paths.py
+
+Level 4: Defective Metal (Microstructure)
+├── GB enhancement: D_eff = f_gb × D_gb + (1-f_gb) × D_bulk
+├── Trapping: D_eff = D / (1 + Σθ_i)
+└── File: defective_metal.py
+
+Level 5: Complete System (L1 + L2 + L3 + L4)
+└── File: sensitivity_level1.py → level5_model_wrapper()
+
+Surface
+Key References:
+- Pick & Sonnenberg (1985): "A model for atomic hydrogen-metal interactions"
+- Baskes (1980): "A calculation of the surface recombination rate constant"
+- Andrew & Haasz (1992): "Models for hydrogen permeation in metals"
+- Causey (2002): "Hydrogen isotope retention and recycling in fusion reactor PFCs"
