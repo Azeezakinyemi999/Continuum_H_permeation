@@ -35,8 +35,10 @@ DEFAULT_PARAMS_LEVEL1 = {
 }
 
 # Valid output metrics for sensitivity analysis
-VALID_OUTPUT_METRICS = ['flux', 'permeability', 'C_up', 'C_down', 'D', 'K_s']
-
+VALID_OUTPUT_METRICS = [
+    'flux', 'permeability', 'C_up', 'C_down', 'D', 'K_s',
+    'log_flux', 'log_D', 'log_K_s', 'log_permeability'  # Log-scale versions
+]
 # =============================================================================
 # MODEL WRAPPER FUNCTIONS
 # =============================================================================
@@ -127,6 +129,12 @@ def level1_model_wrapper(params_dict):
         result['D'] = D
         result['K_s'] = K_s
         result['temperature'] = T
+
+        # Add log-transformed outputs for sensitivity analysis
+        result['log_flux'] = np.log10(result['flux']) if result['flux'] > 0 else -20
+        result['log_D'] = np.log10(D) if D > 0 else -20
+        result['log_K_s'] = np.log10(K_s) if K_s > 0 else -20
+        result['log_permeability'] = np.log10(result['permeability']) if result['permeability'] > 0 else -20
         
         return result
         
@@ -360,7 +368,7 @@ def sobol_sensitivity_level1(
 # =============================================================================
 # VISUALIZATION FUNCTIONS
 # =============================================================================
-def plot_morris_results(Si, problem, output_metric='Model Output'):
+# def plot_morris_results(Si, problem, output_metric='Model Output'):
     """
     Visualize Morris sensitivity results.
     """
@@ -426,6 +434,105 @@ def plot_morris_results(Si, problem, output_metric='Model Output'):
     print("  σ  : Nonlinearity/Interactions (higher = more complex)")
     print(f"{'='*70}\n")
 
+def plot_morris_results(Si, problem, output_metric='Model Output', use_mu_star=False):
+    """
+    Visualize Morris sensitivity results.
+    
+    Parameters:
+    -----------
+    Si : dict
+        Morris sensitivity indices from analyze()
+    problem : dict
+        SALib problem definition
+    output_metric : str
+        Name of output being analyzed
+    use_mu_star : bool
+        If True, plot μ* (absolute, no direction). 
+        If False, plot μ (signed, shows direction of effect).
+    """
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
+    
+    param_names = problem['names']
+    mu = np.nan_to_num(Si['mu'], nan=0.0)           # Signed mean effect
+    mu_star = np.nan_to_num(Si['mu_star'], nan=0.0) # Absolute mean effect
+    sigma = np.nan_to_num(Si['sigma'], nan=0.0)
+    
+    # Choose which μ to plot
+    if use_mu_star:
+        mu_to_plot = mu_star
+        mu_label = 'μ* (Mean Absolute Elementary Effect)'
+    else:
+        mu_to_plot = mu
+        mu_label = 'μ (Mean Effect Elementary Effect)'
+    
+    # Sort by absolute importance for display order
+    sorted_idx = np.argsort(np.abs(mu_to_plot))[::-1]
+    sorted_names = [param_names[i] for i in sorted_idx]
+    sorted_mu = mu_to_plot[sorted_idx]
+    
+    # Bar chart with colors showing direction
+    colors = ['green' if m > 0 else 'red' for m in sorted_mu]
+    ax1.barh(sorted_names, sorted_mu, color=colors, alpha=0.7, edgecolor='black')
+    ax1.axvline(x=0, color='black', linewidth=0.8)  # Zero line
+    ax1.set_xlabel(mu_label, fontsize=12)
+    ax1.set_title(f'Morris Sensitivity Analysis\n{output_metric}', fontsize=14, fontweight='bold')
+    ax1.grid(axis='x', alpha=0.3)
+    
+    # Add legend for colors
+    from matplotlib.patches import Patch
+    legend_elements = [
+        Patch(facecolor='green', alpha=0.7, label='Increases output'),
+        Patch(facecolor='red', alpha=0.7, label='Decreases output')
+    ]
+    ax1.legend(handles=legend_elements, loc='lower right', fontsize=10)
+    
+    # Scatter plot: μ* vs σ (always use μ* for this plot)
+    ax2.scatter(mu_star, sigma, s=150, alpha=0.6, c='steelblue', edgecolors='black')
+    
+    for i, name in enumerate(param_names):
+        ax2.annotate(name, (mu_star[i], sigma[i]), 
+                    fontsize=10, ha='right', va='bottom',
+                    xytext=(-5, 5), textcoords='offset points')
+    
+    ax2.set_xlabel('μ* (Importance)', fontsize=12)
+    ax2.set_ylabel('σ (Nonlinearity/Interactions)', fontsize=12)
+    ax2.set_title('Elementary Effects', fontsize=14, fontweight='bold')
+    ax2.grid(True, alpha=0.3)
+    
+    # Add interpretation zones
+    if np.any(mu_star > 0):
+        max_mu = np.max(mu_star)
+        max_sigma = np.max(sigma)
+        if max_mu > 0:
+            ax2.axvline(max_mu * 0.3, color='red', linestyle='--', alpha=0.3, 
+                       label='High importance')
+        if max_sigma > 0:
+            ax2.axhline(max_sigma * 0.3, color='blue', linestyle='--', alpha=0.3, 
+                       label='High nonlinearity')
+        ax2.legend(fontsize=10)
+    
+    plt.tight_layout()
+    plt.show()
+    
+    # Print summary - include both μ and μ*
+    print(f"\n{'='*70}")
+    print(f"MORRIS SENSITIVITY RESULTS - {output_metric}")
+    print(f"{'='*70}")
+    df = pd.DataFrame({
+        'Parameter': sorted_names,
+        'μ': [mu[i] for i in sorted_idx],          # Signed
+        'μ*': [mu_star[i] for i in sorted_idx],    # Absolute
+        'σ': [sigma[i] for i in sorted_idx],
+        'Direction': ['↑' if mu[i] > 0 else '↓' for i in sorted_idx]
+    })
+    print(df.to_string(index=False))
+    print(f"{'='*70}")
+    print("\nInterpretation:")
+    print("  μ  : Signed mean effect (positive = increases output)")
+    print("  μ* : Absolute importance (higher = more influential)")
+    print("  σ  : Nonlinearity/Interactions (higher = more complex)")
+    print("  ↑/↓: Direction of effect when parameter increases")
+    print(f"{'='*70}\n")
 
 def plot_sobol_results(Si, problem, output_metric='Model Output'):
     """
@@ -654,6 +761,9 @@ VALID_OUTPUT_METRICS_L5 = [
     'P_interface',       # Oxide-metal interface pressure [Pa]
     'flux_intact',       # Flux through intact oxide [mol/m²/s]
     'flux_defect',       # Flux through defect paths [mol/m²/s]
+    'log_flux',
+    'log_D_eff',
+    'log_permeability',
 ]
 
 # =============================================================================
@@ -747,141 +857,87 @@ SUGGESTED_RANGES_LEVEL5 = {
 def level5_model_wrapper(params_dict):
     """
     Wrapper for LEVEL 5 complete hierarchical model.
-    
-    Combines all levels:
-    - Level 1: Base metal (Arrhenius D, K_s)
-    - Level 2: Oxide layer (barrier)
-    - Level 3: Oxide defects (parallel paths)
-    - Level 4: Metal microstructure (GB enhancement + trapping)
-    
-    Parameters
-    ----------
-    params_dict : dict
-        Any subset of parameters from DEFAULT_PARAMS_LEVEL5.
-        Missing parameters are filled from defaults.
-        
-    Returns
-    -------
-    dict
-        Output metrics:
-        - 'flux': Total permeation flux [mol/m²/s]
-        - 'PRF': Permeation Reduction Factor [-]
-        - 'D_eff': Effective metal diffusivity [m²/s]
-        - 'D_modification': D_eff / D_lattice [-]
-        - 'permeability': Effective permeability [mol/m/s/Pa^0.5]
-        - 'P_interface': Oxide-metal interface pressure [Pa]
-        - 'flux_intact': Flux through intact oxide path [mol/m²/s]
-        - 'flux_defect': Flux through defect paths [mol/m²/s]
-        - 'flux_bare_metal': Flux without oxide (Level 4 only) [mol/m²/s]
-        - 'regime': Operating regime classification
+    Combines all levels: metal, oxide, defects, microstructure, traps.
+    Returns a dictionary of output metrics.
     """
     from calculations.parallel_oxide_defect_paths import (
         calculate_parallel_path_flux_defective_metal,
         calculate_PRF_defective_metal
     )
     from calculations.permeation_calc import calculate_defective_metal_flux
-    
+    import numpy as np
+
     # Merge with defaults
     full_params = DEFAULT_PARAMS_LEVEL5.copy()
     full_params.update(params_dict)
-    
+
     try:
         R = 8.314  # J/mol/K
         T = full_params['temperature']
-        
-        # =====================================================================
-        # Calculate temperature-dependent properties
-        # =====================================================================
         T_ref = 1073.15  # Reference temperature for D_ref
-        D_ref = 1e-9  # Reference diffusivity at T_ref
-        K_s_ref = 1.0e-9  # Reference solubility at T_ref
-        D_ox_ref = 1e-6  # Reference oxide diffusivity at T_ref
-        K_ox_ref = 1e-4  # Reference oxide solubility at T_ref
- 
-        # Metal diffusivity: D = D_0 * exp(-E_D / RT)
+        D_ref = 1e-9
+        K_s_ref = 1.0e-9
+        D_ox_ref = 1e-6
+        K_ox_ref = 1e-4
+
+        # Metal properties
         D_0 = full_params['D_0']
         E_D = full_params['E_D']
-        #D_metal = D_0 * np.exp(-E_D / (R * T))
         D_metal = D_ref * np.exp((-E_D / R) * (1/T -1/T_ref))
-        
-        # Metal solubility: K_s = K_s0 * exp(-H_s / RT)
         K_s0 = full_params['K_s0']
         H_s = full_params['H_s']
-        
-        # K_s_metal = K_s0 * np.exp(-H_s / (R * T))
         K_s_metal = K_s_ref * np.exp((-H_s / R) * (1/T - 1/T_ref))
 
-        # Oxide diffusivity: D_ox = D_ox_0 * exp(-E_D_ox / RT)
+        # Oxide properties
         D_ox_0 = full_params['D_ox_0']
         E_D_ox = full_params['E_D_ox']
-        # D_ox = D_ox_0 * np.exp(-E_D_ox / (R * T))
-
         D_ox = D_ox_ref * np.exp((-E_D_ox / R) * (1/T - 1/T_ref))
-        
-        # Oxide solubility: K_ox = K_ox_0 * exp(-H_sol_ox / RT)
         K_ox_0 = full_params['K_ox_0']
         H_sol_ox = full_params['H_sol_ox']
-        # K_ox = K_ox_0 * np.exp(-H_sol_ox / (R * T))
-        
         K_ox = K_ox_ref * np.exp((-H_sol_ox / R) * (1/T - 1/T_ref))
-        # =====================================================================
-        # Build property dictionaries for calculation functions
-        # =====================================================================
-        
+
         oxide_props = {
             'D_ox': D_ox,
             'K_ox': K_ox,
             'thickness': full_params['oxide_thickness']
         }
-        
         metal_props = {
-            'D_metal': D_metal,  # This is D_lattice for Level 4
+            'D_metal': D_metal,
             'K_s_metal': K_s_metal,
             'thickness': full_params['metal_thickness']
         }
-        
-        # Build trap list from individual trap parameters
+
+        # Trap list
         trap_list = []
-        
-        # Dislocation traps
         if full_params.get('trap_dislocation_N_T', 0) > 0:
             trap_list.append({
                 'name': 'dislocations',
                 'binding_energy': full_params['trap_dislocation_E_b'],
                 'density': full_params['trap_dislocation_N_T']
             })
-        
-        # Vacancy traps
         if full_params.get('trap_vacancy_N_T', 0) > 0:
             trap_list.append({
                 'name': 'vacancies',
                 'binding_energy': full_params['trap_vacancy_E_b'],
                 'density': full_params['trap_vacancy_N_T']
             })
-        
-        # Carbide traps
         if full_params.get('trap_carbide_N_T', 0) > 0:
             trap_list.append({
                 'name': 'carbides',
                 'binding_energy': full_params['trap_carbide_E_b'],
                 'density': full_params['trap_carbide_N_T']
             })
-        
-        # Grain boundary traps (density calculated from grain size)
         grain_size = full_params['grain_size']
         gb_thickness = full_params['gb_thickness']
-        sites_per_area = full_params['sites_per_area']  # trap sites/m² of GB area
-        # GB area per unit volume ≈ 3/grain_size for equiaxed grains
+        sites_per_area = full_params['sites_per_area']
         gb_area_per_volume = 3.0 / grain_size
         N_T_gb = sites_per_area * gb_area_per_volume * gb_thickness
-        
         if full_params.get('trap_gb_E_b', 0) > 0 and N_T_gb > 0:
             trap_list.append({
                 'name': 'grain_boundaries',
                 'binding_energy': full_params['trap_gb_E_b'],
                 'density': N_T_gb
             })
-        
         microstructure_params = {
             'grain_size': grain_size,
             'grain_shape': full_params['grain_shape'],
@@ -890,38 +946,21 @@ def level5_model_wrapper(params_dict):
             'trap_list': trap_list,
             'gb_enhancement_factor': full_params.get('gb_enhancement_factor', 100)
         }
-        
-        # Defect parameters for Level 3
         defect_params = {
             'area_fraction': full_params['defect_fraction'],
             'type': full_params['defect_type'],
             'thickness_factor': full_params.get('crack_thickness_factor', 0.1),
             'diffusivity_factor': full_params.get('gb_diffusivity_factor', 10.0)
         }
-        
-        # Operating conditions
         P_upstream = full_params['P_upstream']
         P_downstream = full_params['P_downstream']
         lattice_density = full_params['lattice_density']
         method = full_params.get('D_eff_method', 'average')
-        
-        # Determine mode based on flags
         include_gb = full_params.get('include_gb_enhancement', True)
         include_trap = full_params.get('include_trapping', True)
-        if include_gb and include_trap:
-            mode = 'both'
-        elif include_gb:
-            mode = 'gb_only'
-        elif include_trap:
-            mode = 'trapping_only'
-        else:
-            mode = 'none'
-        
-        # =====================================================================
+        mode = 'both' if include_gb and include_trap else ('gb_only' if include_gb else ('trapping_only' if include_trap else 'none'))
+
         # Calculate Level 5: Full hierarchical model
-        # =====================================================================
-        
-        # Full Level 3+4 calculation
         result_l5 = calculate_parallel_path_flux_defective_metal(
             P_upstream=P_upstream,
             P_downstream=P_downstream,
@@ -935,8 +974,6 @@ def level5_model_wrapper(params_dict):
             n_points=10,
             mode=mode
         )
-        
-        # Calculate bare metal flux for PRF (Level 4 only, no oxide)
         result_bare = calculate_defective_metal_flux(
             D_lattice=D_metal,
             K_s=K_s_metal,
@@ -950,62 +987,46 @@ def level5_model_wrapper(params_dict):
             n_points=10,
             mode=mode
         )
-        
         flux_total = result_l5['flux_total']
         flux_bare = result_bare['flux']
-        
-        # PRF = flux_bare / flux_with_oxide
         PRF = flux_bare / flux_total if flux_total > 0 else float('inf')
-        
-        # Effective permeability
         D_eff = result_l5.get('D_eff_metal', D_metal)
         permeability = D_eff * K_s_metal
-        
-        # D modification factor
         D_modification = D_eff / D_metal if D_metal > 0 else 1.0
-        
-        # =====================================================================
-        # Return comprehensive results
-        # =====================================================================
-        
-        return {
-            # Primary outputs
+
+        # Return comprehensive results, including log-transformed outputs
+        results = {
             'flux': flux_total,
             'PRF': PRF,
             'D_eff': D_eff,
             'D_modification': D_modification,
             'permeability': permeability,
-            
-            # Interface and path details
             'P_interface': result_l5.get('P_interface_intact', 0),
             'flux_intact': result_l5['flux_intact_contribution'],
             'flux_defect': result_l5['flux_defect_contribution'],
             'flux_bare_metal': flux_bare,
-            
-            # Regime classification
             'regime': result_l5.get('regime', 'unknown'),
             'dominant_path': result_l5.get('dominant_path', 'unknown'),
-            
-            # Temperature-dependent calculated values
             'D_metal': D_metal,
             'K_s_metal': K_s_metal,
             'D_ox': D_ox,
             'K_ox': K_ox,
             'temperature': T,
-            
-            # Microstructure details
             'modification_factor': result_l5.get('modification_factor', 1.0),
             'defect_enhancement': result_l5.get('defect_enhancement_factor', 1.0),
+            # Log-transformed outputs for sensitivity analysis
+            'log_flux': np.log10(flux_total) if flux_total > 0 else float('-inf'),
+            'log_D_eff': np.log10(D_eff) if D_eff > 0 else float('-inf'),
+            'log_permeability': np.log10(permeability) if permeability > 0 else float('-inf'),
         }
-        
+        return results
+
     except Exception as e:
         print(f"Error in Level 5 model: {e}")
         print(f"  params_dict keys: {list(params_dict.keys())}")
         import traceback
         traceback.print_exc()
-        
-        # Return safe defaults
-        return {
+        results = {
             'flux': 1e-20,
             'PRF': 1.0,
             'D_eff': 1e-12,
@@ -1024,10 +1045,12 @@ def level5_model_wrapper(params_dict):
             'temperature': full_params.get('temperature', 1073.15),
             'modification_factor': 1.0,
             'defect_enhancement': 1.0,
+            'log_flux': np.log10(1e-20),
+            'log_D_eff': np.log10(1e-12),
+            'log_permeability': np.log10(1e-20),
         }
+        return results
 
-
-# (Add after level5_model_wrapper function)
 
 # =============================================================================
 # MORRIS SENSITIVITY ANALYSIS - LEVEL 5
@@ -1111,6 +1134,8 @@ def morris_sensitivity_level5(
     
     n_samples = param_values.shape[0]
     Y = np.zeros(n_samples)
+    error_log = []  # Track which samples caused errors
+
     
     print(f"\n{'='*70}")
     print(f"MORRIS SENSITIVITY ANALYSIS - LEVEL 5 (Complete Hierarchical Model)")
@@ -1126,22 +1151,46 @@ def morris_sensitivity_level5(
         result = level5_model_wrapper(sample_params)
         Y[i] = result[output_metric]
         
-        if (i + 1) % 10 == 0 or (i + 1) == n_samples:
+        # Track if this sample had an error
+        if result.get('regime') == 'error' or result.get('dominant_path') == 'error':
+            error_log.append({'sample_idx': i, 'params': sample_params.copy()})
+        
+        if (i + 1) % 100 == 0 or (i + 1) == n_samples:
             print(f"  Completed {i + 1}/{n_samples} samples")
     
-    # Handle invalid values
-    valid_idx = np.isfinite(Y) & (Y > 0)
-    n_invalid = np.sum(~valid_idx)
+    # Handle invalid values based on output metric type
+    if output_metric.startswith('log_'):
+        # Log outputs can be negative, only check for -inf or NaN
+        valid_idx = np.isfinite(Y)
+    elif output_metric == 'PRF':
+        # PRF should be >= 1 (or inf for perfect barrier)
+        valid_idx = np.isfinite(Y) & (Y >= 1.0)
+    elif output_metric == 'D_modification':
+        # D_modification can be < 1 (trapping) or > 1 (GB enhancement)
+        valid_idx = np.isfinite(Y) & (Y > 0)
+    else:
+        # Flux, permeability, etc. should be positive
+        valid_idx = np.isfinite(Y) & (Y > 0)
     
+    n_invalid = np.sum(~valid_idx)
+
     if n_invalid > 0:
         print(f"\n⚠️  Warning: {n_invalid} invalid outputs detected")
+        print(f"   Error samples logged: {len(error_log)}")
+        
         if np.any(valid_idx):
             median_val = np.median(Y[valid_idx])
             Y[~valid_idx] = median_val
             print(f"   Replaced with median: {median_val:.2e}")
         else:
-            print("   All outputs invalid! Check parameter ranges.")
+            print("   ❌ All outputs invalid! Check parameter ranges.")
+            # Print first few error samples for debugging
+            print("   First 5 error parameter sets:")
+            for err in error_log[:5]:
+                print(f"      Sample {err['sample_idx']}: {err['params']}")
             Y[:] = 1e-15
+    else:
+        print(f"\n✓ All {n_samples} samples produced valid outputs")
     
     # Analyze with Morris method
     Si = morris_analyzer.analyze(
@@ -1154,8 +1203,10 @@ def morris_sensitivity_level5(
     
     print(f"\n✓ Morris analysis complete")
     print(f"  Output range: [{np.min(Y):.2e}, {np.max(Y):.2e}]")
-    print(f"  Output span: {np.max(Y)/np.min(Y):.1f}× variation")
-    
+    #print(f"  Output span: {np.max(Y)/np.min(Y):.1f}× variation")
+    if np.min(Y) > 0:
+        print(f"  Output span: {np.max(Y)/np.min(Y):.1f}× variation")
+
     # Print quick summary
     mu_star = Si['mu_star']
     sorted_idx = np.argsort(mu_star)[::-1]
@@ -1274,6 +1325,7 @@ def sobol_sensitivity_level5(
     
     n_samples = param_values.shape[0]
     Y = np.zeros(n_samples)
+    error_log = []  # Track which samples caused errors
     
     # Estimate time
     n_params = len(param_ranges)
@@ -1298,24 +1350,48 @@ def sobol_sensitivity_level5(
         result = level5_model_wrapper(sample_params)
         Y[i] = result[output_metric]
         
+        # Track if this sample had an error
+        if result.get('regime') == 'error' or result.get('dominant_path') == 'error':
+            error_log.append({'sample_idx': i, 'params': sample_params.copy()})
+        
         # Progress updates at 10%, 25%, 50%, 75%, 100%
         progress = (i + 1) / n_samples
         if (i + 1) % max(1, n_samples // 10) == 0 or (i + 1) == n_samples:
             print(f"  Completed {i + 1}/{n_samples} samples ({progress*100:.0f}%)")
     
-    # Handle invalid values
-    valid_idx = np.isfinite(Y) & (Y > 0)
+    # Handle invalid values based on output metric type
+    if output_metric.startswith('log_'):
+        # Log outputs can be negative, only check for -inf or NaN
+        valid_idx = np.isfinite(Y)
+    elif output_metric == 'PRF':
+        # PRF should be >= 1 (or inf for perfect barrier)
+        valid_idx = np.isfinite(Y) & (Y >= 1.0)
+    elif output_metric == 'D_modification':
+        # D_modification can be < 1 (trapping) or > 1 (GB enhancement)
+        valid_idx = np.isfinite(Y) & (Y > 0)
+    else:
+        # Flux, permeability, etc. should be positive
+        valid_idx = np.isfinite(Y) & (Y > 0)
+    
     n_invalid = np.sum(~valid_idx)
     
     if n_invalid > 0:
-        print(f"\n⚠️  Warning: {n_invalid} invalid outputs detected ({n_invalid/n_samples*100:.1f}%)")
+        print(f"\n⚠️  Warning: {n_invalid}/{n_samples} invalid outputs detected ({n_invalid/n_samples*100:.1f}%)")
+        print(f"   Error samples logged: {len(error_log)}")
+        
         if np.any(valid_idx):
             median_val = np.median(Y[valid_idx])
             Y[~valid_idx] = median_val
-            print(f"   Replaced with median: {median_val:.2e}")
+            print(f"   Replaced invalid values with median: {median_val:.2e}")
         else:
-            print("   All outputs invalid! Check parameter ranges.")
+            print("   ❌ All outputs invalid! Check parameter ranges.")
+            # Print first few error samples for debugging
+            print("   First 5 error parameter sets:")
+            for err in error_log[:5]:
+                print(f"      Sample {err['sample_idx']}: {err['params']}")
             Y[:] = 1e-15
+    else:
+        print(f"\n✓ All {n_samples} samples produced valid outputs")
     
     # Analyze with Sobol method
     Si = sobol_analyzer.analyze(
@@ -1466,10 +1542,13 @@ VALID_OUTPUT_METRICS_L5L6 = [
     'P_interface',       # Oxide-metal interface pressure [Pa]
     'flux_intact',       # Flux through intact oxide [mol/m²/s]
     'flux_defect',       # Flux through defect paths [mol/m²/s]
+    'log_flux',
+    'log_D_eff',
+    'log_permeability',
     # Level 6 specific outputs
-    # 'SRF',               # Surface Reduction Factor [-]
-    # 'theta',             # Surface coverage (0-1) [-]
-    # 'Da',                # Damköhler number [-]
+    'SRF',               # Surface Reduction Factor [-]
+    'theta',             # Surface coverage (0-1) [-]
+    'Da',                # Damköhler number [-]
 ]
 
 # =============================================================================
@@ -1779,6 +1858,10 @@ def level5L6_model_wrapper(params_dict):
             'D_eff': D_eff,
             'D_modification': D_modification,
             'permeability': permeability,
+            'log_flux': np.log10(flux_total) if flux_total > 0 else float('-inf'),
+            'log_D_eff': np.log10(D_eff) if D_eff > 0 else float('-inf'),
+            'log_permeability': np.log10(permeability) if permeability > 0 else float('-inf'),
+
             
             # Interface and path details
             'P_interface': result_l5l6.get('P_interface_intact', 0),
@@ -1787,9 +1870,9 @@ def level5L6_model_wrapper(params_dict):
             'flux_bare_metal': flux_bare,
             
             # Level 6 surface kinetics outputs
-            # 'SRF': result_l5l6.get('SRF', 1.0),
-            # 'theta': result_l5l6.get('theta', 0),
-            # 'Da': result_l5l6.get('Da', float('inf')),
+            'SRF': result_l5l6.get('SRF', 1.0),
+            'theta': result_l5l6.get('theta', 0),
+            'Da': result_l5l6.get('Da', float('inf')),
             
             # Regime classification
             'regime': result_l5l6.get('regime', 'unknown'),
@@ -1926,6 +2009,7 @@ def morris_sensitivity_level5L6(
     
     n_samples = param_values.shape[0]
     Y = np.zeros(n_samples)
+    error_log = []  # Track which samples caused errors
     
     print(f"\n{'='*70}")
     print(f"MORRIS SENSITIVITY ANALYSIS - LEVEL 5+L6")
@@ -1943,22 +2027,49 @@ def morris_sensitivity_level5L6(
         result = level5L6_model_wrapper(sample_params)
         Y[i] = result[output_metric]
         
-        if (i + 1) % 10 == 0 or (i + 1) == n_samples:
+        # Track if this sample had an error
+        if result.get('regime') == 'error' or result.get('dominant_path') == 'error':
+            error_log.append({'sample_idx': i, 'params': sample_params.copy()})
+        
+        if (i + 1) % 100 == 0 or (i + 1) == n_samples:
             print(f"  Completed {i + 1}/{n_samples} samples")
     
-    # Handle invalid values
-    valid_idx = np.isfinite(Y) & (Y > 0)
+    # Handle invalid values based on output metric type
+    if output_metric.startswith('log_'):
+        # Log outputs can be negative, only check for -inf or NaN
+        valid_idx = np.isfinite(Y)
+    elif output_metric == 'PRF':
+        # PRF should be >= 1 (or inf for perfect barrier)
+        valid_idx = np.isfinite(Y) & (Y >= 1.0)
+    elif output_metric in ['D_modification', 'theta', 'SRF']:
+        # These can be < 1 or > 1, just need to be positive and finite
+        valid_idx = np.isfinite(Y) & (Y > 0)
+    elif output_metric == 'Da':
+        # Damköhler number can be any positive value
+        valid_idx = np.isfinite(Y) & (Y > 0)
+    else:
+        # Flux, permeability, etc. should be positive
+        valid_idx = np.isfinite(Y) & (Y > 0)
+    
     n_invalid = np.sum(~valid_idx)
     
     if n_invalid > 0:
-        print(f"\n⚠️  Warning: {n_invalid} invalid outputs detected")
+        print(f"\n⚠️  Warning: {n_invalid}/{n_samples} invalid outputs detected ({n_invalid/n_samples*100:.1f}%)")
+        print(f"   Error samples logged: {len(error_log)}")
+        
         if np.any(valid_idx):
             median_val = np.median(Y[valid_idx])
             Y[~valid_idx] = median_val
-            print(f"   Replaced with median: {median_val:.2e}")
+            print(f"   Replaced invalid values with median: {median_val:.2e}")
         else:
-            print("   All outputs invalid! Check parameter ranges.")
+            print("   ❌ All outputs invalid! Check parameter ranges.")
+            # Print first few error samples for debugging
+            print("   First 5 error parameter sets:")
+            for err in error_log[:5]:
+                print(f"      Sample {err['sample_idx']}: {err['params']}")
             Y[:] = 1e-15
+    else:
+        print(f"\n✓ All {n_samples} samples produced valid outputs")
     
     # Analyze with Morris method
     Si = morris_analyzer.analyze(
@@ -2070,6 +2181,7 @@ def sobol_sensitivity_level5L6(
     
     n_samples = param_values.shape[0]
     Y = np.zeros(n_samples)
+    error_log = []  # Track which samples caused errors
     
     n_params = len(param_ranges)
     if calc_second_order:
@@ -2095,23 +2207,50 @@ def sobol_sensitivity_level5L6(
         result = level5L6_model_wrapper(sample_params)
         Y[i] = result[output_metric]
         
+        # Track if this sample had an error
+        if result.get('regime') == 'error' or result.get('dominant_path') == 'error':
+            error_log.append({'sample_idx': i, 'params': sample_params.copy()})
+        
         progress = (i + 1) / n_samples
         if (i + 1) % max(1, n_samples // 10) == 0 or (i + 1) == n_samples:
             print(f"  Completed {i + 1}/{n_samples} samples ({progress*100:.0f}%)")
     
-    # Handle invalid values
-    valid_idx = np.isfinite(Y) & (Y > 0)
+    # Handle invalid values based on output metric type
+    if output_metric.startswith('log_'):
+        # Log outputs can be negative, only check for -inf or NaN
+        valid_idx = np.isfinite(Y)
+    elif output_metric == 'PRF':
+        # PRF should be >= 1 (or inf for perfect barrier)
+        valid_idx = np.isfinite(Y) & (Y >= 1.0)
+    elif output_metric in ['D_modification', 'theta', 'SRF']:
+        # These can be < 1 or > 1, just need to be positive and finite
+        valid_idx = np.isfinite(Y) & (Y > 0)
+    elif output_metric == 'Da':
+        # Damköhler number can be any positive value
+        valid_idx = np.isfinite(Y) & (Y > 0)
+    else:
+        # Flux, permeability, etc. should be positive
+        valid_idx = np.isfinite(Y) & (Y > 0)
+    
     n_invalid = np.sum(~valid_idx)
     
     if n_invalid > 0:
-        print(f"\n⚠️  Warning: {n_invalid} invalid outputs detected ({n_invalid/n_samples*100:.1f}%)")
+        print(f"\n⚠️  Warning: {n_invalid}/{n_samples} invalid outputs detected ({n_invalid/n_samples*100:.1f}%)")
+        print(f"   Error samples logged: {len(error_log)}")
+        
         if np.any(valid_idx):
             median_val = np.median(Y[valid_idx])
             Y[~valid_idx] = median_val
-            print(f"   Replaced with median: {median_val:.2e}")
+            print(f"   Replaced invalid values with median: {median_val:.2e}")
         else:
-            print("   All outputs invalid! Check parameter ranges.")
+            print("   ❌ All outputs invalid! Check parameter ranges.")
+            # Print first few error samples for debugging
+            print("   First 5 error parameter sets:")
+            for err in error_log[:5]:
+                print(f"      Sample {err['sample_idx']}: {err['params']}")
             Y[:] = 1e-15
+    else:
+        print(f"\n✓ All {n_samples} samples produced valid outputs")
     
     # Analyze with Sobol method
     Si = sobol_analyzer.analyze(

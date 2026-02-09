@@ -51,46 +51,6 @@ def molecular_diffusion_flux(D_ox, K_ox, thickness, P_up, P_down):
     return flux
 
 
-
-# def calculate_oxide_flux_from_material(material_name, temperature_K, P_up, P_down):
-#     """
-#     Calculate flux using material properties from database.
-    
-#     Parameters:
-#     -----------
-#     material_name : str
-#         Name of oxide (e.g., 'Cr2O3')
-#     temperature_K : float
-#         Temperature in Kelvin
-#     P_up, P_down : float
-#         Upstream and downstream pressures (Pa)
-    
-#     Returns:
-#     --------
-#     float
-#         Flux through oxide (mol/m²/s)
-#     """
-#     # Get material properties
-#     if material_name not in OXIDE_PROPERTIES:
-#         raise ValueError(f"Unknown oxide material: {material_name}")
-    
-#     oxide_props = OXIDE_PROPERTIES[material_name]
-    
-#     # Calculate temperature-dependent properties
-#     R = 8.314  # J/mol/K
-#     D_ox = oxide_props['D_ox_0'] * np.exp(-oxide_props['E_D_ox'] / (R * temperature_K))
-#     K_ox = oxide_props['K_ox_0'] * np.exp(-oxide_props['H_sol_ox'] / (R * temperature_K))
-    
-#     # Use the base function
-#     flux = molecular_diffusion_flux(
-#         D_ox, K_ox, 
-#         oxide_props['thickness'],
-#         P_up, P_down
-#     )
-    
-#     return flux
-
-
 def calculate_oxide_resistance(D_ox, K_ox, thickness):
     """
     Calculate permeation resistance of oxide layer.
@@ -181,6 +141,9 @@ def get_oxide_properties_at_T(oxide_name, temperature_K):
     """
     Calculate temperature-dependent oxide properties.
     
+    Uses reference-temperature Arrhenius format:
+        k(T) = k_ref × exp((-E/R) × (1/T - 1/T_ref))
+    
     Parameters:
     -----------
     oxide_name : str
@@ -198,15 +161,19 @@ def get_oxide_properties_at_T(oxide_name, temperature_K):
     
     oxide_data = OXIDE_PROPERTIES[oxide_name]
     R = 8.314  # J/mol/K
-    
+    T_ref = oxide_data['T_ref']
+
     # Check temperature range
     T_min, T_max = oxide_data['temperature_range']
     if not (T_min <= temperature_K <= T_max):
         print(f"Warning: Temperature {temperature_K}K outside validated range [{T_min}, {T_max}]K")
     
     # Calculate temperature-dependent properties
-    D_ox = oxide_data['D_ox_0'] * np.exp(-oxide_data['E_D_ox'] / (R * temperature_K))
-    K_ox = oxide_data['K_ox_0'] * np.exp(-oxide_data['H_sol_ox'] / (R * temperature_K))
+    # D_ox = oxide_data['D_ox_0'] * np.exp(-oxide_data['E_D_ox'] / (R * temperature_K))
+    # K_ox = oxide_data['K_ox_0'] * np.exp(-oxide_data['H_sol_ox'] / (R * temperature_K))
+    
+    D_ox = oxide_data['D_ox_ref'] * np.exp((-oxide_data['E_D_ox'] / R) * (1/temperature_K - 1/T_ref))
+    K_ox = oxide_data['K_ox_ref'] * np.exp((-oxide_data['H_sol_ox'] / R) * (1/temperature_K - 1/T_ref))
     
     return {
         'D_ox': D_ox,
@@ -237,11 +204,16 @@ def get_metal_properties_at_T(metal_name, temperature_K):
     
     metal_data = MATERIALS[metal_name]
     R = 8.314  # J/mol/K
+    T_ref = metal_data['T_ref']
     
     # From your Level 1 implementation
-    D_metal = metal_data['D_0'] * np.exp(-metal_data['E_D'] / (R * temperature_K))
-    K_s_metal = metal_data['K_s0'] * np.exp(-metal_data['H_s'] / (R * temperature_K))
-    
+    # D_metal = metal_data['D_0'] * np.exp(-metal_data['E_D'] / (R * temperature_K))
+    # K_s_metal = metal_data['K_s0'] * np.exp(-metal_data['H_s'] / (R * temperature_K))
+
+    # Reference-temperature Arrhenius form
+   
+    D_metal = metal_data['D_ref'] * np.exp((-metal_data['E_D'] / R) * (1/temperature_K - 1/T_ref))
+    K_s_metal = metal_data['K_s_ref'] * np.exp((-metal_data['H_s'] / R) * (1/temperature_K - 1/T_ref))
     return {
         'D_metal': D_metal,
         'K_s_metal': K_s_metal

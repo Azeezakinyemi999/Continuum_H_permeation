@@ -1,12 +1,127 @@
+# import numpy as np
+# # Reference parameters at T_ref = 1073.15 K (800 °C)
+# T_ref = 1073.15  # Reference temperature for D_ref
+# D_ref = 1e-9  # Reference diffusivity at T_ref
+# K_s_ref = 1.0e-9  # Reference solubility at T_ref
+# D_ox_ref = 1e-6  # Reference oxide diffusivity at T_ref
+# K_ox_ref = 1e-4  # Reference oxide solubility at T_ref
+# k_diss_ref = 1.0e-2  # Reference dissociation rate at T_ref
+# k_recomb_ref = 1.0e-7  # Reference recombination rate at T_ref
+# def arrhenius(pre_exp, activation_energy, temperature):
+#     """
+#     Calculate temperature-dependent property using Arrhenius equation.
+    
+#     Parameters
+#     ----------
+#     pre_exp : float
+#         Pre-exponential factor (same units as property)
+#     activation_energy : float
+#         Activation energy [J/mol]
+#     temperature : float
+#         Absolute temperature [K]
+    
+#     Returns
+#     -------
+#     float
+#         Temperature-dependent property value
+    
+#     Notes
+#     -----
+#     Arrhenius equation: property = pre_exp * exp(-E_a / R*T)
+#     R = 8.314 J/mol/K (universal gas constant)
+    
+#     Common uses:
+#     - Diffusivity: D = D_0 * exp(-E_D / RT)
+#     - Solubility: K_s = K_s0 * exp(-H_s / RT)
+#     - Permeability: P = P_0 * exp(-E_p / RT)
+#     """
+#     R = 8.314  # J/mol/K
+#     T_ref = 1073.15  # Reference temperature [K]
+
+#     if temperature <= 0:
+#         raise ValueError(f"Temperature must be positive: {temperature} K")
+    
+#     # Handle both endothermic (positive E) and exothermic (negative E) processes
+#     property_value = pre_exp * np.exp((-activation_energy / R) *(1/ temperature - 1/T_ref))
+    
+#     return property_value
+
+# def get_diffusivity(temperature, material_dict):
+#     """
+#     Calculate diffusivity at given temperature.
+    
+#     Parameters
+#     ----------
+#     temperature : float
+#         Temperature [K]
+#     material_dict : dict
+#         Dictionary containing 'D_0' and 'E_D'
+    
+#     Returns
+#     -------
+#     float
+#         Diffusivity [m²/s]
+#     """
+
+    
+#     return arrhenius(D_ref, material_dict['E_D'], temperature)
+
+
+# def get_solubility(temperature, material_dict):
+#     """
+#     Calculate Sieverts' solubility at given temperature.
+    
+#     Parameters
+#     ----------
+#     temperature : float
+#         Temperature [K]
+#     material_dict : dict
+#         Dictionary containing 'K_s0' and 'H_s'
+    
+#     Returns
+#     -------
+#     float
+#         Solubility constant [mol/m³/Pa^0.5]
+#     """
+#     return arrhenius(K_s_ref, material_dict['H_s'], temperature)
+
+
+# def get_permeability(temperature, material_dict):
+#     """
+#     Calculate permeability at given temperature.
+    
+#     Parameters
+#     ----------
+#     temperature : float
+#         Temperature [K]
+#     material_dict : dict
+#         Dictionary with D_0, E_D, K_s0, H_s
+    
+#     Returns
+#     -------
+#     float
+#         Permeability [mol/m/s/Pa^0.5]
+#     """
+#     D = get_diffusivity(temperature, material_dict)
+#     K_s = get_solubility(temperature, material_dict)
+#     return D * K_s
+
+
+"""
+Utility functions for hydrogen permeation calculations.
+
+Uses REFERENCE-TEMPERATURE Arrhenius format:
+    k(T) = k_ref × exp((-E/R) × (1/T - 1/T_ref))
+
+Reference values are read from material/oxide data dictionaries.
+"""
+
 import numpy as np
-# Reference parameters at T_ref = 1073.15 K (800 °C)
-T_ref = 1073.15  # Reference temperature for D_ref
-D_ref = 1e-9  # Reference diffusivity at T_ref
-K_s_ref = 1.0e-9  # Reference solubility at T_ref
-D_ox_ref = 1e-6  # Reference oxide diffusivity at T_ref
-K_ox_ref = 1e-4  # Reference oxide solubility at T_ref
-k_diss_ref = 1.0e-2  # Reference dissociation rate at T_ref
-k_recomb_ref = 1.0e-7  # Reference recombination rate at T_ref
+
+# Gas constant
+R = 8.314  # J/mol/K
+
+
 def arrhenius(pre_exp, activation_energy, temperature):
     """
     Calculate temperature-dependent property using Arrhenius equation.
@@ -27,24 +142,26 @@ def arrhenius(pre_exp, activation_energy, temperature):
     
     Notes
     -----
-    Arrhenius equation: property = pre_exp * exp(-E_a / R*T)
+    Reference-temperature Arrhenius: k(T) = k_ref × exp((-E/R) × (1/T - 1/T_ref))
     R = 8.314 J/mol/K (universal gas constant)
+    T_ref = 1073.15 K (800°C)
     
     Common uses:
-    - Diffusivity: D = D_0 * exp(-E_D / RT)
-    - Solubility: K_s = K_s0 * exp(-H_s / RT)
-    - Permeability: P = P_0 * exp(-E_p / RT)
+    - Diffusivity: D = D_ref * exp((-E_D/R) * (1/T - 1/T_ref))
+    - Solubility: K_s = K_s_ref * exp((-H_s/R) * (1/T - 1/T_ref))
+    - Permeability: P = P_ref * exp((-E_p/R) * (1/T - 1/T_ref))
     """
-    R = 8.314  # J/mol/K
+ 
     T_ref = 1073.15  # Reference temperature [K]
 
     if temperature <= 0:
         raise ValueError(f"Temperature must be positive: {temperature} K")
     
-    # Handle both endothermic (positive E) and exothermic (negative E) processes
-    property_value = pre_exp * np.exp((-activation_energy / R) *(1/ temperature - 1/T_ref))
+    # Reference-temperature Arrhenius form
+    property_value = pre_exp * np.exp((-activation_energy / R) * (1/temperature - 1/T_ref))
     
     return property_value
+
 
 def get_diffusivity(temperature, material_dict):
     """
@@ -55,16 +172,14 @@ def get_diffusivity(temperature, material_dict):
     temperature : float
         Temperature [K]
     material_dict : dict
-        Dictionary containing 'D_0' and 'E_D'
+        Dictionary containing 'D_ref' and 'E_D'
     
     Returns
     -------
     float
         Diffusivity [m²/s]
     """
-
-    
-    return arrhenius(D_ref, material_dict['E_D'], temperature)
+    return arrhenius(material_dict['D_ref'], material_dict['E_D'], temperature)
 
 
 def get_solubility(temperature, material_dict):
@@ -76,14 +191,14 @@ def get_solubility(temperature, material_dict):
     temperature : float
         Temperature [K]
     material_dict : dict
-        Dictionary containing 'K_s0' and 'H_s'
+        Dictionary containing 'K_s_ref' and 'H_s'
     
     Returns
     -------
     float
         Solubility constant [mol/m³/Pa^0.5]
     """
-    return arrhenius(K_s_ref, material_dict['H_s'], temperature)
+    return arrhenius(material_dict['K_s_ref'], material_dict['H_s'], temperature)
 
 
 def get_permeability(temperature, material_dict):
@@ -95,7 +210,7 @@ def get_permeability(temperature, material_dict):
     temperature : float
         Temperature [K]
     material_dict : dict
-        Dictionary with D_0, E_D, K_s0, H_s
+        Dictionary with D_ref, E_D, K_s_ref, H_s
     
     Returns
     -------

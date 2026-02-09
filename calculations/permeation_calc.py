@@ -527,7 +527,6 @@ def calculate_defective_metal_flux_sieverts(D_lattice, K_s, thickness, P_interfa
 ################################################################################
 ################################################################################
 ################################################################################
-# ...existing code...
 
 # =============================================================================
 # LEVEL 1+6: Simple Metal with Surface Kinetics
@@ -537,7 +536,7 @@ def calculate_simple_metal_flux_with_surface(D, K_s, thickness, P_up, P_down,
                                               temperature, 
                                               k_diss=None, k_recomb=None,
                                               material_name=None,
-                                              coverage_mode='equilibrium',
+                                              coverage_mode='steady_state',
                                               forced_coverage=None):
     """
     Calculate hydrogen permeation flux through clean metal with surface kinetics.
@@ -567,8 +566,8 @@ def calculate_simple_metal_flux_with_surface(D, K_s, thickness, P_up, P_down,
         Material name to look up kinetics from database
     coverage_mode : str, optional
         Surface coverage calculation mode:
-        - 'equilibrium' (default): θ from Langmuir isotherm
-        - 'steady_state': θ from solving J_diss = J_bulk (coupled)
+        - 'equilibrium' : θ from Langmuir isotherm
+        - 'steady_state'(default): θ from solving J_diss = J_bulk (coupled)
         - 'forced': θ = forced_coverage (user-specified)
     forced_coverage : float, optional
         Fixed surface coverage θ when coverage_mode='forced'
