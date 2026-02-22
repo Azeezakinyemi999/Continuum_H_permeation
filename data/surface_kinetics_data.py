@@ -370,6 +370,97 @@ SURFACE_SITE_DENSITY = {
 # =============================================================================
 
 SURFACE_KINETICS = {
+    #######################################################
+    ##              OXIDE                                ##
+    #######################################################
+
+    # =========================================================================
+    # Cr2O3 (Chromia)
+    # =========================================================================
+    'Cr2O3': {
+        'T_ref': 1073.15,        # K (800°C)
+        'k_diss_ref': 1.0e-7,    # m⁴/(mol·s) at 800°C
+        'k_recomb_ref': 1.0e-14, # m²/s at 800°C
+        'E_diss': 60000.0,       # J/mol
+        'E_recomb': 120000.0,    # J/mol
+        'N_surf': 2.0e18,        # m⁻²
+        'surface_type': 'oxide',
+        'reference': 'Zarchy & Axtmann (1979); Strehlow & Savage (1974); Serra et al. (1998)',
+        'temp_range': [600, 1200],  # K
+        'notes': 'Dense chromia, slow H2 dissociation/recombination. See cited works.',
+        'uncertainty_factor': 10
+    },
+
+    # =========================================================================
+    # Al2O3 (Alumina)
+    # =========================================================================
+    'Al2O3': {
+        'T_ref': 1073.15,        # K (800°C)
+        'k_diss_ref': 5.0e-8,    # m⁴/(mol·s) at 800°C (very slow)
+        'k_recomb_ref': 5.0e-15, # m²/s at 800°C
+        'E_diss': 70000.0,       # J/mol
+        'E_recomb': 130000.0,    # J/mol
+        'N_surf': 1.0e18,        # m⁻²
+        'surface_type': 'oxide',
+        'reference': 'Est. from Strehlow & Savage (1974), general oxide kinetics',
+        'temp_range': [600, 1200],  # K
+        'notes': 'Dense alumina, extremely slow H2 dissociation. Order-of-magnitude estimate.',
+        'uncertainty_factor': 20
+    },
+
+    # =========================================================================
+    # Fe3O4 (Magnetite)
+    # =========================================================================
+    'Fe3O4': {
+        'T_ref': 1073.15,        # K (800°C)
+        'k_diss_ref': 2.0e-7,    # m⁴/(mol·s) at 800°C
+        'k_recomb_ref': 2.0e-14, # m²/s at 800°C
+        'E_diss': 55000.0,       # J/mol
+        'E_recomb': 110000.0,    # J/mol
+        'N_surf': 3.0e18,        # m⁻²
+        'surface_type': 'oxide',
+        'reference': 'Serra et al. (1998); Zarchy & Axtmann (1979); typical for iron oxides',
+        'temp_range': [600, 1200],  # K
+        'notes': 'Magnetite, moderate H2 dissociation. Literature-based estimate.',
+        'uncertainty_factor': 10
+    },
+
+    # =========================================================================
+    # NiO (Nickel Oxide)
+    # =========================================================================
+    'NiO': {
+        'T_ref': 1073.15,        # K (800°C)
+        'k_diss_ref': 1.0e-8,    # m⁴/(mol·s) at 800°C
+        'k_recomb_ref': 1.0e-15, # m²/s at 800°C
+        'E_diss': 65000.0,       # J/mol
+        'E_recomb': 125000.0,    # J/mol
+        'N_surf': 1.5e18,        # m⁻²
+        'surface_type': 'oxide',
+        'reference': 'Order-of-magnitude from NiO surface studies; see general oxide kinetics',
+        'temp_range': [600, 1200],  # K
+        'notes': 'Nickel oxide, slow H2 dissociation. Estimate.',
+        'uncertainty_factor': 20
+    },
+
+    # =========================================================================
+    # SiO2 (Silica)
+    # =========================================================================
+    'SiO2': {
+        'T_ref': 1073.15,        # K (800°C)
+        'k_diss_ref': 1.0e-9,    # m⁴/(mol·s) at 800°C (extremely slow)
+        'k_recomb_ref': 1.0e-16, # m²/s at 800°C
+        'E_diss': 80000.0,       # J/mol
+        'E_recomb': 140000.0,    # J/mol
+        'N_surf': 5.0e17,        # m⁻²
+        'surface_type': 'oxide',
+        'reference': 'General literature for SiO2, see Strehlow & Savage (1974)',
+        'temp_range': [600, 1200],  # K
+        'notes': 'Silica, extremely slow H2 dissociation. Order-of-magnitude estimate.',
+        'uncertainty_factor': 50
+    },
+    #######################################################
+    ##              METAL                                ##
+    #######################################################
     # =========================================================================
     # Incoloy 800 (Fe-Ni-Cr austenitic alloy)
     # Primary material for this project
