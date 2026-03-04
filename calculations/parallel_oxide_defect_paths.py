@@ -523,7 +523,7 @@ def calculate_defect_path_flux_defective_metal(P_upstream, P_downstream, oxide_p
         - 'thickness_factor': fraction of oxide thickness (for cracks)
         - 'diffusivity_factor': D multiplication factor (for GB)
     temperature : float
-        Temperature [K]
+        Operating temperature [K] (all properties should be evaluated at this T)
     microstructure_params : dict
         Metal microstructure specification
     lattice_density : float, optional
@@ -715,7 +715,7 @@ def calculate_parallel_path_flux_defective_metal(P_upstream, P_downstream, oxide
         - 'type': defect type
         - Additional parameters for specific defect types
     temperature : float
-        Temperature [K]
+        Operating temperature [K] (all properties should be evaluated at this T)
     microstructure_params : dict
         Metal microstructure specification
     lattice_density : float, optional
@@ -871,7 +871,7 @@ def calculate_PRF_defective_metal(P_test, oxide_props, metal_props, temperature,
     metal_props : dict
         Metal properties (D_metal as D_lattice)
     temperature : float
-        Temperature [K]
+        Operating temperature [K] (all properties should be evaluated at this T)
     microstructure_params : dict
         Metal microstructure specification
     defect_params : dict or None
@@ -1028,7 +1028,7 @@ def calculate_defect_path_flux_with_surface(P_upstream, P_downstream, oxide_prop
         - 'thickness_factor': fraction of oxide thickness (for cracks)
         - 'diffusivity_factor': D multiplication factor (for GB)
     temperature : float
-        Temperature [K]
+        Operating temperature [K] (all properties should be evaluated at this T)
     k_diss : float, optional
         Dissociation rate constant [mol/m²/s/Pa]
     k_recomb : float, optional
@@ -1297,7 +1297,7 @@ def calculate_parallel_path_flux_with_surface_L3L6(P_upstream, P_downstream, oxi
         - 'type': defect type ('pinhole', 'crack', 'grain_boundary', 'mixed')
         - Additional parameters for specific defect types
     temperature : float
-        Temperature [K]
+        Operating temperature [K] (all properties should be evaluated at this T)
     k_diss : float, optional
         Dissociation rate constant [mol/m²/s/Pa]
     k_recomb : float, optional
@@ -1474,7 +1474,7 @@ def calculate_PRF_with_surface(P_test, oxide_props, metal_props, temperature,
     metal_props : dict
         Metal properties (D_metal, K_s_metal, thickness)
     temperature : float
-        Temperature [K]
+        Operating temperature [K] (all properties should be evaluated at this T)
     k_diss : float, optional
         Dissociation rate constant
     k_recomb : float, optional
@@ -1631,7 +1631,7 @@ def calculate_defect_path_flux_defective_metal_with_surface(P_upstream, P_downst
     defect_props : dict
         Defect properties (type, thickness_factor, diffusivity_factor)
     temperature : float
-        Temperature [K]
+        Operating temperature [K] (all properties should be evaluated at this T)
     microstructure_params : dict
         Metal microstructure specification
     k_diss, k_recomb : float, optional
@@ -1968,7 +1968,7 @@ def calculate_parallel_path_flux_with_surface(P_upstream, P_downstream, oxide_pr
         - 'type': defect type
         - Additional parameters for specific defect types
     temperature : float
-        Temperature [K]
+        Operating temperature [K] (all properties should be evaluated at this T)
     microstructure_params : dict
         Microstructure specification
     k_diss : float, optional

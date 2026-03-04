@@ -167,7 +167,7 @@ def calculate_defective_metal_flux(D_lattice, K_s, thickness, P_up, P_down,
     P_down : float
         Downstream hydrogen pressure [Pa]
     temperature : float
-        Temperature [K]
+        Operating temperature [K] (all properties should be evaluated at this T)
     microstructure_params : dict
         Microstructure specification:
         - 'grain_size': Average grain diameter [m]
@@ -482,7 +482,7 @@ def calculate_defective_metal_flux_sieverts(D_lattice, K_s, thickness, P_interfa
     P_downstream : float
         Downstream pressure [Pa]
     temperature : float
-        Temperature [K]
+        Operating temperature [K] (all properties should be evaluated at this T)
     microstructure_params : dict
         Microstructure specification (see calculate_defective_metal_flux)
     lattice_density : float, optional
@@ -557,7 +557,7 @@ def calculate_simple_metal_flux_with_surface(D, K_s, thickness, P_up, P_down,
     P_down : float
         Downstream hydrogen pressure [Pa]
     temperature : float
-        Temperature [K]
+        Operating temperature [K] (all properties should be evaluated at this T)
     k_diss : float, optional
         Dissociation rate constant [mol/m²/s/Pa]
     k_recomb : float, optional
@@ -721,7 +721,7 @@ def calculate_defective_metal_flux_with_surface(D_lattice, K_s, thickness, P_up,
     P_down : float
         Downstream hydrogen pressure [Pa]
     temperature : float
-        Temperature [K]
+        Operating temperature [K] (all properties should be evaluated at this T)
     microstructure_params : dict
         Microstructure specification (grain_size, trap_list, etc.)
     k_diss : float, optional

@@ -384,7 +384,7 @@ def calculate_defective_metal_flux_sieverts(D_lattice, K_s_metal, thickness,
     P_downstream : float
         Downstream pressure [Pa]
     temperature : float
-        Temperature [K]
+        Operating temperature [K] (properties should be pre-calculated at this T)
     microstructure_params : dict
         Microstructure specification (grain_size, grain_shape, gb_type, trap_list)
     lattice_density : float, optional
@@ -441,7 +441,7 @@ def flux_balance_equation_defective_metal(P_interface, P_upstream, P_downstream,
     metal_props : dict
         Metal properties (D_metal/D_lattice, K_s_metal, thickness)
     temperature : float
-        Temperature [K]
+        Operating temperature [K] (properties should be pre-calculated at this T)
     microstructure_params : dict
         Microstructure specification
     lattice_density : float
@@ -508,7 +508,7 @@ def solve_interface_pressure_defective_metal(P_upstream, P_downstream, oxide_pro
     metal_props : dict
         Metal properties (D_metal as D_lattice, K_s_metal, thickness)
     temperature : float
-        Temperature [K]
+        Operating temperature [K] (properties should be pre-calculated at this T)
     microstructure_params : dict
         Microstructure specification:
         - 'grain_size': Average grain diameter [m]
@@ -731,7 +731,7 @@ def calculate_oxide_defective_metal_system(P_upstream, P_downstream, oxide_props
     metal_props : dict
         Metal properties (D_metal as D_lattice, K_s_metal, thickness)
     temperature : float
-        Temperature [K]
+        Operating temperature [K] (properties should be pre-calculated at this T)
     microstructure_params : dict
         Microstructure specification
     lattice_density : float, optional
@@ -840,7 +840,7 @@ def calculate_metal_flux_with_surface(D_metal, K_s_metal, thickness,
     P_downstream : float
         Downstream pressure [Pa]
     temperature : float
-        Temperature [K]
+        Operating temperature [K] (properties should be pre-calculated at this T)
     k_diss, k_recomb : float, optional
         Surface kinetics parameters
     material_name : str, optional
@@ -944,7 +944,7 @@ def solve_interface_pressure_with_surface(P_upstream, P_downstream, oxide_props,
     metal_props : dict
         Metal properties (D_metal, K_s_metal, thickness)
     temperature : float
-        Temperature [K]
+        Operating temperature [K] (properties should be pre-calculated at this T)
     k_diss, k_recomb : float, optional
         Surface kinetics parameters
     material_name : str, optional
@@ -1086,7 +1086,7 @@ def calculate_oxide_metal_system_with_surface(P_upstream, P_downstream, oxide_pr
     metal_props : dict
         Metal properties (D_metal, K_s_metal, thickness)
     temperature : float
-        Temperature [K]
+        Operating temperature [K] (properties should be pre-calculated at this T)
     k_diss, k_recomb : float, optional
         Surface kinetics parameters
     material_name : str, optional
@@ -1184,7 +1184,7 @@ def calculate_defective_metal_flux_sieverts_with_surface(D_lattice, K_s_metal, t
     P_downstream : float
         Downstream pressure [Pa]
     temperature : float
-        Temperature [K]
+        Operating temperature [K] (properties should be pre-calculated at this T)
     microstructure_params : dict
         Microstructure specification
     k_diss, k_recomb : float, optional
@@ -1267,7 +1267,7 @@ def flux_balance_equation_defective_metal_with_surface(P_interface, P_upstream, 
     metal_props : dict
         Metal properties (D_metal as D_lattice, K_s_metal, thickness)
     temperature : float
-        Temperature [K]
+        Operating temperature [K] (properties should be pre-calculated at this T)
     microstructure_params : dict
         Microstructure specification
     k_diss, k_recomb : float
@@ -1365,7 +1365,7 @@ def solve_interface_pressure_defective_metal_with_surface(P_upstream, P_downstre
     metal_props : dict
         Metal properties (D_metal as D_lattice, K_s_metal, thickness)
     temperature : float
-        Temperature [K]
+        Operating temperature [K] (properties should be pre-calculated at this T)
     microstructure_params : dict
         Microstructure specification:
         - 'grain_size': Average grain diameter [m]
@@ -1634,7 +1634,7 @@ def calculate_oxide_defective_metal_system_with_surface(P_upstream, P_downstream
         - 'K_s_metal': Sieverts' constant [mol/m³/Pa^0.5]
         - 'thickness': Metal thickness [m]
     temperature : float
-        Temperature [K]
+        Operating temperature [K] (properties should be pre-calculated at this T)
     microstructure_params : dict
         Microstructure specification:
         - 'grain_size': Average grain diameter [m]

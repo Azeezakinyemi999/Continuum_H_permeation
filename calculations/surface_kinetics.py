@@ -598,7 +598,7 @@ def calculate_surface_limited_flux(D, K_s, thickness, P_up, P_down, temperature,
     P_down : float
         Downstream pressure [Pa]
     temperature : float
-        Temperature [K]
+        Operating temperature [K] (used to look up k_diss/k_recomb if material_name provided)
     k_diss : float, optional
         Dissociation rate constant [mol/(m²·s·Pa)]
     k_recomb : float, optional

@@ -965,7 +965,7 @@ def calculate_effective_diffusivity_trapping(D_lattice, temperature, trap_list,
         Typical range: 10⁻¹² to 10⁻⁷ m²/s for H in metals
     
     temperature : float
-        Absolute temperature [K]
+        Operating temperature [K] (all properties should be evaluated at this T)
         Valid range: 300-1500 K for typical applications
     
     trap_list : list of dict
@@ -1291,7 +1291,7 @@ def calculate_gb_enhanced_diffusivity(D_bulk, temperature, grain_size,
         Typical: 10⁻¹² to 10⁻⁷ m²/s for H in metals
     
     temperature : float
-        Temperature [K]
+        Operating temperature [K] (all properties should be evaluated at this T)
         Used to calculate GB enhancement factor
     
     grain_size : float
@@ -1747,7 +1747,7 @@ def combined_microstructure_model(D_lattice, temperature, microstructure_params,
         This is the perfect crystal diffusivity
     
     temperature : float
-        Absolute temperature [K]
+        Operating temperature [K] (all properties should be evaluated at this T)
         Affects both GB enhancement and trap occupancy
     
     microstructure_params : dict

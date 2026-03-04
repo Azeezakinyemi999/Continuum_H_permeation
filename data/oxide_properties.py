@@ -1,3 +1,6 @@
+from calculations.config.model_config import OXIDES
+
+OXIDE_PROPERTIES = OXIDES
 # """
 # Oxide properties for hydrogen permeation calculations.
 
@@ -68,36 +71,36 @@ Oxide properties for hydrogen permeation calculations.
 Uses REFERENCE-TEMPERATURE Arrhenius format.
 """
 
-OXIDE_PROPERTIES = {
-    'Cr2O3': {
-        # Reference temperature
-        'T_ref': 1073.15,       # K (800°C)
+# OXIDE_PROPERTIES = {
+#     'Cr2O3': {
+#         # Reference temperature
+#         'T_ref': 1073.15,       # K (800°C)
         
-        # Reference values at T_ref
-        'D_ox_ref': 1e-15,      # m²/s - Oxide diffusivity at 800°C
-        'K_ox_ref': 1e-10,      # mol/m³/Pa - Oxide solubility at 800°C
+#         # Reference values at T_ref
+#         'D_ox_ref': 1e-15,      # m²/s - Oxide diffusivity at 800°C
+#         'K_ox_ref': 1e-10,      # mol/m³/Pa - Oxide solubility at 800°C
         
-        # Activation energies
-        'E_D_ox': 1.55e5,       # J/mol
-        'H_sol_ox': 1.85e5,     # J/mol
+#         # Activation energies
+#         'E_D_ox': 1.55e5,       # J/mol
+#         'H_sol_ox': 1.85e5,     # J/mol
         
-        # Geometry
-        'thickness': 1e-6,      # m (1 μm)
-        'thickness_range': [1e-7, 1e-5],
+#         # Geometry
+#         'thickness': 1e-6,      # m (1 μm)
+#         'thickness_range': [1e-7, 1e-5],
         
-        # Metadata
-        'reference': 'Strehlow & Savage (1974), Serra (1998)',
-        'temperature_range': [873, 1273],  # K
-        'uncertainty_factor': 10,
-    },
+#         # Metadata
+#         'reference': 'Strehlow & Savage (1974), Serra (1998)',
+#         'temperature_range': [873, 1273],  # K
+#         'uncertainty_factor': 10,
+#     },
     
-    'Cr2O3_thin': {
-        'T_ref': 1073.15,
-        'D_ox_ref': 1e-18,
-        'K_ox_ref': 1e-12,
-        'E_D_ox': 50000,
-        'H_sol_ox': 30000,
-        'thickness': 6e-10,     # 6 Å
-        'reference': 'Zarchy & Axtmann (1979)',
-    }
-}
+#     'Cr2O3_thin': {
+#         'T_ref': 1073.15,
+#         'D_ox_ref': 1e-18,
+#         'K_ox_ref': 1e-12,
+#         'E_D_ox': 50000,
+#         'H_sol_ox': 30000,
+#         'thickness': 6e-10,     # 6 Å
+#         'reference': 'Zarchy & Axtmann (1979)',
+#     }
+# }

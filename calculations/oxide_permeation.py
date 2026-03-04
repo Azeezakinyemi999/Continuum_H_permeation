@@ -1,6 +1,7 @@
 import numpy as np
 from data.oxide_properties import OXIDE_PROPERTIES
 from data.material_data import MATERIALS
+from calculations.utils import arrhenius
 
 def molecular_diffusion_flux(D_ox, K_ox, thickness, P_up, P_down):
     """
@@ -172,9 +173,11 @@ def get_oxide_properties_at_T(oxide_name, temperature_K):
     # D_ox = oxide_data['D_ox_0'] * np.exp(-oxide_data['E_D_ox'] / (R * temperature_K))
     # K_ox = oxide_data['K_ox_0'] * np.exp(-oxide_data['H_sol_ox'] / (R * temperature_K))
     
-    D_ox = oxide_data['D_ox_ref'] * np.exp((-oxide_data['E_D_ox'] / R) * (1/temperature_K - 1/T_ref))
-    K_ox = oxide_data['K_ox_ref'] * np.exp((-oxide_data['H_sol_ox'] / R) * (1/temperature_K - 1/T_ref))
-    
+    # D_ox = oxide_data['D_ox_ref'] * np.exp((-oxide_data['E_D_ox'] / R) * (1/temperature_K - 1/T_ref))
+    # K_ox = oxide_data['K_ox_ref'] * np.exp((-oxide_data['H_sol_ox'] / R) * (1/temperature_K - 1/T_ref))
+    D_ox = arrhenius(oxide_data['D_ox_ref'], oxide_data['E_D_ox'], temperature_K, T_ref)
+    K_ox = arrhenius(oxide_data['K_ox_ref'], oxide_data['H_sol_ox'], temperature_K, T_ref)
+
     return {
         'D_ox': D_ox,
         'K_ox': K_ox,
@@ -212,8 +215,11 @@ def get_metal_properties_at_T(metal_name, temperature_K):
 
     # Reference-temperature Arrhenius form
    
-    D_metal = metal_data['D_ref'] * np.exp((-metal_data['E_D'] / R) * (1/temperature_K - 1/T_ref))
-    K_s_metal = metal_data['K_s_ref'] * np.exp((-metal_data['H_s'] / R) * (1/temperature_K - 1/T_ref))
+    # D_metal = metal_data['D_ref'] * np.exp((-metal_data['E_D'] / R) * (1/temperature_K - 1/T_ref))
+    # K_s_metal = metal_data['K_s_ref'] * np.exp((-metal_data['H_s'] / R) * (1/temperature_K - 1/T_ref))
+
+    D_metal = arrhenius( metal_data['D_ref'], metal_data['E_D'], temperature_K, T_ref)
+    K_s_metal = arrhenius( metal_data['K_s_ref'], metal_data['H_s'], temperature_K, T_ref)
     return {
         'D_metal': D_metal,
         'K_s_metal': K_s_metal
@@ -295,7 +301,7 @@ def calculate_transition_pressure(oxide_props, metal_props):
     
     return P_transition
 
-def pressure_dependence_analysis(P_range, oxide_props, metal_props, T_K):
+def pressure_dependence_analysis(P_range, oxide_props, metal_props, T_K, P_down=0):
     """
     Analyze how system behavior changes with pressure.
     Useful for understanding regime transitions.
