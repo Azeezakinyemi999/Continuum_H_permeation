@@ -79,6 +79,7 @@ MATERIALS = METALS
 
 # R = 8.314  # J/mol/K
 
+
 MATERIALSsss = {
     'Incoloy800': {
         # Reference temperature
@@ -106,5 +107,148 @@ MATERIALSsss = {
         'H_s': 28600,
         'reference': 'San Marchi 2007',
         'temp_range': [25, 900],
-    }
+    },
+
+        'Austenitic_SS_1': {
+        'T_ref': 700.0,             # K (427°C)
+        'D_ref': 6.16e-11,           # m²/s at 427°C
+        'K_s_ref': 6.495e-2,        # mol/m³/Pa^0.5 at 427°C
+        'Phi_ref': 4.004e-12,        # mol/m/s/Pa^0.5 at 427°C
+        'E_D': 54000,              # J/mol (diffusion activation energy)
+        'H_s': 5900,               # J/mol (heat of solution)
+        'reference': 'San Marchi 2007',
+        'temp_range': [423, 700], # K validity range
+        'pressure_range': [1e5, 3e5],  # Pa
+        'Notes': 'Austenitic stainless steel, calibrated from Table 1 of San Marchi 2007 data. doi:10.1016/j.ijhydene.2006.05.008'
+    },
+
+
+        'Austenitic_SS_2': {
+        'T_ref': 700.0,             # K (427°C)
+        'D_ref': 5.734e-11,           # m²/s at 427°C
+        'K_s_ref': 1.104e-1,        # mol/m³/Pa^0.5 at 427°C
+        'Phi_ref': 6.339e-12,        # mol/m/s/Pa^0.5 at 427°C
+        'E_D': 53620,              # J/mol (diffusion activation energy)
+        'H_s': 8650,               # J/mol (heat of solution)
+        'reference': 'San Marchi 2007',
+        'temp_range': [423, 703], # K validity range
+        'pressure_range': [1e5],  # Pa
+        'Notes': 'Austenitic stainless steel, calibrated from Table 1 of San Marchi 2007 data. doi:10.1016/j.ijhydene.2006.05.008'
+    },
+
+        'Austenitic_SS_3': {
+        'T_ref': 623.0,             # K (427°C)
+        'D_ref': 1.478e-11,           # m²/s at 427°C
+        'K_s_ref': 7.074e-2,        # mol/m³/Pa^0.5 at 427°C
+        'Phi_ref': 1.045e-12,        # mol/m/s/Pa^0.5 at 427°C
+        'E_D': 49300,              # J/mol (diffusion activation energy)
+        'H_s': 6860,               # J/mol (heat of solution)
+        'reference': 'San Marchi 2007',
+        'temp_range': [373, 623], # K validity range
+        'pressure_range': [1e2, 3e4],  # Pa
+        'Notes': 'Austenitic stainless steel, calibrated from Table 1 of San Marchi 2007 data. doi:10.1016/j.ijhydene.2006.05.008'
+    },
+    'Austenitic_SS_300series': {
+            'T_ref': 623.0,             # K (427°C)
+            'D_ref': 2.69e-11,           # m²/s at 427°C
+            'K_s_ref': 4.322e-2,        # mol/m³/Pa^0.5 at 427°C
+            'Phi_ref': 1.163e-12,        # mol/m/s/Pa^0.5 at 427°C
+            'E_D': 53900,              # J/mol (diffusion activation energy)
+            'H_s': 5900,               # J/mol (heat of solution)
+            'reference': 'San Marchi 2007',
+            'temp_range': [373, 623], # K validity range
+            'pressure_range': [1e2, 3e4 ],  # Pa
+            'Notes': 'Austenitic stainless steel, calibrated from Table 3 of San Marchi 2007 data. doi:10.1016/j.ijhydene.2006.05.008'
+    },
+    
+    'Austenitic_SS_21Cr–6Ni–9Mn, 22Cr–13Ni–5Mn ': {
+        'T_ref': 623.0,             # K (427°C)
+        'D_ref': 1.633e-11,           # m²/s at 427°C
+        'K_s_ref': 7.107e-2,        # mol/m³/Pa^0.5 at 427°C
+        'Phi_ref': 1.161e-12,        # mol/m/s/Pa^0.5 at 427°C
+        'E_D': 53900,              # J/mol (diffusion activation energy)
+        'H_s': 5900,               # J/mol (heat of solution)
+        'reference': 'San Marchi 2007',
+        'temp_range': [373, 623], # K validity range
+        'pressure_range': [1e2, 3e4 ],  # Pa
+        'Notes': 'Austenitic stainless steel, calibrated from Table 3 of San Marchi 2007 data. doi:10.1016/j.ijhydene.2006.05.008'
+    },
+
+    'Austenitic_SS_A-286/JBK-75 aged ': {
+        'T_ref': 623.0,             # K (427°C)
+        'D_ref': 3.629e-11,           # m²/s at 427°C
+        'K_s_ref': 3.297e-2,        # mol/m³/Pa^0.5 at 427°C
+        'Phi_ref': 1.197e-12,        # mol/m/s/Pa^0.5 at 427°C
+        'E_D': 53900,              # J/mol (diffusion activation energy)
+        'H_s': 5900,               # J/mol (heat of solution)
+        'reference': 'San Marchi 2007',
+        'temp_range': [373, 623], # K validity range
+        'pressure_range': [1e2, 3e4 ],  # Pa
+        'Notes': 'Austenitic stainless steel, calibrated from Table 3 of San Marchi 2007 data. doi:10.1016/j.ijhydene.2006.05.008'
+    },
+
+    'Heat_treated_316L steel': {
+        'T_ref': 873.0,             # K (427°C)
+        'D_ref': 2.194e-10,           # m²/s at 427°C
+        'K_s_ref': 2.723e-2,        # mol/m³/Pa^0.5 at 427°C
+        'Phi_ref': 5.975e-12,        # mol/m/s/Pa^0.5 at 427°C
+        'E_D': 42500,              # J/mol (diffusion activation energy)
+        'H_s': 20580,               # J/mol (heat of solution)
+        'reference': 'Forcey 1988',
+        'temp_range': [523, 873], # K validity range
+        'pressure_range': [1.33e2, 1e5],  # Pa
+        'Notes': 'Austenitic stainless steel, calibrated from 5. Experimental results of Forcey 1988 data. doi:'
+    },
+
+    'Commercial_316L steel': {
+        'T_ref': 873.0,             # K (427°C)
+        'D_ref': 7.237e-10,           # m²/s at 427°C
+        'K_s_ref': 1.171e-1,        # mol/m³/Pa^0.5 at 427°C
+        'Phi_ref': 8.474e-11,        # mol/m/s/Pa^0.5 at 427°C
+        'E_D': 45500,              # J/mol (diffusion activation energy)
+        'H_s': 18510,               # J/mol (heat of solution)
+        'reference': 'Forcey 1988',
+        'temp_range': [523, 873], # K validity range
+        'pressure_range': [1.33e2, 1e5],  # Pa
+        'Notes': 'Austenitic stainless steel, calibrated from 5. Experimental results of Forcey 1988 data. doi:'
+    },
+    'Heat_treated_1.4914 steel': {
+        'T_ref': 873.0,             # K (427°C)
+        'D_ref': 1.118e-8,           # m²/s at 427°C
+        'K_s_ref': 2.179e-2,        # mol/m³/Pa^0.5 at 427°C
+        'Phi_ref': 2.436e-10,        # mol/m/s/Pa^0.5 at 427°C
+        'E_D': 13490,              # J/mol (diffusion activation energy)
+        'H_s': 29620,               # J/mol (heat of solution)
+        'reference': 'Forcey 1988',
+        'temp_range': [523, 873], # K validity range
+        'pressure_range': [1.33e2, 1e5],  # Pa
+        'Notes': 'Martensitic stainless steel, calibrated from 5. Experimental results of Forcey 1988 data. doi:'
+    },
+    'Commercial_1.4914 steel': {
+        'T_ref': 873.0,             # K (427°C)
+        'D_ref': 1.047e-8,           # m²/s at 427°C
+        'K_s_ref': 2.903e-2,        # mol/m³/Pa^0.5 at 427°C
+        'Phi_ref': 3.039e-10,        # mol/m/s/Pa^0.5 at 427°C
+        'E_D': 15470,              # J/mol (diffusion activation energy)
+        'H_s': 26890,               # J/mol (heat of solution)
+        'reference': 'Forcey 1988',
+        'temp_range': [523, 873], # K validity range
+        'pressure_range': [1.33e2, 1e5],  # Pa
+        'Notes': 'Martensitic stainless steel, calibrated from 5. Experimental results of Forcey 1988 data. doi:'
+    },
+
+    'Commercial_1.4914 steel': {
+        'T_ref': 873.0,             # K (427°C)
+        'D_ref': 1.047e-8,           # m²/s at 427°C
+        'K_s_ref': 2.903e-2,        # mol/m³/Pa^0.5 at 427°C
+        'Phi_ref': 3.039e-10,        # mol/m/s/Pa^0.5 at 427°C
+        'E_D': 15470,              # J/mol (diffusion activation energy)
+        'H_s': 26890,               # J/mol (heat of solution)
+        'reference': 'Forcey 1988',
+        'temp_range': [523, 873], # K validity range
+        'pressure_range': [1.33e2, 1e5],  # Pa
+        'Notes': 'Martensitic stainless steel, calibrated from 5. Experimental results of Forcey 1988 data. doi:'
+    },
+
+
 }
