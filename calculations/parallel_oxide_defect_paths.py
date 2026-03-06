@@ -492,7 +492,7 @@ def calculate_PRF(P_test, oxide_props, metal_props, defect_params=None, P_downst
 
 def calculate_defect_path_flux_defective_metal(P_upstream, P_downstream, oxide_props, 
                                                metal_props, defect_props, temperature,
-                                               microstructure_params, lattice_density=1.06e29,
+                                               microstructure_params, lattice_density,
                                                method='average', n_points=10, mode='both'):
     """
     Calculate hydrogen flux through a defect path with defective metal (Level 3+4).
@@ -681,7 +681,7 @@ def calculate_defect_path_flux_defective_metal(P_upstream, P_downstream, oxide_p
 
 def calculate_parallel_path_flux_defective_metal(P_upstream, P_downstream, oxide_props, 
                                                   metal_props, defect_params, temperature,
-                                                  microstructure_params, lattice_density=1.06e29,
+                                                  microstructure_params, lattice_density,
                                                   method='average', n_points=10,
                                                   max_iterations=10, tolerance=1e-6, mode='both'):
     """
@@ -855,7 +855,7 @@ def calculate_parallel_path_flux_defective_metal(P_upstream, P_downstream, oxide
 
 def calculate_PRF_defective_metal(P_test, oxide_props, metal_props, temperature,
                                    microstructure_params, defect_params=None,
-                                   P_downstream=0, lattice_density=1.06e29,
+                                   P_downstream=0, lattice_density=None,
                                    method='average', n_points=10, mode='both'):
     """
     Calculate Permeation Reduction Factor with Level 4 defective metal.
@@ -982,1181 +982,1181 @@ def calculate_PRF_defective_metal(P_test, oxide_props, metal_props, temperature,
 
 
 
-####################################################################################
-####################################################################################
-####################################################################################
+# ####################################################################################
+# ####################################################################################
+# ####################################################################################
 
-# =============================================================================
-# LEVEL 3+6: Defective Oxide + Surface Kinetics
-# =============================================================================
+# # =============================================================================
+# # LEVEL 3+6: Defective Oxide + Surface Kinetics
+# # =============================================================================
 
-def calculate_defect_path_flux_with_surface(P_upstream, P_downstream, oxide_props, metal_props,
-                                             defect_props, temperature,
-                                             k_diss=None, k_recomb=None, material_name=None,
-                                             coverage_mode='equilibrium', forced_coverage=None):
-    """
-    Calculate hydrogen flux through a defect in the oxide layer WITH surface kinetics (L3+L6).
+# def calculate_defect_path_flux_with_surface(P_upstream, P_downstream, oxide_props, metal_props,
+#                                              defect_props, temperature,
+#                                              k_diss=None, k_recomb=None, material_name=None,
+#                                              coverage_mode='equilibrium', forced_coverage=None):
+#     """
+#     Calculate hydrogen flux through a defect in the oxide layer WITH surface kinetics (L3+L6).
     
-    This extends calculate_defect_path_flux() to include Level 6 surface kinetics.
+#     This extends calculate_defect_path_flux() to include Level 6 surface kinetics.
     
-    Theory:
-    -------
-    Same defect types as Level 3, but now surface dissociation limits flux:
+#     Theory:
+#     -------
+#     Same defect types as Level 3, but now surface dissociation limits flux:
     
-    1. Pinhole: Direct metal exposure → L1+L6 (surface-limited bare metal)
-    2. Crack: Thin oxide → L2+L6 (surface-limited at oxide-metal interface)
-    3. Grain boundary: Enhanced oxide diffusion → L2+L6 with modified oxide
+#     1. Pinhole: Direct metal exposure → L1+L6 (surface-limited bare metal)
+#     2. Crack: Thin oxide → L2+L6 (surface-limited at oxide-metal interface)
+#     3. Grain boundary: Enhanced oxide diffusion → L2+L6 with modified oxide
     
-    The surface kinetics apply at ANY gas-metal interface:
-    - For pinholes: H₂ dissociates at exposed metal surface
-    - For cracks/GBs: H₂ arrives as molecular species in oxide, then dissociates
-      at the oxide-metal interface
+#     The surface kinetics apply at ANY gas-metal interface:
+#     - For pinholes: H₂ dissociates at exposed metal surface
+#     - For cracks/GBs: H₂ arrives as molecular species in oxide, then dissociates
+#       at the oxide-metal interface
     
-    Parameters
-    ----------
-    P_upstream : float
-        Upstream hydrogen pressure [Pa]
-    P_downstream : float
-        Downstream hydrogen pressure [Pa]
-    oxide_props : dict
-        Oxide properties (D_ox, K_ox, thickness)
-    metal_props : dict
-        Metal properties (D_metal, K_s_metal, thickness)
-    defect_props : dict
-        Defect properties:
-        - 'type': 'pinhole', 'crack', 'grain_boundary', or 'mixed'
-        - 'thickness_factor': fraction of oxide thickness (for cracks)
-        - 'diffusivity_factor': D multiplication factor (for GB)
-    temperature : float
-        Operating temperature [K] (all properties should be evaluated at this T)
-    k_diss : float, optional
-        Dissociation rate constant [mol/m²/s/Pa]
-    k_recomb : float, optional
-        Recombination rate constant [m⁴/mol/s]
-    material_name : str, optional
-        Material name for kinetics lookup
-    coverage_mode : str
-        Mode for surface coverage:
-        - 'equilibrium': Langmuir isotherm
-        - 'steady_state': Solve J_diss = J_bulk
-        - 'forced': Use forced_coverage
-    forced_coverage : float, optional
-        Required when coverage_mode='forced'
+#     Parameters
+#     ----------
+#     P_upstream : float
+#         Upstream hydrogen pressure [Pa]
+#     P_downstream : float
+#         Downstream hydrogen pressure [Pa]
+#     oxide_props : dict
+#         Oxide properties (D_ox, K_ox, thickness)
+#     metal_props : dict
+#         Metal properties (D_metal, K_s_metal, thickness)
+#     defect_props : dict
+#         Defect properties:
+#         - 'type': 'pinhole', 'crack', 'grain_boundary', or 'mixed'
+#         - 'thickness_factor': fraction of oxide thickness (for cracks)
+#         - 'diffusivity_factor': D multiplication factor (for GB)
+#     temperature : float
+#         Operating temperature [K] (all properties should be evaluated at this T)
+#     k_diss : float, optional
+#         Dissociation rate constant [mol/m²/s/Pa]
+#     k_recomb : float, optional
+#         Recombination rate constant [m⁴/mol/s]
+#     material_name : str, optional
+#         Material name for kinetics lookup
+#     coverage_mode : str
+#         Mode for surface coverage:
+#         - 'equilibrium': Langmuir isotherm
+#         - 'steady_state': Solve J_diss = J_bulk
+#         - 'forced': Use forced_coverage
+#     forced_coverage : float, optional
+#         Required when coverage_mode='forced'
     
-    Returns
-    -------
-    dict
-        Contains flux and surface kinetics info (theta, Da, SRF)
-    """
-    from calculations.permeation_calc import calculate_simple_metal_flux_with_surface
-    from calculations.interface_solver import calculate_oxide_metal_system_with_surface
+#     Returns
+#     -------
+#     dict
+#         Contains flux and surface kinetics info (theta, Da, SRF)
+#     """
+#     from calculations.permeation_calc import calculate_simple_metal_flux_with_surface
+#     from calculations.interface_solver import calculate_oxide_metal_system_with_surface
     
-    defect_type = defect_props.get('type', 'pinhole')
+#     defect_type = defect_props.get('type', 'pinhole')
     
-    if defect_type == 'pinhole':
-        # Direct metal exposure - use L1+L6 (bare metal with surface kinetics)
-        result = calculate_simple_metal_flux_with_surface(
-            D=metal_props['D_metal'],
-            K_s=metal_props['K_s_metal'],
-            thickness=metal_props['thickness'],
-            P_up=P_upstream,
-            P_down=P_downstream,
-            temperature=temperature,
-            k_diss=k_diss,
-            k_recomb=k_recomb,
-            material_name=material_name,
-            coverage_mode=coverage_mode,
-            forced_coverage=forced_coverage
-        )
-        return {
-            'flux': result['flux'],
-            'flux_sieverts': result.get('flux_sieverts', result['flux']),
-            'theta': result.get('theta', 0),
-            'Da': result.get('Da', float('inf')),
-            'SRF': result.get('SRF', 1.0),
-            'coverage_mode': coverage_mode,
-            'defect_type': 'pinhole'
-        }
+#     if defect_type == 'pinhole':
+#         # Direct metal exposure - use L1+L6 (bare metal with surface kinetics)
+#         result = calculate_simple_metal_flux_with_surface(
+#             D=metal_props['D_metal'],
+#             K_s=metal_props['K_s_metal'],
+#             thickness=metal_props['thickness'],
+#             P_up=P_upstream,
+#             P_down=P_downstream,
+#             temperature=temperature,
+#             k_diss=k_diss,
+#             k_recomb=k_recomb,
+#             material_name=material_name,
+#             coverage_mode=coverage_mode,
+#             forced_coverage=forced_coverage
+#         )
+#         return {
+#             'flux': result['flux'],
+#             'flux_sieverts': result.get('flux_sieverts', result['flux']),
+#             'theta': result.get('theta', 0),
+#             'Da': result.get('Da', float('inf')),
+#             'SRF': result.get('SRF', 1.0),
+#             'coverage_mode': coverage_mode,
+#             'defect_type': 'pinhole'
+#         }
         
-    elif defect_type == 'crack':
-        # Crack has thin oxide layer - use L2+L6 with modified thickness
-        alpha = defect_props.get('thickness_factor', 0.1)
+#     elif defect_type == 'crack':
+#         # Crack has thin oxide layer - use L2+L6 with modified thickness
+#         alpha = defect_props.get('thickness_factor', 0.1)
         
-        crack_oxide_props = oxide_props.copy()
-        crack_oxide_props['thickness'] *= alpha
+#         crack_oxide_props = oxide_props.copy()
+#         crack_oxide_props['thickness'] *= alpha
         
-        result = calculate_oxide_metal_system_with_surface(
-            P_upstream=P_upstream,
-            P_downstream=P_downstream,
-            oxide_props=crack_oxide_props,
-            metal_props=metal_props,
-            temperature=temperature,
-            k_diss=k_diss,
-            k_recomb=k_recomb,
-            material_name=material_name,
-            coverage_mode=coverage_mode,
-            forced_coverage=forced_coverage
-        )
-        return {
-            'flux': result['flux'],
-            'flux_sieverts': result.get('flux_sieverts', result['flux']),
-            'theta': result.get('theta', 0),
-            'Da': result.get('Da', float('inf')),
-            'SRF': result.get('SRF', 1.0),
-            'coverage_mode': coverage_mode,
-            'defect_type': 'crack',
-            'P_interface': result.get('P_interface')
-        }
+#         result = calculate_oxide_metal_system_with_surface(
+#             P_upstream=P_upstream,
+#             P_downstream=P_downstream,
+#             oxide_props=crack_oxide_props,
+#             metal_props=metal_props,
+#             temperature=temperature,
+#             k_diss=k_diss,
+#             k_recomb=k_recomb,
+#             material_name=material_name,
+#             coverage_mode=coverage_mode,
+#             forced_coverage=forced_coverage
+#         )
+#         return {
+#             'flux': result['flux'],
+#             'flux_sieverts': result.get('flux_sieverts', result['flux']),
+#             'theta': result.get('theta', 0),
+#             'Da': result.get('Da', float('inf')),
+#             'SRF': result.get('SRF', 1.0),
+#             'coverage_mode': coverage_mode,
+#             'defect_type': 'crack',
+#             'P_interface': result.get('P_interface')
+#         }
         
-    elif defect_type == 'grain_boundary':
-        # Enhanced diffusion through oxide grain boundaries - L2+L6 with modified D_ox
-        beta = defect_props.get('diffusivity_factor', 10)
+#     elif defect_type == 'grain_boundary':
+#         # Enhanced diffusion through oxide grain boundaries - L2+L6 with modified D_ox
+#         beta = defect_props.get('diffusivity_factor', 10)
         
-        gb_oxide_props = oxide_props.copy()
-        gb_oxide_props['D_ox'] *= beta
+#         gb_oxide_props = oxide_props.copy()
+#         gb_oxide_props['D_ox'] *= beta
         
-        result = calculate_oxide_metal_system_with_surface(
-            P_upstream=P_upstream,
-            P_downstream=P_downstream,
-            oxide_props=gb_oxide_props,
-            metal_props=metal_props,
-            temperature=temperature,
-            k_diss=k_diss,
-            k_recomb=k_recomb,
-            material_name=material_name,
-            coverage_mode=coverage_mode,
-            forced_coverage=forced_coverage
-        )
-        return {
-            'flux': result['flux'],
-            'flux_sieverts': result.get('flux_sieverts', result['flux']),
-            'theta': result.get('theta', 0),
-            'Da': result.get('Da', float('inf')),
-            'SRF': result.get('SRF', 1.0),
-            'coverage_mode': coverage_mode,
-            'defect_type': 'grain_boundary',
-            'P_interface': result.get('P_interface')
-        }
+#         result = calculate_oxide_metal_system_with_surface(
+#             P_upstream=P_upstream,
+#             P_downstream=P_downstream,
+#             oxide_props=gb_oxide_props,
+#             metal_props=metal_props,
+#             temperature=temperature,
+#             k_diss=k_diss,
+#             k_recomb=k_recomb,
+#             material_name=material_name,
+#             coverage_mode=coverage_mode,
+#             forced_coverage=forced_coverage
+#         )
+#         return {
+#             'flux': result['flux'],
+#             'flux_sieverts': result.get('flux_sieverts', result['flux']),
+#             'theta': result.get('theta', 0),
+#             'Da': result.get('Da', float('inf')),
+#             'SRF': result.get('SRF', 1.0),
+#             'coverage_mode': coverage_mode,
+#             'defect_type': 'grain_boundary',
+#             'P_interface': result.get('P_interface')
+#         }
         
-    elif defect_type == 'mixed':
-        # Mixed defects: weighted average by component fractions
-        components = defect_props.get('components', {})
-        total_component_fraction = sum(components.values())
+#     elif defect_type == 'mixed':
+#         # Mixed defects: weighted average by component fractions
+#         components = defect_props.get('components', {})
+#         total_component_fraction = sum(components.values())
         
-        if total_component_fraction == 0:
-            # Default to pinhole behavior
-            result = calculate_simple_metal_flux_with_surface(
-                D=metal_props['D_metal'],
-                K_s=metal_props['K_s_metal'],
-                thickness=metal_props['thickness'],
-                P_up=P_upstream,
-                P_down=P_downstream,
-                temperature=temperature,
-                k_diss=k_diss,
-                k_recomb=k_recomb,
-                material_name=material_name,
-                coverage_mode=coverage_mode,
-                forced_coverage=forced_coverage
-            )
-            return {
-                'flux': result['flux'],
-                'flux_sieverts': result.get('flux_sieverts', result['flux']),
-                'theta': result.get('theta', 0),
-                'Da': result.get('Da', float('inf')),
-                'SRF': result.get('SRF', 1.0),
-                'coverage_mode': coverage_mode,
-                'defect_type': 'mixed'
-            }
+#         if total_component_fraction == 0:
+#             # Default to pinhole behavior
+#             result = calculate_simple_metal_flux_with_surface(
+#                 D=metal_props['D_metal'],
+#                 K_s=metal_props['K_s_metal'],
+#                 thickness=metal_props['thickness'],
+#                 P_up=P_upstream,
+#                 P_down=P_downstream,
+#                 temperature=temperature,
+#                 k_diss=k_diss,
+#                 k_recomb=k_recomb,
+#                 material_name=material_name,
+#                 coverage_mode=coverage_mode,
+#                 forced_coverage=forced_coverage
+#             )
+#             return {
+#                 'flux': result['flux'],
+#                 'flux_sieverts': result.get('flux_sieverts', result['flux']),
+#                 'theta': result.get('theta', 0),
+#                 'Da': result.get('Da', float('inf')),
+#                 'SRF': result.get('SRF', 1.0),
+#                 'coverage_mode': coverage_mode,
+#                 'defect_type': 'mixed'
+#             }
         
-        # Calculate flux-weighted averages
-        flux_defect = 0.0
-        theta_avg = 0.0
-        SRF_avg = 0.0
-        Da_min = float('inf')  # Track minimum Da (most surface-limited)
+#         # Calculate flux-weighted averages
+#         flux_defect = 0.0
+#         theta_avg = 0.0
+#         SRF_avg = 0.0
+#         Da_min = float('inf')  # Track minimum Da (most surface-limited)
         
-        # Pinhole component
-        if 'pinholes' in components and components['pinholes'] > 0:
-            pinhole_result = calculate_simple_metal_flux_with_surface(
-                D=metal_props['D_metal'],
-                K_s=metal_props['K_s_metal'],
-                thickness=metal_props['thickness'],
-                P_up=P_upstream,
-                P_down=P_downstream,
-                temperature=temperature,
-                k_diss=k_diss,
-                k_recomb=k_recomb,
-                material_name=material_name,
-                coverage_mode=coverage_mode,
-                forced_coverage=forced_coverage
-            )
-            weight = components['pinholes'] / total_component_fraction
-            flux_defect += pinhole_result['flux'] * weight
-            theta_avg += pinhole_result.get('theta', 0) * weight
-            SRF_avg += pinhole_result.get('SRF', 1.0) * weight
-            Da_min = min(Da_min, pinhole_result.get('Da', float('inf')))
+#         # Pinhole component
+#         if 'pinholes' in components and components['pinholes'] > 0:
+#             pinhole_result = calculate_simple_metal_flux_with_surface(
+#                 D=metal_props['D_metal'],
+#                 K_s=metal_props['K_s_metal'],
+#                 thickness=metal_props['thickness'],
+#                 P_up=P_upstream,
+#                 P_down=P_downstream,
+#                 temperature=temperature,
+#                 k_diss=k_diss,
+#                 k_recomb=k_recomb,
+#                 material_name=material_name,
+#                 coverage_mode=coverage_mode,
+#                 forced_coverage=forced_coverage
+#             )
+#             weight = components['pinholes'] / total_component_fraction
+#             flux_defect += pinhole_result['flux'] * weight
+#             theta_avg += pinhole_result.get('theta', 0) * weight
+#             SRF_avg += pinhole_result.get('SRF', 1.0) * weight
+#             Da_min = min(Da_min, pinhole_result.get('Da', float('inf')))
         
-        # Crack component
-        if 'cracks' in components and components['cracks'] > 0:
-            alpha = defect_props.get('thickness_factor', 0.1)
-            crack_oxide_props = oxide_props.copy()
-            crack_oxide_props['thickness'] *= alpha
+#         # Crack component
+#         if 'cracks' in components and components['cracks'] > 0:
+#             alpha = defect_props.get('thickness_factor', 0.1)
+#             crack_oxide_props = oxide_props.copy()
+#             crack_oxide_props['thickness'] *= alpha
             
-            crack_result = calculate_oxide_metal_system_with_surface(
-                P_upstream=P_upstream,
-                P_downstream=P_downstream,
-                oxide_props=crack_oxide_props,
-                metal_props=metal_props,
-                temperature=temperature,
-                k_diss=k_diss,
-                k_recomb=k_recomb,
-                material_name=material_name,
-                coverage_mode=coverage_mode,
-                forced_coverage=forced_coverage
-            )
-            weight = components['cracks'] / total_component_fraction
-            flux_defect += crack_result['flux'] * weight
-            theta_avg += crack_result.get('theta', 0) * weight
-            SRF_avg += crack_result.get('SRF', 1.0) * weight
-            Da_min = min(Da_min, crack_result.get('Da', float('inf')))
+#             crack_result = calculate_oxide_metal_system_with_surface(
+#                 P_upstream=P_upstream,
+#                 P_downstream=P_downstream,
+#                 oxide_props=crack_oxide_props,
+#                 metal_props=metal_props,
+#                 temperature=temperature,
+#                 k_diss=k_diss,
+#                 k_recomb=k_recomb,
+#                 material_name=material_name,
+#                 coverage_mode=coverage_mode,
+#                 forced_coverage=forced_coverage
+#             )
+#             weight = components['cracks'] / total_component_fraction
+#             flux_defect += crack_result['flux'] * weight
+#             theta_avg += crack_result.get('theta', 0) * weight
+#             SRF_avg += crack_result.get('SRF', 1.0) * weight
+#             Da_min = min(Da_min, crack_result.get('Da', float('inf')))
         
-        # Grain boundary component
-        if 'grain_boundaries' in components and components['grain_boundaries'] > 0:
-            beta = defect_props.get('diffusivity_factor', 10)
-            gb_oxide_props = oxide_props.copy()
-            gb_oxide_props['D_ox'] *= beta
+#         # Grain boundary component
+#         if 'grain_boundaries' in components and components['grain_boundaries'] > 0:
+#             beta = defect_props.get('diffusivity_factor', 10)
+#             gb_oxide_props = oxide_props.copy()
+#             gb_oxide_props['D_ox'] *= beta
             
-            gb_result = calculate_oxide_metal_system_with_surface(
-                P_upstream=P_upstream,
-                P_downstream=P_downstream,
-                oxide_props=gb_oxide_props,
-                metal_props=metal_props,
-                temperature=temperature,
-                k_diss=k_diss,
-                k_recomb=k_recomb,
-                material_name=material_name,
-                coverage_mode=coverage_mode,
-                forced_coverage=forced_coverage
-            )
-            weight = components['grain_boundaries'] / total_component_fraction
-            flux_defect += gb_result['flux'] * weight
-            theta_avg += gb_result.get('theta', 0) * weight
-            SRF_avg += gb_result.get('SRF', 1.0) * weight
-            Da_min = min(Da_min, gb_result.get('Da', float('inf')))
+#             gb_result = calculate_oxide_metal_system_with_surface(
+#                 P_upstream=P_upstream,
+#                 P_downstream=P_downstream,
+#                 oxide_props=gb_oxide_props,
+#                 metal_props=metal_props,
+#                 temperature=temperature,
+#                 k_diss=k_diss,
+#                 k_recomb=k_recomb,
+#                 material_name=material_name,
+#                 coverage_mode=coverage_mode,
+#                 forced_coverage=forced_coverage
+#             )
+#             weight = components['grain_boundaries'] / total_component_fraction
+#             flux_defect += gb_result['flux'] * weight
+#             theta_avg += gb_result.get('theta', 0) * weight
+#             SRF_avg += gb_result.get('SRF', 1.0) * weight
+#             Da_min = min(Da_min, gb_result.get('Da', float('inf')))
         
-        return {
-            'flux': flux_defect,
-            'theta': theta_avg,
-            'Da': Da_min,
-            'SRF': SRF_avg,
-            'coverage_mode': coverage_mode,
-            'defect_type': 'mixed'
-        }
+#         return {
+#             'flux': flux_defect,
+#             'theta': theta_avg,
+#             'Da': Da_min,
+#             'SRF': SRF_avg,
+#             'coverage_mode': coverage_mode,
+#             'defect_type': 'mixed'
+#         }
     
-    else:
-        raise ValueError(f"Unknown defect type: {defect_type}")
+#     else:
+#         raise ValueError(f"Unknown defect type: {defect_type}")
 
 
-def calculate_parallel_path_flux_with_surface_L3L6(P_upstream, P_downstream, oxide_props, 
-                                                    metal_props, defect_params, temperature,
-                                                    k_diss=None, k_recomb=None, 
-                                                    material_name=None,
-                                                    coverage_mode='equilibrium',
-                                                    forced_coverage=None):
-    """
-    Calculate total flux through defective oxide WITH surface kinetics (L3+L6).
+# def calculate_parallel_path_flux_with_surface_L3L6(P_upstream, P_downstream, oxide_props, 
+#                                                     metal_props, defect_params, temperature,
+#                                                     k_diss=None, k_recomb=None, 
+#                                                     material_name=None,
+#                                                     coverage_mode='equilibrium',
+#                                                     forced_coverage=None):
+#     """
+#     Calculate total flux through defective oxide WITH surface kinetics (L3+L6).
     
-    This is the parallel path model (Strehlow & Savage 1974) combined with
-    Level 6 surface kinetics at all gas-metal interfaces.
+#     This is the parallel path model (Strehlow & Savage 1974) combined with
+#     Level 6 surface kinetics at all gas-metal interfaces.
     
-    Theory:
-    -------
-    Total flux = Intact path contribution + Defect path contribution
+#     Theory:
+#     -------
+#     Total flux = Intact path contribution + Defect path contribution
     
-    J_total = j_intact × f_intact + j_defect × f_defect
+#     J_total = j_intact × f_intact + j_defect × f_defect
     
-    Where both paths now include surface kinetics:
-    - j_intact: L2+L6 flux through intact oxide (surface kinetics at oxide-metal interface)
-    - j_defect: L1+L6 or L2+L6 flux through defects (surface kinetics at exposed/interface)
+#     Where both paths now include surface kinetics:
+#     - j_intact: L2+L6 flux through intact oxide (surface kinetics at oxide-metal interface)
+#     - j_defect: L1+L6 or L2+L6 flux through defects (surface kinetics at exposed/interface)
     
-    The surface coverage (θ) and Damköhler number (Da) are calculated at
-    each interface. The effective SRF represents the overall surface limitation.
+#     The surface coverage (θ) and Damköhler number (Da) are calculated at
+#     each interface. The effective SRF represents the overall surface limitation.
     
-    Parameters
-    ----------
-    P_upstream : float
-        Upstream hydrogen pressure [Pa]
-    P_downstream : float
-        Downstream hydrogen pressure [Pa]
-    oxide_props : dict
-        Oxide properties (D_ox, K_ox, thickness)
-    metal_props : dict
-        Metal properties (D_metal, K_s_metal, thickness)
-    defect_params : dict
-        Defect parameters:
-        - 'area_fraction': fraction of surface with defects (0-1)
-        - 'type': defect type ('pinhole', 'crack', 'grain_boundary', 'mixed')
-        - Additional parameters for specific defect types
-    temperature : float
-        Operating temperature [K] (all properties should be evaluated at this T)
-    k_diss : float, optional
-        Dissociation rate constant [mol/m²/s/Pa]
-    k_recomb : float, optional
-        Recombination rate constant [m⁴/mol/s]
-    material_name : str, optional
-        Material name for kinetics lookup
-    coverage_mode : str
-        Mode for surface coverage:
-        - 'equilibrium': Langmuir isotherm (default)
-        - 'steady_state': Solve J_diss = J_bulk
-        - 'forced': Use forced_coverage
-    forced_coverage : float, optional
-        Required when coverage_mode='forced'
+#     Parameters
+#     ----------
+#     P_upstream : float
+#         Upstream hydrogen pressure [Pa]
+#     P_downstream : float
+#         Downstream hydrogen pressure [Pa]
+#     oxide_props : dict
+#         Oxide properties (D_ox, K_ox, thickness)
+#     metal_props : dict
+#         Metal properties (D_metal, K_s_metal, thickness)
+#     defect_params : dict
+#         Defect parameters:
+#         - 'area_fraction': fraction of surface with defects (0-1)
+#         - 'type': defect type ('pinhole', 'crack', 'grain_boundary', 'mixed')
+#         - Additional parameters for specific defect types
+#     temperature : float
+#         Operating temperature [K] (all properties should be evaluated at this T)
+#     k_diss : float, optional
+#         Dissociation rate constant [mol/m²/s/Pa]
+#     k_recomb : float, optional
+#         Recombination rate constant [m⁴/mol/s]
+#     material_name : str, optional
+#         Material name for kinetics lookup
+#     coverage_mode : str
+#         Mode for surface coverage:
+#         - 'equilibrium': Langmuir isotherm (default)
+#         - 'steady_state': Solve J_diss = J_bulk
+#         - 'forced': Use forced_coverage
+#     forced_coverage : float, optional
+#         Required when coverage_mode='forced'
     
-    Returns
-    -------
-    dict
-        Comprehensive L3+L6 results:
-        - 'flux_total': Total hydrogen flux [mol/m²/s]
-        - 'flux_intact_contribution': Flux through intact oxide [mol/m²/s]
-        - 'flux_defect_contribution': Flux through defects [mol/m²/s]
-        - 'dominant_path': Which path carries more flux
-        - 'defect_enhancement_factor': J_total/J_perfect_oxide
-        - Surface kinetics outputs (theta, Da, SRF for each path)
-        - 'regime': Combined regime classification
-    """
-    from calculations.interface_solver import calculate_oxide_metal_system_with_surface
-    from calculations.surface_kinetics import calculate_damkohler_number
+#     Returns
+#     -------
+#     dict
+#         Comprehensive L3+L6 results:
+#         - 'flux_total': Total hydrogen flux [mol/m²/s]
+#         - 'flux_intact_contribution': Flux through intact oxide [mol/m²/s]
+#         - 'flux_defect_contribution': Flux through defects [mol/m²/s]
+#         - 'dominant_path': Which path carries more flux
+#         - 'defect_enhancement_factor': J_total/J_perfect_oxide
+#         - Surface kinetics outputs (theta, Da, SRF for each path)
+#         - 'regime': Combined regime classification
+#     """
+#     from calculations.interface_solver import calculate_oxide_metal_system_with_surface
+#     from calculations.surface_kinetics import calculate_damkohler_number
     
-    # Extract area fractions
-    f_defect = defect_params.get('area_fraction', 0.01)
-    f_intact = 1.0 - f_defect
+#     # Extract area fractions
+#     f_defect = defect_params.get('area_fraction', 0.01)
+#     f_intact = 1.0 - f_defect
     
-    if not 0 <= f_defect <= 1:
-        raise ValueError(f"Defect area fraction must be 0-1, got {f_defect}")
+#     if not 0 <= f_defect <= 1:
+#         raise ValueError(f"Defect area fraction must be 0-1, got {f_defect}")
     
-    # Path 1: Through intact oxide+metal with surface kinetics (L2+L6)
-    intact_result = calculate_oxide_metal_system_with_surface(
-        P_upstream=P_upstream,
-        P_downstream=P_downstream,
-        oxide_props=oxide_props,
-        metal_props=metal_props,
-        temperature=temperature,
-        k_diss=k_diss,
-        k_recomb=k_recomb,
-        material_name=material_name,
-        coverage_mode=coverage_mode,
-        forced_coverage=forced_coverage
-    )
-    j_intact = intact_result['flux']
+#     # Path 1: Through intact oxide+metal with surface kinetics (L2+L6)
+#     intact_result = calculate_oxide_metal_system_with_surface(
+#         P_upstream=P_upstream,
+#         P_downstream=P_downstream,
+#         oxide_props=oxide_props,
+#         metal_props=metal_props,
+#         temperature=temperature,
+#         k_diss=k_diss,
+#         k_recomb=k_recomb,
+#         material_name=material_name,
+#         coverage_mode=coverage_mode,
+#         forced_coverage=forced_coverage
+#     )
+#     j_intact = intact_result['flux']
     
-    # Path 2: Through defects with surface kinetics
-    defect_result = calculate_defect_path_flux_with_surface(
-        P_upstream=P_upstream,
-        P_downstream=P_downstream,
-        oxide_props=oxide_props,
-        metal_props=metal_props,
-        defect_props=defect_params,
-        temperature=temperature,
-        k_diss=k_diss,
-        k_recomb=k_recomb,
-        material_name=material_name,
-        coverage_mode=coverage_mode,
-        forced_coverage=forced_coverage
-    )
-    j_defect = defect_result['flux']
+#     # Path 2: Through defects with surface kinetics
+#     defect_result = calculate_defect_path_flux_with_surface(
+#         P_upstream=P_upstream,
+#         P_downstream=P_downstream,
+#         oxide_props=oxide_props,
+#         metal_props=metal_props,
+#         defect_props=defect_params,
+#         temperature=temperature,
+#         k_diss=k_diss,
+#         k_recomb=k_recomb,
+#         material_name=material_name,
+#         coverage_mode=coverage_mode,
+#         forced_coverage=forced_coverage
+#     )
+#     j_defect = defect_result['flux']
     
-    # Calculate contributions (area-weighted)
-    flux_intact_contribution = j_intact * f_intact
-    flux_defect_contribution = j_defect * f_defect
+#     # Calculate contributions (area-weighted)
+#     flux_intact_contribution = j_intact * f_intact
+#     flux_defect_contribution = j_defect * f_defect
     
-    # Total flux
-    flux_total = flux_intact_contribution + flux_defect_contribution
+#     # Total flux
+#     flux_total = flux_intact_contribution + flux_defect_contribution
     
-    # Determine dominant path
-    if flux_defect_contribution > flux_intact_contribution:
-        dominant = 'defects'
-    else:
-        dominant = 'intact_oxide'
+#     # Determine dominant path
+#     if flux_defect_contribution > flux_intact_contribution:
+#         dominant = 'defects'
+#     else:
+#         dominant = 'intact_oxide'
     
-    # Enhancement factor vs perfect oxide with surface kinetics
-    enhancement = flux_total / j_intact if j_intact > 0 else float('inf')
+#     # Enhancement factor vs perfect oxide with surface kinetics
+#     enhancement = flux_total / j_intact if j_intact > 0 else float('inf')
     
-    # Calculate effective surface parameters (flux-weighted)
-    theta_intact = intact_result.get('theta', 0)
-    theta_defect = defect_result.get('theta', 0)
+#     # Calculate effective surface parameters (flux-weighted)
+#     theta_intact = intact_result.get('theta', 0)
+#     theta_defect = defect_result.get('theta', 0)
     
-    Da_intact = intact_result.get('Da', float('inf'))
-    Da_defect = defect_result.get('Da', float('inf'))
+#     Da_intact = intact_result.get('Da', float('inf'))
+#     Da_defect = defect_result.get('Da', float('inf'))
     
-    SRF_intact = intact_result.get('SRF', 1.0)
-    SRF_defect = defect_result.get('SRF', 1.0)
+#     SRF_intact = intact_result.get('SRF', 1.0)
+#     SRF_defect = defect_result.get('SRF', 1.0)
     
-    # Effective values (flux-weighted average)
-    if flux_total > 0:
-        theta_eff = (theta_intact * flux_intact_contribution + 
-                     theta_defect * flux_defect_contribution) / flux_total
-        SRF_eff = (SRF_intact * flux_intact_contribution + 
-                   SRF_defect * flux_defect_contribution) / flux_total
-    else:
-        theta_eff = theta_intact
-        SRF_eff = SRF_intact
+#     # Effective values (flux-weighted average)
+#     if flux_total > 0:
+#         theta_eff = (theta_intact * flux_intact_contribution + 
+#                      theta_defect * flux_defect_contribution) / flux_total
+#         SRF_eff = (SRF_intact * flux_intact_contribution + 
+#                    SRF_defect * flux_defect_contribution) / flux_total
+#     else:
+#         theta_eff = theta_intact
+#         SRF_eff = SRF_intact
     
-    # Use minimum Da (most surface-limited path)
-    Da_eff = min(Da_intact, Da_defect)
+#     # Use minimum Da (most surface-limited path)
+#     Da_eff = min(Da_intact, Da_defect)
     
-    # Regime classification with surface effects
-    base_regime = intact_result.get('regime', 'transition')
+#     # Regime classification with surface effects
+#     base_regime = intact_result.get('regime', 'transition')
     
-    if Da_eff < 0.1 and SRF_eff < 0.5:
-        regime = "surface-limited"
-    elif dominant == 'defects':
-        regime = f"defect-limited ({defect_params.get('type', 'pinhole')})"
-    else:
-        regime = base_regime
+#     if Da_eff < 0.1 and SRF_eff < 0.5:
+#         regime = "surface-limited"
+#     elif dominant == 'defects':
+#         regime = f"defect-limited ({defect_params.get('type', 'pinhole')})"
+#     else:
+#         regime = base_regime
     
-    return {
-        # Primary flux outputs
-        'flux_total': flux_total,
-        'flux_intact_contribution': flux_intact_contribution,
-        'flux_defect_contribution': flux_defect_contribution,
-        'flux_intact_per_area': j_intact,
-        'flux_defect_per_area': j_defect,
+#     return {
+#         # Primary flux outputs
+#         'flux_total': flux_total,
+#         'flux_intact_contribution': flux_intact_contribution,
+#         'flux_defect_contribution': flux_defect_contribution,
+#         'flux_intact_per_area': j_intact,
+#         'flux_defect_per_area': j_defect,
         
-        # Path analysis
-        'dominant_path': dominant,
-        'defect_enhancement_factor': enhancement,
-        'area_fraction_defect': f_defect,
+#         # Path analysis
+#         'dominant_path': dominant,
+#         'defect_enhancement_factor': enhancement,
+#         'area_fraction_defect': f_defect,
         
-        # Surface kinetics - intact path (L2+L6)
-        'theta_intact': theta_intact,
-        'Da_intact': Da_intact,
-        'SRF_intact': SRF_intact,
+#         # Surface kinetics - intact path (L2+L6)
+#         'theta_intact': theta_intact,
+#         'Da_intact': Da_intact,
+#         'SRF_intact': SRF_intact,
         
-        # Surface kinetics - defect path
-        'theta_defect': theta_defect,
-        'Da_defect': Da_defect,
-        'SRF_defect': SRF_defect,
+#         # Surface kinetics - defect path
+#         'theta_defect': theta_defect,
+#         'Da_defect': Da_defect,
+#         'SRF_defect': SRF_defect,
         
-        # Effective (flux-weighted) surface parameters
-        'theta': theta_eff,
-        'Da': Da_eff,
-        'SRF': SRF_eff,
+#         # Effective (flux-weighted) surface parameters
+#         'theta': theta_eff,
+#         'Da': Da_eff,
+#         'SRF': SRF_eff,
         
-        # Interface info
-        'P_interface_intact': intact_result.get('P_interface'),
-        'P_interface_defect': defect_result.get('P_interface'),
+#         # Interface info
+#         'P_interface_intact': intact_result.get('P_interface'),
+#         'P_interface_defect': defect_result.get('P_interface'),
         
-        # Regime classification
-        'regime': regime,
-        'regime_intact': base_regime,
-        'coverage_mode': coverage_mode,
+#         # Regime classification
+#         'regime': regime,
+#         'regime_intact': base_regime,
+#         'coverage_mode': coverage_mode,
         
-        # Temperature
-        'temperature': temperature
-    }
+#         # Temperature
+#         'temperature': temperature
+#     }
 
 
-def calculate_PRF_with_surface(P_test, oxide_props, metal_props, temperature,
-                                k_diss=None, k_recomb=None, material_name=None,
-                                defect_params=None, P_downstream=0,
-                                coverage_mode='equilibrium', forced_coverage=None):
-    """
-    Calculate Permeation Reduction Factor with surface kinetics (L3+L6 or L2+L6).
+# def calculate_PRF_with_surface(P_test, oxide_props, metal_props, temperature,
+#                                 k_diss=None, k_recomb=None, material_name=None,
+#                                 defect_params=None, P_downstream=0,
+#                                 coverage_mode='equilibrium', forced_coverage=None):
+#     """
+#     Calculate Permeation Reduction Factor with surface kinetics (L3+L6 or L2+L6).
     
-    This extends calculate_PRF() to include Level 6 surface kinetics.
+#     This extends calculate_PRF() to include Level 6 surface kinetics.
     
-    Parameters
-    ----------
-    P_test : float
-        Test pressure [Pa]
-    oxide_props : dict
-        Oxide properties (D_ox, K_ox, thickness)
-    metal_props : dict
-        Metal properties (D_metal, K_s_metal, thickness)
-    temperature : float
-        Operating temperature [K] (all properties should be evaluated at this T)
-    k_diss : float, optional
-        Dissociation rate constant
-    k_recomb : float, optional
-        Recombination rate constant
-    material_name : str, optional
-        Material name for kinetics lookup
-    defect_params : dict or None
-        Defect parameters. If None, calculates PRF for perfect oxide
-    P_downstream : float
-        Downstream pressure [Pa]
-    coverage_mode : str
-        Mode for surface coverage
-    forced_coverage : float, optional
-        Fixed coverage when coverage_mode='forced'
+#     Parameters
+#     ----------
+#     P_test : float
+#         Test pressure [Pa]
+#     oxide_props : dict
+#         Oxide properties (D_ox, K_ox, thickness)
+#     metal_props : dict
+#         Metal properties (D_metal, K_s_metal, thickness)
+#     temperature : float
+#         Operating temperature [K] (all properties should be evaluated at this T)
+#     k_diss : float, optional
+#         Dissociation rate constant
+#     k_recomb : float, optional
+#         Recombination rate constant
+#     material_name : str, optional
+#         Material name for kinetics lookup
+#     defect_params : dict or None
+#         Defect parameters. If None, calculates PRF for perfect oxide
+#     P_downstream : float
+#         Downstream pressure [Pa]
+#     coverage_mode : str
+#         Mode for surface coverage
+#     forced_coverage : float, optional
+#         Fixed coverage when coverage_mode='forced'
     
-    Returns
-    -------
-    dict
-        PRF results with surface kinetics info
-    """
-    from calculations.permeation_calc import calculate_simple_metal_flux_with_surface
-    from calculations.interface_solver import calculate_oxide_metal_system_with_surface
+#     Returns
+#     -------
+#     dict
+#         PRF results with surface kinetics info
+#     """
+#     from calculations.permeation_calc import calculate_simple_metal_flux_with_surface
+#     from calculations.interface_solver import calculate_oxide_metal_system_with_surface
     
-    # Calculate bare metal flux with surface kinetics (L1+L6)
-    bare_result = calculate_simple_metal_flux_with_surface(
-        D=metal_props['D_metal'],
-        K_s=metal_props['K_s_metal'],
-        thickness=metal_props['thickness'],
-        P_up=P_test,
-        P_down=P_downstream,
-        temperature=temperature,
-        k_diss=k_diss,
-        k_recomb=k_recomb,
-        material_name=material_name,
-        coverage_mode=coverage_mode,
-        forced_coverage=forced_coverage
-    )
-    flux_bare_metal = bare_result['flux']
+#     # Calculate bare metal flux with surface kinetics (L1+L6)
+#     bare_result = calculate_simple_metal_flux_with_surface(
+#         D=metal_props['D_metal'],
+#         K_s=metal_props['K_s_metal'],
+#         thickness=metal_props['thickness'],
+#         P_up=P_test,
+#         P_down=P_downstream,
+#         temperature=temperature,
+#         k_diss=k_diss,
+#         k_recomb=k_recomb,
+#         material_name=material_name,
+#         coverage_mode=coverage_mode,
+#         forced_coverage=forced_coverage
+#     )
+#     flux_bare_metal = bare_result['flux']
     
-    # Calculate flux with perfect oxide + surface kinetics (L2+L6)
-    perfect_result = calculate_oxide_metal_system_with_surface(
-        P_upstream=P_test,
-        P_downstream=P_downstream,
-        oxide_props=oxide_props,
-        metal_props=metal_props,
-        temperature=temperature,
-        k_diss=k_diss,
-        k_recomb=k_recomb,
-        material_name=material_name,
-        coverage_mode=coverage_mode,
-        forced_coverage=forced_coverage
-    )
-    flux_perfect_oxide = perfect_result['flux']
+#     # Calculate flux with perfect oxide + surface kinetics (L2+L6)
+#     perfect_result = calculate_oxide_metal_system_with_surface(
+#         P_upstream=P_test,
+#         P_downstream=P_downstream,
+#         oxide_props=oxide_props,
+#         metal_props=metal_props,
+#         temperature=temperature,
+#         k_diss=k_diss,
+#         k_recomb=k_recomb,
+#         material_name=material_name,
+#         coverage_mode=coverage_mode,
+#         forced_coverage=forced_coverage
+#     )
+#     flux_perfect_oxide = perfect_result['flux']
     
-    PRF_perfect = flux_bare_metal / flux_perfect_oxide if flux_perfect_oxide > 0 else float('inf')
+#     PRF_perfect = flux_bare_metal / flux_perfect_oxide if flux_perfect_oxide > 0 else float('inf')
     
-    # Calculate flux with defective oxide if parameters provided (L3+L6)
-    if defect_params is not None:
-        defect_result = calculate_parallel_path_flux_with_surface_L3L6(
-            P_upstream=P_test,
-            P_downstream=P_downstream,
-            oxide_props=oxide_props,
-            metal_props=metal_props,
-            defect_params=defect_params,
-            temperature=temperature,
-            k_diss=k_diss,
-            k_recomb=k_recomb,
-            material_name=material_name,
-            coverage_mode=coverage_mode,
-            forced_coverage=forced_coverage
-        )
-        flux_defective = defect_result['flux_total']
+#     # Calculate flux with defective oxide if parameters provided (L3+L6)
+#     if defect_params is not None:
+#         defect_result = calculate_parallel_path_flux_with_surface_L3L6(
+#             P_upstream=P_test,
+#             P_downstream=P_downstream,
+#             oxide_props=oxide_props,
+#             metal_props=metal_props,
+#             defect_params=defect_params,
+#             temperature=temperature,
+#             k_diss=k_diss,
+#             k_recomb=k_recomb,
+#             material_name=material_name,
+#             coverage_mode=coverage_mode,
+#             forced_coverage=forced_coverage
+#         )
+#         flux_defective = defect_result['flux_total']
         
-        PRF_actual = flux_bare_metal / flux_defective if flux_defective > 0 else float('inf')
-        efficiency = PRF_actual / PRF_perfect if PRF_perfect != float('inf') else 0
+#         PRF_actual = flux_bare_metal / flux_defective if flux_defective > 0 else float('inf')
+#         efficiency = PRF_actual / PRF_perfect if PRF_perfect != float('inf') else 0
         
-        regime = defect_result['regime']
-        flux_with_oxide = flux_defective
+#         regime = defect_result['regime']
+#         flux_with_oxide = flux_defective
         
-        # Surface parameters from defect result
-        theta = defect_result.get('theta', 0)
-        Da = defect_result.get('Da', float('inf'))
-        SRF = defect_result.get('SRF', 1.0)
-    else:
-        PRF_actual = PRF_perfect
-        efficiency = 1.0
-        regime = perfect_result.get('regime', 'transition')
-        flux_with_oxide = flux_perfect_oxide
+#         # Surface parameters from defect result
+#         theta = defect_result.get('theta', 0)
+#         Da = defect_result.get('Da', float('inf'))
+#         SRF = defect_result.get('SRF', 1.0)
+#     else:
+#         PRF_actual = PRF_perfect
+#         efficiency = 1.0
+#         regime = perfect_result.get('regime', 'transition')
+#         flux_with_oxide = flux_perfect_oxide
         
-        theta = perfect_result.get('theta', 0)
-        Da = perfect_result.get('Da', float('inf'))
-        SRF = perfect_result.get('SRF', 1.0)
+#         theta = perfect_result.get('theta', 0)
+#         Da = perfect_result.get('Da', float('inf'))
+#         SRF = perfect_result.get('SRF', 1.0)
     
-    return {
-        'PRF': PRF_actual,
-        'PRF_perfect': PRF_perfect,
-        'efficiency': efficiency,
-        'regime': regime,
-        'test_pressure': P_test,
-        'flux_bare_metal': flux_bare_metal,
-        'flux_with_oxide': flux_with_oxide,
-        'flux_reduction_factor': flux_bare_metal / flux_with_oxide if flux_with_oxide > 0 else float('inf'),
+#     return {
+#         'PRF': PRF_actual,
+#         'PRF_perfect': PRF_perfect,
+#         'efficiency': efficiency,
+#         'regime': regime,
+#         'test_pressure': P_test,
+#         'flux_bare_metal': flux_bare_metal,
+#         'flux_with_oxide': flux_with_oxide,
+#         'flux_reduction_factor': flux_bare_metal / flux_with_oxide if flux_with_oxide > 0 else float('inf'),
         
-        # Surface kinetics outputs
-        'theta': theta,
-        'Da': Da,
-        'SRF': SRF,
-        'coverage_mode': coverage_mode,
+#         # Surface kinetics outputs
+#         'theta': theta,
+#         'Da': Da,
+#         'SRF': SRF,
+#         'coverage_mode': coverage_mode,
         
-        # Bare metal surface info
-        'theta_bare': bare_result.get('theta', 0),
-        'Da_bare': bare_result.get('Da', float('inf')),
-        'SRF_bare': bare_result.get('SRF', 1.0)
-    }
+#         # Bare metal surface info
+#         'theta_bare': bare_result.get('theta', 0),
+#         'Da_bare': bare_result.get('Da', float('inf')),
+#         'SRF_bare': bare_result.get('SRF', 1.0)
+#     }
 
-# =============================================================================
-# LEVEL 3+4+6: Full System with Surface Kinetics (COUPLED)
-# =============================================================================
+# # =============================================================================
+# # LEVEL 3+4+6: Full System with Surface Kinetics (COUPLED)
+# # =============================================================================
 
-def calculate_defect_path_flux_defective_metal_with_surface(P_upstream, P_downstream, 
-                                                            oxide_props, metal_props,
-                                                            defect_props, temperature,
-                                                            microstructure_params,
-                                                            k_diss=None, k_recomb=None,
-                                                            material_name=None,
-                                                            lattice_density=1.06e29,
-                                                            method='average', n_points=10,
-                                                            mode='both',
-                                                            coverage_mode='equilibrium',
-                                                            forced_coverage=None):
-    """
-    Calculate flux through a defect path with defective metal AND surface kinetics (L3+L4+L6).
+# def calculate_defect_path_flux_defective_metal_with_surface(P_upstream, P_downstream, 
+#                                                             oxide_props, metal_props,
+#                                                             defect_props, temperature,
+#                                                             microstructure_params,
+#                                                             k_diss=None, k_recomb=None,
+#                                                             material_name=None,
+#                                                             lattice_density=None,
+#                                                             method='average', n_points=10,
+#                                                             mode='both',
+#                                                             coverage_mode='equilibrium',
+#                                                             forced_coverage=None):
+#     """
+#     Calculate flux through a defect path with defective metal AND surface kinetics (L3+L4+L6).
     
-    This extends calculate_defect_path_flux_defective_metal() to include properly
-    coupled Level 6 surface kinetics.
+#     This extends calculate_defect_path_flux_defective_metal() to include properly
+#     coupled Level 6 surface kinetics.
     
-    Theory:
-    -------
-    For each defect type, uses the appropriate coupled model:
-    1. Pinhole: L4+L6 (defective metal with surface kinetics)
-    2. Crack: L5+L6 (thin oxide + defective metal + surface kinetics)
-    3. Grain boundary: L5+L6 (enhanced oxide + defective metal + surface kinetics)
+#     Theory:
+#     -------
+#     For each defect type, uses the appropriate coupled model:
+#     1. Pinhole: L4+L6 (defective metal with surface kinetics)
+#     2. Crack: L5+L6 (thin oxide + defective metal + surface kinetics)
+#     3. Grain boundary: L5+L6 (enhanced oxide + defective metal + surface kinetics)
     
-    Parameters
-    ----------
-    P_upstream : float
-        Upstream hydrogen pressure [Pa]
-    P_downstream : float
-        Downstream hydrogen pressure [Pa]
-    oxide_props : dict
-        Oxide properties (D_ox, K_ox, thickness)
-    metal_props : dict
-        Metal properties (D_metal as D_lattice, K_s_metal, thickness)
-    defect_props : dict
-        Defect properties (type, thickness_factor, diffusivity_factor)
-    temperature : float
-        Operating temperature [K] (all properties should be evaluated at this T)
-    microstructure_params : dict
-        Metal microstructure specification
-    k_diss, k_recomb : float, optional
-        Surface kinetics parameters
-    material_name : str, optional
-        Material name for kinetics lookup
-    lattice_density : float, optional
-        Lattice site density [m⁻³]
-    method : str, optional
-        D_eff averaging method
-    n_points : int, optional
-        Points for integration
-    mode : str, optional
-        Microstructure mode
-    coverage_mode : str
-        Surface coverage mode ('equilibrium', 'steady_state', 'forced')
-    forced_coverage : float, optional
-        Required when coverage_mode='forced'
+#     Parameters
+#     ----------
+#     P_upstream : float
+#         Upstream hydrogen pressure [Pa]
+#     P_downstream : float
+#         Downstream hydrogen pressure [Pa]
+#     oxide_props : dict
+#         Oxide properties (D_ox, K_ox, thickness)
+#     metal_props : dict
+#         Metal properties (D_metal as D_lattice, K_s_metal, thickness)
+#     defect_props : dict
+#         Defect properties (type, thickness_factor, diffusivity_factor)
+#     temperature : float
+#         Operating temperature [K] (all properties should be evaluated at this T)
+#     microstructure_params : dict
+#         Metal microstructure specification
+#     k_diss, k_recomb : float, optional
+#         Surface kinetics parameters
+#     material_name : str, optional
+#         Material name for kinetics lookup
+#     lattice_density : float, optional
+#         Lattice site density [m⁻³]
+#     method : str, optional
+#         D_eff averaging method
+#     n_points : int, optional
+#         Points for integration
+#     mode : str, optional
+#         Microstructure mode
+#     coverage_mode : str
+#         Surface coverage mode ('equilibrium', 'steady_state', 'forced')
+#     forced_coverage : float, optional
+#         Required when coverage_mode='forced'
     
-    Returns
-    -------
-    dict
-        Contains flux, D_eff, theta, Da, SRF, and microstructure details
-    """
-    from calculations.permeation_calc import calculate_defective_metal_flux_with_surface
-    from calculations.interface_solver import calculate_oxide_defective_metal_system_with_surface
+#     Returns
+#     -------
+#     dict
+#         Contains flux, D_eff, theta, Da, SRF, and microstructure details
+#     """
+#     from calculations.permeation_calc import calculate_defective_metal_flux_with_surface
+#     from calculations.interface_solver import calculate_oxide_defective_metal_system_with_surface
     
-    defect_type = defect_props.get('type', 'pinhole')
+#     defect_type = defect_props.get('type', 'pinhole')
     
-    if defect_type == 'pinhole':
-        # Direct metal exposure - use L4+L6 (defective metal with surface kinetics)
-        result = calculate_defective_metal_flux_with_surface(
-            D_lattice=metal_props['D_metal'],
-            K_s=metal_props['K_s_metal'],
-            thickness=metal_props['thickness'],
-            P_up=P_upstream,
-            P_down=P_downstream,
-            temperature=temperature,
-            microstructure_params=microstructure_params,
-            k_diss=k_diss,
-            k_recomb=k_recomb,
-            material_name=material_name,
-            lattice_density=lattice_density,
-            method=method,
-            n_points=n_points,
-            mode=mode,
-            coverage_mode=coverage_mode,
-            forced_coverage=forced_coverage
-        )
-        return {
-            'flux': result['flux'],
-            'flux_sieverts': result.get('flux_sieverts', result['flux']),
-            'D_eff': result.get('D_eff'),
-            'modification_factor': result.get('modification_factor', 1.0),
-            'theta': result.get('theta', 0),
-            'Da': result.get('Da', float('inf')),
-            'SRF': result.get('SRF', 1.0),
-            'coverage_mode': coverage_mode,
-            'defect_type': 'pinhole',
-            'microstructure_details': result.get('microstructure_details', {})
-        }
+#     if defect_type == 'pinhole':
+#         # Direct metal exposure - use L4+L6 (defective metal with surface kinetics)
+#         result = calculate_defective_metal_flux_with_surface(
+#             D_lattice=metal_props['D_metal'],
+#             K_s=metal_props['K_s_metal'],
+#             thickness=metal_props['thickness'],
+#             P_up=P_upstream,
+#             P_down=P_downstream,
+#             temperature=temperature,
+#             microstructure_params=microstructure_params,
+#             k_diss=k_diss,
+#             k_recomb=k_recomb,
+#             material_name=material_name,
+#             lattice_density=lattice_density,
+#             method=method,
+#             n_points=n_points,
+#             mode=mode,
+#             coverage_mode=coverage_mode,
+#             forced_coverage=forced_coverage
+#         )
+#         return {
+#             'flux': result['flux'],
+#             'flux_sieverts': result.get('flux_sieverts', result['flux']),
+#             'D_eff': result.get('D_eff'),
+#             'modification_factor': result.get('modification_factor', 1.0),
+#             'theta': result.get('theta', 0),
+#             'Da': result.get('Da', float('inf')),
+#             'SRF': result.get('SRF', 1.0),
+#             'coverage_mode': coverage_mode,
+#             'defect_type': 'pinhole',
+#             'microstructure_details': result.get('microstructure_details', {})
+#         }
         
-    elif defect_type == 'crack':
-        # Crack with thin oxide - use L5+L6 COUPLED
-        alpha = defect_props.get('thickness_factor', 0.1)
+#     elif defect_type == 'crack':
+#         # Crack with thin oxide - use L5+L6 COUPLED
+#         alpha = defect_props.get('thickness_factor', 0.1)
         
-        crack_oxide_props = oxide_props.copy()
-        crack_oxide_props['thickness'] *= alpha
+#         crack_oxide_props = oxide_props.copy()
+#         crack_oxide_props['thickness'] *= alpha
         
-        result = calculate_oxide_defective_metal_system_with_surface(
-            P_upstream=P_upstream,
-            P_downstream=P_downstream,
-            oxide_props=crack_oxide_props,
-            metal_props=metal_props,
-            temperature=temperature,
-            microstructure_params=microstructure_params,
-            k_diss=k_diss,
-            k_recomb=k_recomb,
-            material_name=material_name,
-            lattice_density=lattice_density,
-            method=method,
-            n_points=n_points,
-            mode=mode,
-            coverage_mode=coverage_mode,
-            forced_coverage=forced_coverage
-        )
-        return {
-            'flux': result['flux'],
-            'flux_sieverts': result.get('flux_sieverts', result['flux']),
-            'D_eff': result.get('D_eff'),
-            'modification_factor': result.get('modification_factor', 1.0),
-            'theta': result.get('theta', 0),
-            'Da': result.get('Da', float('inf')),
-            'SRF': result.get('SRF', 1.0),
-            'coverage_mode': coverage_mode,
-            'defect_type': 'crack',
-            'P_interface': result.get('P_interface'),
-            'microstructure_details': result.get('microstructure_details', {})
-        }
+#         result = calculate_oxide_defective_metal_system_with_surface(
+#             P_upstream=P_upstream,
+#             P_downstream=P_downstream,
+#             oxide_props=crack_oxide_props,
+#             metal_props=metal_props,
+#             temperature=temperature,
+#             microstructure_params=microstructure_params,
+#             k_diss=k_diss,
+#             k_recomb=k_recomb,
+#             material_name=material_name,
+#             lattice_density=lattice_density,
+#             method=method,
+#             n_points=n_points,
+#             mode=mode,
+#             coverage_mode=coverage_mode,
+#             forced_coverage=forced_coverage
+#         )
+#         return {
+#             'flux': result['flux'],
+#             'flux_sieverts': result.get('flux_sieverts', result['flux']),
+#             'D_eff': result.get('D_eff'),
+#             'modification_factor': result.get('modification_factor', 1.0),
+#             'theta': result.get('theta', 0),
+#             'Da': result.get('Da', float('inf')),
+#             'SRF': result.get('SRF', 1.0),
+#             'coverage_mode': coverage_mode,
+#             'defect_type': 'crack',
+#             'P_interface': result.get('P_interface'),
+#             'microstructure_details': result.get('microstructure_details', {})
+#         }
         
-    elif defect_type == 'grain_boundary':
-        # Enhanced oxide diffusion - use L5+L6 COUPLED
-        beta = defect_props.get('diffusivity_factor', 10)
+#     elif defect_type == 'grain_boundary':
+#         # Enhanced oxide diffusion - use L5+L6 COUPLED
+#         beta = defect_props.get('diffusivity_factor', 10)
         
-        gb_oxide_props = oxide_props.copy()
-        gb_oxide_props['D_ox'] *= beta
+#         gb_oxide_props = oxide_props.copy()
+#         gb_oxide_props['D_ox'] *= beta
         
-        result = calculate_oxide_defective_metal_system_with_surface(
-            P_upstream=P_upstream,
-            P_downstream=P_downstream,
-            oxide_props=gb_oxide_props,
-            metal_props=metal_props,
-            temperature=temperature,
-            microstructure_params=microstructure_params,
-            k_diss=k_diss,
-            k_recomb=k_recomb,
-            material_name=material_name,
-            lattice_density=lattice_density,
-            method=method,
-            n_points=n_points,
-            mode=mode,
-            coverage_mode=coverage_mode,
-            forced_coverage=forced_coverage
-        )
-        return {
-            'flux': result['flux'],
-            'flux_sieverts': result.get('flux_sieverts', result['flux']),
-            'D_eff': result.get('D_eff'),
-            'modification_factor': result.get('modification_factor', 1.0),
-            'theta': result.get('theta', 0),
-            'Da': result.get('Da', float('inf')),
-            'SRF': result.get('SRF', 1.0),
-            'coverage_mode': coverage_mode,
-            'defect_type': 'grain_boundary',
-            'P_interface': result.get('P_interface'),
-            'microstructure_details': result.get('microstructure_details', {})
-        }
+#         result = calculate_oxide_defective_metal_system_with_surface(
+#             P_upstream=P_upstream,
+#             P_downstream=P_downstream,
+#             oxide_props=gb_oxide_props,
+#             metal_props=metal_props,
+#             temperature=temperature,
+#             microstructure_params=microstructure_params,
+#             k_diss=k_diss,
+#             k_recomb=k_recomb,
+#             material_name=material_name,
+#             lattice_density=lattice_density,
+#             method=method,
+#             n_points=n_points,
+#             mode=mode,
+#             coverage_mode=coverage_mode,
+#             forced_coverage=forced_coverage
+#         )
+#         return {
+#             'flux': result['flux'],
+#             'flux_sieverts': result.get('flux_sieverts', result['flux']),
+#             'D_eff': result.get('D_eff'),
+#             'modification_factor': result.get('modification_factor', 1.0),
+#             'theta': result.get('theta', 0),
+#             'Da': result.get('Da', float('inf')),
+#             'SRF': result.get('SRF', 1.0),
+#             'coverage_mode': coverage_mode,
+#             'defect_type': 'grain_boundary',
+#             'P_interface': result.get('P_interface'),
+#             'microstructure_details': result.get('microstructure_details', {})
+#         }
         
-    elif defect_type == 'mixed':
-        # Mixed defects: weighted average by component fractions
-        components = defect_props.get('components', {})
-        total_component_fraction = sum(components.values())
+#     elif defect_type == 'mixed':
+#         # Mixed defects: weighted average by component fractions
+#         components = defect_props.get('components', {})
+#         total_component_fraction = sum(components.values())
         
-        if total_component_fraction == 0:
-            # Default to pinhole behavior
-            result = calculate_defective_metal_flux_with_surface(
-                D_lattice=metal_props['D_metal'],
-                K_s=metal_props['K_s_metal'],
-                thickness=metal_props['thickness'],
-                P_up=P_upstream,
-                P_down=P_downstream,
-                temperature=temperature,
-                microstructure_params=microstructure_params,
-                k_diss=k_diss,
-                k_recomb=k_recomb,
-                material_name=material_name,
-                lattice_density=lattice_density,
-                method=method,
-                n_points=n_points,
-                mode=mode,
-                coverage_mode=coverage_mode,
-                forced_coverage=forced_coverage
-            )
-            return {
-                'flux': result['flux'],
-                'flux_sieverts': result.get('flux_sieverts', result['flux']),
-                'D_eff': result.get('D_eff'),
-                'modification_factor': result.get('modification_factor', 1.0),
-                'theta': result.get('theta', 0),
-                'Da': result.get('Da', float('inf')),
-                'SRF': result.get('SRF', 1.0),
-                'coverage_mode': coverage_mode,
-                'defect_type': 'mixed',
-                'microstructure_details': result.get('microstructure_details', {})
-            }
+#         if total_component_fraction == 0:
+#             # Default to pinhole behavior
+#             result = calculate_defective_metal_flux_with_surface(
+#                 D_lattice=metal_props['D_metal'],
+#                 K_s=metal_props['K_s_metal'],
+#                 thickness=metal_props['thickness'],
+#                 P_up=P_upstream,
+#                 P_down=P_downstream,
+#                 temperature=temperature,
+#                 microstructure_params=microstructure_params,
+#                 k_diss=k_diss,
+#                 k_recomb=k_recomb,
+#                 material_name=material_name,
+#                 lattice_density=lattice_density,
+#                 method=method,
+#                 n_points=n_points,
+#                 mode=mode,
+#                 coverage_mode=coverage_mode,
+#                 forced_coverage=forced_coverage
+#             )
+#             return {
+#                 'flux': result['flux'],
+#                 'flux_sieverts': result.get('flux_sieverts', result['flux']),
+#                 'D_eff': result.get('D_eff'),
+#                 'modification_factor': result.get('modification_factor', 1.0),
+#                 'theta': result.get('theta', 0),
+#                 'Da': result.get('Da', float('inf')),
+#                 'SRF': result.get('SRF', 1.0),
+#                 'coverage_mode': coverage_mode,
+#                 'defect_type': 'mixed',
+#                 'microstructure_details': result.get('microstructure_details', {})
+#             }
         
-        # Calculate flux-weighted averages
-        flux_defect = 0.0
-        flux_sieverts_defect = 0.0
-        theta_avg = 0.0
-        SRF_avg = 0.0
-        Da_min = float('inf')
-        D_eff_avg = 0.0
+#         # Calculate flux-weighted averages
+#         flux_defect = 0.0
+#         flux_sieverts_defect = 0.0
+#         theta_avg = 0.0
+#         SRF_avg = 0.0
+#         Da_min = float('inf')
+#         D_eff_avg = 0.0
         
-        # Pinhole component
-        if 'pinholes' in components and components['pinholes'] > 0:
-            pinhole_result = calculate_defective_metal_flux_with_surface(
-                D_lattice=metal_props['D_metal'],
-                K_s=metal_props['K_s_metal'],
-                thickness=metal_props['thickness'],
-                P_up=P_upstream,
-                P_down=P_downstream,
-                temperature=temperature,
-                microstructure_params=microstructure_params,
-                k_diss=k_diss,
-                k_recomb=k_recomb,
-                material_name=material_name,
-                lattice_density=lattice_density,
-                method=method,
-                n_points=n_points,
-                mode=mode,
-                coverage_mode=coverage_mode,
-                forced_coverage=forced_coverage
-            )
-            weight = components['pinholes'] / total_component_fraction
-            flux_defect += pinhole_result['flux'] * weight
-            flux_sieverts_defect += pinhole_result.get('flux_sieverts', pinhole_result['flux']) * weight
-            theta_avg += pinhole_result.get('theta', 0) * weight
-            SRF_avg += pinhole_result.get('SRF', 1.0) * weight
-            D_eff_avg += pinhole_result.get('D_eff', metal_props['D_metal']) * weight
-            Da_min = min(Da_min, pinhole_result.get('Da', float('inf')))
+#         # Pinhole component
+#         if 'pinholes' in components and components['pinholes'] > 0:
+#             pinhole_result = calculate_defective_metal_flux_with_surface(
+#                 D_lattice=metal_props['D_metal'],
+#                 K_s=metal_props['K_s_metal'],
+#                 thickness=metal_props['thickness'],
+#                 P_up=P_upstream,
+#                 P_down=P_downstream,
+#                 temperature=temperature,
+#                 microstructure_params=microstructure_params,
+#                 k_diss=k_diss,
+#                 k_recomb=k_recomb,
+#                 material_name=material_name,
+#                 lattice_density=lattice_density,
+#                 method=method,
+#                 n_points=n_points,
+#                 mode=mode,
+#                 coverage_mode=coverage_mode,
+#                 forced_coverage=forced_coverage
+#             )
+#             weight = components['pinholes'] / total_component_fraction
+#             flux_defect += pinhole_result['flux'] * weight
+#             flux_sieverts_defect += pinhole_result.get('flux_sieverts', pinhole_result['flux']) * weight
+#             theta_avg += pinhole_result.get('theta', 0) * weight
+#             SRF_avg += pinhole_result.get('SRF', 1.0) * weight
+#             D_eff_avg += pinhole_result.get('D_eff', metal_props['D_metal']) * weight
+#             Da_min = min(Da_min, pinhole_result.get('Da', float('inf')))
         
-        # Crack component
-        if 'cracks' in components and components['cracks'] > 0:
-            alpha = defect_props.get('thickness_factor', 0.1)
-            crack_oxide_props = oxide_props.copy()
-            crack_oxide_props['thickness'] *= alpha
+#         # Crack component
+#         if 'cracks' in components and components['cracks'] > 0:
+#             alpha = defect_props.get('thickness_factor', 0.1)
+#             crack_oxide_props = oxide_props.copy()
+#             crack_oxide_props['thickness'] *= alpha
             
-            crack_result = calculate_oxide_defective_metal_system_with_surface(
-                P_upstream=P_upstream,
-                P_downstream=P_downstream,
-                oxide_props=crack_oxide_props,
-                metal_props=metal_props,
-                temperature=temperature,
-                microstructure_params=microstructure_params,
-                k_diss=k_diss,
-                k_recomb=k_recomb,
-                material_name=material_name,
-                lattice_density=lattice_density,
-                method=method,
-                n_points=n_points,
-                mode=mode,
-                coverage_mode=coverage_mode,
-                forced_coverage=forced_coverage
-            )
-            weight = components['cracks'] / total_component_fraction
-            flux_defect += crack_result['flux'] * weight
-            flux_sieverts_defect += crack_result.get('flux_sieverts', crack_result['flux']) * weight
-            theta_avg += crack_result.get('theta', 0) * weight
-            SRF_avg += crack_result.get('SRF', 1.0) * weight
-            D_eff_avg += crack_result.get('D_eff', metal_props['D_metal']) * weight
-            Da_min = min(Da_min, crack_result.get('Da', float('inf')))
+#             crack_result = calculate_oxide_defective_metal_system_with_surface(
+#                 P_upstream=P_upstream,
+#                 P_downstream=P_downstream,
+#                 oxide_props=crack_oxide_props,
+#                 metal_props=metal_props,
+#                 temperature=temperature,
+#                 microstructure_params=microstructure_params,
+#                 k_diss=k_diss,
+#                 k_recomb=k_recomb,
+#                 material_name=material_name,
+#                 lattice_density=lattice_density,
+#                 method=method,
+#                 n_points=n_points,
+#                 mode=mode,
+#                 coverage_mode=coverage_mode,
+#                 forced_coverage=forced_coverage
+#             )
+#             weight = components['cracks'] / total_component_fraction
+#             flux_defect += crack_result['flux'] * weight
+#             flux_sieverts_defect += crack_result.get('flux_sieverts', crack_result['flux']) * weight
+#             theta_avg += crack_result.get('theta', 0) * weight
+#             SRF_avg += crack_result.get('SRF', 1.0) * weight
+#             D_eff_avg += crack_result.get('D_eff', metal_props['D_metal']) * weight
+#             Da_min = min(Da_min, crack_result.get('Da', float('inf')))
         
-        # Grain boundary component
-        if 'grain_boundaries' in components and components['grain_boundaries'] > 0:
-            beta = defect_props.get('diffusivity_factor', 10)
-            gb_oxide_props = oxide_props.copy()
-            gb_oxide_props['D_ox'] *= beta
+#         # Grain boundary component
+#         if 'grain_boundaries' in components and components['grain_boundaries'] > 0:
+#             beta = defect_props.get('diffusivity_factor', 10)
+#             gb_oxide_props = oxide_props.copy()
+#             gb_oxide_props['D_ox'] *= beta
             
-            gb_result = calculate_oxide_defective_metal_system_with_surface(
-                P_upstream=P_upstream,
-                P_downstream=P_downstream,
-                oxide_props=gb_oxide_props,
-                metal_props=metal_props,
-                temperature=temperature,
-                microstructure_params=microstructure_params,
-                k_diss=k_diss,
-                k_recomb=k_recomb,
-                material_name=material_name,
-                lattice_density=lattice_density,
-                method=method,
-                n_points=n_points,
-                mode=mode,
-                coverage_mode=coverage_mode,
-                forced_coverage=forced_coverage
-            )
-            weight = components['grain_boundaries'] / total_component_fraction
-            flux_defect += gb_result['flux'] * weight
-            flux_sieverts_defect += gb_result.get('flux_sieverts', gb_result['flux']) * weight
-            theta_avg += gb_result.get('theta', 0) * weight
-            SRF_avg += gb_result.get('SRF', 1.0) * weight
-            D_eff_avg += gb_result.get('D_eff', metal_props['D_metal']) * weight
-            Da_min = min(Da_min, gb_result.get('Da', float('inf')))
+#             gb_result = calculate_oxide_defective_metal_system_with_surface(
+#                 P_upstream=P_upstream,
+#                 P_downstream=P_downstream,
+#                 oxide_props=gb_oxide_props,
+#                 metal_props=metal_props,
+#                 temperature=temperature,
+#                 microstructure_params=microstructure_params,
+#                 k_diss=k_diss,
+#                 k_recomb=k_recomb,
+#                 material_name=material_name,
+#                 lattice_density=lattice_density,
+#                 method=method,
+#                 n_points=n_points,
+#                 mode=mode,
+#                 coverage_mode=coverage_mode,
+#                 forced_coverage=forced_coverage
+#             )
+#             weight = components['grain_boundaries'] / total_component_fraction
+#             flux_defect += gb_result['flux'] * weight
+#             flux_sieverts_defect += gb_result.get('flux_sieverts', gb_result['flux']) * weight
+#             theta_avg += gb_result.get('theta', 0) * weight
+#             SRF_avg += gb_result.get('SRF', 1.0) * weight
+#             D_eff_avg += gb_result.get('D_eff', metal_props['D_metal']) * weight
+#             Da_min = min(Da_min, gb_result.get('Da', float('inf')))
         
-        return {
-            'flux': flux_defect,
-            'flux_sieverts': flux_sieverts_defect,
-            'D_eff': D_eff_avg,
-            'modification_factor': D_eff_avg / metal_props['D_metal'] if metal_props['D_metal'] > 0 else 1.0,
-            'theta': theta_avg,
-            'Da': Da_min,
-            'SRF': SRF_avg,
-            'coverage_mode': coverage_mode,
-            'defect_type': 'mixed',
-            'microstructure_details': {}
-        }
+#         return {
+#             'flux': flux_defect,
+#             'flux_sieverts': flux_sieverts_defect,
+#             'D_eff': D_eff_avg,
+#             'modification_factor': D_eff_avg / metal_props['D_metal'] if metal_props['D_metal'] > 0 else 1.0,
+#             'theta': theta_avg,
+#             'Da': Da_min,
+#             'SRF': SRF_avg,
+#             'coverage_mode': coverage_mode,
+#             'defect_type': 'mixed',
+#             'microstructure_details': {}
+#         }
     
-    else:
-        raise ValueError(f"Unknown defect type: {defect_type}")
+#     else:
+#         raise ValueError(f"Unknown defect type: {defect_type}")
 
 
-def calculate_parallel_path_flux_with_surface(P_upstream, P_downstream, oxide_props, metal_props,
-                                               defect_params, temperature, microstructure_params,
-                                               k_diss=None, k_recomb=None, material_name=None,
-                                               lattice_density=1.06e29,
-                                               method='average', n_points=10,
-                                               mode='both',
-                                               coverage_mode='equilibrium',
-                                               forced_coverage=None):
-    """
-    Calculate flux through defective oxide + defective metal WITH surface kinetics (COUPLED).
+# def calculate_parallel_path_flux_with_surface(P_upstream, P_downstream, oxide_props, metal_props,
+#                                                defect_params, temperature, microstructure_params,
+#                                                k_diss=None, k_recomb=None, material_name=None,
+#                                                lattice_density=None,
+#                                                method='average', n_points=10,
+#                                                mode='both',
+#                                                coverage_mode='equilibrium',
+#                                                forced_coverage=None):
+#     """
+#     Calculate flux through defective oxide + defective metal WITH surface kinetics (COUPLED).
     
-    This is Level 3+4+6: The complete hierarchical model combining:
-    - Surface dissociation limitation (Level 6) - PROPERLY COUPLED
-    - Defective oxide with parallel paths (Level 3)
-    - Defective metal with GB + trapping (Level 4)
+#     This is Level 3+4+6: The complete hierarchical model combining:
+#     - Surface dissociation limitation (Level 6) - PROPERLY COUPLED
+#     - Defective oxide with parallel paths (Level 3)
+#     - Defective metal with GB + trapping (Level 4)
     
-    Physics:
-    --------
-    Total flux = Intact path contribution + Defect path contribution
+#     Physics:
+#     --------
+#     Total flux = Intact path contribution + Defect path contribution
     
-    J_total = j_intact × f_intact + j_defect × f_defect
+#     J_total = j_intact × f_intact + j_defect × f_defect
     
-    Where:
-    - j_intact: L5+L6 flux through intact oxide (COUPLED surface kinetics)
-    - j_defect: L4+L6 or L5+L6 flux through defects (COUPLED surface kinetics)
+#     Where:
+#     - j_intact: L5+L6 flux through intact oxide (COUPLED surface kinetics)
+#     - j_defect: L4+L6 or L5+L6 flux through defects (COUPLED surface kinetics)
     
-    The coupling ensures surface kinetics is included in the interface pressure
-    solver, not applied as a post-processing step.
+#     The coupling ensures surface kinetics is included in the interface pressure
+#     solver, not applied as a post-processing step.
     
-    Parameters
-    ----------
-    P_upstream : float
-        Upstream pressure [Pa]
-    P_downstream : float
-        Downstream pressure [Pa]
-    oxide_props : dict
-        Oxide properties (D_ox, K_ox, thickness)
-    metal_props : dict
-        Metal properties (D_metal as D_lattice, K_s_metal, thickness)
-    defect_params : dict
-        Defect parameters:
-        - 'area_fraction': fraction of surface with defects (0-1)
-        - 'type': defect type
-        - Additional parameters for specific defect types
-    temperature : float
-        Operating temperature [K] (all properties should be evaluated at this T)
-    microstructure_params : dict
-        Microstructure specification
-    k_diss : float, optional
-        Dissociation rate constant [mol/m²/s/Pa]
-    k_recomb : float, optional
-        Recombination rate constant [m⁴/mol/s]
-    material_name : str, optional
-        Material name for kinetics lookup
-    lattice_density : float, optional
-        Lattice site density [m⁻³]
-    method : str, optional
-        D_eff averaging method
-    n_points : int, optional
-        Points for integration
-    mode : str, optional
-        Microstructure mode ('both', 'gb_only', 'trapping_only', 'none')
-    coverage_mode : str
-        Surface coverage mode ('equilibrium', 'steady_state', 'forced')
-    forced_coverage : float, optional
-        Required when coverage_mode='forced'
+#     Parameters
+#     ----------
+#     P_upstream : float
+#         Upstream pressure [Pa]
+#     P_downstream : float
+#         Downstream pressure [Pa]
+#     oxide_props : dict
+#         Oxide properties (D_ox, K_ox, thickness)
+#     metal_props : dict
+#         Metal properties (D_metal as D_lattice, K_s_metal, thickness)
+#     defect_params : dict
+#         Defect parameters:
+#         - 'area_fraction': fraction of surface with defects (0-1)
+#         - 'type': defect type
+#         - Additional parameters for specific defect types
+#     temperature : float
+#         Operating temperature [K] (all properties should be evaluated at this T)
+#     microstructure_params : dict
+#         Microstructure specification
+#     k_diss : float, optional
+#         Dissociation rate constant [mol/m²/s/Pa]
+#     k_recomb : float, optional
+#         Recombination rate constant [m⁴/mol/s]
+#     material_name : str, optional
+#         Material name for kinetics lookup
+#     lattice_density : float, optional
+#         Lattice site density [m⁻³]
+#     method : str, optional
+#         D_eff averaging method
+#     n_points : int, optional
+#         Points for integration
+#     mode : str, optional
+#         Microstructure mode ('both', 'gb_only', 'trapping_only', 'none')
+#     coverage_mode : str
+#         Surface coverage mode ('equilibrium', 'steady_state', 'forced')
+#     forced_coverage : float, optional
+#         Required when coverage_mode='forced'
         
-    Returns
-    -------
-    dict
-        Complete Level 3+4+6 results with properly coupled surface kinetics
-    """
-    from calculations.interface_solver import calculate_oxide_defective_metal_system_with_surface
-    from calculations.classify_regime import classify_regime_level56
+#     Returns
+#     -------
+#     dict
+#         Complete Level 3+4+6 results with properly coupled surface kinetics
+#     """
+#     from calculations.interface_solver import calculate_oxide_defective_metal_system_with_surface
+#     from calculations.classify_regime import classify_regime_level56
     
-    # Extract area fractions
-    f_defect = defect_params.get('area_fraction', 0.01)
-    f_intact = 1.0 - f_defect
+#     # Extract area fractions
+#     f_defect = defect_params.get('area_fraction', 0.01)
+#     f_intact = 1.0 - f_defect
     
-    if not 0 <= f_defect <= 1:
-        raise ValueError(f"Defect area fraction must be 0-1, got {f_defect}")
+#     if not 0 <= f_defect <= 1:
+#         raise ValueError(f"Defect area fraction must be 0-1, got {f_defect}")
     
-    # Path 1: Through intact oxide + defective metal + surface kinetics (L5+L6 COUPLED)
-    intact_result = calculate_oxide_defective_metal_system_with_surface(
-        P_upstream=P_upstream,
-        P_downstream=P_downstream,
-        oxide_props=oxide_props,
-        metal_props=metal_props,
-        temperature=temperature,
-        microstructure_params=microstructure_params,
-        k_diss=k_diss,
-        k_recomb=k_recomb,
-        material_name=material_name,
-        lattice_density=lattice_density,
-        method=method,
-        n_points=n_points,
-        mode=mode,
-        coverage_mode=coverage_mode,
-        forced_coverage=forced_coverage
-    )
-    j_intact = intact_result['flux']
+#     # Path 1: Through intact oxide + defective metal + surface kinetics (L5+L6 COUPLED)
+#     intact_result = calculate_oxide_defective_metal_system_with_surface(
+#         P_upstream=P_upstream,
+#         P_downstream=P_downstream,
+#         oxide_props=oxide_props,
+#         metal_props=metal_props,
+#         temperature=temperature,
+#         microstructure_params=microstructure_params,
+#         k_diss=k_diss,
+#         k_recomb=k_recomb,
+#         material_name=material_name,
+#         lattice_density=lattice_density,
+#         method=method,
+#         n_points=n_points,
+#         mode=mode,
+#         coverage_mode=coverage_mode,
+#         forced_coverage=forced_coverage
+#     )
+#     j_intact = intact_result['flux']
     
-    # Path 2: Through defects + defective metal + surface kinetics (L4+L6 or L5+L6 COUPLED)
-    defect_result = calculate_defect_path_flux_defective_metal_with_surface(
-        P_upstream=P_upstream,
-        P_downstream=P_downstream,
-        oxide_props=oxide_props,
-        metal_props=metal_props,
-        defect_props=defect_params,
-        temperature=temperature,
-        microstructure_params=microstructure_params,
-        k_diss=k_diss,
-        k_recomb=k_recomb,
-        material_name=material_name,
-        lattice_density=lattice_density,
-        method=method,
-        n_points=n_points,
-        mode=mode,
-        coverage_mode=coverage_mode,
-        forced_coverage=forced_coverage
-    )
-    j_defect = defect_result['flux']
+#     # Path 2: Through defects + defective metal + surface kinetics (L4+L6 or L5+L6 COUPLED)
+#     defect_result = calculate_defect_path_flux_defective_metal_with_surface(
+#         P_upstream=P_upstream,
+#         P_downstream=P_downstream,
+#         oxide_props=oxide_props,
+#         metal_props=metal_props,
+#         defect_props=defect_params,
+#         temperature=temperature,
+#         microstructure_params=microstructure_params,
+#         k_diss=k_diss,
+#         k_recomb=k_recomb,
+#         material_name=material_name,
+#         lattice_density=lattice_density,
+#         method=method,
+#         n_points=n_points,
+#         mode=mode,
+#         coverage_mode=coverage_mode,
+#         forced_coverage=forced_coverage
+#     )
+#     j_defect = defect_result['flux']
     
-    # Calculate contributions (area-weighted)
-    flux_intact_contribution = j_intact * f_intact
-    flux_defect_contribution = j_defect * f_defect
+#     # Calculate contributions (area-weighted)
+#     flux_intact_contribution = j_intact * f_intact
+#     flux_defect_contribution = j_defect * f_defect
     
-    # Total flux
-    flux_total = flux_intact_contribution + flux_defect_contribution
+#     # Total flux
+#     flux_total = flux_intact_contribution + flux_defect_contribution
     
-    # Determine dominant path
-    if flux_defect_contribution > flux_intact_contribution:
-        dominant = 'defects'
-    else:
-        dominant = 'intact_oxide'
+#     # Determine dominant path
+#     if flux_defect_contribution > flux_intact_contribution:
+#         dominant = 'defects'
+#     else:
+#         dominant = 'intact_oxide'
     
-    # Enhancement factor vs perfect oxide with defective metal and surface kinetics
-    enhancement = flux_total / j_intact if j_intact > 0 else float('inf')
+#     # Enhancement factor vs perfect oxide with defective metal and surface kinetics
+#     enhancement = flux_total / j_intact if j_intact > 0 else float('inf')
     
-    # Surface kinetics from each path
-    theta_intact = intact_result.get('theta', 0)
-    theta_defect = defect_result.get('theta', 0)
+#     # Surface kinetics from each path
+#     theta_intact = intact_result.get('theta', 0)
+#     theta_defect = defect_result.get('theta', 0)
     
-    Da_intact = intact_result.get('Da', float('inf'))
-    Da_defect = defect_result.get('Da', float('inf'))
+#     Da_intact = intact_result.get('Da', float('inf'))
+#     Da_defect = defect_result.get('Da', float('inf'))
     
-    SRF_intact = intact_result.get('SRF', 1.0)
-    SRF_defect = defect_result.get('SRF', 1.0)
+#     SRF_intact = intact_result.get('SRF', 1.0)
+#     SRF_defect = defect_result.get('SRF', 1.0)
     
-    # Effective values (flux-weighted average)
-    if flux_total > 0:
-        theta_eff = (theta_intact * flux_intact_contribution + 
-                     theta_defect * flux_defect_contribution) / flux_total
-        SRF_eff = (SRF_intact * flux_intact_contribution + 
-                   SRF_defect * flux_defect_contribution) / flux_total
-    else:
-        theta_eff = theta_intact
-        SRF_eff = SRF_intact
+#     # Effective values (flux-weighted average)
+#     if flux_total > 0:
+#         theta_eff = (theta_intact * flux_intact_contribution + 
+#                      theta_defect * flux_defect_contribution) / flux_total
+#         SRF_eff = (SRF_intact * flux_intact_contribution + 
+#                    SRF_defect * flux_defect_contribution) / flux_total
+#     else:
+#         theta_eff = theta_intact
+#         SRF_eff = SRF_intact
     
-    # Use minimum Da (most surface-limited path)
-    Da_eff = min(Da_intact, Da_defect)
+#     # Use minimum Da (most surface-limited path)
+#     Da_eff = min(Da_intact, Da_defect)
     
-    # Level 4 outputs
-    D_eff_intact = intact_result.get('D_eff', metal_props['D_metal'])
-    D_eff_defect = defect_result.get('D_eff', metal_props['D_metal'])
-    modification_factor_intact = intact_result.get('modification_factor', 1.0)
-    modification_factor_defect = defect_result.get('modification_factor', 1.0)
+#     # Level 4 outputs
+#     D_eff_intact = intact_result.get('D_eff', metal_props['D_metal'])
+#     D_eff_defect = defect_result.get('D_eff', metal_props['D_metal'])
+#     modification_factor_intact = intact_result.get('modification_factor', 1.0)
+#     modification_factor_defect = defect_result.get('modification_factor', 1.0)
     
-    # Base regime from intact path
-    base_regime = intact_result.get('regime', 'transition')
+#     # Base regime from intact path
+#     base_regime = intact_result.get('regime', 'transition')
     
-    # Full regime classification
-    regime_class = classify_regime_level56(
-        base_regime=base_regime,
-        Da=Da_eff, theta=theta_eff, SRF=SRF_eff,
-        modification_factor=modification_factor_intact,
-        flux_intact_contribution=flux_intact_contribution,
-        flux_defect_contribution=flux_defect_contribution
-    )
+#     # Full regime classification
+#     regime_class = classify_regime_level56(
+#         base_regime=base_regime,
+#         Da=Da_eff, theta=theta_eff, SRF=SRF_eff,
+#         modification_factor=modification_factor_intact,
+#         flux_intact_contribution=flux_intact_contribution,
+#         flux_defect_contribution=flux_defect_contribution
+#     )
     
-    return {
-        # Primary outputs
-        'flux_total': flux_total,
-        'flux_intact_contribution': flux_intact_contribution,
-        'flux_defect_contribution': flux_defect_contribution,
-        'flux_intact_per_area': j_intact,
-        'flux_defect_per_area': j_defect,
+#     return {
+#         # Primary outputs
+#         'flux_total': flux_total,
+#         'flux_intact_contribution': flux_intact_contribution,
+#         'flux_defect_contribution': flux_defect_contribution,
+#         'flux_intact_per_area': j_intact,
+#         'flux_defect_per_area': j_defect,
         
-        # Path analysis
-        'dominant_path': dominant,
-        'defect_enhancement_factor': enhancement,
-        'area_fraction_defect': f_defect,
+#         # Path analysis
+#         'dominant_path': dominant,
+#         'defect_enhancement_factor': enhancement,
+#         'area_fraction_defect': f_defect,
         
-        # Surface kinetics - intact path (L5+L6)
-        'theta_intact': theta_intact,
-        'Da_intact': Da_intact,
-        'SRF_intact': SRF_intact,
+#         # Surface kinetics - intact path (L5+L6)
+#         'theta_intact': theta_intact,
+#         'Da_intact': Da_intact,
+#         'SRF_intact': SRF_intact,
         
-        # Surface kinetics - defect path (L4+L6 or L5+L6)
-        'theta_defect': theta_defect,
-        'Da_defect': Da_defect,
-        'SRF_defect': SRF_defect,
+#         # Surface kinetics - defect path (L4+L6 or L5+L6)
+#         'theta_defect': theta_defect,
+#         'Da_defect': Da_defect,
+#         'SRF_defect': SRF_defect,
         
-        # Effective (flux-weighted) surface parameters
-        'theta': theta_eff,
-        'Da': Da_eff,
-        'SRF': SRF_eff,
+#         # Effective (flux-weighted) surface parameters
+#         'theta': theta_eff,
+#         'Da': Da_eff,
+#         'SRF': SRF_eff,
         
-        # Level 4 outputs
-        'D_eff_intact': D_eff_intact,
-        'D_eff_defect': D_eff_defect,
-        'D_eff': D_eff_intact,  # Primary D_eff from intact path
-        'modification_factor': modification_factor_intact,
+#         # Level 4 outputs
+#         'D_eff_intact': D_eff_intact,
+#         'D_eff_defect': D_eff_defect,
+#         'D_eff': D_eff_intact,  # Primary D_eff from intact path
+#         'modification_factor': modification_factor_intact,
         
-        # Interface info
-        'P_interface_intact': intact_result.get('P_interface'),
-        'P_interface_defect': defect_result.get('P_interface'),
+#         # Interface info
+#         'P_interface_intact': intact_result.get('P_interface'),
+#         'P_interface_defect': defect_result.get('P_interface'),
         
-        # Regime classification
-        'regime_classification': regime_class,
-        'regime': regime_class['regime_hierarchy'],
-        'regime_base': base_regime,
-        'surface_significant': regime_class['surface_significant'],
-        'dominant_limitation': regime_class['dominant_limitation'],
+#         # Regime classification
+#         'regime_classification': regime_class,
+#         'regime': regime_class['regime_hierarchy'],
+#         'regime_base': base_regime,
+#         'surface_significant': regime_class['surface_significant'],
+#         'dominant_limitation': regime_class['dominant_limitation'],
         
-        # Microstructure details
-        'microstructure_details': intact_result.get('microstructure_details', {}),
+#         # Microstructure details
+#         'microstructure_details': intact_result.get('microstructure_details', {}),
         
-        # Coverage mode
-        'coverage_mode': coverage_mode,
-        'temperature': temperature,
+#         # Coverage mode
+#         'coverage_mode': coverage_mode,
+#         'temperature': temperature,
         
-        'units': {
-            'flux': 'mol/m²/s',
-            'diffusivity': 'm²/s'
-        }
-    }
+#         'units': {
+#             'flux': 'mol/m²/s',
+#             'diffusivity': 'm²/s'
+#         }
+#     }
