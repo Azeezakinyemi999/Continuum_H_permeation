@@ -123,7 +123,7 @@
 #     # Pressure
 #     'P_upstream': 1e4,               # Pa (10 kPa)
 #     'P_downstream': 0,               # Pa
-#     'P_range': (1e3, 1e5),           # Pa - Sweep range
+#     'P_range': (1e-7, 1e26),           # Pa - Sweep range
 #     'n_P_points': 30,
     
 #     # Geometry
@@ -306,6 +306,25 @@
 #         'P_fixed_oxide_sweep': 1e6,                      # Pa (1 MPa)
 #         'delta_ox_sweep': np.logspace(-4, -12, 40),      # m (100 μm to 1 pm)
 #     },
+#     # -------------------------------------------------------------------------
+#     # LEVEL 3: Defective Oxide + Perfect Metal Validation
+#     # -------------------------------------------------------------------------
+#     'L3': {
+#         # Fixed pressure for defect analysis
+#         'P_fixed': 1e6,                                  # Pa (1 MPa)
+#         'P_down': 0,                                     # Pa (vacuum)
+        
+#         # Defect fraction comparisons (Panel A)
+#         'defect_fractions_compare': [0.0, 0.001, 0.01, 0.1],  # 0%, 0.1%, 1%, 10%
+        
+#         # Defect fraction sweep (Panel B, C)
+#         'f_defect_min': 1e-5,                           # 0.001% minimum
+#         'f_defect_max': 0.5,                            # 50% maximum (~10^-0.3)
+#         'n_defect_points': 40,                          # number of points in sweep
+        
+#         # Limit check (Panel D)
+#         'f_defect_limit_check': 1e-10,                  # Tiny defect fraction for validation
+#     },
     
 #     # -------------------------------------------------------------------------
 #     # LEVEL 4: Defective Metal Validation
@@ -416,8 +435,8 @@ OXIDES = {
     'Cr2O3': {
         # Reference conditions
         'T_ref': 625,                # K (351.85°C) - same as metal for consistency
-        'D_ox_ref': 1.000e-16,       # m²/s at T_ref
-        'K_ox_ref': 1.070e-02,       # mol/m³/Pa at T_ref (Henry's law)
+        'D_ox_ref': 1.000e-18,       # m²/s at T_ref
+        'K_ox_ref': 1.070e-07,       # mol/m³/Pa at T_ref (Henry's law)
         
         # Activation energies (from literature)
         'E_D_ox': 1.55e5,            # J/mol (155 kJ/mol - diffusion)
@@ -678,6 +697,26 @@ VALIDATION = {
         # Oxide thickness sweep (limit check)
         'P_fixed_oxide_sweep': 1e3,                      # Pa (1 MPa)
         'delta_ox_sweep': np.logspace(-4, -12, 40),      # m (100 μm to 1 pm)
+    },
+
+    # -------------------------------------------------------------------------
+    # LEVEL 3: Defective Oxide + Perfect Metal Validation
+    # -------------------------------------------------------------------------
+    'L3': {
+        # Fixed pressure for defect analysis
+        'P_fixed': 1e3,                                  # Pa (1 kPa)
+        'P_down': 0,                                     # Pa (vacuum)
+        
+        # Defect fraction comparisons (Panel A)
+        'defect_fractions_compare': [0.0, 0.001, 0.01, 0.1],  # 0%, 0.1%, 1%, 10%
+        
+        # Defect fraction sweep (Panel B, C)
+        'f_defect_min': 1e-5,                           # 0.001% minimum
+        'f_defect_max': 0.5,                            # 50% maximum (~10^-0.3)
+        'n_defect_points': 40,                          # number of points in sweep
+        
+        # Limit check (Panel D)
+        'f_defect_limit_check': 1e-100,                  # Tiny defect fraction for validation
     },
     
     # -------------------------------------------------------------------------
