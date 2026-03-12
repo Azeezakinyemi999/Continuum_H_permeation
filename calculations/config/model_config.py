@@ -515,7 +515,7 @@ CONDITIONS = {
     # Pressure
     'P_upstream': 1e4,               # Pa (10 kPa)
     'P_downstream': 0,               # Pa
-    'P_range': (1e3, 1e5),           # Pa - Sweep range
+    'P_range': (1e-8, 1e8),           # Pa - Sweep range
     'n_P_points': 100,
     
     # Geometry
