@@ -783,53 +783,1066 @@ MATERIALSsss = {
     },
 
     #### Grant et al 1988: HYDROGEN IN 316 STEEL - DIFFUSION, PERMEATION AND SURFACE REACTION DOI:
-    '316_steel': {
-        'Diffusion parameters':{
-            'T_ref': 965 # K
-            'D_ref': 1.069e-9          # m²/s at Tref
-            'E_D': 53292.74              # J/mol (diffusion activation energy)
-            'D_o':8.2e-7             # m²/s pre-exponential factor for diffusion
-        },
-        'Solubility parameters':{
-            'K_s_ref': 0.1295,        # mol/m³/Pa^0.5 at Tref
-            'K_s0': 1.19,        # mol/m³/Pa^0.5
-            'H_s': 17791.96,       # J/mol (heat of solution)
-        },
-        'Permeation parameters':{
-            'Phi_ref': 1.384e-10, # mol/m/s/Pa^0.5 at Tref 
-            'Activation energy of permeation': 68756.78 #J/mol
-            'Phi_0': 8.9e-7 # mol/m/s/Pa^0.5 pre-exponential factor for permeation
-        },
-        'surface parameters':{
-            'Clean surface':{
-                'k1_ref': 1.346e-06, #  mol/s/m^-2/Pa^-1 at Tref
-                'E_k1':  81560.34, # J/mol activation energy for surface reaction
-                'k1_0': 3.5e-2 #  at Tref
-
-            },
-            'Surface subjected to partial ion beamed cleaning':{
-                'k1_ref': 6.726e-08, #  mol/s/m^-2/Pa^-1 at Tref
-                'E_k1':  61856.16, # J/mol activation energy for surface reaction
-                'k1_0': 1.5e-4 #  at Tref
-            },
-            'Foil oxidized on both surface':{
-                'k1_ref': 9.2e-08, #  mol/s/m^-2/Pa^-1 at Tref
-                'E_k1':  59860.8, # J/mol activation energy for surface reaction
-                'k1_0': 1.6e-4 #  at Tref
-            },
+'metal_1.4841': {
+    'Diffusion parameters': {
+        'T_ref': 1223,        # K
+        'D_ref': 1.046e-09,   # m²/s at T_ref
+        'E_D':   35400,   # J/mol (diffusion activation energy)
+        'D_0':   3.400e-08,   # m²/s (pre-exponential factor)
     },
-    'Other common parameters':{
-        'pressure': [],  # Pa
-        'reference': 'Grant et al 1988: HYDROGEN IN 316 STEEL - DIFFUSION, PERMEATION AND SURFACE REACTION DOI: 10.1016/0022-3115(88)90128-7',
-        'temp_range': [502, 965], # K validity range
-        'pressure_range': [1e-2, 1e4],  # Pa
-        '_thickness_range':[5e-5,1e-4] # m
-        '''
-        'Note': 'This result is for Hydrogen by Grant et al 1988: HYDROGEN IN 316 STEEL - DIFFUSION, PERMEATION AND SURFACE REACTION DOI: 10.1016/0022-3115(88)90128-7'
-        All these results have an uncertainty attached to it but I added the highest bound of the assigned uncertainty e.g  for E_D, the uncertainty is 9(-0.11 to +0.11), 
-        so, i added the +0.11 to the literature value 
+    'Solubility parameters': {
+        'Ks_ref': 9.010e-02,   # mol/m³/Pa^0.5 at T_ref
+        'K_s0':   7.465e-01,   # mol/m³/Pa^0.5 (pre-exponential factor)
+        'H_s':    21500,   # J/mol (heat of solution)
+    },
+    'Permeation parameters': {
+        'Phi_ref': 9.423e-11,   # mol/m/s/Pa^0.5 at T_ref
+        'Q_p':     56900,   # J/mol (permeation activation energy)
+        'Phi_0':   2.538e-08,   # mol/m/s/Pa^0.5 (pre-exponential factor)
+    },
+    'Other common parameters': {
+        'pressure': [],              # Pa
+        'reference': 'Schmidt et al. 1985: Studies on the permeation of hydrogen and Tritium through Heat resistant Alloys.',
+        'temp_range': [1023, 1223],   # K validity range
+        'pressure_range': [1e5, 4e6],    # Pa
+        'metal_thickness': [5e-3],        # m
+        'gas': 'T₂',
+        'Note': 'Phi_ref = D_ref * Ks_ref',
+    },
+},
 
-        '''
-    }
-    }
+'metal_1.4876(Incoloy800)': {
+    'Diffusion parameters': {
+        'T_ref': 1223,        # K
+        'D_ref': 3.783e-09,   # m²/s at T_ref
+        'E_D':   56400,   # J/mol (diffusion activation energy)
+        'D_0':   9.700e-07,   # m²/s (pre-exponential factor)
+    },
+    'Solubility parameters': {
+        'Ks_ref': 2.138e-02,   # mol/m³/Pa^0.5 at T_ref
+        'K_s0':   2.180e-02,   # mol/m³/Pa^0.5 (pre-exponential factor)
+        'H_s':    200,   # J/mol (heat of solution)
+    },
+    'Permeation parameters': {
+        'Phi_ref': 8.088e-11,   # mol/m/s/Pa^0.5 at T_ref
+        'Q_p':     56600,   # J/mol (permeation activation energy)
+        'Phi_0':   2.115e-08,   # mol/m/s/Pa^0.5 (pre-exponential factor)
+    },
+    'Other common parameters': {
+        'pressure': [],              # Pa
+        'reference': 'Schmidt et al. 1985: Studies on the permeation of hydrogen and Tritium through Heat resistant Alloys.',
+        'temp_range': [1023, 1223],   # K validity range
+        'pressure_range': [1e5, 4e6],    # Pa
+        'metal_thickness': [5e-3],        # m
+        'gas': 'T₂',
+        'Note': 'Phi_ref = D_ref * Ks_ref',
+    },
+},
+
+'metal_X2_NiCr_30_25': {
+    'Diffusion parameters': {
+        'T_ref': 1223,        # K
+        'D_ref': 3.333e-09,   # m²/s at T_ref
+        'E_D':   69500,   # J/mol (diffusion activation energy)
+        'D_0':   3.100e-06,   # m²/s (pre-exponential factor)
+    },
+    'Solubility parameters': {
+        'Ks_ref': 6.505e-02,   # mol/m³/Pa^0.5 at T_ref
+        'K_s0':   1.774e-01,   # mol/m³/Pa^0.5 (pre-exponential factor)
+        'H_s':    10200,   # J/mol (heat of solution)
+    },
+    'Permeation parameters': {
+        'Phi_ref': 2.168e-10,   # mol/m/s/Pa^0.5 at T_ref
+        'Q_p':     79700,   # J/mol (permeation activation energy)
+        'Phi_0':   5.499e-07,   # mol/m/s/Pa^0.5 (pre-exponential factor)
+    },
+    'Other common parameters': {
+        'pressure': [],              # Pa
+        'reference': 'Schmidt et al. 1985: Studies on the permeation of hydrogen and Tritium through Heat resistant Alloys.',
+        'temp_range': [1023, 1223],   # K validity range
+        'pressure_range': [1e5, 4e6],    # Pa
+        'metal_thickness': [5e-3],        # m
+        'gas': 'T₂',
+        'Note': 'Phi_ref = D_ref * Ks_ref',
+    },
+},
+
+'metal_X2_NiCrSi_30_25': {
+    'Diffusion parameters': {
+        'T_ref': 1223,        # K
+        'D_ref': 4.067e-09,   # m²/s at T_ref
+        'E_D':   102900,   # J/mol (diffusion activation energy)
+        'D_0':   1.010e-04,   # m²/s (pre-exponential factor)
+    },
+    'Solubility parameters': {
+        'Ks_ref': 1.843e-01,   # mol/m³/Pa^0.5 at T_ref
+        'K_s0':   1.569e+02,   # mol/m³/Pa^0.5 (pre-exponential factor)
+        'H_s':    68600,   # J/mol (heat of solution)
+    },
+    'Permeation parameters': {
+        'Phi_ref': 7.497e-10,   # mol/m/s/Pa^0.5 at T_ref
+        'Q_p':     171500,   # J/mol (permeation activation energy)
+        'Phi_0':   1.585e-02,   # mol/m/s/Pa^0.5 (pre-exponential factor)
+    },
+    'Other common parameters': {
+        'pressure': [],              # Pa
+        'reference': 'Schmidt et al. 1985: Studies on the permeation of hydrogen and Tritium through Heat resistant Alloys.',
+        'temp_range': [1023, 1223],   # K validity range
+        'pressure_range': [1e5, 4e6],    # Pa
+        'metal_thickness': [5e-3],        # m
+        'gas': 'T₂',
+        'Note': 'Phi_ref = D_ref * Ks_ref',
+    },
+},
+
+'metal_X2_NiCrTi_30_25': {
+    'Diffusion parameters': {
+        'T_ref': 1223,        # K
+        'D_ref': 3.056e-09,   # m²/s at T_ref
+        'E_D':   62300,   # J/mol (diffusion activation energy)
+        'D_0':   1.400e-06,   # m²/s (pre-exponential factor)
+    },
+    'Solubility parameters': {
+        'Ks_ref': 8.059e-03,   # mol/m³/Pa^0.5 at T_ref
+        'K_s0':   1.410e-01,   # mol/m³/Pa^0.5 (pre-exponential factor)
+        'H_s':    29100,   # J/mol (heat of solution)
+    },
+    'Permeation parameters': {
+        'Phi_ref': 2.463e-11,   # mol/m/s/Pa^0.5 at T_ref
+        'Q_p':     91400,   # J/mol (permeation activation energy)
+        'Phi_0':   1.974e-07,   # mol/m/s/Pa^0.5 (pre-exponential factor)
+    },
+    'Other common parameters': {
+        'pressure': [],              # Pa
+        'reference': 'Schmidt et al. 1985: Studies on the permeation of hydrogen and Tritium through Heat resistant Alloys.',
+        'temp_range': [1023, 1223],   # K validity range
+        'pressure_range': [1e5, 4e6],    # Pa
+        'metal_thickness': [5e-3],        # m
+        'gas': 'T₂',
+        'Note': 'Phi_ref = D_ref * Ks_ref',
+    },
+},
+
+'metal_X10_NiCrTi_30_25': {
+    'Diffusion parameters': {
+        'T_ref': 1223,        # K
+        'D_ref': 1.152e-09,   # m²/s at T_ref
+        'E_D':   42600,   # J/mol (diffusion activation energy)
+        'D_0':   7.600e-08,   # m²/s (pre-exponential factor)
+    },
+    'Solubility parameters': {
+        'Ks_ref': 7.315e-02,   # mol/m³/Pa^0.5 at T_ref
+        'K_s0':   6.679e+00,   # mol/m³/Pa^0.5 (pre-exponential factor)
+        'H_s':    45900,   # J/mol (heat of solution)
+    },
+    'Permeation parameters': {
+        'Phi_ref': 8.424e-11,   # mol/m/s/Pa^0.5 at T_ref
+        'Q_p':     88500,   # J/mol (permeation activation energy)
+        'Phi_0':   5.076e-07,   # mol/m/s/Pa^0.5 (pre-exponential factor)
+    },
+    'Other common parameters': {
+        'pressure': [],              # Pa
+        'reference': 'Schmidt et al. 1985: Studies on the permeation of hydrogen and Tritium through Heat resistant Alloys.',
+        'temp_range': [1023, 1223],   # K validity range
+        'pressure_range': [1e5, 4e6],    # Pa
+        'metal_thickness': [5e-3],        # m
+        'gas': 'T₂',
+        'Note': 'Phi_ref = D_ref * Ks_ref',
+    },
+},
+
+'metal_X40_NiCrTi_30_25': {
+    'Diffusion parameters': {
+        'T_ref': 1223,        # K
+        'D_ref': 6.909e-10,   # m²/s at T_ref
+        'E_D':   23400,   # J/mol (diffusion activation energy)
+        'D_0':   6.900e-09,   # m²/s (pre-exponential factor)
+    },
+    'Solubility parameters': {
+        'Ks_ref': 9.948e-02,   # mol/m³/Pa^0.5 at T_ref
+        'K_s0':   2.657e+00,   # mol/m³/Pa^0.5 (pre-exponential factor)
+        'H_s':    33400,   # J/mol (heat of solution)
+    },
+    'Permeation parameters': {
+        'Phi_ref': 6.873e-11,   # mol/m/s/Pa^0.5 at T_ref
+        'Q_p':     56800,   # J/mol (permeation activation energy)
+        'Phi_0':   1.833e-08,   # mol/m/s/Pa^0.5 (pre-exponential factor)
+    },
+    'Other common parameters': {
+        'pressure': [],              # Pa
+        'reference': 'Schmidt et al. 1985: Studies on the permeation of hydrogen and Tritium through Heat resistant Alloys.',
+        'temp_range': [1023, 1223],   # K validity range
+        'pressure_range': [1e5, 4e6],    # Pa
+        'metal_thickness': [5e-3],        # m
+        'gas': 'T₂',
+        'Note': 'Phi_ref = D_ref * Ks_ref',
+    },
+},
+
+'metal_X10_NiCr_30_20': {
+    'Diffusion parameters': {
+        'T_ref': 1223,        # K
+        'D_ref': 2.117e-09,   # m²/s at T_ref
+        'E_D':   48100,   # J/mol (diffusion activation energy)
+        'D_0':   2.400e-07,   # m²/s (pre-exponential factor)
+    },
+    'Solubility parameters': {
+        'Ks_ref': 7.104e-02,   # mol/m³/Pa^0.5 at T_ref
+        'K_s0':   3.525e+00,   # mol/m³/Pa^0.5 (pre-exponential factor)
+        'H_s':    39700,   # J/mol (heat of solution)
+    },
+    'Permeation parameters': {
+        'Phi_ref': 1.504e-10,   # mol/m/s/Pa^0.5 at T_ref
+        'Q_p':     87800,   # J/mol (permeation activation energy)
+        'Phi_0':   8.460e-07,   # mol/m/s/Pa^0.5 (pre-exponential factor)
+    },
+    'Other common parameters': {
+        'pressure': [],              # Pa
+        'reference': 'Schmidt et al. 1985: Studies on the permeation of hydrogen and Tritium through Heat resistant Alloys.',
+        'temp_range': [1023, 1223],   # K validity range
+        'pressure_range': [1e5, 4e6],    # Pa
+        'metal_thickness': [5e-3],        # m
+        'gas': 'T₂',
+        'Note': 'Phi_ref = D_ref * Ks_ref',
+    },
+},
+
+'metal_X10_NiCr_30_22': {
+    'Diffusion parameters': {
+        'T_ref': 1223,        # K
+        'D_ref': 1.764e-09,   # m²/s at T_ref
+        'E_D':   48600,   # J/mol (diffusion activation energy)
+        'D_0':   2.100e-07,   # m²/s (pre-exponential factor)
+    },
+    'Solubility parameters': {
+        'Ks_ref': 6.537e-02,   # mol/m³/Pa^0.5 at T_ref
+        'K_s0':   5.304e+00,   # mol/m³/Pa^0.5 (pre-exponential factor)
+        'H_s':    44700,   # J/mol (heat of solution)
+    },
+    'Permeation parameters': {
+        'Phi_ref': 1.153e-10,   # mol/m/s/Pa^0.5 at T_ref
+        'Q_p':     93300,   # J/mol (permeation activation energy)
+        'Phi_0':   1.114e-06,   # mol/m/s/Pa^0.5 (pre-exponential factor)
+    },
+    'Other common parameters': {
+        'pressure': [],              # Pa
+        'reference': 'Schmidt et al. 1985: Studies on the permeation of hydrogen and Tritium through Heat resistant Alloys.',
+        'temp_range': [1023, 1223],   # K validity range
+        'pressure_range': [1e5, 4e6],    # Pa
+        'metal_thickness': [5e-3],        # m
+        'gas': 'T₂',
+        'Note': 'Phi_ref = D_ref * Ks_ref',
+    },
+},
+
+'metal_X10_NiCr_30_26': {
+    'Diffusion parameters': {
+        'T_ref': 1223,        # K
+        'D_ref': 2.555e-09,   # m²/s at T_ref
+        'E_D':   112800,   # J/mol (diffusion activation energy)
+        'D_0':   1.680e-04,   # m²/s (pre-exponential factor)
+    },
+    'Solubility parameters': {
+        'Ks_ref': 1.502e-01,   # mol/m³/Pa^0.5 at T_ref
+        'K_s0':   7.008e+02,   # mol/m³/Pa^0.5 (pre-exponential factor)
+        'H_s':    85900,   # J/mol (heat of solution)
+    },
+    'Permeation parameters': {
+        'Phi_ref': 3.838e-10,   # mol/m/s/Pa^0.5 at T_ref
+        'Q_p':     198700,   # J/mol (permeation activation energy)
+        'Phi_0':   1.177e-01,   # mol/m/s/Pa^0.5 (pre-exponential factor)
+    },
+    'Other common parameters': {
+        'pressure': [],              # Pa
+        'reference': 'Schmidt et al. 1985: Studies on the permeation of hydrogen and Tritium through Heat resistant Alloys.',
+        'temp_range': [1023, 1223],   # K validity range
+        'pressure_range': [1e5, 4e6],    # Pa
+        'metal_thickness': [5e-3],        # m
+        'gas': 'T₂',
+        'Note': 'Phi_ref = D_ref * Ks_ref',
+    },
+},
+
+'metal_X10_NiCrAlTi_32_12(Incoloy800H)': {
+    'Diffusion parameters': {
+        'T_ref': 1223,        # K
+        'D_ref': None,   # m²/s at T_ref
+        'E_D':   None,   # J/mol (diffusion activation energy)
+        'D_0':   None,   # m²/s (pre-exponential factor)
+    },
+    'Solubility parameters': {
+        'Ks_ref': None,   # mol/m³/Pa^0.5 at T_ref
+        'K_s0':   None,   # mol/m³/Pa^0.5 (pre-exponential factor)
+        'H_s':    None,   # J/mol (heat of solution)
+    },
+    'Permeation parameters': {
+        'Phi_ref': 8.050e-10,   # mol/m/s/Pa^0.5 at T_ref
+        'Q_p':     75200,   # J/mol (permeation activation energy)
+        'Phi_0':   1.311e-06,   # mol/m/s/Pa^0.5 (pre-exponential factor)
+    },
+    'Other common parameters': {
+        'pressure': [],              # Pa
+        'reference': 'Schmidt et al. 1985: Studies on the permeation of hydrogen and Tritium through Heat resistant Alloys.',
+        'temp_range': [1023, 1223],   # K validity range
+        'pressure_range': [1e5, 4e6],    # Pa
+        'metal_thickness': [5e-3],        # m
+        'gas': 'H₂',
+        'Note': 'Phi_ref computed directly from Phi_0 and Qp via Arrhenius (D_0/Ks_0 unavailable)',
+    },
+},
+
+'metal_NiCr_22_CoMoAl(Inconel617)': {
+    'Diffusion parameters': {
+        'T_ref': 1023,        # K
+        'D_ref': None,   # m²/s at T_ref
+        'E_D':   None,   # J/mol (diffusion activation energy)
+        'D_0':   None,   # m²/s (pre-exponential factor)
+    },
+    'Solubility parameters': {
+        'Ks_ref': None,   # mol/m³/Pa^0.5 at T_ref
+        'K_s0':   None,   # mol/m³/Pa^0.5 (pre-exponential factor)
+        'H_s':    None,   # J/mol (heat of solution)
+    },
+    'Permeation parameters': {
+        'Phi_ref': 2.349e-10,   # mol/m/s/Pa^0.5 at T_ref
+        'Q_p':     68100,   # J/mol (permeation activation energy)
+        'Phi_0':   7.050e-07,   # mol/m/s/Pa^0.5 (pre-exponential factor)
+    },
+    'Other common parameters': {
+        'pressure': [],              # Pa
+        'reference': 'Schmidt et al. 1985: Studies on the permeation of hydrogen and Tritium through Heat resistant Alloys.',
+        'temp_range': [1223, 1023],   # K validity range
+        'pressure_range': [1e5, 4e6],    # Pa
+        'metal_thickness': [5e-3],        # m
+        'gas': 'H₂',
+        'Note': 'Phi_ref computed directly from Phi_0 and Qp via Arrhenius (D_0/Ks_0 unavailable)',
+    },
+},
+
+'metal_NiCr_22_CoMoAl(Inconel617)': {
+    'Diffusion parameters': {
+        'T_ref': 1173,        # K
+        'D_ref': None,   # m²/s at T_ref
+        'E_D':   None,   # J/mol (diffusion activation energy)
+        'D_0':   None,   # m²/s (pre-exponential factor)
+    },
+    'Solubility parameters': {
+        'Ks_ref': None,   # mol/m³/Pa^0.5 at T_ref
+        'K_s0':   None,   # mol/m³/Pa^0.5 (pre-exponential factor)
+        'H_s':    None,   # J/mol (heat of solution)
+    },
+    'Permeation parameters': {
+        'Phi_ref': 3.973e-10,   # mol/m/s/Pa^0.5 at T_ref
+        'Q_p':     83000,   # J/mol (permeation activation energy)
+        'Phi_0':   1.974e-06,   # mol/m/s/Pa^0.5 (pre-exponential factor)
+    },
+    'Other common parameters': {
+        'pressure': [],              # Pa
+        'reference': 'Schmidt et al. 1985: Studies on the permeation of hydrogen and Tritium through Heat resistant Alloys.',
+        'temp_range': [1023, 1173],   # K validity range
+        'pressure_range': [1e5, 4e6],    # Pa
+        'metal_thickness': [5e-3],        # m
+        'gas': 'H₂',
+        'Note': 'Trapping effects observed; Phi_ref computed directly from Phi_0 and Qp via Arrhenius (D_0/Ks_0 unavailable)',
+    },
+},
+
+'metal_NiCr_22_MoFeNb(Inconel625)': {
+    'Diffusion parameters': {
+        'T_ref': 1173,        # K
+        'D_ref': None,   # m²/s at T_ref
+        'E_D':   None,   # J/mol (diffusion activation energy)
+        'D_0':   None,   # m²/s (pre-exponential factor)
+    },
+    'Solubility parameters': {
+        'Ks_ref': None,   # mol/m³/Pa^0.5 at T_ref
+        'K_s0':   None,   # mol/m³/Pa^0.5 (pre-exponential factor)
+        'H_s':    None,   # J/mol (heat of solution)
+    },
+    'Permeation parameters': {
+        'Phi_ref': 3.183e-10,   # mol/m/s/Pa^0.5 at T_ref
+        'Q_p':     6e+04,   # J/mol (permeation activation energy)
+        'Phi_0':   2.397e-07,   # mol/m/s/Pa^0.5 (pre-exponential factor)
+    },
+    'Other common parameters': {
+        'pressure': [],              # Pa
+        'reference': 'Schmidt et al. 1985: Studies on the permeation of hydrogen and Tritium through Heat resistant Alloys.',
+        'temp_range': [1023, 1173],   # K validity range
+        'pressure_range': [1e5, 4e6],    # Pa
+        'metal_thickness': [5e-3],        # m
+        'gas': 'H₂',
+        'Note': 'Trapping effects observed; Phi_ref computed directly from Phi_0 and Qp via Arrhenius (D_0/Ks_0 unavailable)',
+    },
+},
+
+'metal_X40_NiCrAlTi_31_19(Incoloy802)': {
+    'Diffusion parameters': {
+        'T_ref': 1223,        # K
+        'D_ref': 2.474e-09,   # m²/s at T_ref
+        'E_D':   72200,   # J/mol (diffusion activation energy)
+        'D_0':   3.000e-06,   # m²/s (pre-exponential factor)
+    },
+    'Solubility parameters': {
+        'Ks_ref': 5.093e-02,   # mol/m³/Pa^0.5 at T_ref
+        'K_s0':   1.034e-01,   # mol/m³/Pa^0.5 (pre-exponential factor)
+        'H_s':    7200,   # J/mol (heat of solution)
+    },
+    'Permeation parameters': {
+        'Phi_ref': 1.260e-10,   # mol/m/s/Pa^0.5 at T_ref
+        'Q_p':     79400,   # J/mol (permeation activation energy)
+        'Phi_0':   3.102e-07,   # mol/m/s/Pa^0.5 (pre-exponential factor)
+    },
+    'Other common parameters': {
+        'pressure': [],              # Pa
+        'reference': 'Schmidt et al. 1985: Studies on the permeation of hydrogen and Tritium through Heat resistant Alloys.',
+        'temp_range': [1023, 1223],   # K validity range
+        'pressure_range': [1e5, 4e6],    # Pa
+        'metal_thickness': [5e-3],        # m
+        'gas': 'T₂',
+        'Note': 'Phi_ref = D_ref * Ks_ref',
+    },
+},
+
+'metal_1.4762': {
+    'Diffusion parameters': {
+        'T_ref': 1123,        # K
+        'D_ref': None,   # m²/s at T_ref
+        'E_D':   None,   # J/mol (diffusion activation energy)
+        'D_0':   None,   # m²/s (pre-exponential factor)
+    },
+    'Solubility parameters': {
+        'Ks_ref': None,   # mol/m³/Pa^0.5 at T_ref
+        'K_s0':   None,   # mol/m³/Pa^0.5 (pre-exponential factor)
+        'H_s':    None,   # J/mol (heat of solution)
+    },
+    'Permeation parameters': {
+        'Phi_ref': None,   # mol/m/s/Pa^0.5 at T_ref
+        'Q_p':     None,   # J/mol (permeation activation energy)
+        'Phi_0':   None,   # mol/m/s/Pa^0.5 (pre-exponential factor)
+    },
+    'Other common parameters': {
+        'pressure': [],              # Pa
+        'reference': 'Schmidt et al. 1985: Studies on the permeation of hydrogen and Tritium through Heat resistant Alloys.',
+        'temp_range': [973, 1123],   # K validity range
+        'pressure_range': [1e5, 4e6],    # Pa
+        'metal_thickness': [5e-3],        # m
+        'gas': 'T₂',
+        'Note': 'Phase transformation in temperature range; Phi_ref = D_ref * Ks_ref',
+    },
+},
+
+'metal_1.4763': {
+    'Diffusion parameters': {
+        'T_ref': 1123,        # K
+        'D_ref': None,   # m²/s at T_ref
+        'E_D':   None,   # J/mol (diffusion activation energy)
+        'D_0':   None,   # m²/s (pre-exponential factor)
+    },
+    'Solubility parameters': {
+        'Ks_ref': None,   # mol/m³/Pa^0.5 at T_ref
+        'K_s0':   None,   # mol/m³/Pa^0.5 (pre-exponential factor)
+        'H_s':    None,   # J/mol (heat of solution)
+    },
+    'Permeation parameters': {
+        'Phi_ref': 2.731e-11,   # mol/m/s/Pa^0.5 at T_ref
+        'Q_p':     141300,   # J/mol (permeation activation energy)
+        'Phi_0':   1.021e-04,   # mol/m/s/Pa^0.5 (pre-exponential factor)
+    },
+    'Other common parameters': {
+        'pressure': [],              # Pa
+        'reference': 'Schmidt et al. 1985: Studies on the permeation of hydrogen and Tritium through Heat resistant Alloys.',
+        'temp_range': [973, 1123],   # K validity range
+        'pressure_range': [1e5, 4e6],    # Pa
+        'metal_thickness': [5e-3],        # m
+        'gas': 'T₂',
+        'Note': 'Phase transformation in temperature range; Phi_ref computed directly from Phi_0 and Qp via Arrhenius (D_0/Ks_0 unavailable)',
+    },
+},
+
+'metal_1.4301': {
+    'Diffusion parameters': {
+        'T_ref': 1223,        # K
+        'D_ref': 1.620e-09,   # m²/s at T_ref
+        'E_D':   46700,   # J/mol (diffusion activation energy)
+        'D_0':   1.600e-07,   # m²/s (pre-exponential factor)
+    },
+    'Solubility parameters': {
+        'Ks_ref': 2.091e-01,   # mol/m³/Pa^0.5 at T_ref
+        'K_s0':   2.882e+02,   # mol/m³/Pa^0.5 (pre-exponential factor)
+        'H_s':    73500,   # J/mol (heat of solution)
+    },
+    'Permeation parameters': {
+        'Phi_ref': 3.387e-10,   # mol/m/s/Pa^0.5 at T_ref
+        'Q_p':     120200,   # J/mol (permeation activation energy)
+        'Phi_0':   4.611e-05,   # mol/m/s/Pa^0.5 (pre-exponential factor)
+    },
+    'Other common parameters': {
+        'pressure': [],              # Pa
+        'reference': 'Schmidt et al. 1985: Studies on the permeation of hydrogen and Tritium through Heat resistant Alloys.',
+        'temp_range': [1023, 1223],   # K validity range
+        'pressure_range': [1e5, 4e6],    # Pa
+        'metal_thickness': [5e-3],        # m
+        'gas': 'T₂',
+        'Note': 'Phi_ref = D_ref * Ks_ref',
+    },
+},
+
+'metal_1.4301': {
+    'Diffusion parameters': {
+        'T_ref': 1223,        # K
+        'D_ref': 2.857e-09,   # m²/s at T_ref
+        'E_D':   54200,   # J/mol (diffusion activation energy)
+        'D_0':   5.900e-07,   # m²/s (pre-exponential factor)
+    },
+    'Solubility parameters': {
+        'Ks_ref': 1.061e-01,   # mol/m³/Pa^0.5 at T_ref
+        'K_s0':   4.780e-01,   # mol/m³/Pa^0.5 (pre-exponential factor)
+        'H_s':    15300,   # J/mol (heat of solution)
+    },
+    'Permeation parameters': {
+        'Phi_ref': 3.032e-10,   # mol/m/s/Pa^0.5 at T_ref
+        'Q_p':     69500,   # J/mol (permeation activation energy)
+        'Phi_0':   2.820e-07,   # mol/m/s/Pa^0.5 (pre-exponential factor)
+    },
+    'Other common parameters': {
+        'pressure': [],              # Pa
+        'reference': 'Schmidt et al. 1985: Studies on the permeation of hydrogen and Tritium through Heat resistant Alloys.',
+        'temp_range': [1023, 1223],   # K validity range
+        'pressure_range': [1e5, 4e6],    # Pa
+        'metal_thickness': [5e-3],        # m
+        'gas': 'T₂',
+        'Note': 'Phi_ref = D_ref * Ks_ref',
+    },
+},
+
+'metal_1.4401': {
+    'Diffusion parameters': {
+        'T_ref': 1223,        # K
+        'D_ref': 3.229e-09,   # m²/s at T_ref
+        'E_D':   50200,   # J/mol (diffusion activation energy)
+        'D_0':   4.500e-07,   # m²/s (pre-exponential factor)
+    },
+    'Solubility parameters': {
+        'Ks_ref': 3.966e-02,   # mol/m³/Pa^0.5 at T_ref
+        'K_s0':   5.327e-02,   # mol/m³/Pa^0.5 (pre-exponential factor)
+        'H_s':    3000,   # J/mol (heat of solution)
+    },
+    'Permeation parameters': {
+        'Phi_ref': 1.281e-10,   # mol/m/s/Pa^0.5 at T_ref
+        'Q_p':     53200,   # J/mol (permeation activation energy)
+        'Phi_0':   2.397e-08,   # mol/m/s/Pa^0.5 (pre-exponential factor)
+    },
+    'Other common parameters': {
+        'pressure': [],              # Pa
+        'reference': 'Schmidt et al. 1985: Studies on the permeation of hydrogen and Tritium through Heat resistant Alloys.',
+        'temp_range': [1023, 1223],   # K validity range
+        'pressure_range': [1e5, 4e6],    # Pa
+        'metal_thickness': [5e-3],        # m
+        'gas': 'T₂',
+        'Note': 'Phi_ref = D_ref * Ks_ref',
+    },
+},
+
+'metal_1.4541': {
+    'Diffusion parameters': {
+        'T_ref': 1223,        # K
+        'D_ref': 2.100e-09,   # m²/s at T_ref
+        'E_D':   56800,   # J/mol (diffusion activation energy)
+        'D_0':   5.600e-07,   # m²/s (pre-exponential factor)
+    },
+    'Solubility parameters': {
+        'Ks_ref': 8.383e-02,   # mol/m³/Pa^0.5 at T_ref
+        'K_s0':   1.158e+00,   # mol/m³/Pa^0.5 (pre-exponential factor)
+        'H_s':    26700,   # J/mol (heat of solution)
+    },
+    'Permeation parameters': {
+        'Phi_ref': 1.760e-10,   # mol/m/s/Pa^0.5 at T_ref
+        'Q_p':     83500,   # J/mol (permeation activation energy)
+        'Phi_0':   6.486e-07,   # mol/m/s/Pa^0.5 (pre-exponential factor)
+    },
+    'Other common parameters': {
+        'pressure': [],              # Pa
+        'reference': 'Schmidt et al. 1985: Studies on the permeation of hydrogen and Tritium through Heat resistant Alloys.',
+        'temp_range': [1023, 1223],   # K validity range
+        'pressure_range': [1e5, 4e6],    # Pa
+        'metal_thickness': [5e-3],        # m
+        'gas': 'T₂',
+        'Note': 'Phi_ref = D_ref * Ks_ref',
+    },
+},
+
+'metal_1.4571': {
+    'Diffusion parameters': {
+        'T_ref': 1223,        # K
+        'D_ref': 1.830e-09,   # m²/s at T_ref
+        'E_D':   50000,   # J/mol (diffusion activation energy)
+        'D_0':   2.500e-07,   # m²/s (pre-exponential factor)
+    },
+    'Solubility parameters': {
+        'Ks_ref': 1.027e-01,   # mol/m³/Pa^0.5 at T_ref
+        'K_s0':   9.024e-01,   # mol/m³/Pa^0.5 (pre-exponential factor)
+        'H_s':    22100,   # J/mol (heat of solution)
+    },
+    'Permeation parameters': {
+        'Phi_ref': 1.879e-10,   # mol/m/s/Pa^0.5 at T_ref
+        'Q_p':     72100,   # J/mol (permeation activation energy)
+        'Phi_0':   2.256e-07,   # mol/m/s/Pa^0.5 (pre-exponential factor)
+    },
+    'Other common parameters': {
+        'pressure': [],              # Pa
+        'reference': 'Schmidt et al. 1985: Studies on the permeation of hydrogen and Tritium through Heat resistant Alloys.',
+        'temp_range': [1023, 1223],   # K validity range
+        'pressure_range': [1e5, 4e6],    # Pa
+        'metal_thickness': [5e-3],        # m
+        'gas': 'T₂',
+        'Note': 'Phi_ref = D_ref * Ks_ref',
+    },
+},
+
+'metal_1.4550': {
+    'Diffusion parameters': {
+        'T_ref': 1223,        # K
+        'D_ref': 1.442e-09,   # m²/s at T_ref
+        'E_D':   53200,   # J/mol (diffusion activation energy)
+        'D_0':   2.700e-07,   # m²/s (pre-exponential factor)
+    },
+    'Solubility parameters': {
+        'Ks_ref': 1.024e-01,   # mol/m³/Pa^0.5 at T_ref
+        'K_s0':   3.394e+00,   # mol/m³/Pa^0.5 (pre-exponential factor)
+        'H_s':    35600,   # J/mol (heat of solution)
+    },
+    'Permeation parameters': {
+        'Phi_ref': 1.477e-10,   # mol/m/s/Pa^0.5 at T_ref
+        'Q_p':     88800,   # J/mol (permeation activation energy)
+        'Phi_0':   9.165e-07,   # mol/m/s/Pa^0.5 (pre-exponential factor)
+    },
+    'Other common parameters': {
+        'pressure': [],              # Pa
+        'reference': 'Schmidt et al. 1985: Studies on the permeation of hydrogen and Tritium through Heat resistant Alloys.',
+        'temp_range': [1023, 1223],   # K validity range
+        'pressure_range': [1e5, 4e6],    # Pa
+        'metal_thickness': [5e-3],        # m
+        'gas': 'T₂',
+        'Note': 'Phi_ref = D_ref * Ks_ref',
+    },
+},
+
+'metal_1.4580': {
+    'Diffusion parameters': {
+        'T_ref': 1223,        # K
+        'D_ref': 1.703e-09,   # m²/s at T_ref
+        'E_D':   62300,   # J/mol (diffusion activation energy)
+        'D_0':   7.800e-07,   # m²/s (pre-exponential factor)
+    },
+    'Solubility parameters': {
+        'Ks_ref': 1.036e+00,   # mol/m³/Pa^0.5 at T_ref
+        'K_s0':   1.645e+00,   # mol/m³/Pa^0.5 (pre-exponential factor)
+        'H_s':    4700,   # J/mol (heat of solution)
+    },
+    'Permeation parameters': {
+        'Phi_ref': 1.764e-09,   # mol/m/s/Pa^0.5 at T_ref
+        'Q_p':     67000,   # J/mol (permeation activation energy)
+        'Phi_0':   1.283e-06,   # mol/m/s/Pa^0.5 (pre-exponential factor)
+    },
+    'Other common parameters': {
+        'pressure': [],              # Pa
+        'reference': 'Schmidt et al. 1985: Studies on the permeation of hydrogen and Tritium through Heat resistant Alloys.',
+        'temp_range': [1023, 1223],   # K validity range
+        'pressure_range': [1e5, 4e6],    # Pa
+        'metal_thickness': [5e-3],        # m
+        'gas': 'T₂',
+        'Note': 'Phi_ref = D_ref * Ks_ref',
+    },
+},
+
+'metal_X10_NiCrNbAl_30_25': {
+    'Diffusion parameters': {
+        'T_ref': 1223,        # K
+        'D_ref': None,   # m²/s at T_ref
+        'E_D':   None,   # J/mol (diffusion activation energy)
+        'D_0':   None,   # m²/s (pre-exponential factor)
+    },
+    'Solubility parameters': {
+        'Ks_ref': None,   # mol/m³/Pa^0.5 at T_ref
+        'K_s0':   None,   # mol/m³/Pa^0.5 (pre-exponential factor)
+        'H_s':    None,   # J/mol (heat of solution)
+    },
+    'Permeation parameters': {
+        'Phi_ref': 9.468e-10,   # mol/m/s/Pa^0.5 at T_ref
+        'Q_p':     63900,   # J/mol (permeation activation energy)
+        'Phi_0':   5.076e-07,   # mol/m/s/Pa^0.5 (pre-exponential factor)
+    },
+    'Other common parameters': {
+        'pressure': [],              # Pa
+        'reference': 'Schmidt et al. 1985: Studies on the permeation of hydrogen and Tritium through Heat resistant Alloys.',
+        'temp_range': [1023, 1223],   # K validity range
+        'pressure_range': [1e5, 4e6],    # Pa
+        'metal_thickness': [5e-3],        # m
+        'gas': 'H₂',
+        'Note': 'Phi_ref computed directly from Phi_0 and Qp via Arrhenius (D_0/Ks_0 unavailable)',
+    },
+},
+
+'metal_X10_NiCrNbAlTi_30_25': {
+    'Diffusion parameters': {
+        'T_ref': 1223,        # K
+        'D_ref': None,   # m²/s at T_ref
+        'E_D':   None,   # J/mol (diffusion activation energy)
+        'D_0':   None,   # m²/s (pre-exponential factor)
+    },
+    'Solubility parameters': {
+        'Ks_ref': None,   # mol/m³/Pa^0.5 at T_ref
+        'K_s0':   None,   # mol/m³/Pa^0.5 (pre-exponential factor)
+        'H_s':    None,   # J/mol (heat of solution)
+    },
+    'Permeation parameters': {
+        'Phi_ref': 3.156e-10,   # mol/m/s/Pa^0.5 at T_ref
+        'Q_p':     63900,   # J/mol (permeation activation energy)
+        'Phi_0':   1.692e-07,   # mol/m/s/Pa^0.5 (pre-exponential factor)
+    },
+    'Other common parameters': {
+        'pressure': [],              # Pa
+        'reference': 'Schmidt et al. 1985: Studies on the permeation of hydrogen and Tritium through Heat resistant Alloys.',
+        'temp_range': [1023, 1223],   # K validity range
+        'pressure_range': [1e5, 4e6],    # Pa
+        'metal_thickness': [5e-3],        # m
+        'gas': 'H₂',
+        'Note': 'Phi_ref computed directly from Phi_0 and Qp via Arrhenius (D_0/Ks_0 unavailable)',
+    },
+},
+
+'metal_NiCr_22_FeW': {
+    'Diffusion parameters': {
+        'T_ref': 1223,        # K
+        'D_ref': None,   # m²/s at T_ref
+        'E_D':   None,   # J/mol (diffusion activation energy)
+        'D_0':   None,   # m²/s (pre-exponential factor)
+    },
+    'Solubility parameters': {
+        'Ks_ref': None,   # mol/m³/Pa^0.5 at T_ref
+        'K_s0':   None,   # mol/m³/Pa^0.5 (pre-exponential factor)
+        'H_s':    None,   # J/mol (heat of solution)
+    },
+    'Permeation parameters': {
+        'Phi_ref': 3.854e-10,   # mol/m/s/Pa^0.5 at T_ref
+        'Q_p':     46700,   # J/mol (permeation activation energy)
+        'Phi_0':   3.807e-08,   # mol/m/s/Pa^0.5 (pre-exponential factor)
+    },
+    'Other common parameters': {
+        'pressure': [],              # Pa
+        'reference': 'Schmidt et al. 1985: Studies on the permeation of hydrogen and Tritium through Heat resistant Alloys.',
+        'temp_range': [1023, 1223],   # K validity range
+        'pressure_range': [1e5, 4e6],    # Pa
+        'metal_thickness': [5e-3],        # m
+        'gas': 'H₂',
+        'Note': 'Phi_ref computed directly from Phi_0 and Qp via Arrhenius (D_0/Ks_0 unavailable)',
+    },
+},
+
+'metal_X25_NiCrNb_30_27': {
+    'Diffusion parameters': {
+        'T_ref': 1223,        # K
+        'D_ref': None,   # m²/s at T_ref
+        'E_D':   None,   # J/mol (diffusion activation energy)
+        'D_0':   None,   # m²/s (pre-exponential factor)
+    },
+    'Solubility parameters': {
+        'Ks_ref': None,   # mol/m³/Pa^0.5 at T_ref
+        'K_s0':   None,   # mol/m³/Pa^0.5 (pre-exponential factor)
+        'H_s':    None,   # J/mol (heat of solution)
+    },
+    'Permeation parameters': {
+        'Phi_ref': 2.425e-10,   # mol/m/s/Pa^0.5 at T_ref
+        'Q_p':     70700,   # J/mol (permeation activation energy)
+        'Phi_0':   2.538e-07,   # mol/m/s/Pa^0.5 (pre-exponential factor)
+    },
+    'Other common parameters': {
+        'pressure': [],              # Pa
+        'reference': 'Schmidt et al. 1985: Studies on the permeation of hydrogen and Tritium through Heat resistant Alloys.',
+        'temp_range': [1023, 1223],   # K validity range
+        'pressure_range': [1e5, 4e6],    # Pa
+        'metal_thickness': [5e-3],        # m
+        'gas': 'H₂',
+        'Note': 'Phi_ref computed directly from Phi_0 and Qp via Arrhenius (D_0/Ks_0 unavailable)',
+    },
+},
+
+'metal_X25_NiCrNbCe_30_30': {
+    'Diffusion parameters': {
+        'T_ref': 1223,        # K
+        'D_ref': None,   # m²/s at T_ref
+        'E_D':   None,   # J/mol (diffusion activation energy)
+        'D_0':   None,   # m²/s (pre-exponential factor)
+    },
+    'Solubility parameters': {
+        'Ks_ref': None,   # mol/m³/Pa^0.5 at T_ref
+        'K_s0':   None,   # mol/m³/Pa^0.5 (pre-exponential factor)
+        'H_s':    None,   # J/mol (heat of solution)
+    },
+    'Permeation parameters': {
+        'Phi_ref': 7.573e-10,   # mol/m/s/Pa^0.5 at T_ref
+        'Q_p':     135400,   # J/mol (permeation activation energy)
+        'Phi_0':   4.597e-04,   # mol/m/s/Pa^0.5 (pre-exponential factor)
+    },
+    'Other common parameters': {
+        'pressure': [],              # Pa
+        'reference': 'Schmidt et al. 1985: Studies on the permeation of hydrogen and Tritium through Heat resistant Alloys.',
+        'temp_range': [1023, 1223],   # K validity range
+        'pressure_range': [1e5, 4e6],    # Pa
+        'metal_thickness': [5e-3],        # m
+        'gas': 'H₂',
+        'Note': 'Oxidation observed; Phi_ref computed directly from Phi_0 and Qp via Arrhenius (D_0/Ks_0 unavailable)',
+    },
+},
+
+'metal_X25_NiCrCoNb_30_27': {
+    'Diffusion parameters': {
+        'T_ref': 1223,        # K
+        'D_ref': None,   # m²/s at T_ref
+        'E_D':   None,   # J/mol (diffusion activation energy)
+        'D_0':   None,   # m²/s (pre-exponential factor)
+    },
+    'Solubility parameters': {
+        'Ks_ref': None,   # mol/m³/Pa^0.5 at T_ref
+        'K_s0':   None,   # mol/m³/Pa^0.5 (pre-exponential factor)
+        'H_s':    None,   # J/mol (heat of solution)
+    },
+    'Permeation parameters': {
+        'Phi_ref': 1.787e-10,   # mol/m/s/Pa^0.5 at T_ref
+        'Q_p':     78300,   # J/mol (permeation activation energy)
+        'Phi_0':   3.948e-07,   # mol/m/s/Pa^0.5 (pre-exponential factor)
+    },
+    'Other common parameters': {
+        'pressure': [],              # Pa
+        'reference': 'Schmidt et al. 1985: Studies on the permeation of hydrogen and Tritium through Heat resistant Alloys.',
+        'temp_range': [1023, 1223],   # K validity range
+        'pressure_range': [1e5, 4e6],    # Pa
+        'metal_thickness': [5e-3],        # m
+        'gas': 'H₂',
+        'Note': 'Phi_ref computed directly from Phi_0 and Qp via Arrhenius (D_0/Ks_0 unavailable)',
+    },
+},
+
+'metal_X25_NiCrSiNbCe_35_27': {
+    'Diffusion parameters': {
+        'T_ref': 1223,        # K
+        'D_ref': None,   # m²/s at T_ref
+        'E_D':   None,   # J/mol (diffusion activation energy)
+        'D_0':   None,   # m²/s (pre-exponential factor)
+    },
+    'Solubility parameters': {
+        'Ks_ref': None,   # mol/m³/Pa^0.5 at T_ref
+        'K_s0':   None,   # mol/m³/Pa^0.5 (pre-exponential factor)
+        'H_s':    None,   # J/mol (heat of solution)
+    },
+    'Permeation parameters': {
+        'Phi_ref': 6.278e-10,   # mol/m/s/Pa^0.5 at T_ref
+        'Q_p':     62100,   # J/mol (permeation activation energy)
+        'Phi_0':   2.820e-07,   # mol/m/s/Pa^0.5 (pre-exponential factor)
+    },
+    'Other common parameters': {
+        'pressure': [],              # Pa
+        'reference': 'Schmidt et al. 1985: Studies on the permeation of hydrogen and Tritium through Heat resistant Alloys.',
+        'temp_range': [1023, 1223],   # K validity range
+        'pressure_range': [1e5, 4e6],    # Pa
+        'metal_thickness': [5e-3],        # m
+        'gas': 'H₂',
+        'Note': 'Phi_ref computed directly from Phi_0 and Qp via Arrhenius (D_0/Ks_0 unavailable)',
+    },
+},
+
+'metal_Nimonic_PE_13': {
+    'Diffusion parameters': {
+        'T_ref': 1223,        # K
+        'D_ref': 1.908e-09,   # m²/s at T_ref
+        'E_D':   33800,   # J/mol (diffusion activation energy)
+        'D_0':   5.300e-08,   # m²/s (pre-exponential factor)
+    },
+    'Solubility parameters': {
+        'Ks_ref': 6.469e-02,   # mol/m³/Pa^0.5 at T_ref
+        'K_s0':   3.991e-01,   # mol/m³/Pa^0.5 (pre-exponential factor)
+        'H_s':    18500,   # J/mol (heat of solution)
+    },
+    'Permeation parameters': {
+        'Phi_ref': 1.234e-10,   # mol/m/s/Pa^0.5 at T_ref
+        'Q_p':     52300,   # J/mol (permeation activation energy)
+        'Phi_0':   2.115e-08,   # mol/m/s/Pa^0.5 (pre-exponential factor)
+    },
+    'Other common parameters': {
+        'pressure': [],              # Pa
+        'reference': 'Schmidt et al. 1985: Studies on the permeation of hydrogen and Tritium through Heat resistant Alloys.',
+        'temp_range': [1023, 1223],   # K validity range
+        'pressure_range': [1e5, 4e6],    # Pa
+        'metal_thickness': [5e-3],        # m
+        'gas': 'T₂',
+        'Note': 'Phi_ref = D_ref * Ks_ref',
+    },
+},
+
+'metal_1.4876(Incoloy800)': {
+    'Diffusion parameters': {
+        'T_ref': 1223,        # K
+        'D_ref': None,   # m²/s at T_ref
+        'E_D':   None,   # J/mol (diffusion activation energy)
+        'D_0':   None,   # m²/s (pre-exponential factor)
+    },
+    'Solubility parameters': {
+        'Ks_ref': None,   # mol/m³/Pa^0.5 at T_ref
+        'K_s0':   None,   # mol/m³/Pa^0.5 (pre-exponential factor)
+        'H_s':    None,   # J/mol (heat of solution)
+    },
+    'Permeation parameters': {
+        'Phi_ref': 2.884e-09,   # mol/m/s/Pa^0.5 at T_ref
+        'Q_p':     59900,   # J/mol (permeation activation energy)
+        'Phi_0':   1.043e-06,   # mol/m/s/Pa^0.5 (pre-exponential factor)
+    },
+    'Other common parameters': {
+        'pressure': [],              # Pa
+        'reference': 'Forcey et al., H2 600-950C',
+        'temp_range': [873, 1223],   # K validity range
+        'pressure_range': [1e5, 4e6],    # Pa
+        'metal_thickness': [5e-3],        # m
+        'gas': 'H₂',
+        'Note': 'Phi_ref computed directly from Phi_0 and Qp via Arrhenius (D_0/Ks_0 unavailable)',
+    },
+},
+
+'metal_various': {
+    'Diffusion parameters': {
+        'T_ref': 723,        # K
+        'D_ref': 5.897e-11,   # m²/s at T_ref
+        'E_D':   54000,   # J/mol (diffusion activation energy)
+        'D_0':   4.700e-07,   # m²/s (pre-exponential factor)
+    },
+    'Solubility parameters': {
+        'Ks_ref': 1.334e-01,   # mol/m³/Pa^0.5 at T_ref
+        'K_s0':   1.800e-01,   # mol/m³/Pa^0.5 (pre-exponential factor)
+        'H_s':    1800,   # J/mol (heat of solution)
+    },
+    'Permeation parameters': {
+        'Phi_ref': 7.868e-12,   # mol/m/s/Pa^0.5 at T_ref
+        'Q_p':     55800,   # J/mol (permeation activation energy)
+        'Phi_0':   8.460e-08,   # mol/m/s/Pa^0.5 (pre-exponential factor)
+    },
+    'Other common parameters': {
+        'pressure': [],              # Pa
+        'reference': 'Various authors, D2 100-450C',
+        'temp_range': [373, 723],   # K validity range
+        'pressure_range': [1e5, 4e6],    # Pa
+        'metal_thickness': [5e-3],        # m
+        'gas': 'D₂',
+        'Note': 'Phi_ref = D_ref * Ks_ref',
+    },
+},
+
+'metal_AISI_304': {
+    'Diffusion parameters': {
+        'T_ref': 873,        # K
+        'D_ref': 1.501e-09,   # m²/s at T_ref
+        'E_D':   54400,   # J/mol (diffusion activation energy)
+        'D_0':   2.700e-06,   # m²/s (pre-exponential factor)
+    },
+    'Solubility parameters': {
+        'Ks_ref': 3.200e-04,   # mol/m³/Pa^0.5 at T_ref
+        'K_s0':   1.201e-03,   # mol/m³/Pa^0.5 (pre-exponential factor)
+        'H_s':    9600,   # J/mol (heat of solution)
+    },
+    'Permeation parameters': {
+        'Phi_ref': 4.802e-13,   # mol/m/s/Pa^0.5 at T_ref
+        'Q_p':     64000,   # J/mol (permeation activation energy)
+        'Phi_0':   3.243e-09,   # mol/m/s/Pa^0.5 (pre-exponential factor)
+    },
+    'Other common parameters': {
+        'pressure': [],              # Pa
+        'reference': 'Perng & Altstetter (AISI 304), H2 100-600C',
+        'temp_range': [373, 873],   # K validity range
+        'pressure_range': [1e5, 4e6],    # Pa
+        'metal_thickness': [5e-3],        # m
+        'gas': 'H₂',
+        'Note': 'Phi_ref = D_ref * Ks_ref',
+    },
+},
+
+'metal_AISI_304_316': {
+    'Diffusion parameters': {
+        'T_ref': 458,        # K
+        'D_ref': 1.284e-08,   # m²/s at T_ref
+        'E_D':   42400,   # J/mol (diffusion activation energy)
+        'D_0':   8.800e-04,   # m²/s (pre-exponential factor)
+    },
+    'Solubility parameters': {
+        'Ks_ref': None,   # mol/m³/Pa^0.5 at T_ref
+        'K_s0':   None,   # mol/m³/Pa^0.5 (pre-exponential factor)
+        'H_s':    None,   # J/mol (heat of solution)
+    },
+    'Permeation parameters': {
+        'Phi_ref': None,   # mol/m/s/Pa^0.5 at T_ref
+        'Q_p':     None,   # J/mol (permeation activation energy)
+        'Phi_0':   None,   # mol/m/s/Pa^0.5 (pre-exponential factor)
+    },
+    'Other common parameters': {
+        'pressure': [],              # Pa
+        'reference': 'Brass & Chene (AISI 304/316), grain boundary, T2 -78-185C',
+        'temp_range': [195, 458],   # K validity range
+        'pressure_range': [1e5, 4e6],    # Pa
+        'metal_thickness': [5e-3],        # m
+        'gas': 'T₂',
+        'Note': 'Grain boundary diffusion; Phi_ref = D_ref * Ks_ref',
+    },
+},
+
+'metal_AISI_304_316': {
+    'Diffusion parameters': {
+        'T_ref': 495,        # K
+        'D_ref': 1.178e-12,   # m²/s at T_ref
+        'E_D':   58600,   # J/mol (diffusion activation energy)
+        'D_0':   1.800e-06,   # m²/s (pre-exponential factor)
+    },
+    'Solubility parameters': {
+        'Ks_ref': None,   # mol/m³/Pa^0.5 at T_ref
+        'K_s0':   None,   # mol/m³/Pa^0.5 (pre-exponential factor)
+        'H_s':    None,   # J/mol (heat of solution)
+    },
+    'Permeation parameters': {
+        'Phi_ref': None,   # mol/m/s/Pa^0.5 at T_ref
+        'Q_p':     None,   # J/mol (permeation activation energy)
+        'Phi_0':   None,   # mol/m/s/Pa^0.5 (pre-exponential factor)
+    },
+    'Other common parameters': {
+        'pressure': [],              # Pa
+        'reference': 'Louthan & Derrick (AISI 304/316), T2 25-222C',
+        'temp_range': [298, 495],   # K validity range
+        'pressure_range': [1e5, 4e6],    # Pa
+        'metal_thickness': [5e-3],        # m
+        'gas': 'T₂',
+        'Note': 'Phi_ref = D_ref * Ks_ref',
+    },
+},
+
+'metal_AISI_304L': {
+    'Diffusion parameters': {
+        'T_ref': 430,        # K
+        'D_ref': 7.438e-14,   # m²/s at T_ref
+        'E_D':   54000,   # J/mol (diffusion activation energy)
+        'D_0':   2.700e-07,   # m²/s (pre-exponential factor)
+    },
+    'Solubility parameters': {
+        'Ks_ref': None,   # mol/m³/Pa^0.5 at T_ref
+        'K_s0':   None,   # mol/m³/Pa^0.5 (pre-exponential factor)
+        'H_s':    None,   # J/mol (heat of solution)
+    },
+    'Permeation parameters': {
+        'Phi_ref': None,   # mol/m/s/Pa^0.5 at T_ref
+        'Q_p':     None,   # J/mol (permeation activation energy)
+        'Phi_0':   None,   # mol/m/s/Pa^0.5 (pre-exponential factor)
+    },
+    'Other common parameters': {
+        'pressure': [],              # Pa
+        'reference': 'Louthan et al. (AISI 304L), T2 22-157C',
+        'temp_range': [295, 430],   # K validity range
+        'pressure_range': [1e5, 4e6],    # Pa
+        'metal_thickness': [5e-3],        # m
+        'gas': 'T₂',
+        'Note': 'Phi_ref = D_ref * Ks_ref',
+    },
 }
