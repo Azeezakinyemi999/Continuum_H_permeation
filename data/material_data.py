@@ -1844,5 +1844,122 @@ MATERIALSsss = {
         'metal_thickness': [5e-3],        # m
         'gas': 'T₂',
         'Note': 'Phi_ref = D_ref * Ks_ref',
+    }
+}
+
+##### Forcey et al., 1988: HYDROGEN TRANSPORT AND SOLUBILITY IN 316L AND 1.4914 STEELS FOR FUSION REACTOR APPLICATIONS. #####
+# --- Manually added: Heat treated reference cast 316L austenitic steel ---
+'metal_316L_ref_cast' = {
+    'Diffusion parameters': {
+        'T_ref': 873,           # K
+        'D_ref': 2.194e-10,     # m²/s at T_ref
+        'E_D':   42500,         # J/mol (diffusion activation energy)
+        'D_0':   7.66e-08,      # m²/s (pre-exponential factor)
     },
+    'Solubility parameters': {
+        'Ks_ref': 2.723e-02,    # mol/m³/Pa^0.5 at T_ref
+        'K_s0':   4.640e-01,    # mol/m³/Pa^0.5 (pre-exponential factor)
+        'H_s':    20585,        # J/mol (heat of solution)
+    },
+    'Permeation parameters': {
+        'Phi_ref': 1.881e-11,   # mol/m/s/Pa^0.5 at T_ref
+        'Q_p':     63085,       # J/mol (permeation activation energy)
+        'Phi_0':   1.12e-07,    # mol/m/s/Pa^0.5 (pre-exponential factor)
+    },
+    'Other common parameters': {
+        'pressure': [],
+        'reference': 'Heat treated reference cast 316L austenitic steel (source document)',
+        'temp_range': [523, 873],       # K validity range
+        'pressure_range': [1.33e2, 1e5],  # Pa
+        'metal_thickness': [5e-3],      # m
+        'gas': 'H₂',
+        'Note': 'Data provided directly in SI units. Phi_ref computed from Phi_0 and Qp via Arrhenius. Ks_o = Phi_0/D_0 = 1.462; Qs = Qp - E_D = 20585 J/mol (consistent with reported H_s = 20580).',
+    },
+}
+ 
+# --- Commercial 316L austenitic steel ---
+'metal_316L_commercial' = {
+    'Diffusion parameters': {
+        'T_ref': 873,           # K
+        'D_ref': 7.237e-10,     # m²/s at T_ref
+        'E_D':   45500,         # J/mol
+        'D_0':   3.82e-07,      # m²/s
+    },
+    'Solubility parameters': {
+        'Ks_ref': 1.171e-01,    # mol/m³/Pa^0.5 at T_ref
+        'K_s0':   1.500e+00,    # mol/m³/Pa^0.5
+        'H_s':    18510,        # J/mol (reported); Qs = 18530 (diff = 20, rounding)
+    },
+    'Permeation parameters': {
+        'Phi_ref': 2.655e-11,   # mol/m/s/Pa^0.5 at T_ref
+        'Q_p':     64030,       # J/mol
+        'Phi_0':   1.80e-07,    # mol/m/s/Pa^0.5
+    },
+    'Other common parameters': {
+        'pressure': [],
+        'reference': 'Commercial 316L austenitic steel (source document)',
+        'temp_range': [523, 873],
+        'pressure_range': [1.33e2, 1e5],
+        'metal_thickness': [5e-3],
+        'gas': 'H₂',
+        'Note': 'Data in SI units. Phi_ref = D_ref * Ks_ref. Ks_o = Phi_0/D_0 = 0.4712.',
+    },
+}
+ 
+# --- Heat-treated reference cast 1.4914 martensitic steel ---
+'metal_1.4914_ref_cast_HT' = {
+    'Diffusion parameters': {
+        'T_ref': 873,           # K
+        'D_ref': 1.118e-08,     # m²/s at T_ref
+        'E_D':   13490,         # J/mol
+        'D_0':   7.17e-08,      # m²/s
+    },
+    'Solubility parameters': {
+        'Ks_ref': 2.179e-02,    # mol/m³/Pa^0.5 at T_ref
+        'K_s0':   1.290e+00,    # mol/m³/Pa^0.5
+        'H_s':    29620,        # J/mol (reported); Qs = 29610 (diff = -10, rounding)
+    },
+    'Permeation parameters': {
+        'Phi_ref': 7.700e-11,   # mol/m/s/Pa^0.5 at T_ref
+        'Q_p':     43100,       # J/mol
+        'Phi_0':   2.92e-08,    # mol/m/s/Pa^0.5
+    },
+    'Other common parameters': {
+        'pressure': [],
+        'reference': 'Heat-treated reference cast 1.4914 martensitic steel (source document)',
+        'temp_range': [523, 873],
+        'pressure_range': [1.33e2, 1e5],
+        'metal_thickness': [5e-3],
+        'gas': 'H₂',
+        'Note': 'Data in SI units. Phi_ref = D_ref * Ks_ref. Ks_o = Phi_0/D_0 = 0.4073.',
+    },
+}
+ 
+# --- Commercial 1.4914 martensitic steel ---
+'metal_1.4914_commercial' = {
+    'Diffusion parameters': {
+        'T_ref': 873,           # K
+        'D_ref': 1.047e-08,     # m²/s at T_ref
+        'E_D':   15470,         # J/mol
+        'D_0':   8.82e-08,      # m²/s
+    },
+    'Solubility parameters': {
+        'Ks_ref': 2.903e-02,    # mol/m³/Pa^0.5 at T_ref
+        'K_s0':   1.180e+00,    # mol/m³/Pa^0.5
+        'H_s':    26890,        # J/mol (reported); Qs = 27800 (diff = 910, likely rounding in source)
+    },
+    'Permeation parameters': {
+        'Phi_ref': 9.737e-11,   # mol/m/s/Pa^0.5 at T_ref
+        'Q_p':     43270,       # J/mol
+        'Phi_0':   3.78e-08,    # mol/m/s/Pa^0.5
+    },
+    'Other common parameters': {
+        'pressure': [],
+        'reference': 'Commercial 1.4914 martensitic steel (source document)',
+        'temp_range': [523, 873],
+        'pressure_range': [1.33e2, 1e5],
+        'metal_thickness': [5e-3],
+        'gas': 'H₂',
+        'Note': 'Data in SI units. Phi_ref = D_ref * Ks_ref. Ks_o = Phi_0/D_0 = 0.4286. Qs vs H_s diff = 910 J/mol (rounding in source).',
+    }
 }
