@@ -1,0 +1,41 @@
+Level,Parameter,Default value,Config value,Suggested range,Reference
+L5,D_ref,4.285e-09,4.285e-09,"[4.285e-11, 4.285e-07]","Schmidt et al. 1985 — X40 NiCrAlTi 31/19 (Incoloy 802), T2, 750-950 C, 5 mm plate"
+L5,E_D,72200,72200,"[60000, 80000]","Schmidt et al. 1985 — X40 NiCrAlTi 31/19 (Incoloy 802), T2, 750-950 C"
+L5,K_s_ref,0.05093,0.05093,"[1e-4, 1e-1]","Schmidt et al. 1985 — X40 NiCrAlTi 31/19 (Incoloy 802), T2, 750-950 C"
+L5,H_s,7200,7200,"[1000, 50000]","Schmidt et al. 1985 — X40 NiCrAlTi 31/19 (Incoloy 802), T2, 750-950 C"
+L5,T_ref_metal,1223,1223,"[600, 1400]",Schmidt et al. 1985 — measurement reference temperature (950 C)
+L5,D_ox_ref,7.8e-19,7.8e-19,"[7.8e-21, 7.8e-17]",Nemanic et al. 2023 (Phi D); Stover 1986 (Qp); Chen 2011 (E_D) — Cr2O3 undamaged limit (sample Cr2)
+L5,E_D_ox,70434,70434,"[69000, 71000]",Chen et al. 2011 / Stover 1986 — Cr2O3 diffusion activation energy (1.24 eV)
+L5,K_ox_ref,0.35417,0.35417,"[0.08, 0.4]",Nemanic et al. 2023 + Stover 1986 — Cr2O3 solubility at T_ref=673 K (Sieverts)
+L5,H_sol_ox,163566,163566,"[20000, 170000]",Stover 1986 / Nemanic 2023 — Q_p - E_D = H_sol for Cr2O3
+L5,T_ref_oxide,673,673,"[600, 1400]",Nemanic et al. 2023 — measurement reference temperature (400 C)
+L5,metal_thickness,0.001,0.001,"[0.0005, 0.005]",model default — CONDITIONS dict (1 mm plate)
+L5,oxide_thickness,4.8e-08,4.8e-08,"[1e-10, 1e-05]",model default — Cr2O3_sample4 nominal thickness (48 nm)
+L5,P_upstream,100000.0,100000.0,"[1e-7, 1e7]",model default — CONDITIONS dict
+L5,temperature,1073,1073,"[573, 1273]",model default — CONDITIONS dict (800 C operating)
+L5,f_pinhole,0.001,0.001,"[1e-05, 0.1]",model default — OXIDE_DEFECTS dict
+L5,f_crack,0.001,0.001,"[1e-05, 0.1]",model default — OXIDE_DEFECTS dict
+L5,f_gb_defect,0.001,0.001,"[1e-05, 0.1]",model default — OXIDE_DEFECTS dict
+L5,crack_thickness_factor,0.1,0.1,"[0.01, 0.5]",model default — OXIDE_DEFECTS dict
+L5,gb_diffusivity_factor,10.0,10.0,"[1.0, 100.0]",model default — OXIDE_DEFECTS dict
+L5,grain_size,0.0001,0.0001,"[1e-05, 0.0005]",Zhu et al. 2021 — Hastelloy N grain size 50-150 um (midpoint 100 um)
+L5,gb_thickness,5e-10,5e-10,"[3e-10, 1e-09]",model default — no Hastelloy N grain boundary thickness measurement available
+L5,lattice_density,8.774e+28,8.774e+28,"[8e+28, 1.2e+29]",model default — Fe BCC estimate (8.774e28 m-3); update for Hastelloy N
+L5,trap_dislocation_E_b,19297,19297,"[15000, 25000]",Lu et al. 2022 — Hastelloy N TDS Peak 1: 0.186-0.215 eV (mean 0.20 eV)
+L5,trap_dislocation_N_T,8160000000000.0,8160000000000.0,"[81600000000.0, 816000000000000.0]",Zhu et al. 2021 — GND density from EBSD (8.16e12 m-3)
+L5,trap_gb_E_b,26051,26051,"[25000, 30000]",Lu et al. 2022 — Hastelloy N TDS Peak 2: 0.258-0.281 eV (mean 0.27 eV)
+L5,trap_gb_N_T,600000000000000.0,600000000000000.0,"[6000000000000.0, 6e+16]",geometric estimate — 3/grain_size for 100 um equiaxed grain (~6e14 m-3)
+L5,trap_vacancy_E_b,41489,41489,"[35000, 50000]",Ni estimate (0.43 eV) — no Hastelloy N vacancy trap data; config MICROSTRUCTURE
+L5,trap_vacancy_N_T,1e+26,1e+26,"[1e+24, 1e+28]",model default — no Hastelloy N vacancy density measurement
+L5,trap_carbide_E_b,26051,26051,"[20000, 40000]",Lu et al. 2022 — M6C carbide TDS: 0.258-0.281 eV (assigned 0.27 eV)
+L5,trap_carbide_N_T,2e+25,2e+25,"[2e+23, 2e+27]",Young et al. 1997 — M6C carbide density upper bound (2e25 m-3)
+L5L6,k_diss_ref,9.487e-08,9.487e-08,"[9.487e-10, 9.487e-06]",Grant et al. 1988 — 316 steel foil oxidized condition (k1=9.2e-8 at 965 K); re-referenced to T_ref=1623 K for Cr2O3 proxy. DOI: 10.1016/0022-3115(88)90128-7
+L5L6,E_diss,57950,57950,"[40000, 70000]",Grant et al. 1988 — foil oxidized both surfaces condition (E_k1=59861 J/mol; value 57950 from re-referencing to Cr2O3 T_ref)
+L5L6,K_eq_ref,1e-10,1e-10,"[1e-14, 1e-06]",PLACEHOLDER — no Cr2O3 gas-oxide surface equilibrium constant in literature
+L5L6,H_eq,20000,20000,"[5000, 50000]",PLACEHOLDER — no Cr2O3 surface equilibrium enthalpy in literature
+L5L6,T_ref_surface,1623,1623,"[600, 1800]",config choice — matches Cr2O3 transport T_ref (1623 K = 1350 C)
+L5L6,k_diss_metal_ref,1.346e-06,1.346e-06,"[1.346e-08, 0.0001346]",Grant et al. 1988 — 316 steel clean surface condition (k1=1.346e-6 at 965 K). DOI: 10.1016/0022-3115(88)90128-7
+L5L6,E_diss_metal,81560,81560,"[70000, 100000]",Grant et al. 1988 — clean surface condition (E_k1=81560 J/mol)
+L5L6,K_eq_metal_ref,1e-08,1e-08,"[1e-10, 0.001]",PLACEHOLDER — no direct surface equilibrium constant measurement for Incoloy 802
+L5L6,H_eq_metal,15000,15000,"[5000, 40000]",PLACEHOLDER — no direct surface equilibrium enthalpy measurement
+L5L6,T_ref_surface_metal,965,965,"[600, 1100]",Grant et al. 1988 — experimental reference temperature (965 K = 692 C)
