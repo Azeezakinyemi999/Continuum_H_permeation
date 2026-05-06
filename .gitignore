@@ -1,10 +1,10 @@
-# Proposal files
+# Backup and scratch files
 Application/extract_data.ipynb
-
-
 Application/sensitivity_analysis_nb_with_D0.ipynb
 Application/Proposal_backup.ipynb
-Application/extract_data.ipynb
+*copy*
+* copy*
+*_copy.*
 # Directories
 validation_backup/
 old_backups/
