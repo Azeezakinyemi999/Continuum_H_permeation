@@ -1,20 +1,13 @@
 # Proposal files
-Proposal.ipynb
-Proposal.md
-Proposal.py
+Application/extract_data.ipynb
 
-# Sensitivity analysis files
-sensitivity_analysis_nb.ipynb
-sensitivity_analysis_nb.py
-sensitivity_analysis_nb.md
 
-# Surface chemistry files
-Surface_chemistry.ipynb
-Surface_chemistry.md
-Surface_chemistry.py
-
+Application/sensitivity_analysis_nb_with_D0.ipynb
+Application/Proposal_backup.ipynb
+Application/extract_data.ipynb
 # Directories
-validation/
+validation_backup/
+old_backups/
 plot&docs/
 Level_1/
 Level_1_result/
