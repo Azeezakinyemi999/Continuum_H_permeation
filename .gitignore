@@ -18,3 +18,8 @@ analysis/
 
 #Plots
 *.png
+
+# Python bytecode
+__pycache__/
+*.pyc
+*.pyo
