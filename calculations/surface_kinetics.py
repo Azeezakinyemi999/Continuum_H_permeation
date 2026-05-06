@@ -1144,9 +1144,16 @@ def calculate_path_flux_L346_v2(
             try:
                 theta_ss = brentq(residual, 1e-12, 1.0 - 1e-12)
             except ValueError as e:
+                _nan_resistances = {
+                    'R_surface': np.nan, 'R_oxide': np.nan, 'R_metal': np.nan,
+                    'R_total': np.nan, 'fraction_surface': np.nan,
+                    'fraction_oxide': np.nan, 'fraction_metal': np.nan,
+                }
                 return {
                     'flux': np.nan, 'theta': np.nan, 'P_int': np.nan, 'D_eff': np.nan,
-                    'path_type': path_type,
+                    'path_type': path_type, 'kinetics_used': 'error',
+                    'modification_factor': np.nan, 'rate_limiting': 'error',
+                    'resistances': _nan_resistances,
                     'error': f'Failed to solve for theta: {str(e)}',
                     'iteration': iteration,
                 }
