@@ -36,7 +36,7 @@ METALS = {
             'T_ref':            965,        # K
             'k_diss_metal_ref': 1.346e-06,      # mol/m²/s/Pa at T_ref
             'E_diss_metal':     81560,      # J/mol
-            'K_eq_metal_ref':   1e-8,       # Pa⁻¹ at T_ref PLACEHOLDER
+            'K_eq_metal_ref':   1e-03,       # Pa⁻¹ at T_ref PLACEHOLDER
             'H_eq_metal':       15000,      # J/mol PLACEHOLDER
             'reference':        'clean metal surface condition(metal_316_steel_Grant1988): Grant 1988: Grant DM, Cummings DL, Blackburn DA	J. Nuclear Materials 152	1988	DOI: 10.1016/0022-3115(88)90128-7	316 steel H₂ transport. ONLY source with full surface kinetics k1 (3 conditions).	Metals + Surface Kinetics',
         },
@@ -126,7 +126,7 @@ OXIDES = {
             'T_ref':       1623,        # K — same as transport T_ref
             'k_diss_ref':  9.487e-08,       # mol/m²/s/Pa at T_ref
             'E_diss':      57950,       # J/mol
-            'K_eq_ref':    1e-10,       # Pa⁻¹ at T_ref PLACEHOLDER
+            'K_eq_ref':    1e-4,       # Pa⁻¹ at T_ref PLACEHOLDER. Changed from 1e-10 to 1e-4
             'H_eq':        20000,       # J/mol PLACEHOLDER
             'reference':   'Grant et al. 1988: Grant DM, Cummings DL, Blackburn DA	J. Nuclear Materials 152	1988	DOI: 10.1016/0022-3115(88)90128-7	316 steel H₂ transport. ONLY source with full surface kinetics k1 (3 conditions).	Oxide Surface Kinetics',
         },
@@ -279,12 +279,12 @@ MICROSTRUCTURE = {
 # OXIDE DEFECT PARAMETERS (Level 3, 5)
 # =============================================================================
 OXIDE_DEFECTS = {
-    'area_fraction':    0.003,
+    'area_fraction':    0.02,
     'type':             'mixed',
     'components': {
-        'pinholes':         0.001,
-        'cracks':           0.001,
-        'grain_boundaries': 0.001,
+        'pinholes':         0.01,
+        'cracks':           0.005,
+        'grain_boundaries': 0.005,
     },
     'thickness_factor':   0.1,    # crack: L_crack = 0.1 × L_oxide
     'diffusivity_factor': 10,     # GB: D_gb = 10 × D_oxide
@@ -298,13 +298,13 @@ OXIDE_DEFECTS = {
 # OPERATING CONDITIONS
 # =============================================================================
 CONDITIONS = {
-    'T_operating':    1073,              # K
+    'T_operating':    873,              # K
     'T_range':        (623, 1200),      # K
     'n_T_points':     20,
 
     'P_upstream':     1e5,              # Pa
     'P_downstream':   0,                # Pa
-    'P_range':        (1e-2, 1e12),      # Pa
+    'P_range':        (1e-4, 1e12),      # Pa
     'n_P_points':     40,
 
     'L_metal':        1e-3,             # m
@@ -490,8 +490,8 @@ def get_surface_kinetics_from_config(material_key, temperature_K, material_dict)
 
 
 def build_simulation_config(
-    metal='Fe_alpha',
-    oxide='Al2O3',
+    metal='metal_X40_NiCrAlTi_31_19_Incoloy802_Schmidt1985',
+    oxide='Cr2O3_sample4',
     T_operating=None,
     P_upstream=None,
     L_metal=None,
@@ -621,5 +621,24 @@ VALIDATION = {
         'P_sensitivity':  1e5,
         'f_defect_sweep': np.array([0.001, 0.01, 0.05, 0.1]),
         'T_limit':        873,
+    },
+
+    'L6': {
+        # ========================================================================
+        # SURFACE KINETICS (L6) — Limit Checks and Model Recovery
+        # ========================================================================
+        # Fast-kinetics limit: verify recovery of limiting cases when k_diss → ∞
+        #   - L1+L6 → Sieverts (pure bulk diffusion, no surface limit)
+        #   - L2a+L6 → L2a (pure oxide diffusion, no surface limit)
+        #   - L2+L6 → series resistance (oxide + metal, no surface limit)
+        #   - L3+L6 → L3 (defective oxide, no surface limit)
+        #   - L4+L6 → L4 (defective metal, no surface limit)
+        #   - L3+L4+L6 → L5 (full defective system, no surface limit)
+        # Parity plots show J_L*+L6(k_diss=1e-3) vs J_L* or J_analytical
+        # ========================================================================
+        'k_diss_sweep_exp_range': (-15, -3),    # exponent range for log sweep
+        'k_diss_sweep_n_points': 7,              # number of points in sweep
+        # Fast kinetics limit value (used in parity plots)
+        'k_diss_fast_limit': 1e-3,               # mol/m²/s/Pa — "fast" regime
     },
 }
