@@ -401,18 +401,6 @@ def plot_morris_results(Si, problem, output_metric='Model Output'):
     ax2.set_title('Elementary Effects', fontsize=14, fontweight='bold')
     ax2.grid(True, alpha=0.3)
 
-    if np.any(np.abs(mu) > 0):
-        max_abs_mu = np.max(np.abs(mu))
-        max_sigma  = np.max(sigma)
-        if max_abs_mu > 0:
-            ax2.axvline( max_abs_mu * 0.3, color='red', linestyle='--', alpha=0.3)
-            ax2.axvline(-max_abs_mu * 0.3, color='red', linestyle='--', alpha=0.3,
-                        label='High importance')
-        if max_sigma > 0:
-            ax2.axhline(max_sigma * 0.3, color='blue', linestyle='--', alpha=0.3,
-                        label='High nonlinearity')
-        ax2.legend(fontsize=10)
-
     plt.tight_layout()
     plt.show()
 
