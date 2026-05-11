@@ -327,7 +327,20 @@ def level5_model_wrapper(params_dict):
         flux_bare  = result_bare['flux']
         PRF        = flux_bare / flux_total if flux_total > 0 else float('inf')
         D_eff      = result_l5.get('D_eff_metal', D_metal)
-        permeability = D_eff * K_s_metal
+
+        # Effective permeability via series resistance (oxide + metal)
+        # 1/Φ_eff = L_oxide/(D_ox·K_ox) + L_metal/(D_eff·K_s_metal)
+        L_oxide = oxide_props['thickness']
+        L_metal = metal_props['thickness']
+        Phi_oxide = D_ox * K_ox
+        Phi_metal = D_eff * K_s_metal
+
+        if Phi_oxide > 0 and Phi_metal > 0:
+            R_oxide = L_oxide / Phi_oxide
+            R_metal = L_metal / Phi_metal
+            permeability = 1.0 / (R_oxide + R_metal)
+        else:
+            permeability = np.nan
 
         return {
             'flux':         flux_total,
@@ -389,14 +402,14 @@ def plot_morris_results(Si, problem, output_metric='Model Output'):
     ax1.set_title(f'Morris Sensitivity Analysis\n{output_metric}', fontsize=14, fontweight='bold')
     ax1.grid(axis='x', alpha=0.3)
 
-    # μ vs σ scatter
-    ax2.scatter(mu, sigma, s=150, alpha=0.6, c='steelblue', edgecolors='black')
+    # μ vs σ scatter (using |μ| for normalized range starting at 0)
+    mu_abs = np.abs(mu)
+    ax2.scatter(mu_abs, sigma, s=150, alpha=0.6, c='steelblue', edgecolors='black')
     for i, name in enumerate(param_names):
-        ax2.annotate(name, (mu[i], sigma[i]),
+        ax2.annotate(name, (mu_abs[i], sigma[i]),
                      fontsize=10, ha='right', va='bottom',
                      xytext=(-5, 5), textcoords='offset points')
-    ax2.axvline(0, color='black', linewidth=0.8)
-    ax2.set_xlabel('μ (Mean Elementary Effect — direction)', fontsize=12)
+    ax2.set_xlabel('|μ| (Mean Elementary Effect — magnitude)', fontsize=12)
     ax2.set_ylabel('σ (Nonlinearity/Interactions)', fontsize=12)
     ax2.set_title('Elementary Effects', fontsize=14, fontweight='bold')
     ax2.grid(True, alpha=0.3)
@@ -876,13 +889,24 @@ def level5L6_model_wrapper(params_dict):
         fw           = r.get('flux_weighted_resistances', {})
         intact_theta = r.get('intact_path', {}).get('theta', np.nan)
 
+        # Effective permeability via series resistance (oxide + metal)
+        # 1/Φ_eff = L_oxide/(D_ox·K_ox) + L_metal/(D_eff·K_s_metal)
+        Phi_oxide_6 = D_ox * K_ox
+        Phi_metal_6 = r.get('D_eff_avg', D_metal) * K_s_met
+
+        if Phi_oxide_6 > 0 and Phi_metal_6 > 0 and not np.isnan(Phi_oxide_6) and not np.isnan(Phi_metal_6):
+            R_oxide_6 = L_ox / Phi_oxide_6
+            R_metal_6 = L_m / Phi_metal_6
+            permeability_6 = 1.0 / (R_oxide_6 + R_metal_6)
+        else:
+            permeability_6 = np.nan
+
         return {
             'flux':           r['J_total'],
             'PRF':            np.nan,
             'D_eff':          r.get('D_eff_avg', np.nan),
             'D_modification': r.get('overall_modification_factor', np.nan),
-            'permeability':   (r.get('D_eff_avg', np.nan) * K_s_met
-                               if r.get('D_eff_avg') else np.nan),
+            'permeability':   permeability_6,
             'P_interface':    r.get('intact_path', {}).get('P_int', np.nan),
             'flux_intact':    r['flux_breakdown'].get('intact', {}).get('contribution', np.nan),
             'flux_defect':    (r['J_total']
