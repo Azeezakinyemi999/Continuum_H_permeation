@@ -328,17 +328,13 @@ def level5_model_wrapper(params_dict):
         PRF        = flux_bare / flux_total if flux_total > 0 else float('inf')
         D_eff      = result_l5.get('D_eff_metal', D_metal)
 
-        # Effective permeability via series resistance (oxide + metal)
-        # 1/Φ_eff = L_oxide/(D_ox·K_ox) + L_metal/(D_eff·K_s_metal)
-        L_oxide = oxide_props['thickness']
-        L_metal = metal_props['thickness']
+        # Effective permeability via harmonic mean (series resistances)
+        # 1/Φ_eff = 1/Φ_oxide + 1/Φ_metal (no length dependence)
         Phi_oxide = D_ox * K_ox
         Phi_metal = D_eff * K_s_metal
 
         if Phi_oxide > 0 and Phi_metal > 0:
-            R_oxide = L_oxide / Phi_oxide
-            R_metal = L_metal / Phi_metal
-            permeability = 1.0 / (R_oxide + R_metal)
+            permeability = 1.0 / (1.0/Phi_oxide + 1.0/Phi_metal)
         else:
             permeability = np.nan
 
@@ -889,15 +885,13 @@ def level5L6_model_wrapper(params_dict):
         fw           = r.get('flux_weighted_resistances', {})
         intact_theta = r.get('intact_path', {}).get('theta', np.nan)
 
-        # Effective permeability via series resistance (oxide + metal)
-        # 1/Φ_eff = L_oxide/(D_ox·K_ox) + L_metal/(D_eff·K_s_metal)
+        # Effective permeability via harmonic mean (series resistances)
+        # 1/Φ_eff = 1/Φ_oxide + 1/Φ_metal (no length dependence)
         Phi_oxide_6 = D_ox * K_ox
         Phi_metal_6 = r.get('D_eff_avg', D_metal) * K_s_met
 
         if Phi_oxide_6 > 0 and Phi_metal_6 > 0 and not np.isnan(Phi_oxide_6) and not np.isnan(Phi_metal_6):
-            R_oxide_6 = L_ox / Phi_oxide_6
-            R_metal_6 = L_m / Phi_metal_6
-            permeability_6 = 1.0 / (R_oxide_6 + R_metal_6)
+            permeability_6 = 1.0 / (1.0/Phi_oxide_6 + 1.0/Phi_metal_6)
         else:
             permeability_6 = np.nan
 
