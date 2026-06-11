@@ -17,6 +17,10 @@ Level_3/
 analysis/
 
 
+# Word documents
+*.docx
+~$*.docx
+
 #Plots
 *.png
 
