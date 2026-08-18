@@ -52,74 +52,67 @@ regimes and hides this. **We separate them.**
 
 ## 1. The ENTIRE workflow
 
+This pipeline is really **two separate workflows** that share the same model and both report into
+Stage 3 — they do not feed into each other in a simple chain. **Workflow A** is fully
+self-contained (its own sampling, its own analysis, the primary answer). **Workflow B** needs an
+extra ingredient *borrowed* from Workflow A's output, plus an independent sampling pass of its own.
+Trying to draw both as one linear flow is what makes this pipeline confusing, so here they are
+separately.
+
+### Workflow A — the primary path (LHS → Route B)
+
 ```mermaid
 flowchart TD
-    M["L5L6 model<br/>calculate_full_model_flux_L346_v2"] --> S0
-    S0["STAGE 0 — label by regime<br/>argmax(frac_surface, frac_oxide, frac_metal)"] --> S1
-    S1["STAGE 1 — targeted sampling<br/>one LHS scan per regime preset<br/>keep in-regime rows"] --> RB
-    S1 --> RA
-    S1 -. feeds top-k .-> SCREEN["Global Morris screen<br/>rank → top-k"]
-    SCREEN -.-> RA
-    RB["STAGE 2 Route B (PRIMARY)<br/>given-data PAWN + delta<br/>on the TRUE cluster"] --> S3
-    RA["STAGE 2 Route A (secondary)<br/>Sobol over top-k sub-box<br/>accept-and-report"] --> S3
-    S3["STAGE 3 — compare regimes<br/>heatmaps + contamination table"]
+    subgraph S1["STAGE 1 — targeted sampling (LHS), once per regime preset"]
+        direction TB
+        D["LHS draw<br/>(regime preset ranges)"] --> R["run model<br/>calculate_full_model_flux_L346_v2"]
+        R --> L["label regime<br/>(Stage 0: argmax fs/fo/fm)"]
+        L --> K["keep row only if<br/>label == target regime"]
+    end
+    S1 -->|3 clusters: metal / surface / oxide| RB["STAGE 2 — Route B (PRIMARY)<br/>PAWN + δ, given-data, on the cluster"]
+    RB --> S3A["STAGE 3 — compare regimes"]
 ```
 
-Same thing as a plain-text schema:
+**Why it's drawn this way:** Stage 0 (`assign_regime`) is *not* a phase that runs before Stage 1 —
+it's one line of logic invoked once per LHS-drawn sample, immediately after that sample's model
+run, nested inside Stage 1's loop (the box above). It cannot run any earlier: it needs the
+flux-weighted fractions, which only exist after a model run, which only exists after a parameter
+draw. Repeat the loop a few thousand times per regime preset → three clusters (metal/surface/oxide)
+of real, unfiltered (input, output) pairs. Route B runs directly on those — no extra sampling, no
+box, no leakage.
 
+### Workflow B — the secondary path (Morris → Sobol / Route A), borrowing from Workflow A
+
+```mermaid
+flowchart TD
+    FULL["full 36-param global ranges<br/>(NOT a regime preset — regime-blind)"] --> SCREEN["Global Morris screen<br/>→ rank → top-k"]
+    CLUSTER["regime cluster_R<br/>⟵ borrowed from Workflow A's Stage 1 output"] -->|"5th–95th percentile BOUNDS<br/>+ regime association"| BOX["extract_topk_subbox"]
+    SCREEN -->|"top-k parameter NAMES only"| BOX
+    BOX --> SALT["Saltelli sample inside the box"] --> SOBOL["Sobol S1 / ST<br/>+ contamination %"]
+    SOBOL --> S3B["STAGE 3 — compare regimes"]
 ```
-        ┌────────────────────────────────────────────────────────────────┐
-        │                THE L5L6 PERMEATION MODEL                         │
-        │      calculate_full_model_flux_L346_v2(params) → flux, fractions │
-        └────────────────────────────────────────────────────────────────┘
-                                       │
-                                       ▼
-   ╔══════════════════════════════════════════════════════════════════════╗
-   ║ STAGE 0 — LABEL each model run with its REGIME                         ║
-   ║   regime = argmax(frac_surface, frac_oxide, frac_metal)                ║
-   ╚══════════════════════════════════════════════════════════════════════╝
-                                       │
-                                       ▼
-   ╔══════════════════════════════════════════════════════════════════════╗
-   ║ STAGE 1 — TARGETED SAMPLING  (because regimes are rare!)               ║
-   ║   metal-preset   ─LHS─► run model ─► keep rows labeled "metal"         ║
-   ║   surface-preset ─LHS─► run model ─► keep rows labeled "surface"       ║
-   ║   oxide-preset   ─LHS─► run model ─► keep rows labeled "oxide"         ║
-   ║   Output: 3 "clusters" = piles of (inputs, outputs) per regime         ║
-   ╚══════════════════════════════════════════════════════════════════════╝
-              │                                              │
-              │  (also, once, on the FULL space:)            │
-              │  ┌────────────────────────────────────┐     │
-              │  │ GLOBAL MORRIS SCREEN → rank → top-k │     │
-              │  │ (cheap "which knobs matter at all") │     │
-              │  └────────────────────────────────────┘     │
-              ▼                                              ▼
-   ╔═══════════════════════════════╗      ╔════════════════════════════════╗
-   ║ STAGE 2 — ROUTE B  (PRIMARY)  ║      ║ STAGE 2 — ROUTE A  (SECONDARY) ║
-   ║ given-data SA on TRUE cluster ║      ║ Sobol over top-k SUB-BOX       ║
-   ║   • PAWN   (CDF shift)        ║      ║   • S1 / ST variance shares    ║
-   ║   • Borgonovo δ (density)     ║      ║   • "accept & report" leakage  ║
-   ║ no box, no contamination      ║      ║ structured, but box leaks      ║
-   ╚═══════════════════════════════╝      ╚════════════════════════════════╝
-              │                                              │
-              └──────────────────────┬───────────────────────┘
-                                     ▼
-   ╔══════════════════════════════════════════════════════════════════════╗
-   ║ STAGE 3 — COMPARE regimes (parameter × regime heatmaps, tables)        ║
-   ╚══════════════════════════════════════════════════════════════════════╝
-```
+
+**Why it's drawn this way:** Morris runs once, independently, over the *full* 36-parameter space —
+it never sees or uses a regime label (see "Global Morris screen" below). It only supplies *which*
+parameters matter (top-k names), the same list reused for all three regime boxes. The actual
+numeric bounds for each box — and the regime association itself — are **borrowed** from Workflow
+A's already-collected cluster (5th–95th percentile of that regime's own data). Only after both
+ingredients are combined does a *fresh* Saltelli sample get drawn and run through the model — a
+new, third sampling pass, separate from both LHS and Morris.
 
 **Plain walk-through:**
 
-1. **Stage 0** — every model run is tagged with its regime (which resistor won).
-2. **Stage 1** — random sampling almost never produces surface-limited cases (0 in 1500 random
-   runs), so we **aim** the sampling at each regime with a "preset" (tuned input ranges that
-   produce that regime), then keep the runs that actually landed in it → three clean data piles.
-3. **Stage 2** — for each pile we ask "which parameters matter?" two ways:
-   - **Route B** uses methods (PAWN, δ) that work on *any* pile of points → the honest, primary answer.
-   - **Route A** uses classic Sobol, which needs a tidy rectangular box → we box the regime,
-     accept that the box leaks into neighbours, and **report** how much it leaked.
-4. **Stage 3** — line the regimes up and see how the important parameters differ.
+1. **Workflow A** — random sampling almost never produces surface-limited cases (0 in 1500 random
+   runs), so we **aim** the sampling at each regime with a preset, labeling and filtering every
+   draw as it comes in (Stage 0 nested inside Stage 1) → three clean data piles → Route B (PAWN, δ)
+   gives the honest, primary answer directly on those piles.
+2. **Workflow B** — runs completely independently: a global, regime-blind Morris screen ranks all
+   36 parameters and picks the top-k. Those names get combined with percentile bounds *borrowed*
+   from Workflow A's clusters to build a rectangular box per regime.
+3. Sobol needs that tidy box (classic Sobol can't consume an arbitrary filtered pile the way
+   PAWN/δ can), so we accept the box leaks into neighbouring regimes and **report** how much
+   (contamination %) rather than pretending it didn't happen.
+4. **Stage 3** — line both workflows' regimes up and see how the important parameters differ.
 
 ---
 
@@ -145,6 +138,10 @@ Same thing as a plain-text schema:
 **Why:** turns a continuous result into one clean label so we can group runs. `argmax` = "pick the
 biggest of the three" (no fuzzy "mixed" bucket). Code: `assign_regime()`, attached inside
 `level5L6_model_wrapper(..., return_full_record=True)`.
+
+**Not a separate temporal phase:** this runs once per sample, immediately after that sample's
+model call, nested inside Stage 1's LHS loop (see Workflow A in §1) — there is no standalone
+"Stage 0 pass" that runs over a batch of already-existing data before sampling starts.
 
 ---
 
@@ -199,6 +196,12 @@ comfortably above the ~300–500 floor.
 top-k define the Route A box (so Sobol isn't wasted on 36 dimensions). Code:
 `morris_screen_global()` + `rank_and_select_top_k()`.
 
+**Regime-blind:** `level5L6_model_wrapper(..., return_full_record=True)` computes a regime label
+internally as a byproduct of every call, but `morris_screen_global` discards it — only
+`flux`/`permeability`/`theta` are kept (`morris_evals.csv` has no regime column). Morris never
+tags or filters by regime, and it runs on the *full* global ranges, not any regime preset. The
+same top-k list is reused as-is for all three regime boxes in Route A.
+
 ---
 
 ### STAGE 2 — ROUTE B (the primary, trustworthy answer)
@@ -227,30 +230,44 @@ them an arbitrary filtered pile. **PAWN and δ are "given-data" methods — they
 
 ### STAGE 2 — ROUTE A (the comparison answer)
 
+Two independent sources feed the box — this is the part that's easy to misread as "Sobol on
+Morris's top parameters":
+
 ```
- cluster_R + top-k params
-        │
-        ▼
- extract_topk_subbox            ← rectangular box = 5th–95th percentile of the
-        │                          cluster on each top-k parameter
-        ▼
- Saltelli sample inside the box ← (other params held at the cluster median)
-        │
-        ▼
- run model on each ──► S1, ST   ← Sobol variance shares
-        │
-        ▼
- re-label each sample's regime  ← how many fell OUTSIDE regime R?
-        │
-        ▼
- report "contamination %"       ← keep all points (deleting them would break
-                                   Sobol's math) and just report the leakage
+ morris_ranking.csv               master_clusters.csv, regime==R
+ (global, regime-blind)           (regime R's own in-regime rows,
+        │                          from Workflow A / Stage 1)
+        │  top-k parameter               │  5th–95th percentile
+        │  NAMES only                    │  BOUNDS + regime association
+        ▼                                ▼
+              extract_topk_subbox(cluster_df, top_k)
+                        │
+                        ▼
+      Saltelli sample inside the box  ← (other params held at the cluster median)
+                        │
+                        ▼
+      run model on each ──► S1, ST    ← Sobol variance shares
+                        │
+                        ▼
+      re-label each sample's regime  ← how many fell OUTSIDE regime R?
+                        │
+                        ▼
+      report "contamination %"       ← keep all points (deleting them would break
+                                        Sobol's math) and just report the leakage
 ```
+
+**Worked example (metal box):** take the top-k parameter *names* from `morris_ranking.csv` (one
+global list, reused for all three regimes). For each name, look up that column in
+`master_clusters.csv` filtered to `regime=='metal'` (813 rows — the same rows as the in-regime
+subset of `scan_metal.csv`) and take its 5th/95th percentile → that's the bound for that
+parameter in the metal box. The surface and oxide boxes reuse the *same* top-k names but read
+their bounds from their *own* clusters — so the three box shapes differ even though the
+parameter list doesn't.
 
 **Why "accept and report"?** Sobol's estimator needs its rows kept in a strict paired arrangement;
 deleting the leaked points breaks the math. So we run it over the box, get standard S1/ST, and
 **report** that e.g. 35 % of the surface box leaked. That's why Route A is the *secondary* check,
-not the primary. Code: `sobol_regime_subbox()`.
+not the primary. Code: `extract_topk_subbox()`, `sobol_regime_subbox()`.
 
 ---
 
@@ -269,6 +286,30 @@ not the primary. Code: `sobol_regime_subbox()`.
 **Why:** the payoff — one picture showing *"temperature matters in all regimes, but `f_crack` only
 matters in oxide, `k_diss_metal` only in surface, `gb_diffusivity` only in metal."* Code:
 `regime_comparison_matrix()` / `plot_regime_comparison_heatmap()`.
+
+**Reading the heatmap (column-normalized by default).** Raw δ is not comparable across columns:
+the surface cluster's δ values are systematically smaller (max 0.390) than metal's (0.546) or
+oxide's (0.553), so on one global colour scale the surface column looks uniformly cool even where a
+parameter is proportionally *more* important there — and `temperature` saturates the top of the
+scale, leaving everything else near-white. `plot_regime_comparison_heatmap(..., normalize='column')`
+(the default) divides each column by its own maximum, so every regime spans a full 0→1 scale and
+each cell reads as *"fraction of this regime's strongest driver."*
+
+Because column-normalization divides magnitude out, each cell is **dual-encoded**:
+
+| element | encodes |
+|---|---|
+| fill colour + large centred number | column-normalized value (column max = 1.00) |
+| small boxed number, upper-right corner | **raw** δ / PAWN value |
+
+So `temperature` reads `1.00` in all three columns, but its corners still show `0.546 / 0.553 /
+0.390` — the cross-regime magnitude difference is preserved. Pass `normalize=None` for the old
+raw-only heatmap, or `show_raw=False` to drop the corner annotations. The exported
+`compare_<index>_<metric>.csv` files are always **raw** — normalization is display-only.
+
+> Column-normalization fixes cross-column comparability, not the fact that `temperature` dominates
+> *within* every column (it is the column max, so it defines 1.00). The remaining parameters still
+> live in the lower ~0.4 of the scale.
 
 ---
 

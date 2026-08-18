@@ -1,0 +1,208 @@
+\begin{thebibliography}{28}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Andrew and Haasz(1992)]{andrew1992}
+P.~L. Andrew and A.~A. Haasz.
+\newblock Models for hydrogen permeation in metals.
+\newblock \emph{Journal of Applied Physics}, 72\penalty0 (7):\penalty0
+  2749--2757, 1992.
+\newblock \doi{10.1063/1.351526}.
+
+\bibitem[Baskes(1980)]{baskes1980}
+M.~I. Baskes.
+\newblock A calculation of the surface recombination rate constant for hydrogen
+  isotopes on metals.
+\newblock \emph{Journal of Nuclear Materials}, 92\penalty0 (2--3):\penalty0
+  318--324, 1980.
+\newblock \doi{10.1016/0022-3115(80)90117-8}.
+
+\bibitem[Brass and Chanfreau(1996)]{brass1996}
+A.~M. Brass and A.~Chanfreau.
+\newblock Accelerated diffusion of hydrogen along grain boundaries in nickel.
+\newblock \emph{Acta Materialia}, 44\penalty0 (9):\penalty0 3823--3831, 1996.
+\newblock \doi{10.1016/1359-6454(95)00446-7}.
+
+\bibitem[Chen et~al.(2011)Chen, Yu, and Zheng]{chen2011}
+C.~F. Chen, H.~B. Yu, and S.~Q. Zheng.
+\newblock First-principles study of hydrogen diffusion mechanism in
+  {Cr$_2$O$_3$}.
+\newblock \emph{Science China Technological Sciences}, 54\penalty0
+  (1):\penalty0 88--94, 2011.
+\newblock \doi{10.1007/s11431-010-4112-3}.
+
+\bibitem[Fick(1855)]{fick1855}
+Adolf Fick.
+\newblock {\"U}ber diffusion.
+\newblock \emph{Annalen der Physik}, 170\penalty0 (1):\penalty0 59--86, 1855.
+\newblock \doi{10.1002/andp.18551700105}.
+
+\bibitem[Grant et~al.(1988)Grant, Cummings, and Blackburn]{grant1988}
+D.~M. Grant, D.~L. Cummings, and D.~A. Blackburn.
+\newblock Hydrogen in 316 steel --- diffusion, permeation and surface reaction.
+\newblock \emph{Journal of Nuclear Materials}, 152\penalty0 (2--3):\penalty0
+  139--145, 1988.
+\newblock \doi{10.1016/0022-3115(88)90128-7}.
+
+\bibitem[Hart(1957)]{hart1957}
+E.~W. Hart.
+\newblock On the role of dislocations in bulk diffusion.
+\newblock \emph{Acta Metallurgica}, 5\penalty0 (10):\penalty0 597, 1957.
+\newblock \doi{10.1016/0001-6160(57)90127-X}.
+
+\bibitem[Hollenberg et~al.(1995)Hollenberg, Simonen, Kalinin, and
+  Terlain]{hollenberg1995}
+G.~W. Hollenberg, E.~P. Simonen, G.~Kalinin, and A.~Terlain.
+\newblock Tritium/hydrogen barrier development.
+\newblock \emph{Fusion Engineering and Design}, 28:\penalty0 190--208, 1995.
+\newblock \doi{10.1016/0920-3796(95)90039-X}.
+
+\bibitem[Kraftmakher(1998)]{kraftmakher1998}
+Yaakov Kraftmakher.
+\newblock Equilibrium vacancies and thermophysical properties of metals.
+\newblock \emph{Physics Reports}, 299\penalty0 (2--3):\penalty0 79--188, 1998.
+\newblock \doi{10.1016/S0370-1573(97)00082-3}.
+
+\bibitem[Langmuir(1918)]{langmuir1918}
+Irving Langmuir.
+\newblock The adsorption of gases on plane surfaces of glass, mica and
+  platinum.
+\newblock \emph{Journal of the American Chemical Society}, 40\penalty0
+  (9):\penalty0 1361--1403, 1918.
+\newblock \doi{10.1021/ja02242a004}.
+
+\bibitem[Lu et~al.(2022)Lu, Depover, and Johnsen]{lu2022}
+X.~Lu, T.~Depover, and R.~Johnsen.
+\newblock Evaluation of hydrogen diffusion and trapping in nickel {Alloy~625}
+  by thermal desorption spectroscopy.
+\newblock \emph{International Journal of Hydrogen Energy}, 47:\penalty0
+  31673--31683, 2022.
+\newblock \doi{10.1016/j.ijhydene.2022.07.094}.
+
+\bibitem[McNabb and Foster(1963)]{mcnabb1963}
+A.~McNabb and P.~K. Foster.
+\newblock A new analysis of the diffusion of hydrogen in iron and ferritic
+  steels.
+\newblock \emph{Transactions of the Metallurgical Society of AIME},
+  227:\penalty0 618--627, 1963.
+
+\bibitem[Nemani{\v c} et~al.(2023)Nemani{\v c}, Kova{\v c}, {\v Z}umer, and
+  Zava{\v s}nik]{nemanic2023}
+V.~Nemani{\v c}, J.~Kova{\v c}, M.~{\v Z}umer, and J.~Zava{\v s}nik.
+\newblock Impact of surface oxide on hydrogen permeability of chromium
+  membranes.
+\newblock \emph{International Journal of Hydrogen Energy}, 48:\penalty0
+  9723--9733, 2023.
+\newblock \doi{10.1016/j.ijhydene.2022.11.267}.
+
+\bibitem[Oriani(1970)]{oriani1970}
+R.~A. Oriani.
+\newblock The diffusion and trapping of hydrogen in steel.
+\newblock \emph{Acta Metallurgica}, 18\penalty0 (1):\penalty0 147--157, 1970.
+\newblock \doi{10.1016/0001-6160(70)90078-7}.
+
+\bibitem[Oudriss et~al.(2012)Oudriss, Creus, Bouhattate, Conforto, Berziou,
+  Savall, and Feaugas]{oudriss2012}
+A.~Oudriss, J.~Creus, J.~Bouhattate, E.~Conforto, C.~Berziou, C.~Savall, and
+  X.~Feaugas.
+\newblock Grain size and grain-boundary effects on diffusion and trapping of
+  hydrogen in pure nickel.
+\newblock \emph{Acta Materialia}, 60\penalty0 (19):\penalty0 6814--6828, 2012.
+\newblock \doi{10.1016/j.actamat.2012.09.004}.
+
+\bibitem[Palumbo and Aust(1990)]{palumbo1990}
+G.~Palumbo and K.~T. Aust.
+\newblock Structure-dependence of intergranular corrosion in high purity
+  nickel.
+\newblock \emph{Acta Metallurgica et Materialia}, 38\penalty0 (11):\penalty0
+  2343--2352, 1990.
+\newblock \doi{10.1016/0956-7151(90)90101-L}.
+
+\bibitem[Pick and Sonnenberg(1985)]{pick1985}
+M.~A. Pick and K.~Sonnenberg.
+\newblock A model for atomic hydrogen--metal interactions --- application to
+  recycling, recombination and permeation.
+\newblock \emph{Journal of Nuclear Materials}, 131\penalty0 (2--3):\penalty0
+  208--220, 1985.
+\newblock \doi{10.1016/0022-3115(85)90459-3}.
+
+\bibitem[Richardson et~al.(1904)Richardson, Nicol, and Parnell]{richardson1904}
+O.~W. Richardson, J.~Nicol, and T.~Parnell.
+\newblock The diffusion of hydrogen through hot platinum.
+\newblock \emph{Philosophical Magazine, Series 6}, 8\penalty0 (43):\penalty0
+  1--29, 1904.
+\newblock \doi{10.1080/14786440409463168}.
+
+\bibitem[Schmidt and Batfalsky(1985)]{schmidt1985}
+H.~Schmidt and P.~Batfalsky.
+\newblock Hydrogen and tritium permeation through heat-resistant alloys.
+\newblock \emph{Journal of Nuclear Materials}, 131, 1985.
+\newblock Source of the X40 NiCrAlTi 31/19 (Incoloy~802) transport parameters;
+  $\mathrm{H_2}$ and $\mathrm{T_2}$ permeation in 30+ heat-resistant alloys.
+
+\bibitem[Sieverts(1929)]{sieverts1929}
+Adolf Sieverts.
+\newblock Die aufnahme von gasen durch metalle.
+\newblock \emph{Zeitschrift f{\"u}r Metallkunde}, 21:\penalty0 37--46, 1929.
+
+\bibitem[St{\"o}ver et~al.(1986)St{\"o}ver, Buchkremer, and Hecker]{stover1986}
+D.~St{\"o}ver, H.~P. Buchkremer, and R.~Hecker.
+\newblock Hydrogen and deuterium permeation through metallic and
+  surface-oxidized chromium.
+\newblock \emph{Surface and Coatings Technology}, 28:\penalty0 281--290, 1986.
+\newblock \doi{10.1016/0257-8972(86)90085-X}.
+
+\bibitem[Strehlow and Savage(1974)]{strehlow1974}
+R.~A. Strehlow and H.~C. Savage.
+\newblock The permeation of hydrogen isotopes through structural metals at low
+  pressures and through metals with oxide film barriers.
+\newblock \emph{Nuclear Technology}, 22\penalty0 (1):\penalty0 127--137, 1974.
+\newblock \doi{10.13182/NT74-A31383}.
+
+\bibitem[Tsuru and Latanision(1982)]{tsuru1982}
+T.~Tsuru and R.~M. Latanision.
+\newblock Grain boundary transport of hydrogen in nickel.
+\newblock \emph{Scripta Metallurgica}, 16\penalty0 (5):\penalty0 575--578,
+  1982.
+\newblock \doi{10.1016/0036-9748(82)90273-3}.
+
+\bibitem[Underwood(1970)]{underwood1970}
+E.~E. Underwood.
+\newblock \emph{Quantitative Stereology}.
+\newblock Addison-Wesley, Reading, MA, 1970.
+
+\bibitem[Wampler(1986)]{wampler1986}
+W.~R. Wampler.
+\newblock Surface recombination of hydrogen on clean nickel.
+\newblock \emph{Applied Physics Letters}, 48\penalty0 (6):\penalty0 405--407,
+  1986.
+\newblock \doi{10.1063/1.96521}.
+
+\bibitem[Young and Scully(1997)]{young1997}
+G.~A. Young and J.~R. Scully.
+\newblock Evidence that carbide precipitation produces hydrogen traps in
+  {Ni-17Cr-8Fe} alloys.
+\newblock \emph{Scripta Materialia}, 36\penalty0 (6):\penalty0 713--719, 1997.
+\newblock \doi{10.1016/S1359-6462(96)00440-X}.
+
+\bibitem[Zarchy and Axtmann(1979)]{zarchy1979}
+A.~S. Zarchy and R.~C. Axtmann.
+\newblock Tritium permeation through 304 stainless steel at ultra-low
+  pressures.
+\newblock \emph{Journal of Nuclear Materials}, 79\penalty0 (1):\penalty0
+  110--117, 1979.
+\newblock \doi{10.1016/0022-3115(79)90436-4}.
+
+\bibitem[Zhu et~al.(2021)Zhu, Mur{\'a}nsky, Wei, Davis, Budzakoska-Testone,
+  Huang, and Drew]{zhu2021}
+H.~Zhu, O.~Mur{\'a}nsky, T.~Wei, J.~Davis, E.~Budzakoska-Testone, H.~Huang, and
+  M.~Drew.
+\newblock The effect of applied stress on the high-temperature creep behaviour
+  and microstructure of {NiMoCr} {Hastelloy-N} alloy.
+\newblock \emph{Materialia}, 16:\penalty0 101069, 2021.
+\newblock \doi{10.1016/j.mtla.2021.101069}.
+
+\end{thebibliography}

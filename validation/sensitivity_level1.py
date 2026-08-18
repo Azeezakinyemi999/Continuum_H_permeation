@@ -1894,13 +1894,36 @@ def sobol_regime_subbox(cluster_df, top_k, target_regime, output_metrics=REGIME_
 # Phase 3 — cross-regime comparison reporting
 # -----------------------------------------------------------------------------
 
+def _column_normalize(mat):
+    """
+    Divide every column of `mat` by its own maximum, so each column peaks at 1.0.
+
+    Columns whose max is non-finite or <= 0 are left untouched — max-division is
+    meaningless there (relevant for 'S1_givendata', which can come out slightly
+    negative on scattered data).
+    """
+    out = mat.astype(float).copy()
+    for c in out.columns:
+        col = out[c].to_numpy(dtype=float)
+        mx = np.nanmax(col) if np.isfinite(col).any() else np.nan
+        if np.isfinite(mx) and mx > 0:
+            out[c] = out[c] / mx
+    return out
+
+
 def regime_comparison_matrix(givendata_results, output_metric, param_names,
-                             index='delta', top_union=12):
+                             index='delta', top_union=12, normalize=None):
     """
     Build a (parameter × regime) matrix of a chosen Route-B index for one metric,
     restricted to the union of each regime's top-`top_union` parameters.
 
     index : 'delta' | 'pawn_median' | 'S1_givendata'
+    normalize : None (raw values) | 'column' (divide each column by its own max,
+        so every regime peaks at 1.0 and rows read as *relative* importance
+        within that regime). The top-`top_union` selection always uses the raw
+        values, so the same parameters appear either way; only the row ordering
+        (by row mean) shifts, since it is computed on whatever is returned.
+
     Returns the DataFrame (params as rows, regimes as columns).
     """
     df = summarize_givendata(givendata_results, param_names)
@@ -1914,34 +1937,84 @@ def regime_comparison_matrix(givendata_results, output_metric, param_names,
 
     mat = (df[df['parameter'].isin(union)]
            .pivot(index='parameter', columns='regime', values=index))
+    if normalize == 'column':
+        mat = _column_normalize(mat)
+    elif normalize not in (None, False):
+        raise ValueError(f"normalize must be None or 'column', got {normalize!r}")
     # order rows by overall importance (row mean)
     mat = mat.reindex(mat.mean(axis=1).sort_values(ascending=False).index)
     return mat
 
 
 def plot_regime_comparison_heatmap(givendata_results, output_metric, param_names,
-                                   index='delta', top_union=12, show=True):
-    """Heatmap of a Route-B index across regimes (rows=params, cols=regimes)."""
-    mat = regime_comparison_matrix(givendata_results, output_metric, param_names,
+                                   index='delta', top_union=12, normalize='column',
+                                   show_raw=True, show=True):
+    """
+    Heatmap of a Route-B index across regimes (rows=params, cols=regimes).
+
+    normalize : 'column' (default) colours each cell by its column-normalized
+        value, so every regime spans a full 0->1 scale and within-regime contrast
+        is visible. Without this, the dominant parameter (usually `temperature`)
+        saturates the single global colour scale and everything else reads white.
+        Pass None for the raw, un-normalized heatmap.
+    show_raw : when normalizing, also print the raw value in a small box in each
+        cell's upper-right corner, so absolute magnitude is not lost. The large
+        centred number is the normalized value.
+    """
+    raw = regime_comparison_matrix(givendata_results, output_metric, param_names,
                                    index=index, top_union=top_union)
-    if mat.empty:
+    if raw.empty:
         print(f"No data for metric '{output_metric}'.")
         return None
-    fig, ax = plt.subplots(figsize=(1.6 * mat.shape[1] + 3, 0.45 * mat.shape[0] + 2))
-    im = ax.imshow(mat.values, cmap='YlOrRd', aspect='auto')
-    ax.set_xticks(range(mat.shape[1]))
-    ax.set_xticklabels(mat.columns, rotation=0)
-    ax.set_yticks(range(mat.shape[0]))
-    ax.set_yticklabels(mat.index)
+
+    normalized = (normalize == 'column')
+    if normalized:
+        colour_mat = _column_normalize(raw)
+        # re-order rows on the normalized values, then keep raw in lockstep
+        colour_mat = colour_mat.reindex(
+            colour_mat.mean(axis=1).sort_values(ascending=False).index)
+        raw = raw.reindex(colour_mat.index)
+        vmin, vmax = 0.0, 1.0
+    else:
+        colour_mat = raw
+        vmin = vmax = None
+        show_raw = False
+
+    # dual-annotated cells need a little more room for the corner box
+    col_w, row_h = (1.9, 0.55) if show_raw else (1.6, 0.45)
+    fig, ax = plt.subplots(figsize=(col_w * colour_mat.shape[1] + 3,
+                                    row_h * colour_mat.shape[0] + 2))
+    im = ax.imshow(colour_mat.values, cmap='YlOrRd', aspect='auto',
+                   vmin=vmin, vmax=vmax)
+    ax.set_xticks(range(colour_mat.shape[1]))
+    ax.set_xticklabels(colour_mat.columns, rotation=0)
+    ax.set_yticks(range(colour_mat.shape[0]))
+    ax.set_yticklabels(colour_mat.index)
     cbar = plt.colorbar(im, ax=ax)
-    cbar.set_label(f'{index}')
-    for i in range(mat.shape[0]):
-        for j in range(mat.shape[1]):
-            v = mat.values[i, j]
-            if np.isfinite(v):
-                ax.text(j, i, f'{v:.2f}', ha='center', va='center', fontsize=8,
-                        color='black' if v < np.nanmax(mat.values) * 0.6 else 'white')
-    ax.set_title(f'Cross-regime sensitivity ({index}) — {output_metric}')
+    cbar.set_label(f'{index} (fraction of column max)' if normalized else f'{index}')
+
+    flip = (vmax if normalized else np.nanmax(colour_mat.values)) * 0.6
+    for i in range(colour_mat.shape[0]):
+        for j in range(colour_mat.shape[1]):
+            v = colour_mat.values[i, j]
+            if not np.isfinite(v):
+                continue
+            ax.text(j, i, f'{v:.2f}', ha='center', va='center', fontsize=9,
+                    color='black' if v < flip else 'white')
+            if show_raw:
+                r = raw.values[i, j]
+                if np.isfinite(r):
+                    # translucent white box keeps black text legible on any fill
+                    ax.text(j + 0.45, i - 0.39, f'{r:.3f}', ha='right', va='top',
+                            fontsize=6.5, color='black',
+                            bbox=dict(boxstyle='round,pad=0.15', fc='white',
+                                      ec='none', alpha=0.65))
+
+    title = f'Cross-regime sensitivity ({index}) — {output_metric}'
+    if normalized:
+        title += ('\ncolour + large number = normalized to column max'
+                  + ('; corner = raw value' if show_raw else ''))
+    ax.set_title(title)
     fig.tight_layout()
     if show:
         plt.show()

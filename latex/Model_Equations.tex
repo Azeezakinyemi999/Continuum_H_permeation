@@ -1,0 +1,1281 @@
+% ============================================================================
+% Model_Equations.tex
+%
+% Complete equation catalogue for the hierarchical hydrogen permeation
+% model. Section A documents Model A (bulk transport hierarchy, levels
+% L1-L5, driven by Application/Proposal.ipynb). Section B documents Model B
+% (surface-kinetics extension, level L6 combined with the bulk levels,
+% driven by Application/Surface_proposal.ipynb).
+%
+% Every equation is transcribed from the Python calculation modules in
+% calculations/ (the code is the source of truth). Code locations are given
+% as file -> function. Compile with pdflatex + bibtex (or upload the folder
+% to Overleaf).
+% ============================================================================
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[margin=2.2cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage[round]{natbib}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue!60!black,citecolor=blue!60!black,urlcolor=blue!60!black]{hyperref}
+
+% ---------------------------------------------------------------- notation macros
+\newcommand{\Pup}{P_{\mathrm{up}}}
+\newcommand{\Pdown}{P_{\mathrm{down}}}
+\newcommand{\Pint}{P_{\mathrm{int}}}
+\newcommand{\Ks}{K_{\mathrm{s}}}
+\newcommand{\Kox}{K_{\mathrm{ox}}}
+\newcommand{\Keq}{K_{\mathrm{eq}}}
+\newcommand{\Dm}{D_{\mathrm{m}}}
+\newcommand{\Dox}{D_{\mathrm{ox}}}
+\newcommand{\Deff}{D_{\mathrm{eff}}}
+\newcommand{\Lm}{L_{\mathrm{m}}}
+\newcommand{\Lox}{L_{\mathrm{ox}}}
+\newcommand{\kdiss}{k_{\mathrm{diss}}}
+\newcommand{\krec}{k_{\mathrm{recomb}}}
+\newcommand{\fgb}{f_{\mathrm{gb}}}
+\newcommand{\Rsurf}{R_{\mathrm{surface}}}
+\newcommand{\Rox}{R_{\mathrm{oxide}}}
+\newcommand{\Rmet}{R_{\mathrm{metal}}}
+% code identifiers (file and function names)
+\newcommand{\code}[1]{\texttt{#1}}
+
+\title{Equations of the Hierarchical Hydrogen Permeation Model\\
+\large Model A: Bulk Transport Hierarchy (L1--L5) \quad
+Model B: Surface-Kinetics Extension (L6)}
+\author{Azeez Akinyemi}
+\date{\today}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\clearpage
+
+% ============================================================================
+\section{Introduction and notation}
+% ============================================================================
+
+The permeation model is built as a hierarchy of physical fidelity. \textbf{Model
+A} (Section~\ref{sec:modelA}, notebook \code{Application/Proposal.ipynb})
+assumes that surface processes are infinitely fast, so transport is always
+limited by bulk diffusion through the oxide and/or metal layers. It progresses
+from a perfect metal membrane (L1) through a perfect oxide (L2a), the coupled
+oxide--metal bilayer (L2b), a defective oxide with parallel leakage paths (L3),
+a defective metal with grain-boundary transport and trapping (L4), up to the
+full defective system (L5). \textbf{Model B} (Section~\ref{sec:modelB},
+notebook \code{Application/Surface\_proposal.ipynb}) relaxes the fast-surface
+assumption: a finite Langmuir--Hinshelwood dissociation/recombination step (L6)
+is placed in series with each bulk configuration, and the steady state is found
+by enforcing flux continuity through all layers.
+
+All equations below are transcribed directly from the Python modules in
+\code{calculations/}; the code location column in the summary tables gives
+\emph{file $\rightarrow$ function}. Table~\ref{tab:notation} collects the
+global symbols. Throughout, $R = 8.314\;\mathrm{J\,mol^{-1}\,K^{-1}}$ is the
+gas constant and $T$ the absolute temperature in K.
+
+\begin{table}[h]
+\centering
+\caption{Global notation and units.}
+\label{tab:notation}
+\begin{tabular}{llll}
+\toprule
+Symbol & Meaning & Units & First used \\
+\midrule
+$J$ & permeation flux & $\mathrm{mol\,m^{-2}\,s^{-1}}$ & Eq.~\eqref{eq:fick} \\
+$C$ & dissolved hydrogen concentration & $\mathrm{mol\,m^{-3}}$ & Eq.~\eqref{eq:sieverts} \\
+$\Pup,\,\Pdown$ & upstream / downstream $\mathrm{H_2}$ pressure & Pa & Eq.~\eqref{eq:sieverts} \\
+$\Pint$ & oxide--metal interface pressure & Pa & Eq.~\eqref{eq:closureL2b} \\
+$\Dm,\,\Dox$ & diffusivity of H in metal / $\mathrm{H_2}$ in oxide & $\mathrm{m^2\,s^{-1}}$ & Eq.~\eqref{eq:fick} \\
+$\Ks$ & Sieverts' solubility constant (metal) & $\mathrm{mol\,m^{-3}\,Pa^{-1/2}}$ & Eq.~\eqref{eq:sieverts} \\
+$\Kox$ & oxide solubility constant (Henry form in A, & $\mathrm{mol\,m^{-3}\,Pa^{-1}}$ (A) & Eq.~\eqref{eq:henry} \\
+ & \quad Sieverts form in B; \S\ref{sec:oxideconvention}) & $\mathrm{mol\,m^{-3}\,Pa^{-1/2}}$ (B) & \\
+$\Lm,\,\Lox$ & metal / oxide thickness & m & Eq.~\eqref{eq:L1flux} \\
+$\Phi$ & metal permeability $\Dm\Ks$ & $\mathrm{mol\,m^{-1}\,s^{-1}\,Pa^{-1/2}}$ & Eq.~\eqref{eq:permeability} \\
+$\Deff$ & effective (microstructure-modified) diffusivity & $\mathrm{m^2\,s^{-1}}$ & Eq.~\eqref{eq:orianiDeff} \\
+$\theta$ & surface coverage (fraction of occupied sites) & -- & Eq.~\eqref{eq:ads} \\
+$\kdiss$ & dissociative adsorption rate constant & $\mathrm{mol\,m^{-2}\,s^{-1}\,Pa^{-1}}$ & Eq.~\eqref{eq:ads} \\
+$\Keq$ & surface equilibrium constant $\kdiss/\krec$ & $\mathrm{Pa^{-1}}$ & Eq.~\eqref{eq:des} \\
+$\alpha$ & oxide permeance $\Dox\Kox/\Lox$ (Model B) & $\mathrm{mol\,m^{-2}\,s^{-1}\,Pa^{-1/2}}$ & Eq.~\eqref{eq:permeances} \\
+$\beta$ & metal permeance $\Dm\Ks/\Lm$ & $\mathrm{mol\,m^{-2}\,s^{-1}\,Pa^{-1/2}}$ & Eq.~\eqref{eq:permeances} \\
+$E_D,\,H_s,\,E$ & activation / solution energies & $\mathrm{J\,mol^{-1}}$ & Eq.~\eqref{eq:arrhenius} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ============================================================================
+\section{Model A: bulk transport hierarchy (L1--L5)}
+\label{sec:modelA}
+% ============================================================================
+
+% ----------------------------------------------------------------------------
+\subsection{Summary table}
+% ----------------------------------------------------------------------------
+
+{\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}c >{\raggedright\arraybackslash}p{2.1cm} l >{\raggedright\arraybackslash}p{4.6cm} >{\raggedright\arraybackslash}p{2.5cm}@{}}
+\caption{Model A equations, code locations (file, function in \code{calculations/}), and references.}
+\label{tab:summaryA}\\
+\toprule
+Eq. & Name & Formula & Code location & Ref. \\
+\midrule
+\endfirsthead
+\toprule
+Eq. & Name & Formula & Code location & Ref. \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+\multicolumn{5}{@{}l}{\emph{L1 --- perfect metal}}\\
+\eqref{eq:sieverts} & Sieverts' law & $C = \Ks\sqrt{P}$ & \code{permeation\_calc.py}\newline \code{sieverts\_concentration} & \citet{sieverts1929} \\
+\eqref{eq:fick} & Fick's first law & $J = D\,(C_{\mathrm{up}}-C_{\mathrm{down}})/L$ & \code{permeation\_calc.py}\newline \code{fick\_flux} & \citet{fick1855} \\
+\eqref{eq:L1flux} & L1 flux & $J_{\mathrm{L1}} = \frac{\Dm\Ks}{\Lm}(\sqrt{\Pup}-\sqrt{\Pdown})$ & \code{permeation\_calc.py}\newline \code{calculate\_simple\_metal\_flux} & \\
+\eqref{eq:permeability} & Permeability & $\Phi = \Dm\Ks$ & \code{utils.py}\newline \code{get\_permeability} & \\
+\midrule
+\multicolumn{5}{@{}l}{\emph{L2a --- perfect oxide}}\\
+\eqref{eq:henry} & Henry's law & $C = \Kox P$ & \code{oxide\_permeation.py}\newline \code{molecular\_diffusion\_flux} & \\
+\eqref{eq:L2aflux} & L2a flux & $J_{\mathrm{L2a}} = \frac{\Dox\Kox}{\Lox}(\Pup-\Pdown)$ & \code{oxide\_permeation.py}\newline \code{molecular\_diffusion\_flux} & \\
+\eqref{eq:Rox} & Oxide resistance & $\Rox = \Lox/(\Dox\Kox)$ & \code{oxide\_permeation.py}\newline \code{calculate\_oxide\_resistance} & \\
+\midrule
+\multicolumn{5}{@{}l}{\emph{L2b --- oxide + metal bilayer}}\\
+\eqref{eq:closureL2b} & Flux continuity & $J_{\mathrm{ox}}(\Pint) = J_{\mathrm{m}}(\Pint)$ & \code{interface\_solver.py}\newline \code{flux\_balance\_equation} & \\
+\eqref{eq:Rmetal} & Linearised metal resistance & $\Rmet \approx 2\Lm\sqrt{\Pint}/(\Dm\Ks)$ & \code{oxide\_permeation.py}\newline \code{calculate\_metal\_resistance} & \\
+\eqref{eq:chi} & Regime ratio & $\chi = \Rox/\Rmet$ & \code{interface\_solver.py}\newline \code{calculate\_oxide\_metal\_system} & \\
+\eqref{eq:Ptrans} & Transition pressure & $P_{\mathrm{trans}} = \left[\frac{\Lox \Dm\Ks}{2\Dox\Kox\Lm}\right]^2$ & \code{oxide\_permeation.py}\newline \code{calculate\_transition\_pressure} & \\
+\midrule
+\multicolumn{5}{@{}l}{\emph{L3 --- defective oxide (parallel paths)}}\\
+\eqref{eq:L3parallel} & Parallel-path flux & $J_{\mathrm{L3}} = f_{\mathrm{int}}J_{\mathrm{int}} + f_{\mathrm{def}}J_{\mathrm{def}}$ & \code{parallel\_oxide\_defect\_paths.py}\newline \code{calculate\_parallel\_path\_flux} & \citet{strehlow1974,zarchy1979} \\
+\eqref{eq:crack} & Crack path & $\Lox^{\mathrm{crack}} = \gamma\,\Lox$ & \code{parallel\_oxide\_defect\_paths.py}\newline \code{calculate\_defect\_path\_flux} & \citet{strehlow1974} \\
+\eqref{eq:gbdefect} & Oxide-GB path & $\Dox^{\mathrm{gb}} = \delta_D\,\Dox$ & \code{parallel\_oxide\_defect\_paths.py}\newline \code{calculate\_defect\_path\_flux} & \\
+\eqref{eq:mixed} & Mixed defects & $J_{\mathrm{def}} = \sum_i w_i J_i$ & \code{parallel\_oxide\_defect\_paths.py}\newline \code{calculate\_defect\_path\_flux} & \\
+\midrule
+\multicolumn{5}{@{}l}{\emph{L4 --- defective metal (grain boundaries + traps)}}\\
+\eqref{eq:fgb} & GB volume fraction & $\fgb = 3\delta/d$ & \code{defective\_metal.py}\newline \code{grain\_boundary\_density} & \citet{underwood1970,palumbo1990} \\
+\eqref{eq:gbenh} & GB enhancement & $\alpha_{\mathrm{gb}}(T) = A\exp\!\left[\frac{Q_{\mathrm{bulk}}-Q_{\mathrm{gb}}}{RT}\right]$ & \code{defective\_metal.py}\newline \code{gb\_enhancement\_factor} & \citet{tsuru1982,brass1996} \\
+\eqref{eq:gbparallel} & GB parallel model & $D_{\mathrm{gb\text{-}enh}} = (1-\fgb)D + \fgb\,\alpha_{\mathrm{gb}}D$ & \code{defective\_metal.py}\newline \code{calculate\_gb\_enhanced\_}\newline\code{diffusivity} & \\
+\eqref{eq:hart} & Hart equation & see text & \code{defective\_metal.py}\newline \code{calculate\_gb\_enhanced\_}\newline\code{diffusivity} & \citet{hart1957} \\
+\eqref{eq:orianitheta} & Trap occupancy & $\theta_T = \frac{K\theta_L}{1+K\theta_L}$ & \code{defective\_metal.py}\newline \code{trap\_occupancy} & \citet{oriani1970,mcnabb1963} \\
+\eqref{eq:orianiDeff} & Trapping reduction & $\Deff = \frac{D}{1+\sum_i N_{T,i}K_i/N_L}$ & \code{defective\_metal.py}\newline \code{calculate\_effective\_}\newline\code{diffusivity\_trapping} & \citet{oriani1970} \\
+\eqref{eq:combined} & Combined model & $\Deff = \frac{(1-\fgb)D+\fgb\alpha_{\mathrm{gb}}D}{1+\sum_i N_{T,i}K_i/N_L}$ & \code{defective\_metal.py}\newline \code{combined\_microstructure\_}\newline\code{model} & \citet{oudriss2012} \\
+\eqref{eq:vacancy} & Vacancy concentration & $C_v = N\exp(-E_f^v/RT)$ & \code{defective\_metal.py}\newline \code{vacancy\_concentration} & \citet{kraftmakher1998} \\
+\eqref{eq:L4flux} & L4 flux & $J_{\mathrm{L4}} = \frac{\Deff\Ks}{\Lm}(\sqrt{\Pup}-\sqrt{\Pdown})$ & \code{permeation\_calc.py}\newline \code{calculate\_defective\_}\newline\code{metal\_flux} & \\
+\midrule
+\multicolumn{5}{@{}l}{\emph{L5 --- full system}}\\
+\eqref{eq:closureL5} & Coupled closure & $J_{\mathrm{ox}}(\Pint) = J_{\mathrm{L4}}(\Pint;\Deff)$ & \code{interface\_solver.py}\newline \code{solve\_interface\_pressure\_}\newline\code{defective\_metal} & \\
+\midrule
+\multicolumn{5}{@{}l}{\emph{Shared temperature dependence}}\\
+\eqref{eq:arrhenius} & Arrhenius (reference form) & $k(T) = k_{\mathrm{ref}}\exp\!\left[-\frac{E}{R}\!\left(\frac1T-\frac1{T_{\mathrm{ref}}}\right)\right]$ & \code{utils.py}\newline \code{arrhenius} & \\
+\eqref{eq:QPhi} & Permeation activation & $Q_\Phi = E_D + H_s$ & \code{utils.py}\newline \code{get\_permeability} & \\
+\end{longtable}
+}
+
+% ----------------------------------------------------------------------------
+\subsection{L1: perfect metal}
+% ----------------------------------------------------------------------------
+
+\paragraph{Sieverts' law.} At a clean metal surface in equilibrium with
+$\mathrm{H_2}$ gas, the molecule dissociates and dissolves atomically, so the
+dissolved concentration scales with the \emph{square root} of pressure:
+\begin{equation}
+  C = \Ks \sqrt{P}.
+  \label{eq:sieverts}
+\end{equation}
+Here $C$ is the hydrogen concentration at the surface
+[$\mathrm{mol\,m^{-3}}$], $P$ the hydrogen partial pressure [Pa], and $\Ks$
+the Sieverts solubility constant [$\mathrm{mol\,m^{-3}\,Pa^{-1/2}}$], a
+material property with its own van~'t Hoff temperature dependence
+(Eq.~\eqref{eq:arrhenius} with $E = H_s$). The square root is the fingerprint
+of dissociative absorption \citep{sieverts1929}: it is what distinguishes
+metals from oxides in every log--log flux plot in the model.
+
+\paragraph{Fick's first law.} Steady-state diffusion through a flat membrane
+with a linear concentration profile gives
+\begin{equation}
+  J = D\,\frac{C_{\mathrm{up}} - C_{\mathrm{down}}}{L},
+  \label{eq:fick}
+\end{equation}
+where $J$ is the flux [$\mathrm{mol\,m^{-2}\,s^{-1}}$], $D$ the diffusion
+coefficient [$\mathrm{m^2\,s^{-1}}$], $L$ the membrane thickness [m], and
+$C_{\mathrm{up}}$, $C_{\mathrm{down}}$ the boundary concentrations
+[$\mathrm{mol\,m^{-3}}$]. Positive flux runs from upstream to downstream
+\citep{fick1855}.
+
+\paragraph{L1 permeation flux.} Substituting Eq.~\eqref{eq:sieverts} at both
+faces into Eq.~\eqref{eq:fick} yields the classical Richardson form,
+\begin{equation}
+  J_{\mathrm{L1}} = \frac{\Dm \Ks}{\Lm}\left(\sqrt{\Pup} - \sqrt{\Pdown}\right),
+  \label{eq:L1flux}
+\end{equation}
+with $\Dm$ the metal diffusivity [$\mathrm{m^2\,s^{-1}}$], $\Lm$ the metal
+thickness [m], and $\Pup$, $\Pdown$ the boundary pressures [Pa]
+\citep{richardson1904,sieverts1929}. On a log--log
+plot of $J$ versus $\Pup$ (with $\Pdown \approx 0$) this gives the
+characteristic slope of $0.5$; the notebooks use this slope as the L1
+validation criterion.
+
+\paragraph{Permeability.} The kinetic and thermodynamic factors are lumped into
+\begin{equation}
+  \Phi = \Dm \Ks,
+  \label{eq:permeability}
+\end{equation}
+with units $\mathrm{mol\,m^{-1}\,s^{-1}\,Pa^{-1/2}}$. Written with $\Phi$,
+Eq.~\eqref{eq:L1flux} becomes $J = (\Phi/\Lm)\,\Delta\sqrt{P}$, and the
+corresponding driving-force resistance is $R_{\mathrm{L1}} = \Lm/\Phi$
+[$\mathrm{Pa^{1/2}\,s\,m^{2}\,mol^{-1}}$]. Note this resistance acts on a
+$\sqrt{P}$ driving force, so it is \emph{not} directly comparable to the
+oxide resistance of Eq.~\eqref{eq:Rox} without linearisation
+(Eq.~\eqref{eq:Rmetal}).
+
+% ----------------------------------------------------------------------------
+\subsection{L2a: perfect oxide}
+% ----------------------------------------------------------------------------
+
+\paragraph{Henry's law.} In the oxide, hydrogen is assumed to diffuse as
+intact $\mathrm{H_2}$ molecules (no dissociation), so solubility is
+\emph{linear} in pressure:
+\begin{equation}
+  C = \Kox P,
+  \label{eq:henry}
+\end{equation}
+where $\Kox$ is the Henry constant [$\mathrm{mol\,m^{-3}\,Pa^{-1}}$] --- note
+the different units from $\Ks$. This single change of exponent propagates
+through the whole hierarchy: it is why oxide-limited and metal-limited regimes
+are distinguishable by pressure slope.
+
+\paragraph{L2a flux.} Combining Eq.~\eqref{eq:henry} with Fick's law across
+the oxide thickness $\Lox$:
+\begin{equation}
+  J_{\mathrm{L2a}} = \frac{\Dox \Kox}{\Lox}\left(\Pup - \Pdown\right),
+  \label{eq:L2aflux}
+\end{equation}
+with $\Dox$ the molecular diffusivity of $\mathrm{H_2}$ in the oxide
+[$\mathrm{m^2\,s^{-1}}$] \citep{strehlow1974,hollenberg1995}. The flux is
+linear in $\Delta P$ (log--log slope $1.0$), the L2a validation criterion.
+The $\mathrm{Cr_2O_3}$ transport parameters themselves come from
+\citet{nemanic2023} ($\Phi_{\mathrm{ox}}$, $\Dox$), \citet{stover1986}
+($Q_{p,\mathrm{ox}}$), and \citet{chen2011} ($E_{D,\mathrm{ox}}$ from DFT).
+
+\paragraph{Oxide resistance.} Because transport is linear, a genuine
+pressure-independent resistance exists:
+\begin{equation}
+  \Rox = \frac{\Lox}{\Dox \Kox},
+  \qquad J = \frac{\Delta P}{\Rox},
+  \label{eq:Rox}
+\end{equation}
+with $\Rox$ in $\mathrm{Pa\,s\,m^{2}\,mol^{-1}}$. This constancy is the key
+structural difference from the metal layer and is what makes the series
+combination in L2b a nonlinear problem.
+
+% ----------------------------------------------------------------------------
+\subsection{L2b: oxide + metal in series}
+% ----------------------------------------------------------------------------
+
+\paragraph{Flux continuity closure.} With an oxide on the upstream face of the
+metal, an unknown interface pressure $\Pint$ develops at the oxide--metal
+boundary. At steady state the same flux must cross both layers:
+\begin{equation}
+  \underbrace{\frac{\Dox\Kox}{\Lox}\bigl(\Pup - \Pint\bigr)}_{J_{\mathrm{ox}}(\Pint)}
+  \;=\;
+  \underbrace{\frac{\Dm\Ks}{\Lm}\bigl(\sqrt{\Pint} - \sqrt{\Pdown}\bigr)}_{J_{\mathrm{m}}(\Pint)} .
+  \label{eq:closureL2b}
+\end{equation}
+This series-barrier construction is the standard treatment of oxide permeation
+barriers on structural metals \citep{strehlow1974,hollenberg1995}. The mixed
+linear/square-root equation has no closed-form solution; the code
+brackets $\Pint \in (\Pdown, \Pup)$ and solves it with Brent's method
+(\code{interface\_solver.py} $\rightarrow$ \code{solve\_interface\_pressure}).
+The solved $\Pint$ determines both the flux and the operating regime.
+
+\paragraph{Linearised metal resistance.} To compare the two layers on a common
+$\Delta P$ basis, the metal flux is linearised about $\Pint$ using
+$\partial\sqrt{P}/\partial P = 1/(2\sqrt{P})$:
+\begin{equation}
+  \Rmet \approx \frac{2 \Lm \sqrt{\Pint}}{\Dm \Ks},
+  \label{eq:Rmetal}
+\end{equation}
+in $\mathrm{Pa\,s\,m^{2}\,mol^{-1}}$. Unlike $\Rox$, this resistance grows
+with $\sqrt{\Pint}$: at high pressure the metal becomes comparatively easier
+to traverse per pascal of driving force.
+
+\paragraph{Regime classification.} The resistance ratio
+\begin{equation}
+  \chi = \frac{\Rox}{\Rmet}
+  \qquad
+  \begin{cases}
+    \chi > 10 & \text{oxide-limited } (\Pint \ll \Pup,\ \text{slope} \to 1.0),\\[2pt]
+    0.5 \le \chi \le 10 & \text{transition } (0.5 < \text{slope} < 1.0),\\[2pt]
+    \chi < 0.5 & \text{metal-limited } (\Pint \to \Pup,\ \text{slope} \to 0.5),
+  \end{cases}
+  \label{eq:chi}
+\end{equation}
+is evaluated at the solved interface pressure. Setting $\Rox = \Rmet$ and
+solving for pressure gives the approximate crossover
+\begin{equation}
+  P_{\mathrm{trans}} = \left(\frac{\Lox\, \Dm \Ks}{2\, \Dox \Kox\, \Lm}\right)^{2},
+  \label{eq:Ptrans}
+\end{equation}
+the pressure at which the rate-limiting layer switches --- a useful design
+number for choosing operating windows.
+
+\paragraph{Remark (comparing metal and oxide resistances --- the chemistry
+behind the units).} The mismatch between the two resistances is not a
+mathematical artefact; it records \emph{which chemical species each layer
+transports}. The oxide carries \emph{intact} $\mathrm{H_2}$: no bond is
+broken on dissolution, one gas molecule becomes one dissolved molecule, so
+$C \propto P$ (Henry) and the flux responds linearly to $\Delta P$ with the
+constant resistance $\Rox$ [$\mathrm{Pa\,s\,m^2\,mol^{-1}}$]. Dissociation is
+deferred to the oxide--metal interface, where
+$\mathrm{H_2} \rightleftharpoons 2\mathrm{H}^{*}$; the law of mass action for
+a reaction delivering \emph{two} atoms per molecule gives
+$C_{\mathrm{H}}^{2} \propto \Pint$, i.e.\ $C_{\mathrm{H}} \propto
+\sqrt{\Pint}$ --- Sieverts' law \emph{is} that 2:1 stoichiometry. The metal
+therefore responds to $\Delta\sqrt{P}$ (natural resistance
+$R_{\mathrm{L1}} = \Lm/\Phi$ [$\mathrm{Pa^{1/2}\,s\,m^2\,mol^{-1}}$]):
+doubling the pressure less than doubles the dissolved-atom population, so per
+pascal the metal becomes progressively harder to feed while the oxide does
+not. Eq.~\eqref{eq:Rmetal} translates the metal onto the oxide's per-pascal
+basis by linearising about $\Pint$ (the factor 2 is
+$\mathrm{d}\sqrt{P}/\mathrm{d}P = 1/(2\sqrt{P})$, the marginal yield of the
+dissociation equilibrium), which is what makes $\chi$ in Eq.~\eqref{eq:chi}
+meaningful. Two caveats: the linearised $\Rmet$ is a \emph{diagnostic only}
+--- the L2b flux is always computed from the exact continuity condition
+Eq.~\eqref{eq:closureL2b}, never as $\Delta P/(\Rox + \Rmet)$ --- and Model B
+never meets the mismatch because there dissociation happens at the
+\emph{gas--oxide} surface instead, so atomic H traverses every layer and all
+driving forces are already in $\sqrt{P}$ units
+(\S\ref{sec:oxideconvention}). Appendix~\ref{app:resistance} gives the
+complete derivation.
+
+% ----------------------------------------------------------------------------
+\subsection{L3: defective oxide (parallel paths)}
+% ----------------------------------------------------------------------------
+
+\paragraph{Area-weighted parallel paths.} Following
+\citet{strehlow1974}, a real oxide is treated as intact film and defects
+acting as parallel permeation paths, weighted by their area fractions:
+\begin{equation}
+  J_{\mathrm{L3}} = f_{\mathrm{intact}}\, J_{\mathrm{intact}}
+                  + f_{\mathrm{defect}}\, J_{\mathrm{defect}},
+  \qquad f_{\mathrm{intact}} + f_{\mathrm{defect}} = 1,
+  \label{eq:L3parallel}
+\end{equation}
+where $f_{\mathrm{defect}}$ is the fraction of surface area occupied by
+defects [--] and each $J$ is a flux \emph{density} through its own path
+[$\mathrm{mol\,m^{-2}\,s^{-1}}$]. Crucially, the intact oxide still conducts
+($J_{\mathrm{intact}}$ from the full L2b solver), so even $\sim$1\% defect
+coverage can dominate without the intact film being ignored
+\citep{zarchy1979}. Each defect type maps onto a modified L1 or L2b problem:
+\begin{align}
+  \text{pinhole:}&\quad J_{\mathrm{def}} = J_{\mathrm{L1}}
+    \quad\text{(bare metal, Eq.~\eqref{eq:L1flux}; no oxide barrier)},
+    \nonumber\\
+  \text{crack:}&\quad \Lox^{\mathrm{crack}} = \gamma\,\Lox,
+    \quad 0<\gamma<1 \text{ (default } \gamma=0.1\text{)},
+    \label{eq:crack}\\
+  \text{oxide grain boundary:}&\quad \Dox^{\mathrm{gb}} = \delta_D\,\Dox,
+    \quad \delta_D>1 \text{ (default } \delta_D=10\text{)},
+    \label{eq:gbdefect}
+\end{align}
+where $\gamma$ is the crack thickness factor [--] and $\delta_D$ the
+grain-boundary diffusivity enhancement [--]; crack and GB paths are solved
+with the L2b machinery using the modified oxide properties. Several defect
+types can coexist; their contribution is the normalised weighted sum
+\begin{equation}
+  J_{\mathrm{defect}} = \frac{\sum_i w_i J_i}{\sum_i w_i},
+  \label{eq:mixed}
+\end{equation}
+with $w_i$ the component area fractions within the defective region.
+
+% ----------------------------------------------------------------------------
+\subsection{L4: defective metal (grain boundaries + trapping)}
+% ----------------------------------------------------------------------------
+
+\paragraph{Grain-boundary volume fraction.} From stereology of a random
+polycrystal \citep{underwood1970}, the GB surface area per volume is
+$S_v = s/d$ and the GB volume fraction is
+\begin{equation}
+  \fgb = \frac{s\,\delta}{d}, \qquad
+  s = \begin{cases} 3 & \text{equiaxed grains}\\ 2 & \text{columnar}\\ 1 & \text{planar/lamellar}, \end{cases}
+  \label{eq:fgb}
+\end{equation}
+where $\delta$ is the GB thickness [m] (default $0.5\;\mathrm{nm}$), $d$ the
+mean grain diameter [m], and $s$ the dimensionality shape factor [--]. The
+same geometry supplies the GB \emph{trap} density
+$N_{\mathrm{gb}} = S_v\,\rho_{\mathrm{gb}}$ [$\mathrm{m^{-3}}$], with
+$\rho_{\mathrm{gb}} \approx 10^{19}\;\mathrm{m^{-2}}$ the areal density of
+trap sites on the boundary.
+
+\paragraph{Grain-boundary enhancement factor.} GBs are fast diffusion paths
+because their activation energy is lower ($Q_{\mathrm{gb}} \approx
+0.6\,Q_{\mathrm{bulk}}$):
+\begin{equation}
+  \alpha_{\mathrm{gb}}(T) = \frac{D_{\mathrm{gb}}}{D_{\mathrm{bulk}}}
+  = A \exp\!\left[\frac{Q_{\mathrm{bulk}} - Q_{\mathrm{gb}}}{RT}\right],
+  \label{eq:gbenh}
+\end{equation}
+where $A$ is the pre-exponential ratio $D_{0,\mathrm{gb}}/D_{0,\mathrm{bulk}}$
+[--] and $Q$ are activation energies [$\mathrm{J\,mol^{-1}}$]
+\citep{tsuru1982,brass1996}. In the code the factor is interpolated
+log-linearly in $1/T$ from tabulated austenitic-steel data
+($\alpha_{\mathrm{gb}} \approx 500$ at $600\,^\circ$C down to $\approx 20$ at
+$1000\,^\circ$C), then scaled by GB character (HAGB $1.0$, LAGB $0.1$, twin
+$0.05$, special $0.3$).
+
+\paragraph{GB-enhanced diffusivity.} Treating lattice and GB as independent
+parallel channels:
+\begin{equation}
+  D_{\mathrm{gb\text{-}enh}}
+  = (1-\fgb)\,D_{\mathrm{bulk}} + \fgb\,\alpha_{\mathrm{gb}} D_{\mathrm{bulk}}
+  = D_{\mathrm{bulk}}\bigl[1 + \fgb(\alpha_{\mathrm{gb}}-1)\bigr].
+  \label{eq:gbparallel}
+\end{equation}
+For larger GB fractions ($\fgb \gtrsim 0.01$), where network connectivity
+matters, the Hart equation \citep{hart1957} is available instead:
+\begin{equation}
+  \frac{\Deff}{D_{\mathrm{bulk}}}
+  = 1 + \frac{\dfrac{\fgb}{1-\fgb}\,( \alpha_{\mathrm{gb}} - 1)}
+             {1 + \dfrac{2(\alpha_{\mathrm{gb}}-1)\,\fgb}{3(1-\fgb)}}.
+  \label{eq:hart}
+\end{equation}
+
+\paragraph{Oriani trap occupancy.} Traps (dislocations, vacancies, GBs,
+precipitates) immobilise hydrogen. Under local equilibrium
+\citep{oriani1970}, each trap type $i$ has an equilibrium constant and
+occupancy
+\begin{equation}
+  K_i = \exp\!\left(\frac{E_{b,i}}{RT}\right), \qquad
+  \theta_{T,i} = \frac{K_i\,\theta_L}{1 + K_i\,\theta_L}, \qquad
+  \theta_L = \frac{N_A C_L}{N_L},
+  \label{eq:orianitheta}
+\end{equation}
+where $E_{b,i}$ is the trap binding energy [$\mathrm{J\,mol^{-1}}$]
+(dislocations 20--30, GBs 40--50, vacancies 40--45, precipitates
+60--90~$\mathrm{kJ\,mol^{-1}}$), $\theta_L$ the lattice-site occupancy [--],
+$C_L$ the mobile (lattice) hydrogen concentration [$\mathrm{mol\,m^{-3}}$],
+$N_L$ the interstitial site density [$\mathrm{m^{-3}}$]
+($\approx 1.06\times10^{29}$ for FCC), and $N_A$ Avogadro's number. The model
+is valid for $\theta_{T,i} < 0.9$; beyond that the kinetic McNabb--Foster
+treatment \citep{mcnabb1963} is recommended.
+
+\paragraph{Trapping-reduced diffusivity.} Partitioning hydrogen between mobile
+and trapped populations gives the Oriani reduction
+\begin{equation}
+  \Deff = \frac{D}{1 + \displaystyle\sum_i \frac{N_{T,i}\,K_i}{N_L}},
+  \label{eq:orianiDeff}
+\end{equation}
+where $N_{T,i}$ is the trap density of type $i$ [$\mathrm{m^{-3}}$]. The
+denominator term $\sum_i N_{T,i}K_i/N_L$ is the ratio of trapped to mobile
+hydrogen; the critical trap density at which $\Deff = D/2$ is
+$N_T^{*} = N_L/K$.
+
+\paragraph{Combined microstructure model.} Enhancement and trapping are
+applied sequentially (GB first, then traps, assumed uniformly distributed):
+\begin{equation}
+  \Deff = \frac{(1-\fgb)\,D_{\mathrm{bulk}} + \fgb\,\alpha_{\mathrm{gb}} D_{\mathrm{bulk}}}
+               {1 + \displaystyle\sum_i \frac{N_{T,i}\,K_i}{N_L}}.
+  \label{eq:combined}
+\end{equation}
+The net modification factor $M = \Deff/D_{\mathrm{bulk}}$ can be either
+$>1$ (GB-dominated, typically coarse traps / high $T$) or $<1$
+(trapping-dominated, typically fine microstructure / low $T$)
+\citep{oudriss2012}. Thermal vacancies, one of the trap populations, follow
+\begin{equation}
+  C_v = N \exp\!\left(-\frac{E_f^{v}}{RT}\right),
+  \label{eq:vacancy}
+\end{equation}
+with $E_f^{v}$ the vacancy formation energy [$\mathrm{J\,mol^{-1}}$]
+($140\;\mathrm{kJ\,mol^{-1}}$ for Incoloy~800) and $N$ the lattice site
+density [$\mathrm{m^{-3}}$] \citep{kraftmakher1998}.
+
+\paragraph{L4 permeation flux.} The membrane flux keeps the Sieverts boundary
+conditions (solubility is a bulk thermodynamic property, unchanged by
+microstructure) but replaces $D$ with $\Deff$:
+\begin{equation}
+  J_{\mathrm{L4}} = \frac{\Deff \Ks}{\Lm}\left(\sqrt{\Pup} - \sqrt{\Pdown}\right).
+  \label{eq:L4flux}
+\end{equation}
+Because trap occupancy depends on the local concentration $C(x)$ --- the
+profile linear in $\sqrt{P}$-space, written out as Eq.~\eqref{eq:profile} ---
+$\Deff$ varies through the thickness; the code evaluates it on an $n$-point
+profile and averages (arithmetic, harmonic, inlet, or outlet --- the
+\code{method} argument) before applying Eq.~\eqref{eq:L4flux}.
+
+% ----------------------------------------------------------------------------
+\subsection{L5: full system (defective oxide + defective metal)}
+% ----------------------------------------------------------------------------
+
+L5 has no separate physics: it composes the L3 oxide description with the L4
+metal description through the same flux-continuity closure as L2b, now with a
+concentration-dependent $\Deff$:
+\begin{equation}
+  \frac{\Dox\Kox}{\Lox}\bigl(\Pup - \Pint\bigr)
+  =
+  \frac{\Deff(\Pint)\,\Ks}{\Lm}\bigl(\sqrt{\Pint} - \sqrt{\Pdown}\bigr).
+  \label{eq:closureL5}
+\end{equation}
+Since $\Deff$ depends on the concentration profile, which depends on $\Pint$,
+the solver iterates: guess $\Pint$, evaluate $\Deff$ on the resulting profile,
+re-solve Eq.~\eqref{eq:closureL5} by Brent's method, and repeat until $\Pint$
+converges (\code{interface\_solver.py} $\rightarrow$
+\code{solve\_interface\_pressure\_defective\_metal}). The defective-oxide
+variant applies this closure per parallel path of Eq.~\eqref{eq:L3parallel};
+the assembly is orchestrated in \code{Application/Proposal.ipynb}. Regime
+classification reuses Eq.~\eqref{eq:chi} with $\Rmet$ evaluated at $\Deff$.
+
+% ----------------------------------------------------------------------------
+\subsection{Shared temperature dependence}
+% ----------------------------------------------------------------------------
+
+Every transport property in both models ($\Dm$, $\Ks$, $\Dox$, $\Kox$,
+$\kdiss$, $\Keq$) is evaluated at temperature with the same
+\emph{reference-temperature} Arrhenius form:
+\begin{equation}
+  k(T) = k_{\mathrm{ref}} \exp\!\left[-\frac{E}{R}\left(\frac{1}{T} - \frac{1}{T_{\mathrm{ref}}}\right)\right],
+  \label{eq:arrhenius}
+\end{equation}
+where $k_{\mathrm{ref}}$ is the measured value at the reference temperature
+$T_{\mathrm{ref}}$ [K] and $E$ the relevant activation or solution energy
+[$\mathrm{J\,mol^{-1}}$]: $E_D$ for diffusivities, $H_s$ (metal) or
+$H_{\mathrm{sol,ox}}$ (oxide) for solubilities, $E_{\mathrm{diss}}$ for the
+dissociation rate constant. This form avoids extrapolating pre-exponentials
+far outside the fitted range. The permeability inherits
+\begin{equation}
+  Q_\Phi = E_D + H_s,
+  \qquad \Phi(T) = \Phi_{\mathrm{ref}}
+  \exp\!\left[-\frac{Q_\Phi}{R}\left(\frac1T - \frac1{T_{\mathrm{ref}}}\right)\right],
+  \label{eq:QPhi}
+\end{equation}
+so an Arrhenius plot of measured permeation flux yields $Q_\Phi$ directly ---
+the basis of the Arrhenius validation panels in both notebooks. Material
+parameters ($D_{\mathrm{ref}}$, $E_D$, $K_{s,\mathrm{ref}}$, $H_s$, oxide
+analogues, surface kinetics) live in \code{calculations/config/model\_config.py}
+and \code{data/}; Section~\ref{sec:parameters} lists every value with its
+default, sensitivity range, and literature source
+\citep{schmidt1985,nemanic2023,stover1986,chen2011,grant1988,zhu2021,lu2022,young1997}.
+
+% ============================================================================
+\section{Model B: surface-kinetics extension (L6 and combinations)}
+\label{sec:modelB}
+% ============================================================================
+
+Model B inserts a finite dissociation/recombination step at the gas--solid
+interface, in series with the Model A bulk layers. All of Model B lives in
+\code{calculations/surface\_kinetics.py}; the bulk equations
+\eqref{eq:sieverts}--\eqref{eq:QPhi} are reused unchanged.
+
+% ----------------------------------------------------------------------------
+\subsection{Summary table}
+% ----------------------------------------------------------------------------
+
+{\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}c >{\raggedright\arraybackslash}p{2.4cm} l >{\raggedright\arraybackslash}p{4.4cm} >{\raggedright\arraybackslash}p{2.2cm}@{}}
+\caption{Model B equations, code locations, and references. All code locations
+are functions in \code{calculations/surface\_kinetics.py} unless noted.}
+\label{tab:summaryB}\\
+\toprule
+Eq. & Name & Formula & Code location & Ref. \\
+\midrule
+\endfirsthead
+\toprule
+Eq. & Name & Formula & Code location & Ref. \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+\multicolumn{5}{@{}l}{\emph{L6 fundamentals}}\\
+\eqref{eq:ads} & Dissociative adsorption & $r_{\mathrm{ads}} = \kdiss P (1-\theta)^2$ & \code{surface\_flux} & \citet{pick1985,baskes1980} \\
+\eqref{eq:des} & Recombinative desorption & $r_{\mathrm{des}} = (\kdiss/\Keq)\,\theta^2$ & \code{surface\_flux} & \citet{pick1985,wampler1986} \\
+\eqref{eq:Jsurf} & Net surface flux & $J_{\mathrm{surf}} = \kdiss\bigl[P(1-\theta)^2 - \theta^2/\Keq\bigr]$ & \code{surface\_flux} & \citet{andrew1992} \\
+\eqref{eq:langmuir} & Langmuir isotherm & $\theta_{\mathrm{eq}} = \frac{\sqrt{\Keq P}}{1+\sqrt{\Keq P}}$ & implicit ($J_{\mathrm{surf}}=0$) & \citet{langmuir1918} \\
+\eqref{eq:gtheta} & Coverage conversion & $g(\theta) = \frac{\theta}{(1-\theta)\sqrt{\Keq}}$ & \code{g\_theta} & \\
+\eqref{eq:Rsurface} & Surface resistance & $\Rsurf \approx \frac{1}{\kdiss \Pup (1-\theta)^2}$ & \code{smooth\_surface\_}\newline\code{resistance} & \\
+\eqref{eq:permeances} & Permeances & $\alpha = \frac{\Dox\Kox}{\Lox}$, $\beta = \frac{\Dm\Ks}{\Lm}$ & \code{compute\_permeances} & \\
+\eqref{eq:KsKeq} & Sieverts--Langmuir link & $\Ks = \sqrt{\kdiss/\krec}\;N_{\mathrm{surf}}/N_L$ & \code{data/surface\_}\newline\code{kinetics\_data.py} & \citet{pick1985} \\
+\midrule
+\multicolumn{5}{@{}l}{\emph{L1+L6 --- metal + surface}}\\
+\eqref{eq:JmL1L6} & Metal flux & $J_{\mathrm{m}} = \beta\bigl(g(\theta) - \sqrt{\Pdown}\bigr)$ & \code{metal\_flux\_L1} & \\
+\eqref{eq:closureL1L6} & Closure in $\theta$ & $J_{\mathrm{surf}}(\theta) = J_{\mathrm{m}}(\theta)$ & \code{solve\_steady\_state\_}\newline\code{flux\_L1L6} & \\
+\midrule
+\multicolumn{5}{@{}l}{\emph{L2a+L6 --- oxide + surface}}\\
+\eqref{eq:JoxL2aL6} & Oxide flux & $J_{\mathrm{ox}} = \alpha\bigl(g(\theta) - \sqrt{\Pdown}\bigr)$ & \code{oxide\_flux\_L2a} & \\
+\midrule
+\multicolumn{5}{@{}l}{\emph{L2+L6 --- oxide + metal + surface}}\\
+\eqref{eq:PintTheta} & Analytic interface pressure & $\sqrt{\Pint} = \frac{\alpha g(\theta) + \beta\sqrt{\Pdown}}{\alpha+\beta}$ & \code{sqrt\_P\_int\_from\_theta} & \\
+\eqref{eq:tripleflux} & Three-flux system & $J_{\mathrm{surf}} = J_{\mathrm{ox}} = J_{\mathrm{m}}$ & \code{solve\_steady\_state\_flux} & \\
+\eqref{eq:fractions} & Resistance fractions & $f_i = R_i / R_{\mathrm{total}}$ & \code{solve\_steady\_state\_flux} & \\
+\midrule
+\multicolumn{5}{@{}l}{\emph{L3+L6 --- defective oxide + surface}}\\
+\eqref{eq:alphapaths} & Path permeances & $\alpha_{\mathrm{crack}} = \alpha/\gamma$, $\alpha_{\mathrm{gb}} = \delta_D\alpha$, $\alpha_{\mathrm{pin}} = \infty$ & \code{calculate\_parallel\_}\newline\code{path\_flux\_L6} & \citet{strehlow1974} \\
+\eqref{eq:L3L6total} & Multi-path total & $J_{\mathrm{tot}} = f_{\mathrm{int}}J_{\mathrm{int}} + \sum_i f_i J_i$ & \code{calculate\_mixed\_}\newline\code{defect\_flux\_L6} & \\
+\midrule
+\multicolumn{5}{@{}l}{\emph{L2+L4+L6 --- oxide + defective metal + surface}}\\
+\eqref{eq:betaeff} & Effective permeance & $\beta_{\mathrm{eff}} = \Deff\Ks/\Lm$ & \code{calculate\_defective\_}\newline\code{metal\_flux\_L6} & \\
+\eqref{eq:profile} & Concentration profile & $C(x) = \Ks\bigl[\sqrt{\Pint} - (\sqrt{\Pint}-\sqrt{\Pdown})\frac{x}{\Lm}\bigr]$ & \code{calculate\_defective\_}\newline\code{metal\_flux\_L6} & \\
+\midrule
+\multicolumn{5}{@{}l}{\emph{L3+L4+L6 --- full model}}\\
+\eqref{eq:L346} & Full-model total & $J_{\mathrm{tot}} = f_{\mathrm{int}}J_{\mathrm{int}} + \sum_i f_i J_i$ & \code{calculate\_full\_model\_}\newline\code{flux\_L346\_v2} & \\
+\end{longtable}
+}
+
+% ----------------------------------------------------------------------------
+\subsection{L6 fundamentals: Langmuir--Hinshelwood surface kinetics}
+% ----------------------------------------------------------------------------
+
+\paragraph{Dissociative adsorption.} An $\mathrm{H_2}$ molecule needs two
+adjacent vacant surface sites to dissociate,
+$\mathrm{H_2(g)} + 2S \rightarrow 2\mathrm{H(ads)}$, giving a rate
+second-order in the vacancy fraction:
+\begin{equation}
+  r_{\mathrm{ads}} = \kdiss\, P\, (1-\theta)^2,
+  \label{eq:ads}
+\end{equation}
+where $\theta \in [0,1]$ is the surface coverage (fraction of occupied
+sites) [--], $\kdiss$ the dissociation rate constant
+[$\mathrm{mol\,m^{-2}\,s^{-1}\,Pa^{-1}}$], and $P$ the local $\mathrm{H_2}$
+pressure [Pa] \citep{pick1985,baskes1980}. $\kdiss$ follows
+Eq.~\eqref{eq:arrhenius} with activation energy $E_{\mathrm{diss}}$; the
+numerical rate constants for both the oxide surface and the clean metal
+surface (used for pinhole paths) are taken from the 316-steel measurements of
+\citet{grant1988}, the only literature source providing the full dissociation
+constant $k_1$ under clean, partially cleaned, and oxidised surface
+conditions.
+
+\paragraph{Recombinative desorption.} The reverse step,
+$2\mathrm{H(ads)} \rightarrow \mathrm{H_2(g)} + 2S$, is second-order in
+coverage. The code parameterises the recombination constant through the
+surface equilibrium constant $\Keq = \kdiss/\krec$ [$\mathrm{Pa^{-1}}$]:
+\begin{equation}
+  r_{\mathrm{des}} = \krec\,\theta^2 = \frac{\kdiss}{\Keq}\,\theta^2 .
+  \label{eq:des}
+\end{equation}
+
+\paragraph{Net surface flux.} The net rate of atoms entering the solid is the
+Langmuir--Hinshelwood balance
+\begin{equation}
+  J_{\mathrm{surf}}(\theta)
+  = \kdiss \left[\Pup\,(1-\theta)^2 - \frac{\theta^2}{\Keq}\right],
+  \label{eq:Jsurf}
+\end{equation}
+positive for net adsorption \citep{andrew1992}. This is the extra series
+element that Model B adds to every bulk configuration.
+
+\paragraph{Langmuir isotherm.} Setting $J_{\mathrm{surf}} = 0$ recovers the
+equilibrium coverage
+\begin{equation}
+  \frac{\theta_{\mathrm{eq}}}{1-\theta_{\mathrm{eq}}} = \sqrt{\Keq P}
+  \quad\Longrightarrow\quad
+  \theta_{\mathrm{eq}} = \frac{\sqrt{\Keq P}}{1 + \sqrt{\Keq P}},
+  \label{eq:langmuir}
+\end{equation}
+which grows as $\sqrt{P}$ at low pressure and saturates at
+$\theta_{\mathrm{eq}} \to 1$ \citep{langmuir1918}. When the surface is fast
+($\theta \to \theta_{\mathrm{eq}}$) Model B collapses onto Model A --- this
+limit is used as a verification test in
+\code{Application/Surface\_proposal.ipynb}.
+
+\paragraph{Coverage-to-driving-force conversion.} Inverting
+Eq.~\eqref{eq:langmuir} defines the effective $\sqrt{P}$ that a coverage
+$\theta$ presents to the bulk layers beneath:
+\begin{equation}
+  g(\theta) = \frac{\theta}{(1-\theta)\sqrt{\Keq}} \qquad [\mathrm{Pa^{1/2}}].
+  \label{eq:gtheta}
+\end{equation}
+$g(\theta)$ is the pivot of the whole Model B formulation: it lets every bulk
+flux be written as a function of the single unknown $\theta$, so the coupled
+surface--bulk problem reduces to one-dimensional root finding. It also
+connects to the Sieverts constant: consistency of the surface equilibrium
+with bulk solubility requires
+\begin{equation}
+  \Ks = \sqrt{\kdiss/\krec}\;\frac{N_{\mathrm{surf}}}{N_L},
+  \label{eq:KsKeq}
+\end{equation}
+with $N_{\mathrm{surf}} \approx 10^{19}\;\mathrm{m^{-2}}$ the surface site
+density \citep{pick1985}.
+
+\paragraph{Surface resistance and permeances.} Linearising
+Eq.~\eqref{eq:Jsurf} gives the surface resistance used for regime
+classification,
+\begin{equation}
+  \Rsurf \approx \frac{1}{\kdiss\,\Pup\,(1-\theta)^2}
+  \qquad [\mathrm{Pa^{1/2}\,s\,m^{2}\,mol^{-1}}],
+  \label{eq:Rsurface}
+\end{equation}
+which blows up as the surface saturates ($\theta \to 1$) or as $\kdiss\Pup$
+becomes small --- the two routes to surface limitation. The bulk layers are
+condensed into the permeances
+\begin{equation}
+  \alpha = \frac{\Dox\Kox}{\Lox},
+  \qquad
+  \beta = \frac{\Dm\Ks}{\Lm},
+  \qquad
+  \text{both } [\mathrm{mol\,m^{-2}\,s^{-1}\,Pa^{-1/2}}],
+  \label{eq:permeances}
+\end{equation}
+with bulk resistances $\Rox = 1/\alpha$ and $\Rmet = 1/\beta$.
+
+\paragraph{Change of oxide dissolution convention.}
+\label{sec:oxideconvention}
+Note a deliberate difference from Model A: there, dissociation happens (fast)
+at the oxide--metal interface, so the oxide carries molecular $\mathrm{H_2}$
+and obeys Henry's law (Eq.~\eqref{eq:henry}, driving force $\Delta P$). In
+Model B, dissociation happens at the \emph{gas--oxide} surface
+(Eq.~\eqref{eq:Jsurf}), so it is atomic hydrogen that enters the oxide and
+all bulk driving forces are expressed in $\sqrt{P}$ units --- the code
+docstrings accordingly call $\Kox$ the ``oxide Sieverts constant''
+[$\mathrm{mol\,m^{-3}\,Pa^{-1/2}}$]. This makes $\alpha$ and $\beta$
+dimensionally identical, which is what allows the permeance-weighted
+interface pressure of Eq.~\eqref{eq:PintTheta}.
+
+% ----------------------------------------------------------------------------
+\subsection{L1+L6: perfect metal + surface kinetics}
+% ----------------------------------------------------------------------------
+
+With no oxide, the coverage sits directly on the metal, so the interface
+driving force is $\sqrt{\Pint} = g(\theta)$ and the metal flux is
+\begin{equation}
+  J_{\mathrm{m}}(\theta) = \beta\bigl(g(\theta) - \sqrt{\Pdown}\bigr).
+  \label{eq:JmL1L6}
+\end{equation}
+Steady state is the single-unknown closure
+\begin{equation}
+  J_{\mathrm{surf}}(\theta) = J_{\mathrm{m}}(\theta)
+  \quad\Longrightarrow\quad \theta_{\mathrm{ss}},
+  \qquad
+  J_{\mathrm{ss}} = \beta\bigl(g(\theta_{\mathrm{ss}}) - \sqrt{\Pdown}\bigr),
+  \label{eq:closureL1L6}
+\end{equation}
+solved by Brent's method on $\theta \in (0,1)$. The physics question this
+level answers: at what $(\Pup, T)$ does control shift from dissociation
+($\Rsurf > \Rmet$; flux $\propto \Pup$, slope 1.0) to bulk diffusion
+($\Rmet > \Rsurf$; Sieverts recovered, slope 0.5)? High $\kdiss$ must
+reproduce Eq.~\eqref{eq:L1flux} exactly --- the L1+L6 parity check in the
+notebook.
+
+% ----------------------------------------------------------------------------
+\subsection{L2a+L6: perfect oxide + surface kinetics}
+% ----------------------------------------------------------------------------
+
+The same structure with the oxide as the only bulk layer:
+\begin{equation}
+  J_{\mathrm{ox}}(\theta) = \alpha\bigl(g(\theta) - \sqrt{\Pdown}\bigr),
+  \qquad
+  J_{\mathrm{surf}}(\theta) = J_{\mathrm{ox}}(\theta)
+  \;\Longrightarrow\; \theta_{\mathrm{ss}}.
+  \label{eq:JoxL2aL6}
+\end{equation}
+Resistances $\Rsurf$ (Eq.~\eqref{eq:Rsurface}) and $\Rox = 1/\alpha$ decide
+whether the film or its surface is limiting.
+
+% ----------------------------------------------------------------------------
+\subsection{L2+L6: oxide + metal + surface kinetics}
+% ----------------------------------------------------------------------------
+
+\paragraph{Analytic reduction to one unknown.} Three fluxes must match:
+surface (Eq.~\eqref{eq:Jsurf}), oxide, and metal. Nominally the unknowns are
+$\theta$ and $\Pint$, but equating the oxide and metal fluxes,
+$\alpha\bigl(g(\theta) - \sqrt{\Pint}\bigr) =
+\beta\bigl(\sqrt{\Pint} - \sqrt{\Pdown}\bigr)$, is \emph{linear} in
+$\sqrt{\Pint}$ and solves analytically:
+\begin{equation}
+  \sqrt{\Pint}(\theta)
+  = \frac{\alpha\, g(\theta) + \beta \sqrt{\Pdown}}{\alpha + \beta}.
+  \label{eq:PintTheta}
+\end{equation}
+The interface pressure is the permeance-weighted mean of the two boundary
+driving forces. Substituting back leaves a single residual in $\theta$:
+\begin{equation}
+  J_{\mathrm{surf}}(\theta)
+  = J_{\mathrm{ox}}(\theta)
+  = J_{\mathrm{m}}(\theta), \qquad
+  J_{\mathrm{ox}} = \alpha\bigl(g(\theta) - \sqrt{\Pint}(\theta)\bigr), \quad
+  J_{\mathrm{m}} = \beta\bigl(\sqrt{\Pint}(\theta) - \sqrt{\Pdown}\bigr),
+  \label{eq:tripleflux}
+\end{equation}
+solved with Brent's method on $f(\theta) = J_{\mathrm{surf}} -
+J_{\mathrm{ox}} = 0$. This reduction (rather than nested 2-D solving) is what
+keeps the higher combinations tractable.
+
+\paragraph{Rate-limiting analysis.} Three series resistances,
+$R_{\mathrm{total}} = \Rsurf + 1/\alpha + 1/\beta$, give fractional
+contributions
+\begin{equation}
+  f_i = \frac{R_i}{R_{\mathrm{total}}}, \qquad
+  i \in \{\text{surface},\, \text{oxide},\, \text{metal}\},
+  \label{eq:fractions}
+\end{equation}
+and the step with $f_i > 0.5$ is declared rate-limiting (otherwise
+\emph{mixed}). The pressure-exponent signatures --- surface-limited
+$J \propto P^{1.0}$, oxide- or metal-limited $J \propto P^{0.5}$ under
+Model B's $g(\theta)$ formulation --- are used in the notebook's regime maps
+over $(\Pup, T, \kdiss)$.
+
+% ----------------------------------------------------------------------------
+\subsection{L3+L6: defective oxide + surface kinetics}
+% ----------------------------------------------------------------------------
+
+Each oxide path from L3 becomes an independent L2+L6 problem with its own
+permeance,
+\begin{equation}
+  \alpha_{\mathrm{intact}} = \frac{\Dox\Kox}{\Lox}, \qquad
+  \alpha_{\mathrm{crack}} = \frac{\alpha_{\mathrm{intact}}}{\gamma}, \qquad
+  \alpha_{\mathrm{gb}} = \delta_D\,\alpha_{\mathrm{intact}}, \qquad
+  \alpha_{\mathrm{pinhole}} = \infty,
+  \label{eq:alphapaths}
+\end{equation}
+($\gamma$, $\delta_D$ as in Eqs.~\eqref{eq:crack}--\eqref{eq:gbdefect}). Each
+path is solved for its own coverage $\theta_i$ and interface pressure
+$\Pint{}_{,i}$ via Eqs.~\eqref{eq:PintTheta}--\eqref{eq:tripleflux}; the
+pinhole path replaces the oxide kinetics by metal surface kinetics
+($\kdiss^{\mathrm{m}}$, $\Keq^{\mathrm{m}}$, so $\sqrt{\Pint} = g_{\mathrm{m}}(\theta)$)
+or, if none are supplied, by the Sieverts limit $\sqrt{\Pint} = \sqrt{\Pup}$.
+The total is the area-weighted sum over intact plus all defect types,
+\begin{equation}
+  J_{\mathrm{total}} = f_{\mathrm{intact}}\,J_{\mathrm{intact}}
+                     + \sum_i f_i\, J_i,
+  \qquad f_{\mathrm{intact}} = 1 - \sum_i f_i,
+  \label{eq:L3L6total}
+\end{equation}
+with $f_i$ the area fraction of defect type $i$ [--].
+
+% ----------------------------------------------------------------------------
+\subsection{L2+L4+L6: oxide + defective metal + surface kinetics}
+% ----------------------------------------------------------------------------
+
+The L2+L6 solver is wrapped in a self-consistency loop over the metal
+diffusivity. The metal permeance becomes
+\begin{equation}
+  \beta_{\mathrm{eff}} = \frac{\Deff \Ks}{\Lm},
+  \label{eq:betaeff}
+\end{equation}
+with $\Deff$ from the combined microstructure model
+(Eq.~\eqref{eq:combined}). Because trap occupancy depends on the local
+concentration, $\Deff$ is evaluated on the through-thickness profile
+\begin{equation}
+  C(x) = \Ks\left[\sqrt{\Pint} - \bigl(\sqrt{\Pint} - \sqrt{\Pdown}\bigr)\frac{x}{\Lm}\right],
+  \qquad 0 \le x \le \Lm,
+  \label{eq:profile}
+\end{equation}
+averaged (arithmetic/harmonic/inlet/outlet), and iterated: solve
+Eq.~\eqref{eq:tripleflux} with the current $\beta_{\mathrm{eff}}$, rebuild the
+profile, update $\Deff$, repeat until the relative change in $\Deff$ falls
+below tolerance. Outputs include the modification factor
+$M = \Deff/D_{\mathrm{lattice}}$ and the resistance fractions of
+Eq.~\eqref{eq:fractions} evaluated with $\beta_{\mathrm{eff}}$.
+
+% ----------------------------------------------------------------------------
+\subsection{L3+L4+L6: full model}
+% ----------------------------------------------------------------------------
+
+The most complete configuration composes everything: each oxide path of
+Eq.~\eqref{eq:alphapaths} is solved as an L2+L4+L6 problem (surface kinetics
+$\rightarrow$ path-specific $\alpha$ $\rightarrow$ defective metal with
+iterated $\Deff$), then area-weighted:
+\begin{equation}
+  J_{\mathrm{total}} = f_{\mathrm{intact}}\,J_{\mathrm{intact}}^{\mathrm{L2+L4+L6}}
+                     + \sum_i f_i\, J_i^{\mathrm{L2+L4+L6}}.
+  \label{eq:L346}
+\end{equation}
+Each path carries its own $\theta_i$, $\Pint{}_{,i}$, and $\Deff{}_{,i}$; the
+system-level rate-limiting step is taken from the path that dominates the
+total flux (or reported as \emph{mixed} if no path contributes more than
+70\%).
+
+% ============================================================================
+\section{Parameter values and sources}
+\label{sec:parameters}
+% ============================================================================
+
+Both models are driven by a single unified configuration,
+\code{calculations/config/model\_config.py}: the metal is X40 NiCrAlTi 31/19
+(Incoloy~802) with transport data from \citet{schmidt1985}, the oxide is
+$\mathrm{Cr_2O_3}$ (``sample~4'', the undamaged-chromia limit) assembled from
+\citet{nemanic2023,stover1986,chen2011}, surface kinetics are the 316-steel
+measurements of \citet{grant1988}, and the metal microstructure (grain size,
+trap spectrum) is parameterised for Hastelloy-N-class Ni alloys from
+\citet{zhu2021,lu2022,young1997}. Tables~\ref{tab:paramsA}--\ref{tab:paramsC}
+list every parameter with its default, the range explored in the sensitivity
+analyses (\code{data/sensitivity\_parameters.csv}), the source, and why that
+range was chosen. Entries marked \textsc{placeholder} have no literature
+measurement; their defaults are assumptions and their ranges are deliberately
+wide. Primary-source raw data are archived in the literature-database
+workbook \code{permeation\_literature\_database\_v3.xlsx} in \code{data/}.
+
+% ----------------------------------------------------------------------------
+\subsection{Bulk transport and operating conditions}
+% ----------------------------------------------------------------------------
+
+{\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}l l l >{\raggedright\arraybackslash}p{5.2cm}@{}}
+\caption{Bulk transport parameters and operating conditions (used by both
+models). Defaults from \code{model\_config.py}; ranges from the sensitivity
+configuration.}
+\label{tab:paramsA}\\
+\toprule
+Parameter & Default & Range & Source and range justification \\
+\midrule
+\endfirsthead
+\toprule
+Parameter & Default & Range & Source and range justification \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+\multicolumn{4}{@{}l}{\emph{Metal (Incoloy~802) --- $\Dm$, $\Ks$ in Eqs.~\eqref{eq:sieverts}, \eqref{eq:L1flux}}}\\
+$D_{\mathrm{ref}}$ \code{D\_ref} & $4.285\times10^{-9}\;\mathrm{m^2\,s^{-1}}$ & $[4.3\times10^{-11},\,4.3\times10^{-7}]$ & \citet{schmidt1985}: $\mathrm{T_2}$ permeation, X40 NiCrAlTi 31/19, 750--950\,$^\circ$C, 5\,mm plate. $\pm2$ decades covers alloy-to-alloy scatter across the Ni--Cr family. \\
+$E_D$ \code{E\_D} & $72\,200\;\mathrm{J\,mol^{-1}}$ & $[60,\,80]\;\mathrm{kJ\,mol^{-1}}$ & \citet{schmidt1985}. Window brackets reported diffusion activation energies for austenitic Ni--Cr alloys. \\
+$K_{s,\mathrm{ref}}$ \code{K\_s\_ref} & $0.05093\;\mathrm{mol\,m^{-3}\,Pa^{-1/2}}$ & $[10^{-4},\,10^{-1}]$ & \citet{schmidt1985}. Three-decade window spans reported Sieverts constants for austenitic alloys. \\
+$H_s$ \code{H\_s} & $7\,200\;\mathrm{J\,mol^{-1}}$ & $[1,\,50]\;\mathrm{kJ\,mol^{-1}}$ & \citet{schmidt1985}. Solution enthalpy is small and weakly constrained; wide window for endothermic dissolvers. \\
+$T_{\mathrm{ref}}$ (metal) & $1223\;\mathrm{K}$ & $[600,\,1400]\;\mathrm{K}$ & \citet{schmidt1985} measurement reference (950\,$^\circ$C). \\
+\midrule
+\multicolumn{4}{@{}l}{\emph{Oxide ($\mathrm{Cr_2O_3}$ sample~4) --- $\Dox$, $\Kox$ in Eqs.~\eqref{eq:henry}, \eqref{eq:L2aflux}}}\\
+$D_{\mathrm{ox,ref}}$ \code{D\_ox\_ref} & $7.80\times10^{-19}\;\mathrm{m^2\,s^{-1}}$ & $[7.8\times10^{-21},\,7.8\times10^{-17}]$ & \citet{nemanic2023} ($\Phi_{\mathrm{ox}}$, $D$); \citet{stover1986} ($Q_p$, Fig.~7 sample Cr2); \citet{chen2011} ($E_D$). Undamaged-chromia limit; $\pm2$ decades for oxide quality/porosity variation. \\
+$E_{D,\mathrm{ox}}$ \code{E\_D\_ox} & $70\,434\;\mathrm{J\,mol^{-1}}$ & $[69,\,71]\;\mathrm{kJ\,mol^{-1}}$ & \citet{chen2011} DFT (1.24\,eV), consistent with \citet{stover1986}. Tight range: theory and experiment agree. \\
+$K_{\mathrm{ox,ref}}$ \code{K\_ox\_ref} & $0.35417\;\mathrm{mol\,m^{-3}\,Pa^{-1/2}}$ & $[0.08,\,0.4]$ & \citet{nemanic2023} + \citet{stover1986}: derived as $\Phi_{\mathrm{ox}}/\Dox$ at $T_{\mathrm{ref}}=673$\,K (Sieverts form, \S\ref{sec:oxideconvention}). \\
+$H_{\mathrm{sol,ox}}$ \code{H\_sol\_ox} & $163\,566\;\mathrm{J\,mol^{-1}}$ & $[20,\,170]\;\mathrm{kJ\,mol^{-1}}$ & $Q_{p,\mathrm{ox}} - E_{D,\mathrm{ox}}$ from \citet{stover1986} and \citet{nemanic2023}; wide range because $Q_p$ measurements for chromia scatter strongly. \\
+$T_{\mathrm{ref}}$ (oxide) & $673\;\mathrm{K}$ & $[600,\,1400]\;\mathrm{K}$ & \citet{nemanic2023} measurement reference (400\,$^\circ$C). \\
+\midrule
+\multicolumn{4}{@{}l}{\emph{Geometry and operating conditions --- $\Lm$, $\Lox$, $\Pup$, $T$}}\\
+$\Lm$ \code{L\_metal} & $10^{-3}\;\mathrm{m}$ & $[5\times10^{-4},\,5\times10^{-3}]$ & Model default (\code{CONDITIONS}): 1\,mm plate; range spans practical component wall thicknesses. \\
+$\Lox$ \code{thickness} & $4.8\times10^{-8}\;\mathrm{m}$ & $[10^{-10},\,10^{-5}]$ & Model default: sample-4 nominal 48\,nm scale; range spans native film to thick thermally grown scale. \\
+$\Pup$ \code{P\_upstream} & $10^{5}\;\mathrm{Pa}$ & $[10^{-7},\,10^{7}]$ & Model default (\code{CONDITIONS}); range covers vacuum-facing to pressurised service. \\
+$T$ \code{T\_operating} & $873\;\mathrm{K}$ & $[573,\,1273]\;\mathrm{K}$ & Model default (\code{CONDITIONS}, 600\,$^\circ$C); range spans the validated windows of the metal and oxide datasets. \\
+\end{longtable}
+}
+
+% ----------------------------------------------------------------------------
+\subsection{Oxide defects (L3) and metal microstructure (L4)}
+% ----------------------------------------------------------------------------
+
+{\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}l l l >{\raggedright\arraybackslash}p{5.2cm}@{}}
+\caption{Defect and microstructure parameters. Trap binding energies are
+stored in \code{model\_config.py} as $\mathrm{eV}\times F$ with
+$F = 96\,485\;\mathrm{C\,mol^{-1}}$.}
+\label{tab:paramsB}\\
+\toprule
+Parameter & Default & Range & Source and range justification \\
+\midrule
+\endfirsthead
+\toprule
+Parameter & Default & Range & Source and range justification \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+\multicolumn{4}{@{}l}{\emph{Oxide defects (L3) --- $f_i$, $\gamma$, $\delta_D$ in Eqs.~\eqref{eq:L3parallel}--\eqref{eq:mixed}}}\\
+$f_{\mathrm{pinhole}}$ & $0.01$ & $[10^{-5},\,0.1]$ & Model default (\code{OXIDE\_DEFECTS}); range from trace porosity to heavily damaged scale. \\
+$f_{\mathrm{crack}}$ & $0.005$ & $[10^{-5},\,0.1]$ & Model default (\code{OXIDE\_DEFECTS}). \\
+$f_{\mathrm{gb,defect}}$ & $0.005$ & $[10^{-5},\,0.1]$ & Model default (\code{OXIDE\_DEFECTS}). \\
+$\gamma$ \code{thickness\_factor} & $0.1$ & $[0.01,\,0.5]$ & Model default: crack retains 10\% of oxide thickness (Eq.~\eqref{eq:crack}); range from near-through-crack to half-thickness. \\
+$\delta_D$ \code{diffusivity\_factor} & $10$ & $[1,\,100]$ & Model default: oxide-GB fast path (Eq.~\eqref{eq:gbdefect}); bounded by no enhancement and the fast-path limit. \\
+\midrule
+\multicolumn{4}{@{}l}{\emph{Metal microstructure (L4) --- $d$, $\delta$, $N_L$ in Eqs.~\eqref{eq:fgb}--\eqref{eq:combined}}}\\
+$d$ \code{grain\_size} & $10^{-4}\;\mathrm{m}$ & $[10^{-5},\,5\times10^{-4}]$ & \citet{zhu2021}: Hastelloy-N equiaxed grains 50--150\,$\mu$m (EBSD); default is the midpoint, range extends to fine-grained condition. \\
+$\delta$ \code{gb\_thickness} & $5\times10^{-10}\;\mathrm{m}$ & $[3\times10^{-10},\,10^{-9}]$ & Nominal high-angle boundary width; no Hastelloy-N measurement available. \\
+$N_L$ \code{lattice\_density} & $8.774\times10^{28}\;\mathrm{m^{-3}}$ & $[8\times10^{28},\,1.2\times10^{29}]$ & Fe BCC estimate (model default); range spans BCC to FCC interstitial site densities. \\
+\midrule
+\multicolumn{4}{@{}l}{\emph{Trap spectrum (L4) --- $E_{b,i}$, $N_{T,i}$ in Eqs.~\eqref{eq:orianitheta}--\eqref{eq:orianiDeff}}}\\
+$E_b$ dislocations & $19\,297\;\mathrm{J\,mol^{-1}}$ (0.20\,eV) & $[15,\,25]\;\mathrm{kJ\,mol^{-1}}$ & \citet{lu2022}: Alloy~625 TDS Peak~1, 0.186--0.215\,eV (dislocation elastic field); default is the mean. \\
+$N_T$ dislocations & $8.16\times10^{12}\;\mathrm{m^{-3}}$ & $[8.2\times10^{10},\,8.2\times10^{14}]$ & \citet{zhu2021}: GND density from EBSD; $\pm2$ decades covers annealed to cold-worked states. \\
+$E_b$ grain boundaries & $26\,051\;\mathrm{J\,mol^{-1}}$ (0.27\,eV) & $[25,\,30]\;\mathrm{kJ\,mol^{-1}}$ & \citet{lu2022}: TDS Peak~2, 0.258--0.281\,eV (GB + carbide interface). \\
+$N_T$ grain boundaries & $6\times10^{14}\;\mathrm{m^{-3}}$ & $[6\times10^{12},\,6\times10^{16}]$ & Geometric estimate $3\rho_{\mathrm{gb}}/d$ for the 100\,$\mu$m equiaxed grain (Eq.~\eqref{eq:fgb}); $\pm2$ decades tracks the grain-size range. \\
+$E_b$ vacancies & $41\,489\;\mathrm{J\,mol^{-1}}$ (0.43\,eV) & $[35,\,50]\;\mathrm{kJ\,mol^{-1}}$ & Ni estimate; no Hastelloy-N vacancy trap measurement. \\
+$N_T$ vacancies & $10^{26}\;\mathrm{m^{-3}}$ & $[10^{24},\,10^{28}]$ & Model default; no measurement --- deliberately wide. \\
+$E_b$ carbides ($\mathrm{M_6C}$) & $26\,051\;\mathrm{J\,mol^{-1}}$ (0.27\,eV) & $[20,\,40]\;\mathrm{kJ\,mol^{-1}}$ & \citet{lu2022}: M$_6$C TDS, 0.258--0.281\,eV; upper range allows for incoherent interfaces. \\
+$N_T$ carbides & $2\times10^{25}\;\mathrm{m^{-3}}$ & $[2\times10^{23},\,2\times10^{27}]$ & \citet{young1997}: carbide trap density upper bound in Ni-17Cr-8Fe (TDS). \\
+\end{longtable}
+}
+
+% ----------------------------------------------------------------------------
+\subsection{Surface kinetics (L6)}
+% ----------------------------------------------------------------------------
+
+{\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}l l l >{\raggedright\arraybackslash}p{4.1cm}@{}}
+\caption{Surface-kinetics parameters (Model B). Both parameter sets derive
+from \citet{grant1988}, the only literature source reporting the full
+dissociation constant $k_1$; the oxidised-foil condition proxies the
+$\mathrm{Cr_2O_3}$ surface and the clean condition the bare metal (pinhole
+paths).}
+\label{tab:paramsC}\\
+\toprule
+Parameter & Default & Range & Source and range justification \\
+\midrule
+\endfirsthead
+\toprule
+Parameter & Default & Range & Source and range justification \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+\multicolumn{4}{@{}l}{\emph{Oxide surface (gas--$\mathrm{Cr_2O_3}$) --- $\kdiss$, $\Keq$ in Eqs.~\eqref{eq:ads}--\eqref{eq:Jsurf}}}\\
+$k_{\mathrm{diss,ref}}$ \code{k\_diss\_ref} & $9.487\times10^{-8}\;\mathrm{mol\,m^{-2}\,s^{-1}\,Pa^{-1}}$ & $[9.5\times10^{-10},\,9.5\times10^{-6}]$ & \citet{grant1988}: oxidised 316 foil, $k_1 = 9.2\times10^{-8}$ at 965\,K, re-referenced to $T_{\mathrm{ref}}=1623$\,K; $\pm2$ decades because 316 oxide is a proxy for $\mathrm{Cr_2O_3}$. \\
+$E_{\mathrm{diss}}$ \code{E\_diss} & $57\,950\;\mathrm{J\,mol^{-1}}$ & $[40,\,70]\;\mathrm{kJ\,mol^{-1}}$ & \citet{grant1988}: oxidised-both-surfaces condition ($E_{k_1} = 59\,861\;\mathrm{J\,mol^{-1}}$; default shifted slightly by the re-referencing). \\
+$K_{\mathrm{eq,ref}}$ \code{K\_eq\_ref} & $10^{-4}\;\mathrm{Pa^{-1}}$ & $[10^{-14},\,10^{-2}]$ & \textsc{placeholder}: no gas--$\mathrm{Cr_2O_3}$ surface equilibrium constant in the literature; deliberately wide window bracketing the working default ($\pm2$ decades above, extending down to the historical sweep floor). \\
+$H_{\mathrm{eq}}$ \code{H\_eq} & $20\,000\;\mathrm{J\,mol^{-1}}$ & $[5,\,50]\;\mathrm{kJ\,mol^{-1}}$ & \textsc{placeholder}: no measured surface equilibrium enthalpy for $\mathrm{Cr_2O_3}$. \\
+$T_{\mathrm{ref}}$ (oxide surface) & $1623\;\mathrm{K}$ & $[600,\,1800]\;\mathrm{K}$ & Configuration choice: matches the $\mathrm{Cr_2O_3}$ transport reference temperature. \\
+\midrule
+\multicolumn{4}{@{}l}{\emph{Metal surface (pinhole paths, L1+L6) --- $\kdiss^{\mathrm{m}}$, $\Keq^{\mathrm{m}}$}}\\
+$k_{\mathrm{diss,ref}}^{\mathrm{m}}$ \code{k\_diss\_metal\_ref} & $1.346\times10^{-6}\;\mathrm{mol\,m^{-2}\,s^{-1}\,Pa^{-1}}$ & $[1.3\times10^{-8},\,1.3\times10^{-4}]$ & \citet{grant1988}: clean 316 surface, $k_1$ at 965\,K; $\pm2$ decades for surface-condition uncertainty. \\
+$E_{\mathrm{diss}}^{\mathrm{m}}$ \code{E\_diss\_metal} & $81\,560\;\mathrm{J\,mol^{-1}}$ & $[70,\,100]\;\mathrm{kJ\,mol^{-1}}$ & \citet{grant1988}: clean-surface activation energy. \\
+$K_{\mathrm{eq,ref}}^{\mathrm{m}}$ \code{K\_eq\_metal\_ref} & $10^{-3}\;\mathrm{Pa^{-1}}$ & $[10^{-10},\,10^{-3}]$ & \textsc{placeholder}: no direct surface equilibrium measurement for Incoloy~802. \\
+$H_{\mathrm{eq}}^{\mathrm{m}}$ \code{H\_eq\_metal} & $15\,000\;\mathrm{J\,mol^{-1}}$ & $[5,\,40]\;\mathrm{kJ\,mol^{-1}}$ & \textsc{placeholder}: no direct measurement. \\
+$T_{\mathrm{ref}}$ (metal surface) & $965\;\mathrm{K}$ & $[600,\,1100]\;\mathrm{K}$ & \citet{grant1988} experimental reference temperature (692\,$^\circ$C). \\
+\end{longtable}
+}
+
+% ============================================================================
+\section{Cross-model equation map}
+% ============================================================================
+
+\begin{table}[h]
+\centering
+\caption{Which equations are shared between the two models and which are
+specific. Shared equations are implemented once and imported by Model B.}
+\label{tab:crossmodel}
+\begin{tabular}{lcc>{\raggedright\arraybackslash}p{4.7cm}}
+\toprule
+Equation & Model A & Model B & Role in Model B \\
+\midrule
+Sieverts' law \eqref{eq:sieverts} & \checkmark & \checkmark & metal boundary condition via $g(\theta)$ \\
+Fick's law \eqref{eq:fick} & \checkmark & \checkmark & unchanged bulk transport \\
+Henry's law \eqref{eq:henry} & \checkmark & replaced & oxide carries atomic H --- Sieverts-form $\Kox$, $\sqrt{P}$ driving force (\S\ref{sec:oxideconvention}) \\
+Arrhenius form \eqref{eq:arrhenius} & \checkmark & \checkmark & also applied to $\kdiss$, $\Keq$ \\
+Parallel paths \eqref{eq:L3parallel} & \checkmark & \checkmark & per-path L2+L6 solves \eqref{eq:L3L6total} \\
+Oriani trapping \eqref{eq:orianiDeff} & \checkmark & \checkmark & inside $\beta_{\mathrm{eff}}$ iteration \eqref{eq:betaeff} \\
+GB enhancement \eqref{eq:gbparallel} & \checkmark & \checkmark & inside $\beta_{\mathrm{eff}}$ iteration \\
+Interface closure \eqref{eq:closureL2b} & \checkmark & replaced & analytic $\sqrt{\Pint}(\theta)$ \eqref{eq:PintTheta} \\
+Regime ratio $\chi$ \eqref{eq:chi} & \checkmark & generalised & three-way fractions \eqref{eq:fractions} \\
+Surface kinetics \eqref{eq:ads}--\eqref{eq:Rsurface} & --- & \checkmark & the new series element \\
+$g(\theta)$ conversion \eqref{eq:gtheta} & --- & \checkmark & reduces system to 1-D root find \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The essential difference is the closure variable: Model A solves for the
+interface pressure $\Pint$ (Brent's method on
+Eq.~\eqref{eq:closureL2b}/\eqref{eq:closureL5}), while Model B solves for the
+surface coverage $\theta$ (Brent's method on Eq.~\eqref{eq:tripleflux}), with
+$\Pint$ recovered analytically from Eq.~\eqref{eq:PintTheta}. In the
+fast-surface limit ($\kdiss \to \infty$, $\theta \to \theta_{\mathrm{eq}}$)
+every Model B level reduces to its Model A counterpart, which is the
+consistency test used throughout \code{Application/Surface\_proposal.ipynb}.
+
+% ============================================================================
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+% ============================================================================
+\appendix
+\section{Resistance formulation: complete derivation}
+\label{app:resistance}
+% ============================================================================
+
+\begin{sloppypar}
+This appendix derives the resistance quantities used in \S\ref{sec:modelA}
+from first principles and explains precisely in what sense the metal and
+oxide resistances can --- and cannot --- be compared. The corresponding code
+lives in \code{oxide\_permeation.py} (functions
+\code{calculate\_oxide\_resistance}, \code{calculate\_metal\_resistance},
+and \code{calculate\_transition\_pressure}) and in
+\code{interface\_solver.py} (\code{calculate\_oxide\_metal\_system}).
+\end{sloppypar}
+
+% ----------------------------------------------------------------------------
+\subsection{What a permeation resistance is}
+% ----------------------------------------------------------------------------
+
+The electrical analogy defines a resistance through a linear response law,
+\begin{equation}
+  J = \frac{X_{\mathrm{up}} - X_{\mathrm{down}}}{R_X},
+  \label{eq:app-linresp}
+\end{equation}
+where $X$ is some \emph{driving-force variable} evaluated at the two
+boundaries, in analogy with $I = V/R$. The definition is only useful when $J$
+is genuinely linear in $\Delta X$, because only then is $R_X$ a constant of
+the layer, independent of operating point --- exactly as an ohmic resistor
+has an $R$ independent of the applied voltage. The subtlety in this model is
+that the two layers are linear in \emph{different} variables: the choice of
+$X$ is not free, it is dictated by each layer's solubility law.
+
+% ----------------------------------------------------------------------------
+\subsection{Oxide: linear in $\Delta P$}
+% ----------------------------------------------------------------------------
+
+Combining Henry's law (Eq.~\eqref{eq:henry}) at both faces with Fick's first
+law across the thickness:
+\begin{equation}
+  J_{\mathrm{ox}}
+  = \Dox\,\frac{C_{\mathrm{up}} - C_{\mathrm{down}}}{\Lox}
+  = \Dox\,\frac{\Kox \Pup - \Kox \Pdown}{\Lox}
+  = \underbrace{\frac{\Dox\Kox}{\Lox}}_{1/\Rox}\,\bigl(\Pup - \Pdown\bigr).
+  \label{eq:app-oxide}
+\end{equation}
+The flux is exactly linear in $\Delta P$, so the oxide possesses a true,
+pressure-independent resistance
+\begin{equation}
+  \Rox = \frac{\Lox}{\Dox\Kox}
+  \qquad [\mathrm{Pa\,s\,m^{2}\,mol^{-1}}],
+  \label{eq:app-Rox}
+\end{equation}
+with the pressure difference itself as the driving force
+($X = P$). Every extra pascal of driving force buys the same extra flux,
+at any operating pressure.
+
+% ----------------------------------------------------------------------------
+\subsection{Metal: linear in $\Delta\sqrt{P}$}
+% ----------------------------------------------------------------------------
+
+The metal transports a different species. In the L2b picture the intact
+$\mathrm{H_2}$ molecule arriving through the oxide dissociates at the
+oxide--metal interface,
+\begin{equation}
+  \mathrm{H_2} \;\rightleftharpoons\; 2\,\mathrm{H}^{*},
+  \label{eq:app-dissoc}
+\end{equation}
+and it is the \emph{atoms} that dissolve into and diffuse through the metal
+lattice. The law of mass action for this equilibrium, with two atoms produced
+per molecule, reads $C_{\mathrm{H}}^{2}/\Pint = \text{const}$, so the
+dissolved-atom concentration scales as $C_{\mathrm{H}} = \Ks\sqrt{\Pint}$ ---
+Sieverts' law (Eq.~\eqref{eq:sieverts}) is nothing but the 2:1 stoichiometry
+of reaction~\eqref{eq:app-dissoc}. Repeating the resistance construction with
+this boundary condition:
+\begin{equation}
+  J_{\mathrm{m}}
+  = \Dm\,\frac{\Ks\sqrt{\Pup} - \Ks\sqrt{\Pdown}}{\Lm}
+  = \underbrace{\frac{\Dm\Ks}{\Lm}}_{1/R_{\mathrm{L1}}}\,
+    \bigl(\sqrt{\Pup} - \sqrt{\Pdown}\bigr).
+  \label{eq:app-metal}
+\end{equation}
+The metal is exactly linear too --- but in $\Delta\sqrt{P}$, not $\Delta P$.
+Its natural resistance is
+\begin{equation}
+  R_{\mathrm{L1}} = \frac{\Lm}{\Dm\Ks} = \frac{\Lm}{\Phi}
+  \qquad [\mathrm{Pa^{1/2}\,s\,m^{2}\,mol^{-1}}],
+  \label{eq:app-RL1}
+\end{equation}
+a constant of the layer, with driving force $X = \sqrt{P}$.
+
+% ----------------------------------------------------------------------------
+\subsection{Why the two are not directly comparable}
+% ----------------------------------------------------------------------------
+
+Both $\Rox$ and $R_{\mathrm{L1}}$ are legitimate constants, but they act on
+different driving forces and carry different units:
+
+\begin{center}
+\begin{tabular}{lllll}
+\toprule
+Layer & Flux law & Driving force $X$ & Resistance & Units \\
+\midrule
+Oxide & $J = \Delta P/\Rox$ & $P$ & $\Rox = \Lox/(\Dox\Kox)$ & $\mathrm{Pa\,s\,m^2\,mol^{-1}}$ \\
+Metal & $J = \Delta\sqrt{P}/R_{\mathrm{L1}}$ & $\sqrt{P}$ & $R_{\mathrm{L1}} = \Lm/(\Dm\Ks)$ & $\mathrm{Pa^{1/2}\,s\,m^2\,mol^{-1}}$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Asking whether $\Rox > R_{\mathrm{L1}}$ is dimensionally meaningless --- like
+comparing a quantity in ohms with one in kilograms. Chemically, the mismatch
+is the dissociation step \eqref{eq:app-dissoc} sitting between the two
+layers: the oxide counts \emph{molecules} (one dissolved per gas molecule,
+hence $\propto P$), the metal counts \emph{atoms} produced by an equilibrium
+that delivers two per molecule (hence $\propto \sqrt{P}$). The unit
+$\mathrm{Pa^{1/2}}$ separating the two resistances is exactly the
+stoichiometric square root introduced by that reaction. Yet the L2b regime
+question (``which layer limits the flux?'') demands a comparison. The
+resolution is to re-express the metal on the oxide's per-pascal basis.
+
+% ----------------------------------------------------------------------------
+\subsection{Linearising the metal: origin of the factor 2}
+% ----------------------------------------------------------------------------
+
+Fix the downstream pressure and consider the metal flux as a function of its
+upstream (interface) pressure, $J_{\mathrm{m}}(P) =
+\tfrac{\Dm\Ks}{\Lm}\bigl(\sqrt{P} - \sqrt{\Pdown}\bigr)$. Taylor-expanding
+about the operating point $P = \Pint$:
+\begin{equation}
+  J_{\mathrm{m}}(P) \approx J_{\mathrm{m}}(\Pint)
+  + \frac{\mathrm{d}J_{\mathrm{m}}}{\mathrm{d}P}\bigg|_{\Pint}\,(P - \Pint),
+  \qquad
+  \frac{\mathrm{d}J_{\mathrm{m}}}{\mathrm{d}P}\bigg|_{\Pint}
+  = \frac{\Dm\Ks}{\Lm}\cdot
+    \frac{\mathrm{d}\sqrt{P}}{\mathrm{d}P}\bigg|_{\Pint}
+  = \frac{\Dm\Ks}{\Lm}\cdot\frac{1}{2\sqrt{\Pint}}.
+  \label{eq:app-taylor}
+\end{equation}
+The local slope $\mathrm{d}J/\mathrm{d}P$ is a per-pascal conductance; its
+reciprocal is the metal's \emph{effective} per-pascal resistance at that
+operating point,
+\begin{equation}
+  \Rmet(\Pint)
+  = \left(\frac{\mathrm{d}J_{\mathrm{m}}}{\mathrm{d}P}\bigg|_{\Pint}\right)^{-1}
+  = \frac{2\,\Lm\sqrt{\Pint}}{\Dm\Ks}
+  \qquad [\mathrm{Pa\,s\,m^{2}\,mol^{-1}}],
+  \label{eq:app-Rmet}
+\end{equation}
+which is Eq.~\eqref{eq:Rmetal}. The factor 2 is nothing but the derivative
+$\mathrm{d}\sqrt{P}/\mathrm{d}P = 1/(2\sqrt{P})$ --- no additional physics.
+The approximation is valid when the pressure drop across the metal is small
+compared with $\Pint$, i.e.\ near the operating point about which the
+expansion was taken. Physically: the dissociation equilibrium
+\eqref{eq:app-dissoc} yields dissolved atoms only as $\sqrt{P}$, so at higher
+pressure each additional pascal of $\mathrm{H_2}$ converts into
+proportionally fewer new $\mathrm{H}^{*}$ atoms --- the marginal atom yield
+falls as $1/(2\sqrt{\Pint})$. Each additional pascal therefore buys less
+additional flux, and the metal's per-pascal resistance \emph{grows} as
+$\sqrt{\Pint}$ while the oxide's, which counts molecules one-for-one, stays
+constant.
+
+% ----------------------------------------------------------------------------
+\subsection{Consequences: regime ratio and transition pressure}
+% ----------------------------------------------------------------------------
+
+With both layers on the per-pascal basis, the ratio
+$\chi = \Rox/\Rmet$ of Eq.~\eqref{eq:chi} is dimensionless and meaningful.
+Since $\Rmet \propto \sqrt{\Pint}$, $\chi$ \emph{falls} as pressure rises:
+the bilayer is oxide-limited at low pressure (flux slope $\to 1.0$) and
+metal-limited at high pressure (slope $\to 0.5$). The crossover follows from
+setting $\Rox = \Rmet$:
+\begin{equation}
+  \frac{\Lox}{\Dox\Kox} = \frac{2\,\Lm\sqrt{P_{\mathrm{trans}}}}{\Dm\Ks}
+  \;\;\Longrightarrow\;\;
+  \sqrt{P_{\mathrm{trans}}} = \frac{\Lox\,\Dm\Ks}{2\,\Dox\Kox\,\Lm}
+  \;\;\Longrightarrow\;\;
+  P_{\mathrm{trans}} = \left(\frac{\Lox\,\Dm\Ks}{2\,\Dox\Kox\,\Lm}\right)^{2},
+  \label{eq:app-Ptrans}
+\end{equation}
+which is Eq.~\eqref{eq:Ptrans}.
+
+% ----------------------------------------------------------------------------
+\subsection{Caveats and the Model B alternative}
+% ----------------------------------------------------------------------------
+
+\paragraph{Resistances are diagnostics, not the solution.} Because the
+series combination of a linear element ($\Rox$) and a linearised one
+($\Rmet$) is only approximate, the L2b flux is \emph{never} computed as
+$\Delta P/(\Rox + \Rmet)$. The code always solves the exact flux-continuity
+condition Eq.~\eqref{eq:closureL2b} for $\Pint$ by Brent's method and only
+afterwards evaluates $\Rox$, $\Rmet(\Pint)$, and $\chi$ to label the regime
+(\code{interface\_solver.py} $\rightarrow$
+\code{calculate\_oxide\_metal\_system}).
+
+\paragraph{Model B sidesteps the mismatch.} In the surface-kinetics model
+every layer is expressed in $\sqrt{P}$ units from the outset: dissociation at
+the gas--oxide surface means atomic hydrogen traverses the oxide
+(\S\ref{sec:oxideconvention}), so the permeances $\alpha$ and $\beta$ of
+Eq.~\eqref{eq:permeances} are dimensionally identical and the resistances
+$\Rsurf$, $1/\alpha$, $1/\beta$ add and compare directly
+(Eq.~\eqref{eq:fractions}) --- no linearisation, and no factor of 2, is ever
+needed there.
+
+
+\end{document}
