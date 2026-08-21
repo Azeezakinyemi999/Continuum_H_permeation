@@ -24,9 +24,17 @@ Usage
 import numpy as np
 from scipy.optimize import brentq
 
-from data.surface_kinetics_data import SURFACE_KINETICS, get_surface_kinetics
-from data.oxide_properties import OXIDE_PROPERTIES
-from data.material_data import MATERIALS
+# Surface kinetics come from model_config too. data/surface_kinetics_data.py holds a
+# SECOND, independent dataset keyed differently ('Cr2O3' vs 'Cr2O3_sample4') and in a
+# different parameterisation: it gives k_recomb directly with its own E_recomb, while
+# model_config gives the equilibrium constant K_eq_ref/H_eq. The two disagree by ~11
+# orders of magnitude on K_eq (1e-07/1e-14 = 1e7 there, 1e-4 here), so they cannot
+# both be right. model_config is authoritative.
+from calculations.config.model_config import get_surface_kinetics_from_config
+# Material data comes straight from model_config, the authoritative source —
+# previously routed through the data/ aliasing shims, whose double imports let the
+# Fuerst config silently shadow model_config. See oxide_permeation.py.
+from calculations.config.model_config import METALS, OXIDES
 from calculations.defective_metal import combined_microstructure_model
 
 R = 8.314  # J/(mol·K)
@@ -37,22 +45,29 @@ R = 8.314  # J/(mol·K)
 # Used by all model levels
 # =============================================================================
 
-def get_all_properties(oxide_name, metal_name, temperature_K):
+def get_all_properties(oxide_name, metal_name, temperature_K,
+                       oxides=None, metals=None):
     """
-    Look up and compute all transport properties from data modules.
+    Look up and compute all transport properties from model_config.
 
     Returns surface kinetics, oxide transport, and metal transport
     at the given temperature via Arrhenius correction.
-    """
-    surfraction_kin = get_surface_kinetics(oxide_name, temperature_K)
 
-    oxide_data = OXIDE_PROPERTIES[oxide_name]
+    oxides, metals : dict, optional
+        Registries to resolve the names in. Default to model_config.OXIDES /
+        METALS; pass another study's dicts to resolve names it defines instead.
+    """
+    oxides = OXIDES if oxides is None else oxides
+    metals = METALS if metals is None else metals
+    surfraction_kin = get_surface_kinetics_from_config(oxide_name, temperature_K, oxides)
+
+    oxide_data = oxides[oxide_name]
     T_ref_ox = oxide_data['T_ref']
     D_ox = oxide_data['D_ox_ref'] * np.exp((-oxide_data['E_D_ox'] / R) * (1/temperature_K - 1/T_ref_ox))
     K_ox = oxide_data['K_ox_ref'] * np.exp((-oxide_data['H_sol_ox'] / R) * (1/temperature_K - 1/T_ref_ox))
     L_ox = oxide_data['thickness']
 
-    metal_data = MATERIALS[metal_name]
+    metal_data = metals[metal_name]
     T_ref_m = metal_data['T_ref']
     D_m   = metal_data['D_ref']  * np.exp((-metal_data['E_D'] / R) * (1/temperature_K - 1/T_ref_m))
     K_s_m = metal_data['K_s_ref'] * np.exp((-metal_data['H_s']  / R) * (1/temperature_K - 1/T_ref_m))
@@ -287,8 +302,8 @@ def solve_steady_state_flux(P_up, P_down, L_m, oxide_name, metal_name, temperatu
     ----------
     P_up, P_down  : float — upstream/downstream H2 pressure [Pa]
     L_m           : float — metal thickness [m]
-    oxide_name    : str   — key in OXIDE_PROPERTIES
-    metal_name    : str   — key in MATERIALS
+    oxide_name    : str   — key in model_config.OXIDES
+    metal_name    : str   — key in model_config.METALS
     temperature_K : float — temperature [K]
 
     Returns

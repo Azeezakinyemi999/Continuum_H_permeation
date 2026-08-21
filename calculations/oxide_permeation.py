@@ -1,6 +1,11 @@
 import numpy as np
-from data.oxide_properties import OXIDE_PROPERTIES
-from data.material_data import MATERIALS
+# Material data comes straight from model_config, the authoritative source. This
+# used to route through data/oxide_properties.py and data/material_data.py, which
+# were three-line aliasing shims that each imported the same name twice —
+# from model_config and then from fuerst_etal_2024_model_config — so the second
+# silently shadowed the first and MATERIALS held only the Fuerst alloy. That made
+# model_config's own active metal unreachable by name.
+from calculations.config.model_config import METALS, OXIDES
 from calculations.utils import arrhenius
 
 def molecular_diffusion_flux(D_ox, K_ox, thickness, P_up, P_down):
@@ -138,29 +143,35 @@ def calculate_metal_resistance(D_metal, K_s_metal, thickness, P_interface):
 
 
 
-def get_oxide_properties_at_T(oxide_name, temperature_K):
+def get_oxide_properties_at_T(oxide_name, temperature_K, oxides=None):
     """
     Calculate temperature-dependent oxide properties.
-    
+
     Uses reference-temperature Arrhenius format:
         k(T) = k_ref × exp((-E/R) × (1/T - 1/T_ref))
-    
+
     Parameters:
     -----------
     oxide_name : str
         Name of oxide material (e.g., 'Cr2O3')
     temperature_K : float
         Temperature in Kelvin
-    
+    oxides : dict, optional
+        Registry to look `oxide_name` up in. Defaults to model_config.OXIDES;
+        pass another study's OXIDES dict to resolve names it defines instead.
+
     Returns:
     --------
     dict
         Contains D_ox, K_ox, thickness at specified temperature
     """
-    if oxide_name not in OXIDE_PROPERTIES:
-        raise ValueError(f"Unknown oxide material: {oxide_name}")
-    
-    oxide_data = OXIDE_PROPERTIES[oxide_name]
+    oxides = OXIDES if oxides is None else oxides
+    if oxide_name not in oxides:
+        raise ValueError(f"Unknown oxide material: {oxide_name}. "
+                         f"Known: {sorted(oxides)}. Pass oxides=<dict> to use a "
+                         f"different registry.")
+
+    oxide_data = oxides[oxide_name]
     R = 8.314  # J/mol/K
     T_ref = oxide_data['T_ref']
 
@@ -185,27 +196,33 @@ def get_oxide_properties_at_T(oxide_name, temperature_K):
     }
 
 
-def get_metal_properties_at_T(metal_name, temperature_K):
+def get_metal_properties_at_T(metal_name, temperature_K, metals=None):
     """
     Calculate temperature-dependent metal properties.
     Using your Level 1 material data.
-    
+
     Parameters:
     -----------
     metal_name : str
         Name of metal (e.g., 'Incoloy800')
     temperature_K : float
         Temperature in Kelvin
-    
+    metals : dict, optional
+        Registry to look `metal_name` up in. Defaults to model_config.METALS;
+        pass another study's METALS dict to resolve names it defines instead.
+
     Returns:
     --------
     dict
         Contains D_metal, K_s_metal at specified temperature
     """
-    if metal_name not in MATERIALS:
-        raise ValueError(f"Unknown metal material: {metal_name}")
-    
-    metal_data = MATERIALS[metal_name]
+    metals = METALS if metals is None else metals
+    if metal_name not in metals:
+        raise ValueError(f"Unknown metal material: {metal_name}. "
+                         f"Known: {sorted(metals)}. Pass metals=<dict> to use a "
+                         f"different registry.")
+
+    metal_data = metals[metal_name]
     R = 8.314  # J/mol/K
     T_ref = metal_data['T_ref']
     
