@@ -15,6 +15,15 @@ Level_1_result/
 Level_2/
 Level_3/
 analysis/
+data/
+docs/
+
+# Generated sensitivity-analysis output: LHS scans, cluster tables, comparison
+# matrices and the interactive figures. All of it is regenerable by re-running the
+# sensitivity notebooks, and the Plotly HTML embeds a ~4.7 MB JS bundle per file
+# (24 figures came to 120 MB). Keep the code and notebooks in git, not the output.
+sa_results*/
+*.html
 
 
 #Plots

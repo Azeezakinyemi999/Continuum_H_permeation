@@ -50,14 +50,14 @@ METALS = {
         # ---------------------------------------------------------------
         # SURFACE KINETICS — metal surface (for pinhole paths, L1+L6)
         # ---------------------------------------------------------------
-        # 'surface_kinetics': {
-        #     'T_ref':            965,        # K
-        #     'k_diss_metal_ref': 1.346e-06,      # mol/m²/s/Pa at T_ref
-        #     'E_diss_metal':     81560,      # J/mol
-        #     'K_eq_metal_ref':   1e-03,       # Pa⁻¹ at T_ref PLACEHOLDER
-        #     'H_eq_metal':       15000,      # J/mol PLACEHOLDER
-        #     'reference':        'clean metal surface condition(metal_316_steel_Grant1988): Grant 1988: Grant DM, Cummings DL, Blackburn DA	J. Nuclear Materials 152	1988	DOI: 10.1016/0022-3115(88)90128-7	316 steel H₂ transport. ONLY source with full surface kinetics k1 (3 conditions).	Metals + Surface Kinetics',
-        # },
+        'surface_kinetics': {
+            'T_ref':            965,        # K
+            'k_diss_metal_ref': 1.346e-06,      # mol/m²/s/Pa at T_ref
+            'E_diss_metal':     81560,      # J/mol
+            'K_eq_metal_ref':   1e-03,       # Pa⁻¹ at T_ref PLACEHOLDER
+            'H_eq_metal':       15000,      # J/mol PLACEHOLDER
+            'reference':        'clean metal surface condition(metal_316_steel_Grant1988): Grant 1988: Grant DM, Cummings DL, Blackburn DA	J. Nuclear Materials 152	1988	DOI: 10.1016/0022-3115(88)90128-7	316 steel H₂ transport. ONLY source with full surface kinetics k1 (3 conditions).	Metals + Surface Kinetics',
+        },
 
         'pressure':       [],
         'pressure_range': [13, 1e5],
