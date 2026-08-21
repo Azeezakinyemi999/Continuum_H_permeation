@@ -6,154 +6,181 @@ from SALib.sample import latin as latin_sampler
 from SALib.analyze import pawn as pawn_analyzer
 from SALib.analyze import delta as delta_analyzer
 
-# =============================================================================
-# LEVEL 5: Complete Hierarchical Model (L3 + L4)
-# Defective oxide (L3) + defective metal microstructure (L4)
-#
-# Reference-point Arrhenius: X(T) = X_ref * exp(-E/R * (1/T - 1/T_ref))
-# Reference values from model_config.py:
-#   Incoloy 802 (X40 NiCrAlTi) — T_ref_metal  = 1223 K  (Schmidt 1985)
-#   Cr2O3_sample4               — T_ref_oxide  =  673 K  (Nemanic 2023 / Stover 1986)
-# =============================================================================
 
-DEFAULT_PARAMS_LEVEL5 = {
-    # -------------------------------------------------------------------------
-    # Metal transport  (Incoloy 802 at T_ref_metal = 1223 K, Schmidt 1985)
-    # -------------------------------------------------------------------------
-    'D_ref':       4.285e-9,    # m²/s           D_metal at T_ref_metal
-    'E_D':         72200,       # J/mol           activation energy for diffusion
-    'K_s_ref':     0.05093,     # mol/m³/Pa^0.5   K_s at T_ref_metal
-    'H_s':         7200,        # J/mol           heat of solution
-    'T_ref_metal': 1223,        # K               Incoloy 802 measurement reference
+# Parameter definitions and study design live in calculations/model.py.
+# Dependency direction is strictly sensitivity -> model -> config; nothing in
+# model.py may import from here.
+# Parameter defaults, ranges, presets and draw counts live in the SENSITIVITY
+# ANALYSIS PARAMETERS section of calculations/config/model_config.py — one file to
+# open when you want to change what the study explores. Only the names this module
+# actually uses are imported; everything else there is imported directly from
+# model_config by whoever needs it, rather than re-exported here as a shim.
+from calculations.config.model_config import (
+    DEFAULT_PARAMS_LEVEL5, DEFAULT_PARAMS_LEVEL5L6,
+    SUGGESTED_RANGES_LEVEL5, SUGGESTED_RANGES_LEVEL5L6,
+    REGIME_PRESETS, REGIME_PRESETS_L5,
+    DEFAULT_N_PER_REGIME,
+)
 
-    # -------------------------------------------------------------------------
-    # Oxide transport  (Cr2O3_sample4 at T_ref_oxide = 673 K)
-    # -------------------------------------------------------------------------
-    'D_ox_ref':    7.800e-19,   # m²/s            D_ox at T_ref_oxide
-    'E_D_ox':      70434,       # J/mol
-    'K_ox_ref':    0.35417,     # mol/m³/Pa^0.5
-    'H_sol_ox':    163566,      # J/mol
-    'T_ref_oxide': 673,         # K               Cr2O3 measurement reference
-
-    # -------------------------------------------------------------------------
-    # Geometry
-    # -------------------------------------------------------------------------
-    'metal_thickness': 1e-3,    # m (1 mm)
-    'oxide_thickness': 4.8e-8,  # m (48 nm, Cr2O3_sample4)
-
-    # -------------------------------------------------------------------------
-    # Operating conditions
-    # -------------------------------------------------------------------------
-    'P_upstream':   1e5,        # Pa (100 kPa)
-    'P_downstream': 0.0,        # Pa
-    'temperature':  1073,       # K (800°C)
-
-    # -------------------------------------------------------------------------
-    # Level 3: Oxide defect properties  (structure mirrors model_config OXIDE_DEFECTS)
-    # -------------------------------------------------------------------------
-    'f_pinhole':              0.001,    # area fraction — pinholes (config: 0.001)
-    'f_crack':                0.001,    # area fraction — cracks   (config: 0.001)
-    'f_gb_defect':            0.001,    # area fraction — GB paths (config: 0.001)
-    'crack_thickness_factor': 0.1,      # L_crack = factor × L_oxide
-    'gb_diffusivity_factor':  10.0,     # D_gb_defect = factor × D_oxide
-    'use_sieverts_pinhole':   False,    # False = use metal surface kinetics at pinholes
-
-    # -------------------------------------------------------------------------
-    # Level 4: Grain structure  (Zhu 2021 for Hastelloy N baseline)
-    # -------------------------------------------------------------------------
-    'grain_size':            100e-6,    # m (100 μm, Zhu 2021 midpoint)
-    'grain_shape':           'equiaxed',
-    'gb_type':               'LAGB',
-    'gb_thickness':          0.5e-9,    # m (0.5 nm)
-    'gb_enhancement_factor': 100,
-    'lattice_density':       8.774e28,  # m⁻³ (Fe BCC estimate — update for alloy)
-
-    # -------------------------------------------------------------------------
-    # Level 4: Trap properties  (Lu 2022 + Young 1997 via model_config MICROSTRUCTURE)
-    # -------------------------------------------------------------------------
-    'trap_dislocation_E_b': 19297,   # J/mol  0.20 eV (Lu 2022: 0.186–0.215 eV)
-    'trap_dislocation_N_T': 8.16e12, # m⁻³   (Zhu 2021 GND density)
-    'trap_gb_E_b':          26051,   # J/mol  0.27 eV (Lu 2022 Peak 2: 0.258–0.281 eV)
-    'trap_gb_N_T':          6e14,    # m⁻³   (geometric, 100 μm grain)
-    'trap_vacancy_E_b':     41489,   # J/mol  0.43 eV (Ni estimate)
-    'trap_vacancy_N_T':     1e26,    # m⁻³
-    'trap_carbide_E_b':     26051,   # J/mol  0.27 eV (M6C, Lu 2022)
-    'trap_carbide_N_T':     2e25,    # m⁻³   (Young 1997 upper bound)
-
-    # -------------------------------------------------------------------------
-    # Model options
-    # -------------------------------------------------------------------------
-    'include_gb_enhancement': True,
-    'include_trapping':       True,
-    'D_eff_method':           'average',
-}
 
 # =============================================================================
-# PARAMETER GROUPS (for organised sensitivity analysis)
+# ANALYSIS WIRING
+# Which model outputs the scan records, which of them get analysed, and which are
+# log-transformed. These mirror what the model wrappers below actually return, so
+# they live with the wrappers rather than in the config file — change a wrapper's
+# return dict and these change with it.
 # =============================================================================
-PARAM_GROUPS = {
-    'metal_transport': ['D_ref', 'E_D', 'K_s_ref', 'H_s', 'T_ref_metal', 'metal_thickness'],
-    'oxide_transport': ['D_ox_ref', 'E_D_ox', 'K_ox_ref', 'H_sol_ox', 'T_ref_oxide', 'oxide_thickness'],
-    'oxide_defects':   ['f_pinhole', 'f_crack', 'f_gb_defect',
-                        'crack_thickness_factor', 'gb_diffusivity_factor'],
-    'microstructure':  ['grain_size', 'gb_thickness', 'lattice_density'],
-    'traps':           ['trap_dislocation_E_b', 'trap_dislocation_N_T',
-                        'trap_gb_E_b', 'trap_gb_N_T', 'trap_vacancy_E_b', 'trap_vacancy_N_T',
-                        'trap_carbide_E_b', 'trap_carbide_N_T'],
-    'operating':       ['temperature', 'P_upstream'],
-}
 
-# =============================================================================
-# SUGGESTED PARAMETER RANGES FOR SENSITIVITY ANALYSIS  (28 parameters)
-# Ref-point values span ±2 orders of magnitude around the reference value.
-# Activation energies and T_ref span physically meaningful bounds.
-# =============================================================================
-SUGGESTED_RANGES_LEVEL5 = {
-    # Metal transport (Incoloy 802, Schmidt 1985)
-    'D_ref':        [4.285e-11, 4.285e-7],
-    'E_D':          [60000, 80000],
-    'K_s_ref':      [1e-4, 0.1],
-    'H_s':          [1000, 50000],
-    #'T_ref_metal':  [600, 1400],
+REGIME_LABELS    = ('surface', 'oxide', 'metal')   # L5L6, surface kinetics
+REGIME_LABELS_L5 = ('oxide', 'metal', 'defect')    # L5, no surface kinetics
 
-    # Oxide transport (Cr2O3_sample4)
-    'D_ox_ref':     [7.800e-21, 7.800e-17],
-    'E_D_ox':       [69000, 71000],
-    'K_ox_ref':     [0.08, 0.4],
-    'H_sol_ox':     [20000, 170000],
-    #'T_ref_oxide':  [600, 1400],
+# --- L5L6 --------------------------------------------------------------------
+# Scalar model outputs stored as columns in the scan DataFrame.
+SCAN_OUTPUT_FIELDS = [
+    'flux', 'permeability', 'theta',
+    'frac_surface', 'frac_oxide', 'frac_metal',
+    'PRF', 'D_eff', 'P_interface', 'flux_intact', 'flux_defect',
+]
+# String diagnostics stored alongside.
+SCAN_LABEL_FIELDS = ['regime', 'system_rate_limiting', 'dominant_path']
 
-    # Geometry
-    'metal_thickness': [5e-4, 5e-3],
-    'oxide_thickness': [1e-10, 1e-5],
-    'P_upstream':      [1e-7, 1e7],
+# 'flux' is primary (the only metric that responds to surface kinetics);
+# 'permeability' is bulk-only by construction; 'theta' is the surface coverage.
+# The regime-defining frac_* are excluded — degenerate within their own cluster.
+REGIME_SA_METRICS = ['flux', 'permeability', 'theta']
 
-    # Oxide defects
-    'f_pinhole':              [1e-5, 0.1],
-    'f_crack':                [1e-5, 0.1],
-    'f_gb_defect':            [1e-5, 0.1],
-    'crack_thickness_factor': [0.01, 0.5],
-    'gb_diffusivity_factor':  [1.0, 100.0],
+# Metrics analysed on a log10 scale so the density estimators behind PAWN/delta
+# aren't dominated by a few huge values (raw flux spans ~10 decades).
+# theta (∈[0,1]) stays linear.
+LOG_METRICS_DEFAULT = ('flux', 'permeability')
 
-    # Grain structure
-    'grain_size':      [1e-5, 5e-4],
-    'gb_thickness':    [3e-10, 1e-9],
-    'lattice_density': [8e28, 1.2e29],
+# --- L5 (no surface kinetics) ------------------------------------------------
+SCAN_OUTPUT_FIELDS_L5 = [
+    'flux', 'permeability', 'PRF',
+    'frac_oxide', 'frac_metal', 'frac_defect',
+    'D_eff', 'D_modification', 'P_interface',
+    'flux_intact', 'flux_defect', 'flux_bare_metal',
+]
+SCAN_LABEL_FIELDS_L5 = ['regime', 'regime_hierarchy', 'dominant_path']
 
-    # Traps (Lu 2022 + Young 1997; ranges narrowed to physically motivated bounds)
-    'trap_dislocation_E_b': [15000, 25000],
-    'trap_dislocation_N_T': [8.16e10, 8.16e14],
-    'trap_gb_E_b':          [25000, 30000],
-    'trap_gb_N_T':          [6e12, 6e16],
-    'trap_vacancy_E_b':     [35000, 50000],
-    'trap_vacancy_N_T':     [1e24, 1e28],
-    'trap_carbide_E_b':     [20000, 40000],
-    'trap_carbide_N_T':     [2e23, 2e27],
+# 'flux' is primary. 'PRF' (bare-metal flux / coated flux) is the coating-
+# effectiveness metric and replaces L5L6's 'theta'. NOTE 'permeability' here is a
+# harmonic mean of the oxide and metal permeabilities only — it ignores the defect
+# paths entirely, so it is bulk-only by construction and will look insensitive to
+# the very parameters that define the 'defect' regime. Read 'flux' and 'PRF' for
+# that cluster.
+REGIME_SA_METRICS_L5 = ['flux', 'permeability', 'PRF']
+LOG_METRICS_L5       = ('flux', 'permeability', 'PRF')   # PRF spans decades too
 
-    # Operating conditions
-    'temperature': [573, 1273],
-}
 
+def presets_without(presets, *drop):
+    """Copy of `presets` with the named parameters removed from every range dict.
+
+    Used to take a parameter OUT of the sampled set so it can be pinned via
+    run_global_lhs_scan(fixed_params=...) instead. The motivating case is
+    `temperature`: it enters D, K_s, D_ox and K_ox exponentially over 573-1273 K
+    and so monopolises the variance of log10(flux) — a dummy-parameter test on the
+    varying-T clusters put every other parameter at or below the noise floor
+    (delta ~0.09), while temperature scored ~0.5. Pinning it lets the remaining
+    parameters compete; in a T-banded probe `H_sol_ox` then reached 5x the floor in
+    the oxide regime and `f_crack` surfaced in the defect regime.
+
+    >>> presets_without(REGIME_PRESETS_L5, 'temperature')
+    """
+    return {r: {k: v for k, v in rng.items() if k not in drop}
+            for r, rng in presets.items()}
+
+
+def _preset_overrides(preset, base):
+    """Which entries of `preset` actually differ from its base ranges."""
+    return {k: list(v) for k, v in preset.items()
+            if k in base and list(v) != list(base[k])}
+
+
+def check_against_config(raise_on_fail=True, verbose=True):
+    """Validate the SENSITIVITY ANALYSIS PARAMETERS section of model_config.py.
+
+    The defaults there are derived from METALS / OXIDES / MICROSTRUCTURE /
+    OXIDE_DEFECTS / CONDITIONS, so value drift against the material data is
+    impossible by construction. What this checks is everything derivation does NOT
+    guarantee:
+
+    1. every derived value is a finite scalar — catches a config entry that has
+       become a list or a sweep range (METALS['metal_thickness'] is already a list,
+       which is why geometry reads from CONDITIONS)
+    2. every swept parameter has a default
+    3. every default lies strictly INSIDE its own sweep range. A default outside
+       the range means the two disagree about what is plausible; a default sitting
+       exactly ON a bound is only half-sampled, which is how K_eq_metal_ref once
+       slipped through
+    4. L5 and L5L6 still agree on every value they share — the inherited defaults
+       and ranges, and the preset overrides both levels have in common
+
+    Returns a list of problem strings (empty when clean).
+    """
+    problems = []
+
+    # 1-2. derived values must be usable scalars
+    for name, params in (('L5', DEFAULT_PARAMS_LEVEL5),
+                         ('L5L6', DEFAULT_PARAMS_LEVEL5L6)):
+        for k, v in params.items():
+            if isinstance(v, (str, bool)):
+                continue
+            if isinstance(v, (list, tuple)):
+                problems.append(f"{name}: {k} is a {type(v).__name__} ({v!r}) — expected "
+                                f"a scalar; check its model_config source")
+            elif not isinstance(v, (int, float)):
+                problems.append(f"{name}: {k} has non-numeric type {type(v).__name__}")
+
+    # 3. defaults must sit strictly inside their sweep range
+    for name, params, ranges in (('L5', DEFAULT_PARAMS_LEVEL5, SUGGESTED_RANGES_LEVEL5),
+                                 ('L5L6', DEFAULT_PARAMS_LEVEL5L6, SUGGESTED_RANGES_LEVEL5L6)):
+        for k, (lo, hi) in ranges.items():
+            if k not in params:
+                problems.append(f"{name}: {k} is swept but has no default")
+                continue
+            v = params[k]
+            if isinstance(v, (int, float)) and not isinstance(v, bool):
+                if not (lo <= v <= hi):
+                    problems.append(f"{name}: default {k}={v:g} lies OUTSIDE its sweep "
+                                    f"range [{lo:g}, {hi:g}]")
+                elif v == lo or v == hi:
+                    problems.append(f"{name}: default {k}={v:g} sits exactly ON a sweep "
+                                    f"bound [{lo:g}, {hi:g}] — one side is never sampled")
+
+    # 4a. the two levels must agree wherever their defaults/ranges overlap
+    for label, a, b in (('DEFAULT_PARAMS', DEFAULT_PARAMS_LEVEL5, DEFAULT_PARAMS_LEVEL5L6),
+                        ('SUGGESTED_RANGES', SUGGESTED_RANGES_LEVEL5, SUGGESTED_RANGES_LEVEL5L6)):
+        for k in set(a) & set(b):
+            va, vb = a[k], b[k]
+            if isinstance(va, (list, tuple)) or isinstance(vb, (list, tuple)):
+                va, vb = list(va), list(vb)
+            if va != vb:
+                problems.append(f"{label}: L5 and L5L6 disagree on {k} "
+                                f"({va!r} vs {vb!r}) — they must share one value")
+
+    # 4b. shared preset overrides must match. Compared by what each preset actually
+    # changes relative to its own base, so this needs no access to the private
+    # building blocks in model_config and stays correct if they are restructured.
+    for reg in set(REGIME_PRESETS) & set(REGIME_PRESETS_L5):
+        ov6 = _preset_overrides(REGIME_PRESETS[reg], SUGGESTED_RANGES_LEVEL5L6)
+        ov5 = _preset_overrides(REGIME_PRESETS_L5[reg], SUGGESTED_RANGES_LEVEL5)
+        for k in set(ov5) & set(ov6):
+            if ov5[k] != ov6[k]:
+                problems.append(f"'{reg}' preset: L5 and L5L6 disagree on {k} "
+                                f"({ov5[k]!r} vs {ov6[k]!r}) — both compose the same blocks")
+
+    if verbose:
+        if problems:
+            print(f"check_against_config: {len(problems)} problem(s)")
+            for p in problems:
+                print(f"  - {p}")
+        else:
+            print("check_against_config: clean")
+    if problems and raise_on_fail:
+        raise ValueError("model_config.py sensitivity-parameter inconsistency:\n  "
+                         + "\n  ".join(problems))
+    return problems
 
 # =============================================================================
 # MODEL WRAPPER — LEVEL 5
@@ -412,55 +439,8 @@ def level5_model_wrapper(params_dict, return_full_record=False):
 
 
 # =============================================================================
-# LEVEL 5L6: SURFACE KINETICS EXTENSION
-# Adds oxide + metal surface dissociation/recombination kinetics.
-# Maps to Surface_proposal.ipynb → calculate_full_model_flux_L346_v2.
-# Cleanly inherits all Level 5 parameters via **DEFAULT_PARAMS_LEVEL5.
-# =============================================================================
-
-DEFAULT_PARAMS_LEVEL5L6 = {
-    **DEFAULT_PARAMS_LEVEL5,
-    # -------------------------------------------------------------------------
-    # Oxide surface kinetics  (Cr2O3_sample4, T_ref_surface = 1623 K)
-    # -------------------------------------------------------------------------
-    'k_diss_ref':    9.487e-8,  # mol/m²/s/Pa   Grant 1988 oxidized surface condition
-    'E_diss':        57950,     # J/mol          Cr2O3 surface activation energy
-    'K_eq_ref':      1e-10,     # Pa⁻¹          PLACEHOLDER
-    'H_eq':          20000,     # J/mol          PLACEHOLDER
-    'T_ref_surface': 1623,      # K              oxide surface kinetics reference
-    # -------------------------------------------------------------------------
-    # Metal surface kinetics (Grant 1988 clean surface, T_ref = 965 K)
-    # -------------------------------------------------------------------------
-    'k_diss_metal_ref':  1.346e-6,  # mol/m²/s/Pa   Grant 1988 clean surface
-    'E_diss_metal':      81560,     # J/mol
-    'K_eq_metal_ref':    1e-8,      # Pa⁻¹          PLACEHOLDER
-    'H_eq_metal':        15000,     # J/mol          PLACEHOLDER
-    'T_ref_surface_metal': 965,     # K              Grant 1988 reference temperature
-}
-
-SUGGESTED_RANGES_LEVEL5L6 = {
-    **SUGGESTED_RANGES_LEVEL5,
-    # Oxide surface kinetics (Cr2O3)
-    'k_diss_ref':          [9.487e-10, 9.487e-6],
-    'E_diss':              [40000, 70000],
-    'K_eq_ref':            [1e-14, 1e-6],
-    'H_eq':                [5000, 50000],
-    #'T_ref_surface':       [600, 1800],
-    # Metal surface kinetics (Grant 1988)
-    'k_diss_metal_ref':    [1.346e-8, 1.346e-4],
-    'E_diss_metal':        [70000, 100000],
-    'K_eq_metal_ref':      [1e-10, 1e-3],
-    'H_eq_metal':          [5000, 40000],
-    #'T_ref_surface_metal': [600, 1100],
-}
-
-
-# =============================================================================
 # REGIME LABELLING — single source of truth
 # =============================================================================
-
-REGIME_LABELS    = ('surface', 'oxide', 'metal')   # L5L6, surface kinetics
-REGIME_LABELS_L5 = ('oxide', 'metal', 'defect')    # L5, no surface kinetics
 
 
 def _argmax_label(fracs, rule='argmax', threshold=0.5):
@@ -792,21 +772,6 @@ def level5L6_model_wrapper(params_dict, return_full_record=False):
 # which need no structured design and cost no extra model evaluations.
 # =============================================================================
 
-# Scalar model outputs stored as columns in the global-scan DataFrame.
-SCAN_OUTPUT_FIELDS = [
-    'flux', 'permeability', 'theta',
-    'frac_surface', 'frac_oxide', 'frac_metal',
-    'PRF', 'D_eff', 'P_interface', 'flux_intact', 'flux_defect',
-]
-# String diagnostics stored alongside.
-SCAN_LABEL_FIELDS = ['regime', 'system_rate_limiting', 'dominant_path']
-# Default per-cluster output metrics for the regime SA. 'flux' is primary (the
-# only metric that responds to surface kinetics); 'permeability' is bulk-only
-# (surface-insensitive by construction); 'theta' is the surface coverage.
-# The regime-defining frac_* are intentionally excluded as per-cluster metrics
-# (degenerate within their own cluster).
-REGIME_SA_METRICS = ['flux', 'permeability', 'theta']
-
 
 def _make_problem(param_ranges):
     """SALib problem dict from an ordered {name: [lo, hi]} mapping."""
@@ -815,12 +780,6 @@ def _make_problem(param_ranges):
         'names':    list(param_ranges.keys()),
         'bounds':   [list(v) for v in param_ranges.values()],
     }
-
-
-# Metrics that span orders of magnitude — analysed on a log10 scale so the
-# density estimators behind PAWN/δ aren't dominated by a few huge values (raw
-# flux ranges ~10 decades). theta (∈[0,1]) stays linear.
-LOG_METRICS_DEFAULT = ('flux', 'permeability')
 
 
 def _save_scan(df, path):
@@ -1023,166 +982,6 @@ def plot_regime_exploration(partition, output_metrics=('flux', 'permeability', '
     return fig
 
 
-
-
-# -----------------------------------------------------------------------------
-# Regime-targeted sampling presets
-# Each preset = the default ranges with ONLY the regime-controlling parameters
-# overridden, left as broad as possible so the per-regime SA reflects genuine
-# sensitivity rather than the targeting itself. Targeting is necessary because an
-# untargeted sweep over the full ranges yields essentially no surface-limited rows.
-#
-# Yields measured on the 36-param production scans (Application/sa_results/scans):
-#   metal    813/1000  = 81.3%   (default ranges)
-#   surface  714/2500  = 28.6%   (low pressure + slow surface kinetics)
-#   oxide   3725/5000  = 74.5%   (suppressed defects + slow/thick oxide + fast surface & metal)
-# -----------------------------------------------------------------------------
-
-def _ranges_with(overrides):
-    R = {k: list(v) for k, v in SUGGESTED_RANGES_LEVEL5L6.items()}
-    R.update({k: list(v) for k, v in overrides.items()})
-    return R
-
-
-REGIME_PRESETS = {
-    'metal': _ranges_with({}),  # default ranges already ~97% metal-limited
-
-    'surface': _ranges_with({
-        'P_upstream':       [1e-7, 1e1],     # low pressure
-        'k_diss_ref':       [9.5e-12, 9.5e-9],   # slow oxide-surface dissociation
-        'k_diss_metal_ref': [1.3e-10, 1.3e-7],   # slow metal-surface dissociation
-    }),
-
-    'oxide': _ranges_with({
-        'f_pinhole':   [1e-7, 1e-5],   # suppress defect bypass so flux uses the intact oxide
-        'f_crack':     [1e-7, 1e-5],
-        'f_gb_defect': [1e-7, 1e-5],
-        'oxide_thickness': [1e-7, 1e-5],     # thick, slow oxide -> oxide is the bottleneck
-        'D_ox_ref':        [7.8e-21, 7.8e-20],
-        'P_upstream':      [1e4, 1e7],       # fast surface (high P + high k_diss)
-        'k_diss_ref':      [9.5e-8, 9.5e-6],
-        'metal_thickness': [5e-5, 5e-4],     # thin, fast metal -> metal not limiting
-        'D_ref':           [4.3e-8, 4.3e-7],
-    }),
-}
-
-# Default LHS draws per regime = target cluster size / that preset's measured yield,
-# so all three clusters land near 1500 points. Balance matters as much as absolute
-# size here: delta/PAWN estimator variance depends on n, so unequal clusters make the
-# cross-regime comparison in regime_comparison_matrix() compare noise levels as well
-# as sensitivities. Column-normalisation in the heatmap rescales magnitude but cannot
-# undo that. 1500 also leaves headroom over the ~300-500 stability floor.
-DEFAULT_N_PER_REGIME = {'metal': 1850, 'surface': 5250, 'oxide': 2010}
-
-
-# -----------------------------------------------------------------------------
-# LEVEL 5 (no surface kinetics) — scan fields, metrics and regime-targeted presets
-#
-# The L5 regimes are oxide / metal / defect: two series resistances plus the
-# PARALLEL bypass through pinholes, cracks and grain-boundary paths. There is no
-# 'theta' (no surface coverage) and no surface-kinetics parameters to target with,
-# so the oxide preset has to lean entirely on oxide/metal transport and geometry.
-#
-# Measured on 300-draw LHS probes (seed 42):
-#   default ranges   -> 98% metal, max frac_defect 0.415  (i.e. ONE regime;
-#                       targeting is not optional here, it is what makes the study)
-#   metal preset     -> 97.0% in-regime
-#   oxide preset     -> 77.7%
-#   defect preset    -> 87.3%,  max frac_defect 0.999
-# -----------------------------------------------------------------------------
-
-SCAN_OUTPUT_FIELDS_L5 = [
-    'flux', 'permeability', 'PRF',
-    'frac_oxide', 'frac_metal', 'frac_defect',
-    'D_eff', 'D_modification', 'P_interface',
-    'flux_intact', 'flux_defect', 'flux_bare_metal',
-]
-SCAN_LABEL_FIELDS_L5 = ['regime', 'regime_hierarchy', 'dominant_path']
-
-# 'flux' is primary. 'PRF' (bare-metal flux / coated flux) is the coating-
-# effectiveness metric and replaces L5L6's 'theta'. NOTE 'permeability' here is a
-# harmonic mean of the oxide and metal permeabilities only — it ignores the defect
-# paths entirely, so it is bulk-only by construction and will look insensitive to
-# the very parameters that define the 'defect' regime. Kept for continuity with
-# L5L6, but read 'flux' and 'PRF' for the defect cluster.
-REGIME_SA_METRICS_L5 = ['flux', 'permeability', 'PRF']
-LOG_METRICS_L5       = ('flux', 'permeability', 'PRF')   # PRF spans decades too
-
-
-def _ranges_with_L5(overrides):
-    R = {k: list(v) for k, v in SUGGESTED_RANGES_LEVEL5.items()}
-    R.update({k: list(v) for k, v in overrides.items()})
-    return R
-
-
-REGIME_PRESETS_L5 = {
-    # default ranges are already ~97% metal-limited
-    'metal': _ranges_with_L5({}),
-
-    'oxide': _ranges_with_L5({
-        'f_pinhole':   [1e-7, 1e-5],    # suppress the bypass so flux uses the oxide
-        'f_crack':     [1e-7, 1e-5],
-        'f_gb_defect': [1e-7, 1e-5],
-        'oxide_thickness': [1e-7, 1e-5],      # thick, slow oxide -> the bottleneck
-        'D_ox_ref':        [7.8e-21, 7.8e-20],
-        'metal_thickness': [5e-5, 5e-4],      # thin, fast metal -> not limiting
-        'D_ref':           [4.3e-8, 4.3e-7],
-    }),
-
-    'defect': _ranges_with_L5({
-        # Large defect area AND a slow intact oxide, so the bypass actually wins.
-        # NOTE this is a heavily degraded coating (total defect area up to ~0.9) —
-        # a wider claim than the <=0.3 the default ranges imply. State it in any
-        # write-up rather than leaving it buried here.
-        'f_pinhole':   [0.05, 0.30],
-        'f_crack':     [0.05, 0.30],
-        'f_gb_defect': [0.05, 0.30],
-        'oxide_thickness': [1e-7, 1e-5],
-        'D_ox_ref':        [7.8e-21, 7.8e-20],
-    }),
-}
-
-# draws = target cluster size / measured yield, balanced at ~1500 per cluster so
-# delta/PAWN estimator noise is comparable across the regime columns (see the
-# note on DEFAULT_N_PER_REGIME above).
-DEFAULT_N_PER_REGIME_L5 = {'metal': 1550, 'oxide': 1930, 'defect': 1720}
-
-
-def presets_without(presets, *drop):
-    """Copy of `presets` with the named parameters removed from every range dict.
-
-    Used to take a parameter OUT of the sampled set so it can be pinned via
-    run_global_lhs_scan(fixed_params=...) instead. The motivating case is
-    `temperature`: it enters D, K_s, D_ox and K_ox exponentially over 573-1273 K
-    and so monopolises the variance of log10(flux) — a dummy-parameter test on the
-    varying-T clusters put every other parameter at or below the noise floor
-    (delta ~0.09), while temperature scored ~0.5. Pinning it lets the remaining
-    parameters compete; in a T-banded probe `H_sol_ox` then reached 5x the floor in
-    the oxide regime and `f_crack` surfaced in the defect regime.
-
-    >>> presets_without(REGIME_PRESETS_L5, 'temperature')
-    """
-    return {r: {k: v for k, v in rng.items() if k not in drop}
-            for r, rng in presets.items()}
-
-
-# Temperatures for the isothermal L5 sweep. Spans the operating window; the probe
-# showed the driver ranking genuinely shifts between the low and high ends.
-DEFAULT_SWEEP_TEMPERATURES = (773.0, 1073.0, 1273.0)
-
-# In-regime yield of each preset AT FIXED TEMPERATURE (250-draw LHS probes, seed 42).
-# These differ from the varying-T yields, so draw counts must be sized per temperature —
-# a single dict would leave the oxide cluster ~40% short at 1273 K and reintroduce the
-# cross-regime imbalance the isothermal design exists to remove.
-#
-# The oxide yield falls steadily with temperature (0.92 -> 0.59) because the oxide's
-# activation energies (E_D_ox ~70 kJ/mol, H_sol_ox up to ~164 kJ/mol) exceed the metal's,
-# so it speeds up faster than the metal and stops being the bottleneck.
-MEASURED_YIELDS_L5_BY_T = {
-    773.0:  {'oxide': 0.916, 'metal': 0.992, 'defect': 0.916},
-    1073.0: {'oxide': 0.700, 'metal': 0.988, 'defect': 0.820},
-    1273.0: {'oxide': 0.592, 'metal': 0.972, 'defect': 0.800},
-}
 
 
 def run_targeted_regime_scans(N_per_regime=None, regimes=('metal', 'surface', 'oxide'),
