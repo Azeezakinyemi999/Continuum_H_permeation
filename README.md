@@ -14,7 +14,9 @@ All entry points are Jupyter notebooks in `Application/`. Open them in order:
 | `Application/Surface_proposal.ipynb` | Adds Level 6 surface kinetics (chemosorption, Langmuir coverage) |
 | `Application/complete_model.ipynb` | Single end-to-end Level 5L6 run showing all resistance paths |
 | `Application/model_analysis.ipynb` | Parametric sweeps and regime classification |
-| `Application/sensitivity_analysis_nb.ipynb` | Morris and Sobol sensitivity analysis for Level 5 and Level 5L6 |
+| `Application/sensitivity_regime_L5L6.ipynb` | Regime-stratified SA, Level 5L6 — regimes surface / oxide / metal |
+| `Application/sensitivity_regime_L5.ipynb` | Regime-stratified SA, Level 5 (no surface kinetics) — regimes oxide / metal / defect |
+| `Application/regime_parallel_coords.ipynb` | Parallel-coordinates views of the regime clusters and their sensitivities |
 
 ---
 
@@ -45,6 +47,7 @@ calculations/           Physics modules
   interface_solver.py     Oxide–metal interface coupling
   surface_kinetics.py     Chemosorption kinetics (Level 6)
   classify_regime.py      Regime classifier (surface- vs diffusion-limited)
+  sensitivity.py          Regime-stratified given-data SA (PAWN + Borgonovo delta)
   config/
     model_config.py       Active material parameters (Incoloy 802 / Cr2O3_sample4)
     model_config1.py      Alternative config for comparison
@@ -56,9 +59,6 @@ data/                   Material property databases
   literature_permeation_data.csv  CSV export of material_data.py
   sensitivity_parameters.csv      40 sensitivity parameters with ranges and references
   permeation_literature_database_v3 (3).xlsx  Raw literature data (Excel)
-
-validation/             Sensitivity analysis scripts
-  sensitivity_level1.py   Morris + Sobol wrappers for Level 5 and Level 5L6
 
 plot&docs/              Documentation, design notes, and archived plots
 
