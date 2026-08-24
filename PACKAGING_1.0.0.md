@@ -3,8 +3,9 @@
 Scope record for the offline Docker deliverable. Captures decisions that are not
 recoverable from the code, so a later reader does not have to re-derive them.
 
-Status: **Phase A, C, D, E complete.** `hydrogen-model:1.0.0-rc1` builds and both
-gates pass offline as non-root. Not yet exported / notebook-executed / promoted.
+Status: **`hydrogen-model:1.0.0` released 2026-08-24.** Built, both gates passing
+offline as non-root, notebooks executed, exported, checksummed, and verified by
+deleting the image and restoring it from the archive alone.
 
 ## Target environment
 
@@ -339,11 +340,64 @@ Practical consequence: do not use a 600 s per-cell limit for any automated
 notebook gate on the sensitivity notebooks. `Proposal` and `Surface_proposal`
 are fast (~40 s) and are the sensible smoke-level notebook gate.
 
-### Not yet verified
+### Archive round-trip — PASSED 2026-08-24
 
-Notebook **execution** end-to-end (only import/serve is proven), `docker save` /
-checksum / `docker load` round-trip, and true Linux bind-mount ownership. The
-last cannot be tested on macOS at all: Docker Desktop's virtiofs rewrites
-ownership, so the mount test always appears to pass. The arbitrary-UID design is
-what makes it work; the HOME-writability half of it *is* proven, since that is
-inside the container filesystem rather than the mount.
+The full company-side restore, performed after **deleting the image locally**.
+Both tags (`1.0.0` and `1.0.0-rc1`) were removed, not just one — untagging a
+single tag leaves the layers resident and makes `docker load` a no-op, so the
+test would prove nothing. `docker rmi` reported `Deleted: sha256:f393ab...`,
+confirming the layers were actually freed.
+
+| step | result |
+|---|---|
+| `docker save` | 228 MB tar (image is 1.1 GB uncompressed) |
+| `shasum -a 256 -c` | `image/hydrogen-model-1.0.0.tar: OK` |
+| `docker rmi` both tags | image gone |
+| `docker load -i` | `Loaded image: hydrogen-model:1.0.0` |
+| image ID before vs after | `sha256:f393ab4bd5e6...` **identical** |
+| `scripts/verify.sh` from inside the package | both gates PASSED, offline |
+| `scripts/start.sh`, host port | 403 unauthenticated, 200 with token, all six notebooks served, bound `127.0.0.1:8888` only |
+| `Proposal.ipynb` executed from the restored image | passed, 43 s, wrote six PNGs owned by the host user |
+
+Image identity: `sha256:f393ab4bd5e6cf7af1516b3ae2371b6151651aa1d1a53d63c99c08fc1cfb93b6`,
+`amd64/linux`, `User=1000:0`.
+
+`installed-packages.txt` (pip freeze from inside the built image) is
+byte-identical to `requirements.lock.txt`. That equality is the audit evidence
+that the build installed exactly what was locked.
+
+Note the `.sha256` file records the path `image/hydrogen-model-1.0.0.tar`
+relative to the package root, so `shasum -c` must be run from there — which is
+what the README instructs.
+
+### Two script bugs found by testing, both fixed
+
+1. `verify.sh` mounted a non-existent `workspace/`, and **Docker silently creates
+   a missing bind-mount source as an empty directory**. A broken package layout
+   therefore surfaced as a confusing gate-2 import failure. It now checks for
+   `workspace/calculations` first and says the package is incomplete.
+2. `start.sh` used `docker run -it` unconditionally and died with `the input
+   device is not a TTY` whenever stdin/stdout were redirected
+   (`./scripts/start.sh > jupyter.log`, CI, a GUI launcher). Now guarded by
+   `[ -t 0 ] && [ -t 1 ]`. The first attempt at that fix used a bash array and
+   broke on **macOS's bash 3.2**, where expanding an empty array under `set -u`
+   aborts with `TTY_FLAGS[@]: unbound variable`; it uses a scalar instead.
+
+### Still open
+
+- **True Linux bind-mount ownership.** Cannot be tested on macOS at all: Docker
+  Desktop's virtiofs rewrites ownership, so the mount test always appears to
+  pass. The arbitrary-UID design is what makes it work, and the half that *can*
+  be proven here — that an unknown UID gets a writable HOME — is proven.
+- **`gb_enhancement_factor` is a dead parameter.** `calculate_gb_enhanced_diffusivity`
+  takes no such argument and derives alpha internally from a hardcoded
+  austenitic-steel table, so the `'gb_enhancement_factor': 100` that
+  `sensitivity.py` puts into `microstructure_params` is never read (verified:
+  alpha of 1, 100 and 10000 give an identical `D_eff`). Harmless today — it is
+  not among the 35 parameters the shipped SA actually varies — but if it is ever
+  added to the SA ranges it will report delta ~ 0 and read as physics rather
+  than as a wiring bug.
+- **Deployment questions for the company**, none of which are Python questions:
+  container runtime and version, whether Linux containers are permitted, whether
+  bind mounts and localhost port binds are allowed, whether images are scanned
+  before import, and whether containers must run as a specific UID.

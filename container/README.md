@@ -19,8 +19,11 @@ Hydrogen_Model_Environment_1.0.0/
 │   ├── verify.sh                     run the two acceptance gates
 │   └── start.sh                      launch JupyterLab
 ├── workspace/                         your working files (see below)
-├── requirements.lock.txt              the exact 106 packages installed
-├── installed-packages.txt             pip freeze from inside the image
+├── requirements.in                    what we deliberately depend on
+├── requirements.lock.txt              the exact 106 packages the image installs
+├── installed-packages.txt             pip freeze taken from inside the built
+│                                      image; byte-identical to the lock, which
+│                                      is the evidence the build honoured it
 ├── Dockerfile                         how the image was built
 └── README.md
 ```
