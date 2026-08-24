@@ -1,0 +1,43 @@
+# Lint gate for the hydrogen-model container release.
+#
+# Deliberately narrow. This is not a style checker — it enforces only the bug
+# classes that can silently change which parameters the model resolves, which
+# is how the data/*.py shims came to return Fuerst Hastelloy_N values instead of
+# the active study's Incoloy 802 values (fixed 2026-08-24). Style findings would
+# bury that signal, so they are not selected.
+
+target-version = "py312"
+
+extend-exclude = [
+    "old_backups",
+    "validation_backup",
+    "docs/old_ipynb",
+    "plot&docs",
+    "atat-sqs-gui",
+    "Fuerst_et_al_2024",
+]
+
+[lint]
+select = [
+    "F811",  # redefinition of unused name — the data/ shim shadowing bug
+    "F821",  # undefined name
+    "F402",  # import shadowed by loop variable
+    "F406",  # `from x import *` outside module level
+    "F632",  # `is` comparison against a literal
+    "TID251", # banned imports (GUI modules — see banned-api below)
+]
+
+[lint.per-file-ignores]
+# Notebook cells here are written to be independently runnable, so most cells
+# re-import np / plt / brentq / apply_style. Ruff parses a notebook as one
+# module and reports each re-import as F811; that pattern is intentional, not a
+# defect. F821 and the rest still apply to notebooks.
+"*.ipynb" = ["F811"]
+
+[lint.flake8-tidy-imports.banned-api]
+# These are GUI/stdlib-tkinter modules. python:*-slim has no tkinter, so an
+# accidental IDE-autocomplete import (we shipped `from turtle import mode` in
+# defective_metal.py for a while) becomes an ImportError only inside the
+# container — after the image is built and handed over. Ban them at lint time.
+"turtle".msg  = "GUI module; unavailable in python:slim. Almost certainly an accidental autocomplete import."
+"tkinter".msg = "GUI module; unavailable in python:slim. Use a headless matplotlib backend instead."

@@ -1,5 +1,4 @@
 from calculations.config.model_config import OXIDES
-from calculations.config.fuerst_etal_2024_model_config import OXIDES
 
 OXIDE_PROPERTIES = OXIDES
 # # """
