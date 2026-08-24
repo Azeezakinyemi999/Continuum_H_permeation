@@ -11,10 +11,10 @@ Verified to run with networking fully disabled.
 ## What you received
 
 ```
-Hydrogen_Model_Environment_1.0.0/
+Hydrogen_Model_Environment_1.0.1/
 ├── image/
-│   ├── hydrogen-model-1.0.0.tar      the container image
-│   └── hydrogen-model-1.0.0.sha256   checksum for the above
+│   ├── hydrogen-model-1.0.1.tar      the container image
+│   └── hydrogen-model-1.0.1.sha256   checksum for the above
 ├── scripts/
 │   ├── verify.sh                     run the two acceptance gates
 │   └── start.sh                      launch JupyterLab
@@ -42,15 +42,15 @@ The container runs as a **non-root** user and needs no elevated privileges.
 **1. Check the archive is intact.** From the package root:
 
 ```bash
-shasum -a 256 -c image/hydrogen-model-1.0.0.sha256
+shasum -a 256 -c image/hydrogen-model-1.0.1.sha256
 ```
-Expect `image/hydrogen-model-1.0.0.tar: OK`. On Linux without `shasum`, use
+Expect `image/hydrogen-model-1.0.1.tar: OK`. On Linux without `shasum`, use
 `sha256sum -c`. If this fails, the transfer was corrupted — do not proceed.
 
 **2. Load the image.**
 
 ```bash
-docker load -i image/hydrogen-model-1.0.0.tar
+docker load -i image/hydrogen-model-1.0.1.tar
 docker images hydrogen-model
 ```
 
@@ -62,7 +62,7 @@ docker images hydrogen-model
 This runs with `--network none` and must end with:
 
 ```
-VERIFICATION PASSED — hydrogen-model:1.0.0 is the validated environment.
+VERIFICATION PASSED — hydrogen-model:1.0.1 is the validated environment.
 ```
 
 It checks two separate things: that all 106 pinned packages are exactly the
@@ -140,10 +140,21 @@ Please include:
 
 - the output of `./scripts/verify.sh` in full
 - `docker --version` and your OS
-- `docker image inspect hydrogen-model:1.0.0 --format '{{.Id}} {{.Architecture}}'`
+- `docker image inspect hydrogen-model:1.0.1 --format '{{.Id}} {{.Architecture}}'`
 - which notebook and which cell, with the error text
 
 ## Version
 
-`hydrogen-model:1.0.0` — Python 3.12, linux/amd64. Cite this tag alongside any
+`hydrogen-model:1.0.1` — Python 3.12, linux/amd64. Cite this tag alongside any
 results, so they can be tied back to a known environment.
+
+### Changes since 1.0.0
+
+1.0.0 required `--user "$(id -u):0"`; running it as `--user "$(id -u):$(id -g)"`
+— the more natural form — failed with
+`PermissionError: [Errno 13] Permission denied: '/home/appuser/.ipython'`.
+1.0.1 redirects every per-user state directory (IPython, matplotlib, XDG) to
+`/tmp`, so any `uid:gid` works and your files are written with your own group
+rather than group 0. `scripts/start.sh` uses the natural form. Nothing about the
+scientific environment changed — the 106 locked package versions and every
+reference value are identical.

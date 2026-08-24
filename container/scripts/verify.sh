@@ -3,7 +3,7 @@
 # transfer of the image archive.
 set -uo pipefail
 
-IMAGE="${IMAGE:-hydrogen-model:1.0.0}"
+IMAGE="${IMAGE:-hydrogen-model:1.0.1}"
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PKG="$(cd "$HERE/.." && pwd)"
 
@@ -29,7 +29,7 @@ echo
 echo "### Gate 2/2 — scientific smoke test (offline)"
 if ! docker run --rm --network none \
       -v "$PKG/workspace:/workspace" -w /workspace \
-      --user "$(id -u):0" \
+      --user "$(id -u):$(id -g)" \
       "$IMAGE" python /opt/model_smoke_test.py; then
   echo ">>> GATE 2 FAILED: the model does not reproduce its reference values." >&2
   fail=1

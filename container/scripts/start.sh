@@ -2,7 +2,7 @@
 # Start JupyterLab against the workspace. Ctrl-C to stop.
 set -euo pipefail
 
-IMAGE="${IMAGE:-hydrogen-model:1.0.0}"
+IMAGE="${IMAGE:-hydrogen-model:1.0.1}"
 PORT="${PORT:-8888}"
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PKG="$(cd "$HERE/.." && pwd)"
@@ -37,13 +37,13 @@ if [ -t 0 ] && [ -t 1 ]; then
   TTY_FLAGS="-it"
 fi
 
-# --user "$(id -u):0" makes files written into workspace/ belong to you rather
-# than to root. Group 0 is required: the image's HOME is group-writable so any
-# host UID gets a writable home, which JupyterLab needs.
+# --user makes files written into workspace/ belong to you rather than to root.
+# The image redirects every per-user state directory to /tmp, so any uid:gid
+# works and we can use your real group instead of forcing group 0.
 # shellcheck disable=SC2086  # deliberate word splitting, see above
 exec docker run --rm $TTY_FLAGS \
   --name hydrogen-jupyter \
   -p "127.0.0.1:$PORT:8888" \
   -v "$PKG/workspace:/workspace" \
-  --user "$(id -u):0" \
+  --user "$(id -u):$(id -g)" \
   "$IMAGE"

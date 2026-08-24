@@ -3,9 +3,10 @@
 Scope record for the offline Docker deliverable. Captures decisions that are not
 recoverable from the code, so a later reader does not have to re-derive them.
 
-Status: **`hydrogen-model:1.0.0` released 2026-08-24.** Built, both gates passing
-offline as non-root, notebooks executed, exported, checksummed, and verified by
-deleting the image and restoring it from the archive alone.
+Status: **`hydrogen-model:1.0.1` released 2026-08-24**, superseding 1.0.0.
+Built, both gates passing offline as non-root, notebooks executed, exported,
+checksummed, and verified by deleting the image and restoring it from the
+archive alone — including a real Linux filesystem ownership test.
 
 ## Target environment
 
@@ -383,12 +384,56 @@ what the README instructs.
    broke on **macOS's bash 3.2**, where expanding an empty array under `set -u`
    aborts with `TTY_FLAGS[@]: unbound variable`; it uses a scalar instead.
 
-### Still open
+## Linux ownership — TESTED 2026-08-24, and it forced 1.0.1
 
-- **True Linux bind-mount ownership.** Cannot be tested on macOS at all: Docker
-  Desktop's virtiofs rewrites ownership, so the mount test always appears to
-  pass. The arbitrary-UID design is what makes it work, and the half that *can*
-  be proven here — that an unknown UID gets a writable HOME — is proven.
+Testable after all. The obstacle was never Linux; it was that **macOS bind
+mounts** go through virtiofs, which rewrites ownership so any such test
+trivially "passes". A **Docker named volume** lives inside the Linux VM on a real
+`ext4` filesystem with genuine UID semantics, so the test is meaningful there.
+
+Method: stage the workspace into a named volume, `chown -R 1234:1234` it to
+represent a company user, run the image against it, then act as a *normal* user
+(uid 1234, gid 1234, **not** in group 0) and try to use the outputs.
+
+Result for the documented invocation: read, modify, rename, delete, create,
+rewrite a notebook in place, and write/delete inside `calculations/` — **all
+succeed**, no `sudo`, no `chown`. `Proposal.ipynb` executes offline and its six
+PNGs land owned by the invoking user.
+
+### What this found
+
+| invocation | 1.0.0 | 1.0.1 |
+|---|---|---|
+| `--user "$(id -u):0"` | works | works |
+| `--user "$(id -u):$(id -g)"` | **fails** | works |
+| no `--user` (image default 1000:0) | cannot write into a user-owned dir | same, and correct |
+
+1.0.0 died under the natural form with
+`PermissionError: [Errno 13] Permission denied: '/home/appuser/.ipython'` —
+because `JUPYTER_*_DIR` covers Jupyter but IPython, matplotlib and the XDG dirs
+still resolve under `$HOME`, which an off-group UID cannot write. 1.0.1 redirects
+`IPYTHONDIR`, `MPLCONFIGDIR`, `XDG_CACHE_HOME` and `XDG_CONFIG_HOME` to `/tmp`,
+so any `uid:gid` works and files carry the user's own group rather than group 0.
+`scripts/start.sh` and `verify.sh` now use `--user "$(id -u):$(id -g)"`.
+
+A UID that does *not* own the directory (`--user 4242:4242`) still cannot write.
+That is correct Unix behaviour, not a defect.
+
+Nothing about the scientific environment changed between 1.0.0 and 1.0.1: the
+106 locked versions and every reference value are identical.
+
+### 1.0.1 release record
+
+| | |
+|---|---|
+| image id | `sha256:b4db77b638cb757a54b2944a5687c9a2eb26c499ab623f1a8d95769144c74bc3` |
+| arch / user | `amd64/linux`, `User=1000:0` |
+| archive | 228 MB tar, sha256 verified |
+| round-trip | all three tags removed (`Deleted: sha256:b4db77...`), reloaded, **identical id** |
+| gates from the package | both PASSED offline |
+| Proposal.ipynb, restored image, uid 1234:1234 | rc=0, PNGs owned `1234:1234` |
+
+### Still open
 - **`gb_enhancement_factor` is a dead parameter.** `calculate_gb_enhanced_diffusivity`
   takes no such argument and derives alpha internally from a hardcoded
   austenitic-steel table, so the `'gb_enhancement_factor': 100` that

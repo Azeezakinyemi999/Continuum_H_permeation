@@ -15,9 +15,8 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 # container UID 1000 writing to a host dir owned by 1001 gets EACCES and
 # notebooks cannot save at all, whereas root always writes. But `--user $(id -u)`
 # alone also fails, because an unknown UID gets HOME=/ which is not writable and
-# JupyterLab needs a writable HOME. So: own the home dir by group 0, make it
-# group-writable, run as 1000:0, and keep Jupyter's state in /tmp. Any host UID
-# then works via `--user "$(id -u):0"`.
+# JupyterLab needs a writable HOME. So: own the home dir by group 0 and make it
+# group-writable, giving a working fallback for `--user "$(id -u):0"`.
 RUN useradd --create-home --uid 1000 --gid 0 --shell /bin/bash appuser && \
     chmod -R g=u /home/appuser
 
@@ -25,11 +24,21 @@ RUN useradd --create-home --uid 1000 --gid 0 --shell /bin/bash appuser && \
 # python is invoked. Without it, `python /opt/model_smoke_test.py` puts /opt on
 # sys.path[0] -- not the cwd -- and `import calculations` fails even with
 # -w /workspace. The notebooks do their own sys.path.insert, but scripts do not.
+# Every per-user state directory is redirected to /tmp, which is world-writable.
+# That is what makes ANY uid:gid work, including the natural
+# `--user "$(id -u):$(id -g)"`. Verified on a real Linux filesystem: with only
+# the JUPYTER_* vars set, `--user 1234:1234` died with
+#   PermissionError: [Errno 13] Permission denied: '/home/appuser/.ipython'
+# because IPython, matplotlib and the XDG dirs still resolve under $HOME.
 ENV PYTHONPATH=/workspace \
     HOME=/home/appuser \
     JUPYTER_CONFIG_DIR=/tmp/.jupyter \
     JUPYTER_DATA_DIR=/tmp/.jupyter/data \
-    JUPYTER_RUNTIME_DIR=/tmp/.jupyter/runtime
+    JUPYTER_RUNTIME_DIR=/tmp/.jupyter/runtime \
+    IPYTHONDIR=/tmp/.ipython \
+    MPLCONFIGDIR=/tmp/.matplotlib \
+    XDG_CACHE_HOME=/tmp/.cache \
+    XDG_CONFIG_HOME=/tmp/.config
 
 WORKDIR /workspace
 
