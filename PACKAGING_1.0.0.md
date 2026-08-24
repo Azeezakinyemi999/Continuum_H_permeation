@@ -3,7 +3,8 @@
 Scope record for the offline Docker deliverable. Captures decisions that are not
 recoverable from the code, so a later reader does not have to re-derive them.
 
-Status: **Phase A + C complete** (repo hygiene; dependency lock and 3.12 revalidation). Image not yet built.
+Status: **Phase A, C, D, E complete.** `hydrogen-model:1.0.0-rc1` builds and both
+gates pass offline as non-root. Not yet exported / notebook-executed / promoted.
 
 ## Target environment
 
@@ -225,3 +226,69 @@ anything placed under `docs/` is untracked and would be lost on a fresh clone.
 `data/` is likewise gitignored, though its files predate the rule and remain
 tracked, which is why the Phase A shim fixes commit normally. `plot&docs/` is
 also ignored.
+
+
+## Gates (Phase D/E) — both passing on 1.0.0-rc1
+
+`container/verify_environment.py` (gate 1) and `container/model_smoke_test.py`
+(gate 2), both baked into `/opt` of the image.
+
+Gate 1 checks the **whole** locked environment, not a hand-maintained subset: it
+reads the same `requirements.lock.txt` the image was built from and compares all
+106 pins against `importlib.metadata.version`, so the gate cannot drift out of
+step with the build. It also asserts Python 3.12.x, runs functional checks
+(brentq, SALib imports, headless Agg savefig with Rectangle patches, plotly
+`Parcoords.to_html`, `IPython.display`, exact pandas CSV round-trip), and asserts
+`turtle` and `tkinter` are **absent** — the runtime mirror of the ruff TID251 rule.
+Confirmed: they are absent, so the old `from turtle import mode` would indeed have
+failed only inside the container.
+
+Gate 2 asserts the reference-value table above through the real solvers at
+`rtol=1e-9`, plus `top_drivers` rankings against the shipped
+`Application/sa_results/` CSVs. It does not assert plotly HTML byte counts, only
+that figures build — the counts move with the embedded plotly version string.
+
+Verified on rc1, all with `--network none` and `--user "$(id -u):0"`:
+
+| check | result |
+|---|---|
+| gate 1 offline | PASSED, 106/106 versions matched |
+| gate 2 offline against assembled workspace | PASSED |
+| HOME and JUPYTER_RUNTIME_DIR writable as unknown UID | yes |
+| write PNG + CSV into the bind mount | yes, files owned by the host user |
+| JupyterLab starts offline, prints tokenised URL | yes |
+| authenticated `api/status` and `api/contents` | HTTP 200, all six notebooks served |
+
+### The sys.path trap, third occurrence
+
+`python /opt/model_smoke_test.py -w /workspace` failed with
+`ModuleNotFoundError: No module named 'calculations'`, because running a script
+puts the **script's** directory on `sys.path[0]`, not the cwd. This is the same
+defect as the original exercise's `python calculations/sensitivity.py`, and it has
+now bitten three times. Fixed systemically with `ENV PYTHONPATH=/workspace` in the
+Dockerfile, plus a defensive `sys.path` bootstrap in the smoke test. The notebooks
+are unaffected — they do their own `sys.path.insert`.
+
+### Workspace size — needs a decision
+
+The assembled `release/workspace` is **121 MB**:
+
+| | size | is it needed? |
+|---|---|---|
+| `calculations/` | 508 KB | yes |
+| `sa_results*/scans/` | 21 MB | yes — cached model evaluations, `load_regime_scans` reads them, regenerating means re-running the expensive scans |
+| `sa_results*/figures/` | **72 MB** | probably not — generated HTML/PNG outputs. The notebooks *write* here and glob it; they do not need pre-existing contents. |
+| `sa_results*/*.csv` | ~28 MB | yes — `master_clusters.csv`, `routeB_givendata.csv`, `compare_*` are read by the parallel-coords notebooks and cannot be regenerated without re-running the scans |
+
+Dropping `figures/` (keeping the empty directories, since the notebooks glob
+them) would take the workspace to ~49 MB. Not done yet — pending confirmation
+that no notebook depends on a pre-existing figure.
+
+### Not yet verified
+
+Notebook **execution** end-to-end (only import/serve is proven), `docker save` /
+checksum / `docker load` round-trip, and true Linux bind-mount ownership. The
+last cannot be tested on macOS at all: Docker Desktop's virtiofs rewrites
+ownership, so the mount test always appears to pass. The arbitrary-UID design is
+what makes it work; the HOME-writability half of it *is* proven, since that is
+inside the container filesystem rather than the mount.
