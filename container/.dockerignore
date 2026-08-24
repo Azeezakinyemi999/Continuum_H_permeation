@@ -1,0 +1,11 @@
+# The build context is container/ only. Keep the multi-GB release tar and the
+# mounted-at-runtime workspace out of it, or every rebuild ships them to the
+# Docker daemon.
+image/
+workspace/
+*.tar
+*.tar.gz
+**/__pycache__/
+**/*.pyc
+**/.ipynb_checkpoints/
+.DS_Store

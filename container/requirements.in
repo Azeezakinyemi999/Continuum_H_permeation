@@ -1,0 +1,19 @@
+# Intent file for hydrogen-model:1.0.0. Human-maintained.
+# The build installs requirements.lock.txt, NOT this file.
+# Regenerate the lock with: container/lock.sh
+#
+# Pinned = the numerical result depends on it, so the reference values in
+# PACKAGING_1.0.0.md are only meaningful against these exact versions.
+numpy==1.26.4        # baseline numerics; also keeps us <2 (see SALib note)
+scipy==1.13.1        # brentq -> every interface-pressure solve
+pandas==2.3.3        # SA scan/cluster CSVs are written and re-read by pandas
+SALib==1.5.0         # 1.5.1+ calls np.trapezoid, which needs numpy>=2
+
+# Floating = presentation layer only, no effect on computed values. These were
+# previously pinned to the last Python 3.9-compatible releases (ipython 8.18.1,
+# matplotlib 3.9.4); on 3.12 those pins are arbitrary, so let the resolver pick
+# and let the lock freeze the result.
+matplotlib
+plotly
+ipython
+jupyterlab

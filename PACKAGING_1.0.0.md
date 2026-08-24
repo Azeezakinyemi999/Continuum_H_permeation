@@ -3,45 +3,104 @@
 Scope record for the offline Docker deliverable. Captures decisions that are not
 recoverable from the code, so a later reader does not have to re-derive them.
 
-Status: **Phase A complete** (repo hygiene). Not yet built.
+Status: **Phase A + C complete** (repo hygiene; dependency lock and 3.12 revalidation). Image not yet built.
 
 ## Target environment
 
 | Decision | Value | Why |
 |---|---|---|
-| Python | **3.12** | 3.9 reached end of life in Oct 2025 and the company is expected to vulnerability-scan the image. The numpy<2 ceiling that forced 3.9 in `mace_env` comes from **torch**, which this project never imports, so the constraint does not apply here. Requires a numerical revalidation gate (below). |
+| Python | **3.12** (`3.12.14`) | 3.9 reached end of life in Oct 2025 and the company is expected to vulnerability-scan the image. The numpy<2 ceiling that forced 3.9 in `mace_env` comes from **torch**, which this project never imports, so the constraint does not apply here. Requires a numerical revalidation gate (below). |
 | Platform | `linux/amd64` | Set at build time (`docker build --platform linux/amd64`), not in `FROM`, so the image definition stays reusable. Dev host is already x86_64/amd64. |
 | Base image | `python:3.12-slim` | |
 | Release tag | `hydrogen-model:1.0.0` | Promoted from `1.0.0-rc*` only after every acceptance gate passes. Never `latest`. |
 | Container user | non-root, arbitrary-UID tolerant | See "Bind-mount ownership". |
 
-### Numerical revalidation gate (blocks 1.0.0)
+### Numerical revalidation gate — PASSED 2026-08-24
 
-Moving 3.9 → 3.12 changes the interpreter under the solvers, so reference values
-must be re-established rather than assumed. Baseline measured on `mace_env`
-(Python 3.9.23, numpy 1.26.4, scipy 1.13.1), study `incoloy802_cr2o3`, at
-`T = 700.0 K`, `P_up = 1e5 Pa`, `P_down = 1e2 Pa`, `L_metal = 1e-3 m`,
-`L_oxide = 4.8e-8 m`:
+Moving 3.9 -> 3.12 changes the interpreter under the solvers, so reference values
+were re-measured rather than assumed. `container/revalidate_reference.py` was run
+under both interpreters and the output diffed.
 
-| quantity | 3.9 baseline |
+| | |
+|---|---|
+| reference | Python 3.9.23, macOS, x86_64 (`mace_env`) |
+| candidate | Python 3.12.14, linux/amd64, from `container/requirements.lock.txt` |
+| result | **bit-identical on every model output** |
+
+Covered: `arrhenius`; L1 `calculate_simple_metal_flux`; L2b
+`calculate_oxide_metal_system` (brentq); L1L6 `solve_steady_state_flux_L1L6`
+(brentq on a different equation); `combined_microstructure_model` (4 trap types);
+seeded SALib Latin-hypercube -> PAWN + Borgonovo delta; pandas CSV round-trip;
+and `top_drivers` / `parallel_coordinates_*` against the real
+`Application/sa_results/` CSVs.
+
+Reference values, identical under both:
+
+| quantity | value |
 |---|---|
 | `arrhenius(1e-11, 50000, 800, 700)` | `2.926830409475082e-11` |
-| L1 `calculate_simple_metal_flux(...)['flux']` | `1.955109516956673e-07` |
-| L2b `flux` (brentq) | `1.888003770552079e-07` |
+| L1 flux | `1.955109516956673e-07` |
+| L2b flux | `1.888003770552079e-07` |
 | L2b `P_interface` | `93462.901558976` |
 | L2b `resistance_ratio` | `0.036154225782795736` |
-| `classify_regime_level14(0.2)['regime_hierarchy']` | `metal_limited/traps_defect_limited` |
-| `classify_regime_level14(0.9)['regime_hierarchy']` | `metal_limited/lattice_limited` |
+| L1L6 `J_ss` | `7.10792976386876e-07` |
+| L1L6 `theta` | `0.7597385771009892` |
+| L1L6 `P_int` | `99990.85191948501` |
+| micro `D_eff` | `5.084388686889583e-11` |
+| micro `overall_factor` | `0.7388612272380938` |
+| micro `theta_total` | `0.026370841516212183` |
+| SALib `pawn_median` | `[0.17518028846153846, 0.14708533653846154, 0.6875]` |
+| SALib `delta` | `[0.10706087473576083, 0.06905348258240432, 0.6947500046510651]` |
+| `classify_regime_level14(0.2)` | `metal_limited/traps_defect_limited` |
+| `classify_regime_level14(0.9)` | `metal_limited/lattice_limited` |
 
-Compare with `math.isclose(rtol=1e-9)`, not equality — BLAS differs between the
-macOS dev host and linux/amd64, which can move the last few bits without any
-scientific meaning. A disagreement larger than `rtol=1e-9` is a real finding and
-blocks the release.
+`top_drivers` rankings are identical for all three regimes on both.
+
+**The one difference found**, and why it does not block: the plotly figure from
+`parallel_coordinates_samples` differs in 23 of 1495 values of its `line.color`
+channel, by a maximum **relative** difference of `2.1e-16` — one ULP of a
+float64 (worst case `-4.914129070710655` vs `-4.914129070710656`). That channel
+is `log10(flux)` computed for colour mapping only; the parcoords dimension values
+are bit-identical. This is macOS libm vs glibc rounding in `np.log10`, has no
+scientific content, and is ~7 orders of magnitude inside the `rtol=1e-9`
+tolerance the smoke test should use. Do not compare figure HTML byte-for-byte:
+it also differs by 13-23 bytes purely from the embedded plotly version string.
 
 Two API details for whoever writes `model_smoke_test.py`:
 `get_metal_properties_at_T` returns `D_metal` / `K_s_metal` (not `D` / `K_s`),
 and `calculate_oxide_metal_system` needs a `thickness` key injected into **both**
 props dicts — the T-evaluated getters do not supply it for the metal.
+`solve_steady_state_flux_L1L6` returns `J_ss` / `P_int` / `theta` / `beta` /
+`rate_limiting` — there is no `flux` key.
+
+## Dependencies
+
+`container/requirements.in` is human-maintained intent; `container/requirements.lock.txt`
+(106 packages) is what the build installs. Regenerate with `container/lock.sh`,
+which resolves *inside* `python:3.12-slim` on `linux/amd64` — resolving on the
+macOS dev host would bake in the wrong platform wheels.
+
+Pinned in `requirements.in` because results depend on them: `numpy==1.26.4`,
+`scipy==1.13.1`, `pandas==2.3.3`, `SALib==1.5.0`. SALib must stay at 1.5.0
+because 1.5.1+ calls `np.trapezoid`, which needs numpy>=2.
+
+Left floating, then frozen by the lock, because they are presentation-only. These
+had been pinned to the last Python 3.9-compatible releases, so on 3.12 the old
+pins were arbitrary:
+
+| package | was (3.9) | now (3.12 lock) |
+|---|---|---|
+| matplotlib | 3.9.4 | 3.11.1 |
+| plotly | 6.3.1 | 6.9.0 |
+| ipython | 8.18.1 | 9.16.1 |
+| jupyterlab | 4.4.9 | 4.6.3 |
+
+All four verified on 3.12: headless Agg `savefig` with `Rectangle` patches,
+`go.Parcoords().to_html()`, and `from IPython.display import display, HTML`.
+IPython 8 -> 9 is a major bump but the only IPython API used is
+`IPython.display.display`, which is unchanged. Scanned the delivery notebooks for
+matplotlib APIs removed in 3.10/3.11 (`cm.get_cmap`, `register_cmap`, `normed=`)
+— none present.
 
 ## What ships
 
