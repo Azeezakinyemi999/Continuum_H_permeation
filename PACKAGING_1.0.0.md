@@ -269,20 +269,41 @@ now bitten three times. Fixed systemically with `ENV PYTHONPATH=/workspace` in t
 Dockerfile, plus a defensive `sys.path` bootstrap in the smoke test. The notebooks
 are unaffected — they do their own `sys.path.insert`.
 
-### Workspace size — needs a decision
+### Workspace contents — decided: code and notebooks only
 
-The assembled `release/workspace` is **121 MB**:
+All generated artefacts are stripped from the shipped workspace. Decided
+2026-08-24: drop every `.html`, `.csv` and `.png`, keeping the directory
+skeleton (with `.gitkeep`) because the notebooks glob `FIG_DIR` and write into
+`RESULTS_DIR`.
 
-| | size | is it needed? |
+| | before | after |
 |---|---|---|
-| `calculations/` | 508 KB | yes |
-| `sa_results*/scans/` | 21 MB | yes — cached model evaluations, `load_regime_scans` reads them, regenerating means re-running the expensive scans |
-| `sa_results*/figures/` | **72 MB** | probably not — generated HTML/PNG outputs. The notebooks *write* here and glob it; they do not need pre-existing contents. |
-| `sa_results*/*.csv` | ~28 MB | yes — `master_clusters.csv`, `routeB_givendata.csv`, `compare_*` are read by the parallel-coords notebooks and cannot be regenerated without re-running the scans |
+| workspace total | 121 MB | **13 MB** |
+| `.html` figures | 15 files, 71.8 MB | 0 |
+| `.csv` results + scans | 43 files, 36.9 MB | 0 |
+| `.py` (calculations) | 14 files, 0.5 MB | unchanged |
+| `.ipynb` | 6 files, 12.3 MB | unchanged |
 
-Dropping `figures/` (keeping the empty directories, since the notebooks glob
-them) would take the workspace to ~49 MB. Not done yet — pending confirmation
-that no notebook depends on a pre-existing figure.
+There were no `.png` files in the workspace to begin with — the figures are
+plotly HTML.
+
+**Consequence, accepted deliberately.** `regime_parallel_coords.ipynb` and
+`regime_parallel_coords_L5.ipynb` read `master_clusters.csv`,
+`routeB_givendata.csv` and `compare_delta_*.csv`, and cannot regenerate them.
+They are therefore not runnable out of the box; the company must run
+`sensitivity_regime_L5.ipynb` / `sensitivity_regime_L5L6.ipynb` first to produce
+the scans and cluster tables. That ordering must be stated in the README. The
+upside is that no possibly-stale results ship, and the deliverable is code plus
+notebooks only.
+
+Gate 2's "shipped SA artefacts" section detects the absent CSVs and reports
+SKIP rather than failing, so it passes against both the development tree (where
+the CSVs exist and rankings are asserted) and the shipped workspace.
+
+Note the remaining 13 MB is almost entirely embedded notebook output — the six
+`.ipynb` files are 12.3 MB of base64 matplotlib PNGs. Stripping outputs would
+take the workspace under 1 MB, but the outputs are useful as documentation of
+expected results, so they are kept.
 
 ### Not yet verified
 

@@ -178,7 +178,10 @@ print("\nshipped SA artefacts:")
 R = os.path.join("Application", "sa_results")
 needed = ["routeB_givendata.csv", "master_clusters.csv", "compare_delta_flux.csv"]
 if not all(os.path.exists(os.path.join(R, f)) for f in needed):
-    print(f"SKIP  {R}/ not present — mount the workspace to exercise this")
+    # Expected for the shipped workspace: the SA result CSVs are deliberately
+    # not distributed (see PACKAGING_1.0.0.md), so this section only runs in the
+    # development tree. It is not a failure.
+    print(f"SKIP  {R}/ CSVs absent — not shipped; run the sensitivity notebooks first")
 else:
     import pandas as pd
     from calculations.sensitivity import (
