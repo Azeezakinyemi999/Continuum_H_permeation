@@ -305,6 +305,40 @@ Note the remaining 13 MB is almost entirely embedded notebook output — the six
 take the workspace under 1 MB, but the outputs are useful as documentation of
 expected results, so they are kept.
 
+### Notebook execution — measured 2026-08-24
+
+All six executed headless in rc1 via `jupyter nbconvert --execute`, offline
+(`--network none`), non-root (`--user "$(id -u):0"`), against the stripped
+workspace, with a 600 s per-cell limit.
+
+| notebook | result |
+|---|---|
+| `Proposal.ipynb` | **passed**, 41 s — wrote all six `Level*.png` into the bind mount |
+| `Surface_proposal.ipynb` | **passed**, 43 s |
+| `regime_parallel_coords.ipynb` | failed, 10 s — `FileNotFoundError` on the stripped CSVs (expected) |
+| `regime_parallel_coords_L5.ipynb` | failed, 10 s — same |
+| `sensitivity_regime_L5.ipynb` | `CellTimeoutError` at 600 s, in the scan-regeneration cell |
+| `sensitivity_regime_L5L6.ipynb` | `CellTimeoutError` at 600 s, in the `givendata_sensitivity_by_regime` cell |
+
+Neither timeout is an environment fault — both are the 600 s per-cell limit
+being unrealistic for these notebooks. But they fail in **different** cells, and
+the distinction matters for the shipping decision:
+
+- `sensitivity_regime_L5` timed out inside the cell that runs `cache_is_valid`
+  and writes `master_clusters.csv`, i.e. **scan regeneration**. Shipping
+  `sa_results_L5/scans/` (21 MB) would let its cache check short-circuit this.
+- `sensitivity_regime_L5L6` got **past** scan regeneration — it successfully wrote
+  `scans/scan_{metal,oxide,surface}.csv` and `master_clusters.csv` — and then timed
+  out in the PAWN/delta analysis itself. Shipping cached scans would **not** help
+  it; that cost is the sensitivity computation, not the scans.
+
+So reinstating `scans/` would speed up one of the two, not both. Left stripped as
+instructed; revisit only if first-run wall time becomes a company complaint.
+
+Practical consequence: do not use a 600 s per-cell limit for any automated
+notebook gate on the sensitivity notebooks. `Proposal` and `Surface_proposal`
+are fast (~40 s) and are the sensible smoke-level notebook gate.
+
 ### Not yet verified
 
 Notebook **execution** end-to-end (only import/serve is proven), `docker save` /
