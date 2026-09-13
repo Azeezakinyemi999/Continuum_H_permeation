@@ -108,19 +108,19 @@ OXIDES = {
         #   K_eq(T)   = K_eq_ref   × exp(-H_eq/R    × (1/T - 1/T_ref))
         #   k_recomb  = k_diss / K_eq  (derived)
         # ---------------------------------------------------------------
-        # 'surface_kinetics': {
-        #     'T_ref':       1623,        # K — same as transport T_ref
-        #     'k_diss_ref':  9.487e-08,       # mol/m²/s/Pa at T_ref
-        #     'E_diss':      57950,       # J/mol
-        #     'K_eq_ref':    1e-4,       # Pa⁻¹ at T_ref PLACEHOLDER. Changed from 1e-10 to 1e-4
-        #     'H_eq':        20000,       # J/mol PLACEHOLDER
-        #     'reference':   'Grant et al. 1988: Grant DM, Cummings DL, Blackburn DA	J. Nuclear Materials 152	1988	DOI: 10.1016/0022-3115(88)90128-7	316 steel H₂ transport. ONLY source with full surface kinetics k1 (3 conditions).	Oxide Surface Kinetics',
-        # },
+        'surface_kinetics': {
+            'T_ref':       1623,        # K — same as transport T_ref
+            'k_diss_ref':  9.487e-08,       # mol/m²/s/Pa at T_ref
+            'E_diss':      57950,       # J/mol
+            'K_eq_ref':    1e-4,       # Pa⁻¹ at T_ref PLACEHOLDER. Changed from 1e-10 to 1e-4
+            'H_eq':        20000,       # J/mol PLACEHOLDER
+            'reference':   'Grant et al. 1988: Grant DM, Cummings DL, Blackburn DA	J. Nuclear Materials 152	1988	DOI: 10.1016/0022-3115(88)90128-7	316 steel H₂ transport. ONLY source with full surface kinetics k1 (3 conditions).	Oxide Surface Kinetics',
+        },
 
-        # # ---- Metadata ----
-        # 'reference': (
-        #     "Nemanic et al. 2023 (Phi, D), Stover 1986 (Q_p) and Chen 2011 (E_D): Undamaged chromia limit from Stover 1986 Fig.7 (sample Cr2)"
-        # ),
+        # ---- Metadata ----
+        'reference': (
+            "Nemanic et al. 2023 (Phi, D), Stover 1986 (Q_p) and Chen 2011 (E_D): Undamaged chromia limit from Stover 1986 Fig.7 (sample Cr2)"
+        ),
         'temp_range_K':       [473, 773],
         'temperature_range':  [473, 773],
     },

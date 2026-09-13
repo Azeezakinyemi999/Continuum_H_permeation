@@ -30,4 +30,5 @@ from calculations.config.studies.incoloy802_cr2o3 import *   # noqa: F401,F403
 
 # Record which study is active, for provenance in saved results and for anything
 # that wants to label a figure or a CSV with its source.
-ACTIVE_STUDY = 'incoloy802_cr2o3'
+# ACTIVE_STUDY = 'incoloy802_cr2o3'
+ACTIVE_STUDY = 'fuerst_etal_2024_model_config.py'

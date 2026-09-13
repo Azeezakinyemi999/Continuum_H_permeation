@@ -48,40 +48,7 @@ METALS = {
         'metal_thickness': [5e-3],
         'gas':            'H₂',
         'Notes':          'Phi_ref = D_ref * Ks_ref.',
-    },
-
-    # 'metal_316L_Heat_treated_ref_cast': {
-    #     'T_ref':   873,           # K
-    #     'D_ref':   2.194e-10,     # m²/s at T_ref
-    #     'E_D':     42500,         # J/mol
-    #     'D_0':     7.66e-08,      # m²/s
-    #     'K_s_ref': 2.723e-2,      # mol/m³/Pa^0.5 at T_ref
-    #     'K_s0':    4.640e-1,      # mol/m³/Pa^0.5
-    #     'H_s':     20585,         # J/mol
-    #     'Phi_ref': 1.881e-11,     # mol/m/s/Pa^0.5 at T_ref
-    #     'Q_p':     63085,         # J/mol
-    #     'Phi_0':   1.12e-07,      # mol/m/s/Pa^0.5
-
-    #     # ---------------------------------------------------------------
-    #     # SURFACE KINETICS — metal surface (for pinhole paths, L1+L6)
-    #     # ---------------------------------------------------------------
-    #     'surface_kinetics': {
-    #         'T_ref':            873,        # K
-    #         'k_diss_metal_ref': 1e-12,      # mol/m²/s/Pa at T_ref
-    #         'E_diss_metal':     40000,      # J/mol
-    #         'K_eq_metal_ref':   1e-8,       # Pa⁻¹ at T_ref
-    #         'H_eq_metal':       15000,      # J/mol
-    #         'reference':        'Placeholder — replace with literature values',
-    #     },
-
-    #     'pressure':       [],
-    #     'reference':      'Forcey et al. 1988 — Heat treated reference cast 316L',
-    #     'temp_range':     [523, 873],
-    #     'pressure_range': [1.33e2, 1e5],
-    #     'metal_thickness': [5e-3],
-    #     'gas':            'H₂',
-    #     'Notes':          'Phi_ref = D_ref * Ks_ref.',
-    # },
+    }
 }
 
 
@@ -139,102 +106,7 @@ OXIDES = {
         'temperature_range':  [473, 773],
     },
     
-
-    # 'Al2O3': {
-    #     # ---- Reference conditions ----
-    #     'T_ref':       1623,        # K (1350°C)
-    #     'D_ox_ref':    3.0647e-11,  # m²/s — Belonoshko 2004
-    #     'K_ox_ref':    4.9077,      # mol/m³/Pa^0.5 — Sieverts re-assumed at 1 atm
-
-    #     # ---- Activation energies ----
-    #     'E_D_ox':      119641,      # J/mol (1.24 eV) — Belonoshko 2004
-    #     'H_sol_ox':    198559,      # J/mol — Q_p − E_D = 318200 − 119641
-
-    #     # ---- Pre-exponential factors (Sieverts, Pa^0.5) ----
-    #     'D_ox_0':      2.1730e-7,   # m²/s
-    #     'K_ox_0':      1.2065e+7,   # mol/m³/Pa^0.5
-
-    #     # ---- Permeability at T_ref (Sieverts, Pa^0.5) ----
-    #     'Phi_ox_ref':  1.5040e-10,  # mol/m/s/Pa^0.5
-    #     'Phi_ox_0':    2.6216,      # mol/m/s/Pa^0.5
-
-    #     # ---- Raw Roberts values (Pa^0.43) — retained for traceability ----
-    #     'Phi_ox_0_raw_Pa043':       5.8744,
-    #     'K_ox_ref_raw_Pa043':       1.0997e+1,
-    #     'K_ox_0_raw_Pa043':         2.7034e+7,
-    #     'Phi_ox_ref_raw_Pa043':     3.3701e-10,
-    #     'pressure_exponent_Roberts': 0.43,
-    #     'P_reassumption_Pa':        101325,
-
-    #     # ---- Default geometry ----
-    #     'thickness':       1e-6,
-    #     'thickness_range': [1e-7, 1e-5],
-
-    #     # ---------------------------------------------------------------
-    #     # SURFACE KINETICS — oxide surface (gas–oxide interface, L6)
-    #     # Used by: get_all_properties → solve_steady_state_flux,
-    #     #          solve_steady_state_flux_L2aL6, calculate_path_flux_L6,
-    #     #          calculate_path_flux_L346_v2
-    #     # Arrhenius form:
-    #     #   k_diss(T) = k_diss_ref × exp(-E_diss/R  × (1/T - 1/T_ref))
-    #     #   K_eq(T)   = K_eq_ref   × exp(-H_eq/R    × (1/T - 1/T_ref))
-    #     #   k_recomb  = k_diss / K_eq  (derived)
-    #     # ---------------------------------------------------------------
-    #     'surface_kinetics': {
-    #         'T_ref':       1623,        # K — same as transport T_ref
-    #         'k_diss_ref':  1e-15,       # mol/m²/s/Pa at T_ref
-    #         'E_diss':      50000,       # J/mol
-    #         'K_eq_ref':    1e-10,       # Pa⁻¹ at T_ref
-    #         'H_eq':        20000,       # J/mol (van't Hoff)
-    #         'reference':   'Placeholder — replace with literature values',
-    #     },
-
-    #     # ---- Metadata ----
-    #     'reference': (
-    #         'Roberts RM et al. J. Am. Ceram. Soc. 62(9–10), 495–499 (1979). '
-    #         'E_D_ox: Belonoshko et al. 2004, Phys. Rev. B 69, 024302. '
-    #         'Sieverts re-assumption at P_ref=101325 Pa.'
-    #     ),
-    #     'temp_range_K':       [1473, 1723],
-    #     'temperature_range':  [1473, 1723],
-    #     'uncertainty_factor': 10,
-    # },
 }
-
-
-# =============================================================================
-# MICROSTRUCTURE PARAMETERS (Level 4)
-# =============================================================================
-# MICROSTRUCTURE = {
-#     'grain_size':          50e-6,       # m (50 μm default)
-#     'gb_thickness':        0.5e-9,      # m (0.5 nm)
-#     'grain_shape':         'equiaxed',  # 'equiaxed', 'columnar'
-#     'gb_type':             'LAGB',      # 'HAGB', 'LAGB'
-#     'include_gb_trapping': False,
-
-#     'trap_list': [
-#         {
-#             'name':           'vacancies',
-#             'binding_energy': 0.5 * F,  # J/mol (0.5 eV)
-#             'density':        1e26,     # m⁻³
-#         },
-#         {
-#             'name':           'dislocations',
-#             'binding_energy': 0.7 * F,  # J/mol (0.7 eV)
-#             'density':        1e22,     # m⁻³
-#         },
-#         {
-#             'name':           'grain_boundaries',
-#             'binding_energy': 0.9 * F,  # J/mol (0.9 eV)
-#             'density':        1e24,     # m⁻³
-#         },
-
-#         {
-#             'name':           'Carbides',
-#             'binding_energy': 0 * F,  # J/mol (0 eV)
-#             'density':        0,     # m⁻³
-#         },
-#     ],
 
 MICROSTRUCTURE = {
     'grain_size':          100e-6,      # m  (midpoint 50-150 um, Zhu 2021)
