@@ -102,7 +102,8 @@ OXIDES = {
         'reference': (
             "Nemanic et al. 2023 (Phi, D), Stover 1986 (Q_p) and Chen 2011 (E_D): Undamaged chromia limit from Stover 1986 Fig.7 (sample Cr2)"
         ),
-        'temp_range_K':       [473, 773],
+        # Validity range of the Nemanic/Stover data; read by
+        # oxide_permeation.get_oxide_properties_at_T to warn on extrapolation.
         'temperature_range':  [473, 773],
     },
     
@@ -143,8 +144,11 @@ MICROSTRUCTURE = {
     # LATTICE SITE DENSITY
     # -------------------------------------------------------------------
     'lattice_density':     8.774e28,     # m⁻³ — Fe BCC; update for your alloy
-    'N_L':                 8.774e28,     # m⁻³ — alias retained for backward compatibility
 }
+# 'N_L' is the same quantity under the symbol the derivations use, and
+# Application/Proposal.ipynb reads it 14 times. Aliased rather than written out
+# twice: two literals of the same number drift the moment one is edited.
+MICROSTRUCTURE['N_L'] = MICROSTRUCTURE['lattice_density']
 
 
 # =============================================================================
@@ -186,18 +190,6 @@ CONDITIONS = {
     'n_L_points':     20,
 }
 
-
-# # =============================================================================
-# # SURFACE KINETICS — flat defaults (Level 6)
-# # Used when no per-material Arrhenius data is available.
-# # K_eq is derived: K_eq = k_diss / k_recomb
-# # =============================================================================
-# SURFACE_KINETICS = {
-#     'k_diss':         1e-15,                        # mol/m²/s/Pa
-#     'k_recomb':       1e-3,                         # m⁴/mol/s
-#     'K_eq':           1e-15 / 1e-3,                 # Pa⁻¹ — derived: k_diss / k_recomb
-#     'coverage_mode':  'steady_state',               # 'steady_state', 'langmuir'
-# }
 
 
 
@@ -306,7 +298,9 @@ DEFAULT_PARAMS_LEVEL5 = {
     'f_gb_defect':            _SA_DC['grain_boundaries'],  # area fraction
     'crack_thickness_factor': OXIDE_DEFECTS['thickness_factor'],    # L_crack = f × L_oxide
     'gb_diffusivity_factor':  OXIDE_DEFECTS['diffusivity_factor'],  # D_gb = f × D_oxide
-    'use_sieverts_pinhole':   OXIDE_DEFECTS['use_sieverts_pinhole'],
+    # 'use_sieverts_pinhole' is NOT here: neither model wrapper reads it from the
+    # parameter dict. Surface_proposal.ipynb takes it from SIM['oxide_defects'],
+    # i.e. straight from OXIDE_DEFECTS, so that is where it lives.
 
     # Level 4: grain structure  (MICROSTRUCTURE; Zhu 2021 baseline)
     'grain_size':      MICROSTRUCTURE['grain_size'],       # m
@@ -314,9 +308,6 @@ DEFAULT_PARAMS_LEVEL5 = {
     'gb_type':         MICROSTRUCTURE['gb_type'],
     'gb_thickness':    MICROSTRUCTURE['gb_thickness'],     # m
     'lattice_density': MICROSTRUCTURE['lattice_density'],  # m⁻³
-
-    # No config source — an SA modelling choice, not a material property.
-    'gb_enhancement_factor': 100,
 
     # Level 4: traps  (MICROSTRUCTURE['trap_list'])
     # Lu 2022 binding energies + Young 1997 carbide density
@@ -359,20 +350,6 @@ DEFAULT_PARAMS_LEVEL5L6 = {
 }
 
 
-# -----------------------------------------------------------------------------
-# PARAMETER GROUPS (for organised reporting)
-# -----------------------------------------------------------------------------
-PARAM_GROUPS = {
-    'metal_transport': ['D_ref', 'E_D', 'K_s_ref', 'H_s', 'T_ref_metal', 'metal_thickness'],
-    'oxide_transport': ['D_ox_ref', 'E_D_ox', 'K_ox_ref', 'H_sol_ox', 'T_ref_oxide', 'oxide_thickness'],
-    'oxide_defects':   ['f_pinhole', 'f_crack', 'f_gb_defect',
-                        'crack_thickness_factor', 'gb_diffusivity_factor'],
-    'microstructure':  ['grain_size', 'gb_thickness', 'lattice_density'],
-    'traps':           ['trap_dislocation_E_b', 'trap_dislocation_N_T',
-                        'trap_gb_E_b', 'trap_gb_N_T', 'trap_vacancy_E_b', 'trap_vacancy_N_T',
-                        'trap_carbide_E_b', 'trap_carbide_N_T'],
-    'operating':       ['temperature', 'P_upstream'],
-}
 
 
 # -----------------------------------------------------------------------------
@@ -389,14 +366,14 @@ SUGGESTED_RANGES_LEVEL5 = {
     'E_D':          [60000, 80000],
     'K_s_ref':      [1e-4, 0.1],
     'H_s':          [1000, 50000],
-    #'T_ref_metal':  [600, 1400],
+  
 
     # Oxide transport (Cr2O3_sample4)
     'D_ox_ref':     [7.800e-21, 7.800e-17],
     'E_D_ox':       [69000, 71000],
     'K_ox_ref':     [0.08, 0.4],
     'H_sol_ox':     [20000, 170000],
-    #'T_ref_oxide':  [600, 1400],
+   
 
     # Geometry
     'metal_thickness': [5e-4, 5e-3],
@@ -446,13 +423,11 @@ SUGGESTED_RANGES_LEVEL5L6 = {
     # only ever sampled below its nominal value.
     'K_eq_ref':            [1e-6, 1e-2],
     'H_eq':                [5000, 50000],
-    #'T_ref_surface':       [600, 1800],
     # Metal surface kinetics (Grant 1988)
     'k_diss_metal_ref':    [1.346e-8, 1.346e-4],
     'E_diss_metal':        [70000, 100000],
     'K_eq_metal_ref':      [1e-5, 1e-1],
     'H_eq_metal':          [5000, 40000],
-    #'T_ref_surface_metal': [600, 1100],
 }
 
 
@@ -516,10 +491,6 @@ _SA_SLOW_SURFACE  = {'P_upstream':       [1e-7, 1e1],
                      'k_diss_ref':       [9.5e-12, 9.5e-9],
                      'k_diss_metal_ref': [1.3e-10, 1.3e-7]}
 
-# Level 5L6 presets. Yields measured on the 36-param production scans:
-#   metal    813/1000  = 81.3%   (default ranges)
-#   surface  714/2500  = 28.6%
-#   oxide   3725/5000  = 74.5%
 REGIME_PRESETS = {
     'metal':   _sa_ranges_with(SUGGESTED_RANGES_LEVEL5L6, {}),
     'surface': _sa_ranges_with(SUGGESTED_RANGES_LEVEL5L6, _SA_SLOW_SURFACE),
@@ -544,58 +515,24 @@ REGIME_PRESETS_L5 = {
 
 
 # -----------------------------------------------------------------------------
-# SAMPLE SIZES AND SWEEP POINTS   ** TUNE ME **
+# SWEEP POINTS
 #
-# draws = target cluster size / that preset's measured yield, balanced at ~1500 per
-# cluster. Balance matters as much as absolute size: delta/PAWN estimator variance
-# depends on n, so unequal clusters make the cross-regime comparison compare noise
-# levels as well as sensitivities. Column-normalisation in the heatmap rescales
-# magnitude but cannot undo that. 1500 also leaves headroom over the ~300-500
-# stability floor.
+# Draw counts and per-preset yields used to live here as measured constants. They
+# are gone: `calculations.sensitivity.size_draws_for_target()` now probes each
+# preset and sizes the run from the yield it actually observes. A cached yield
+# cannot notice that a range or a preset block was edited, or that the study
+# switched material, and silently unbalanced clusters make a cross-regime
+# comparison partly a comparison of estimator noise. TARGET_CLUSTER_SIZE lives in
+# sensitivity.py beside the code that consumes it.
+#
+# What remains here is study design, which no probe can infer.
 # -----------------------------------------------------------------------------
-DEFAULT_N_PER_REGIME    = {'metal': 1850, 'surface': 5250, 'oxide': 2010}
-DEFAULT_N_PER_REGIME_L5 = {'metal': 1550, 'oxide': 1930, 'defect': 1720}
 
 # Temperatures for the isothermal L5 sweep. With temperature varying it monopolises
 # the variance of log10(flux) and leaves every other parameter at or below the noise
 # floor; sampling harder does not help, because the floor is flat in n (0.085 at
 # n=400, 0.092 at n=1500). The driver ranking genuinely shifts across this span.
 DEFAULT_SWEEP_TEMPERATURES = (773.0, 1073.0, 1273.0)
-
-# In-regime yield of each L5 preset AT FIXED TEMPERATURE (250-draw probes, seed 42).
-# These differ from the varying-T yields, so draw counts must be sized per
-# temperature — a single dict would leave the oxide cluster ~40% short at 1273 K and
-# reintroduce the cross-regime imbalance the isothermal design exists to remove.
-#
-# The oxide yield falls steadily with temperature (0.92 -> 0.59) because the oxide's
-# activation energies (E_D_ox ~70 kJ/mol, H_sol_ox up to ~164 kJ/mol) exceed the
-# metal's, so it speeds up faster than the metal and stops being the bottleneck.
-MEASURED_YIELDS_L5_BY_T = {
-    773.0:  {'oxide': 0.916, 'metal': 0.992, 'defect': 0.916},
-    1073.0: {'oxide': 0.700, 'metal': 0.988, 'defect': 0.820},
-    1273.0: {'oxide': 0.592, 'metal': 0.972, 'defect': 0.800},
-}
-
-# Same, for the L5L6 presets (250-draw probes, seed 42). L5L6 is run isothermally for
-# the same reason as L5, and the case is if anything stronger: a dummy-parameter test on
-# varying-T L5L6 clusters left temperature at 3.4-4.3x the noise floor and, in the metal
-# cluster, NOTHING else above 1.0x — the runner-up scored 0.84x, i.e. below a random
-# input. L5L6 spreads 36 parameters over the variance left after temperature takes its
-# share, versus L5's 28, so it has less signal per parameter, not more.
-#
-# The surface yield RISES steeply with temperature (0.23 -> 0.57) — the opposite trend to
-# L5's oxide yield — so per-temperature sizing matters even more here. At 773 K the
-# surface preset needs ~6.5k draws for a 1500-point cluster against ~2.6k at 1273 K.
-#
-# NOTE for 'theta': temperature does NOT dominate that metric (1.54x oxide, 0.88x metal),
-# because theta is bounded [0,1] and analysed linearly, so it cannot absorb an
-# exponential response. L5L6 theta results from a varying-T run are far less compromised
-# than the flux ones.
-MEASURED_YIELDS_L5L6_BY_T = {
-    773.0:  {'surface': 0.232, 'oxide': 0.780, 'metal': 0.772},
-    1073.0: {'surface': 0.476, 'oxide': 0.836, 'metal': 0.852},
-    1273.0: {'surface': 0.568, 'oxide': 0.820, 'metal': 0.864},
-}
 
 
 # =============================================================================
