@@ -4,6 +4,19 @@
 Environment reproducibility (gate 1) does not imply scientific reproducibility.
 This asserts pinned reference values through the real solvers.
 
+**Study-aware.** The model computes whichever study `ACTIVE_STUDY` names, so a
+single set of pinned numbers could only ever test one of them. REFERENCE below
+holds a measured set per study and the test selects on ACTIVE_STUDY; a study with
+no entry fails with a message saying to measure one rather than silently passing.
+
+Model INPUTS are derived from the active study too — its own metal/oxide
+properties at T, its own surface kinetics — so the test exercises the study it
+claims to. That matters: the earlier fixed-input version paired the metal's
+k_diss with the OXIDE's K_eq (1e-4) rather than the metal's own K_eq_metal_ref
+(1e-3), which is why the L1L6 and microstructure numbers here differ from the
+values pinned before. The model is unchanged — re-running it with the old
+hardcoded inputs still returns the old numbers exactly.
+
 Reference values were measured on Python 3.9.23 / macOS / x86_64 (mace_env) and
 confirmed bit-identical on Python 3.12.14 / linux-amd64 from
 container/requirements.lock.txt. See PACKAGING_1.0.0.md.
@@ -36,7 +49,57 @@ RTOL = 1e-9
 # Fixed operating point. T=700 K is deliberate: it sits inside the Cr2O3
 # validated range [473, 773] K, so no extrapolation warning perturbs the run.
 T, P_UP, P_DOWN = 700.0, 1.0e5, 1.0e2
-L_METAL, L_OXIDE = 1.0e-3, 4.8e-08
+L_METAL = 1.0e-3
+# L_OXIDE is NOT fixed here: it comes from the active study's oxide, so the test
+# follows the study rather than asserting one study's scale onto another.
+
+REFERENCE = {
+    'incoloy802_cr2o3': {
+        'metal_name':             'metal_X40_NiCrAlTi_31_19_Incoloy802_Schmidt1985',
+        'oxide_name':             'Cr2O3_sample4',
+        'L1_flux':                1.955109516956673e-07,
+        'L2b_flux':               1.888003770552079e-07,
+        'L2b_P_interface':        93462.901558976,
+        'L2b_resistance_ratio':   0.036154225782795736,
+        'L1L6_J_ss':              1.9549321314132636e-07,
+        'L1L6_P_int':             99982.42875170171,
+        'L1L6_theta':             0.9090836473455054,
+        'L1L6_rate_limiting':     'metal',
+        'micro_D_eff':            8.720200643474982e-12,
+        'micro_overall_factor':   0.4098345562673666,
+        'micro_theta_total':      0.09282336531113745,
+    },
+    'fuerst_etal_2024_model_config': {
+        'metal_name':             'Hastelloy_N_fuerst_2024',
+        'oxide_name':             'Cr2O3_sample4',
+        'L1_flux':                2.074929655645745e-06,
+        'L2b_flux':               1.4462213335730932e-06,
+        'L2b_P_interface':        49925.464278538966,
+        'L2b_resistance_ratio':   0.5249886661138037,
+        'L1L6_J_ss':              2.0729356704106247e-06,
+        'L1L6_P_int':             99813.96656812982,
+        'L1L6_theta':             0.9090139348659355,
+        'L1L6_rate_limiting':     'metal',
+        'micro_D_eff':            8.008430918590877e-11,
+        'micro_overall_factor':   0.4098345562673666,
+        'micro_theta_total':      0.09282336531113745,
+    },
+    'Guo_etal_2025_316L': {
+        'metal_name':             '316L_Guo_2025',
+        'oxide_name':             'Cr2O3_sample4',
+        'L1_flux':                5.118412424120975e-07,
+        'L2b_flux':               4.672050860445382e-07,
+        'L2b_P_interface':        83823.30752058215,
+        'L2b_resistance_ratio':   0.09994486510402441,
+        'L1L6_J_ss':              1.276041708643705e-07,
+        'L1L6_P_int':             7455.263517774021,
+        'L1L6_theta':             0.7709733288080891,
+        'L1L6_rate_limiting':     'metal',
+        'micro_D_eff':            1.6434267493955927e-11,
+        'micro_overall_factor':   0.40983455626736665,
+        'micro_theta_total':      0.09282336531113745,
+    },
+}
 
 failures: list[str] = []
 
@@ -70,7 +133,7 @@ print("=" * 78)
 try:
     from calculations.classify_regime import classify_regime_level14
     from calculations.config.model_config import (
-        ACTIVE_STUDY, MICROSTRUCTURE, build_simulation_config,
+        ACTIVE_STUDY, METALS, MICROSTRUCTURE, OXIDES, build_simulation_config,
     )
     from calculations.defective_metal import combined_microstructure_model
     from calculations.interface_solver import calculate_oxide_metal_system
@@ -89,12 +152,18 @@ except ImportError as exc:
 warnings.simplefilter("ignore")
 
 print(f"\nactive study: {ACTIVE_STUDY}")
-equal("ACTIVE_STUDY", ACTIVE_STUDY, "incoloy802_cr2o3")
+if ACTIVE_STUDY not in REFERENCE:
+    print(f"FAIL  no reference values for study {ACTIVE_STUDY!r}.")
+    print(f"      known: {sorted(REFERENCE)}")
+    print( "      Measure a set for it and add it to REFERENCE — passing without")
+    print( "      one would mean the gate checks nothing about this study.")
+    sys.exit(1)
+REF = REFERENCE[ACTIVE_STUDY]
+print(f"OK    reference set found     {len(REF)} pinned values")
 
 SIM = build_simulation_config()
-equal("metal resolves in METALS", SIM["metal_name"],
-      "metal_X40_NiCrAlTi_31_19_Incoloy802_Schmidt1985")
-equal("oxide resolves in OXIDES", SIM["oxide_name"], "Cr2O3_sample4")
+equal("metal resolves in METALS", SIM["metal_name"], REF["metal_name"])
+equal("oxide resolves in OXIDES", SIM["oxide_name"], REF["oxide_name"])
 
 # ---------------------------------------------------------------- analytic
 print("\nanalytic:")
@@ -104,20 +173,21 @@ close("arrhenius", arrhenius(1.0e-11, 50_000.0, 800.0, 700.0),
 # ------------------------------------------------------- L1: perfect metal
 print("\nLevel 1 (perfect metal):")
 # NB: the T-evaluated getters return D_metal / K_s_metal, not D / K_s.
+L_OXIDE = OXIDES[SIM["oxide_name"]]["thickness"]
 mp = dict(get_metal_properties_at_T(SIM["metal_name"], T), thickness=L_METAL)
 op = dict(get_oxide_properties_at_T(SIM["oxide_name"], T), thickness=L_OXIDE)
 r1 = calculate_simple_metal_flux(mp["D_metal"], mp["K_s_metal"],
                                  L_METAL, P_UP, P_DOWN)
-close("L1 flux", r1["flux"], 1.955109516956673e-07)
+close("L1 flux", r1["flux"], REF["L1_flux"])
 
 # --------------------------------------------- L2b: oxide + metal (brentq)
 print("\nLevel 2b (oxide+metal, brentq):")
 # calculate_oxide_metal_system needs `thickness` in BOTH props dicts; the
 # T-evaluated getter does not supply it for the metal.
 r2 = calculate_oxide_metal_system(P_UP, P_DOWN, op, mp, T_K=T)
-close("L2b flux", r2["flux"], 1.888003770552079e-07)
-close("L2b P_interface", r2["P_interface"], 93462.901558976)
-close("L2b resistance_ratio", r2["resistance_ratio"], 0.036154225782795736)
+close("L2b flux", r2["flux"], REF["L2b_flux"])
+close("L2b P_interface", r2["P_interface"], REF["L2b_P_interface"])
+close("L2b resistance_ratio", r2["resistance_ratio"], REF["L2b_resistance_ratio"])
 if not (isinstance(r2.get("flux_error"), float) and abs(r2["flux_error"]) < 1e-12):
     print(f"FAIL  L2b solver converged           flux_error={r2.get('flux_error')!r}")
     failures.append("L2b solver converged")
@@ -127,22 +197,26 @@ else:
 # ------------------------------------- L1L6: surface kinetics (brentq #2)
 print("\nLevel 1+6 (surface kinetics, brentq):")
 # Returns J_ss / P_int / theta / beta / rate_limiting — there is no 'flux' key.
+# Inputs from the study's OWN metal surface kinetics, not literals -- pairing one
+# study's k_diss with another's K_eq is exactly the mismatch this replaced.
+_sk = METALS[SIM["metal_name"]]["surface_kinetics"]
 r3 = solve_steady_state_flux_L1L6(
-    P_up=P_UP, P_down=P_DOWN, L_m=L_METAL, k_diss=1.346e-06, K_eq=1.0e-4,
-    D_m=6.881385163348364e-11, K_s_m=0.03373208680855995)
-close("L1L6 J_ss", r3["J_ss"], 7.10792976386876e-07)
-close("L1L6 P_int", r3["P_int"], 99990.85191948501)
-close("L1L6 theta", r3["theta"], 0.7597385771009892)
-equal("L1L6 rate_limiting", r3["rate_limiting"], "metal")
+    P_up=P_UP, P_down=P_DOWN, L_m=L_METAL,
+    k_diss=_sk["k_diss_metal_ref"], K_eq=_sk["K_eq_metal_ref"],
+    D_m=mp["D_metal"], K_s_m=mp["K_s_metal"])
+close("L1L6 J_ss", r3["J_ss"], REF["L1L6_J_ss"])
+close("L1L6 P_int", r3["P_int"], REF["L1L6_P_int"])
+close("L1L6 theta", r3["theta"], REF["L1L6_theta"])
+equal("L1L6 rate_limiting", r3["rate_limiting"], REF["L1L6_rate_limiting"])
 
 # ------------------------------------------- microstructure (4 trap types)
 print("\nLevel 4 (microstructure, 4 traps):")
 m = combined_microstructure_model(
-    6.881385163348364e-11, 873.0, dict(MICROSTRUCTURE),
+    mp["D_metal"], T, dict(MICROSTRUCTURE),
     lattice_concentration=10.0, lattice_density=MICROSTRUCTURE["lattice_density"])
-close("micro D_eff", m["D_eff"], 5.084388686889583e-11)
-close("micro overall_factor", m["overall_factor"], 0.7388612272380938)
-close("micro theta_total", m["trapping"]["theta_total"], 0.026370841516212183)
+close("micro D_eff", m["D_eff"], REF["micro_D_eff"])
+close("micro overall_factor", m["overall_factor"], REF["micro_overall_factor"])
+close("micro theta_total", m["trapping"]["theta_total"], REF["micro_theta_total"])
 
 # ------------------------------------------------- regime classification
 print("\nregime classification:")
