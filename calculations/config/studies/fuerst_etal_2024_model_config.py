@@ -13,11 +13,12 @@ import numpy as np
 R = 8.314      # J/mol/K — Universal gas constant
 F = 96485      # C/mol  — Faraday constant (for eV conversions)
 
+
 # =============================================================================
 # METAL PROPERTIES (Level 1, 4)
 # =============================================================================
 METALS = {
-        'Hastelloy_N': {
+        'Hastelloy_N_fuerst_2024': {
         'T_ref':   973,           # K
         'D_ref':   2.893e-09,     # m²/s at T_ref
         'E_D':     55900,         # J/mol
@@ -44,9 +45,7 @@ METALS = {
         #   abstract = {Hastelloy N was chosen as the fluoride salt-contacting structural material for the Molten Salt Reactor Experiment due to its excellent compatibility with the fuel salt FLiBe. FLiBe is currently investigated for several advanced fusion and fission reactor concepts where tritium generation in the FLiBe is anticipated. Knowledge of hydrogen transport properties through Hastelloy N is important to understand how tritium would permeate through this material and result in an unintentional release. In this study, the hydrogen and deuterium permeability, diffusivity, and solubility were measured from 500 to 700 ◦C at a primary-side pressure of 10 kPa in a wellcharacterized sample of Hastelloy N. The prepared polycrystalline Hastelloy N had C and O impurities present on the surface. These impurities were investigated using Auger Emission Spectroscopy and Ar depth profiling. The adventitious C was removed upon the first Ar sputter cycle whereas O persisted deeper into the sample. For permeation experiments, applied deuterium pressures ranged from 13 Pa to 100 kPa and deuterium transport remained in the diffusion-limited regime (J ∝ P0.5) throughout the pressure range examined. Two methods are employed to measure the effective hydrogen and deuterium diffusivity: rise and decline. The decline method produced improved statistical model fits for calculating the effective diffusion coefficient compared to the rise method. The resultant transport properties compared well to published values for other nickel alloys.},
         #   langid = {english},
         #   file = {/Users/akinyemi.az/Zotero/storage/9NYFPMTG/Fuerst et al. - 2024 - Hydrogen and deuterium permeation in Hastelloy N.pdf;/Users/akinyemi.az/Zotero/storage/PMQW9EFQ/1-s2.0-S0022311523006189-mmc1.xlsx}
-  
-
-
+        
         # ---------------------------------------------------------------
         # SURFACE KINETICS — metal surface (for pinhole paths, L1+L6)
         # ---------------------------------------------------------------
@@ -60,15 +59,14 @@ METALS = {
         },
 
         'pressure':       [],
-        'pressure_range': [13, 1e5],
-        'metal_thickness': [1.37e-3],
+        'reference':      'Schmidt 1985	Schmidt H, Batfalsky P	J. Nuclear Materials 131	1985		H₂ and T₂ permeation in 30+ heat-resistant alloys. Full D+Ks+Phi for many Ni-Cr alloys.	Metals: X40 NiCrAlTi (Incoloy 802) — use as primary reference for Incoloy 800.',
+        'temp_range':     [1023, 1223],
+        'pressure_range': [1.33e2, 1e5],
+        'metal_thickness': [5e-3],
         'gas':            'H₂',
         'Notes':          'Phi_ref = D_ref * Ks_ref.',
     }
 }
-
-
-
 
 
 # =============================================================================
@@ -121,17 +119,13 @@ OXIDES = {
         'reference': (
             "Nemanic et al. 2023 (Phi, D), Stover 1986 (Q_p) and Chen 2011 (E_D): Undamaged chromia limit from Stover 1986 Fig.7 (sample Cr2)"
         ),
-        'temp_range_K':       [473, 773],
+        # Validity range of the Nemanic/Stover data; read by
+        # oxide_permeation.get_oxide_properties_at_T to warn on extrapolation.
         'temperature_range':  [473, 773],
     },
     
-
 }
 
-
-# =============================================================================
-# MICROSTRUCTURE PARAMETERS (Level 4)
-# =============================================================================
 MICROSTRUCTURE = {
     'grain_size':          100e-6,      # m  (midpoint 50-150 um, Zhu 2021)
     'gb_thickness':        0.5e-9,      # m  (unchanged -- no Has-N measurement)
@@ -167,8 +161,11 @@ MICROSTRUCTURE = {
     # LATTICE SITE DENSITY
     # -------------------------------------------------------------------
     'lattice_density':     8.774e28,     # m⁻³ — Fe BCC; update for your alloy
-    'N_L':                 8.774e28,     # m⁻³ — alias retained for backward compatibility
 }
+# 'N_L' is the same quantity under the symbol the derivations use, and
+# Application/Proposal.ipynb reads it 14 times. Aliased rather than written out
+# twice: two literals of the same number drift the moment one is edited.
+MICROSTRUCTURE['N_L'] = MICROSTRUCTURE['lattice_density']
 
 
 # =============================================================================
@@ -194,7 +191,7 @@ OXIDE_DEFECTS = {
 # OPERATING CONDITIONS
 # =============================================================================
 CONDITIONS = {
-    'T_operating':    973,              # K
+    'T_operating':    873,              # K
     'T_range':        (623, 1200),      # K
     'n_T_points':     20,
 
@@ -203,7 +200,7 @@ CONDITIONS = {
     'P_range':        (1e-4, 1e12),      # Pa
     'n_P_points':     40,
 
-    'L_metal':        1.51e-3,             # m
+    'L_metal':        1e-3,             # m
     'L_oxide':        1e-6,             # m
     'L_metal_range':  (0.1e-3, 5e-3),  # m
     'L_oxide_range':  (1e-7, 1e-5),    # m
@@ -212,6 +209,350 @@ CONDITIONS = {
 
 
 
+
+# =============================================================================
+# =============================================================================
+# SENSITIVITY ANALYSIS PARAMETERS
+#
+# Everything the regime-stratified sensitivity analysis lets you tune lives here,
+# so there is one file to open when you want to change what the study explores.
+# Consumed by calculations/sensitivity.py; nothing here imports it back.
+#
+# Two kinds of thing, and the distinction matters:
+#
+#   DEFAULT_PARAMS_*   are DERIVED from METALS / OXIDES / MICROSTRUCTURE /
+#                      OXIDE_DEFECTS / CONDITIONS above. Do not hardcode a number
+#                      into them — change the source dict instead. They were once
+#                      hand-copied literals and had already drifted: the defect
+#                      area fractions, the operating temperature and both surface
+#                      equilibrium constants disagreed with the values above by up
+#                      to six orders of magnitude.
+#
+#   SUGGESTED_RANGES_*, REGIME_PRESETS_*, draw counts and sweep temperatures are
+#                      STUDY DESIGN — deliberately literal. A preset that
+#                      suppresses f_pinhole to force an oxide-limited cluster
+#                      expresses intent about the analysis, not a material
+#                      property, so it is written out explicitly.
+#
+# Run calculations.sensitivity.check_against_config() after editing.
+# =============================================================================
+# =============================================================================
+
+# Which METALS / OXIDES entry the sensitivity analysis characterises: THE FIRST
+# ENTRY of each dict. Taken positionally rather than spelled out, so adding or
+# renaming a material needs no edit here and the name cannot fall out of sync with
+# the dict it indexes.
+#
+# The convention this encodes: the first entry is the active one. Dicts preserve
+# insertion order (Python 3.7+), so that means the first literal in the file. If you
+# add a second material, put it BELOW the active one — inserting above silently
+# switches every derived default.
+
+
+def _first_key(d, what):
+    """First key of `d`, with a clear error instead of a bare StopIteration."""
+    try:
+        return next(iter(d))
+    except StopIteration:
+        raise ValueError(f"{what} is empty — cannot determine the active material") from None
+
+
+ACTIVE_METAL = _first_key(METALS, 'METALS')
+ACTIVE_OXIDE = _first_key(OXIDES, 'OXIDES')
+
+_SA_M  = METALS[ACTIVE_METAL]
+_SA_O  = OXIDES[ACTIVE_OXIDE]
+_SA_MS = _SA_M['surface_kinetics']          # metal surface kinetics
+_SA_OS = _SA_O['surface_kinetics']          # oxide surface kinetics
+_SA_DC = OXIDE_DEFECTS['components']
+
+
+def _sa_trap(name):
+    """MICROSTRUCTURE trap entry by name (case-insensitive — config uses 'Carbides')."""
+    for t in MICROSTRUCTURE['trap_list']:
+        if t['name'].lower() == name.lower():
+            return t
+    raise KeyError(f"no trap named {name!r} in MICROSTRUCTURE['trap_list']; "
+                   f"have {[t['name'] for t in MICROSTRUCTURE['trap_list']]}")
+
+
+# -----------------------------------------------------------------------------
+# LEVEL 5 defaults — defective oxide (L3) + defective metal microstructure (L4)
+#
+# Reference-point Arrhenius: X(T) = X_ref * exp(-E/R * (1/T - 1/T_ref))
+#   Incoloy 802 (X40 NiCrAlTi) — T_ref_metal = 1223 K (Schmidt 1985)
+#   Cr2O3_sample4              — T_ref_oxide =  673 K (Nemanic 2023 / Stover 1986)
+# -----------------------------------------------------------------------------
+
+DEFAULT_PARAMS_LEVEL5 = {
+    # Metal transport  (METALS[ACTIVE_METAL])
+    'D_ref':       _SA_M['D_ref'],      # m²/s           D_metal at T_ref_metal
+    'E_D':         _SA_M['E_D'],        # J/mol          activation energy for diffusion
+    'K_s_ref':     _SA_M['K_s_ref'],    # mol/m³/Pa^0.5  K_s at T_ref_metal
+    'H_s':         _SA_M['H_s'],        # J/mol          heat of solution
+    'T_ref_metal': _SA_M['T_ref'],      # K              measurement reference
+
+    # Oxide transport  (OXIDES[ACTIVE_OXIDE])
+    'D_ox_ref':    _SA_O['D_ox_ref'],   # m²/s
+    'E_D_ox':      _SA_O['E_D_ox'],     # J/mol
+    'K_ox_ref':    _SA_O['K_ox_ref'],   # mol/m³/Pa^0.5
+    'H_sol_ox':    _SA_O['H_sol_ox'],   # J/mol
+    'T_ref_oxide': _SA_O['T_ref'],      # K
+
+    # Geometry — metal thickness comes from CONDITIONS, NOT METALS['metal_thickness'],
+    # which is a LIST of sweep values and would silently poison every model call.
+    'metal_thickness': CONDITIONS['L_metal'],   # m
+    'oxide_thickness': _SA_O['thickness'],      # m
+
+    # Operating conditions  (CONDITIONS)
+    'P_upstream':   CONDITIONS['P_upstream'],   # Pa
+    'P_downstream': CONDITIONS['P_downstream'], # Pa
+    'temperature':  CONDITIONS['T_operating'],  # K
+
+    # Level 3: oxide defects  (OXIDE_DEFECTS)
+    'f_pinhole':              _SA_DC['pinholes'],          # area fraction
+    'f_crack':                _SA_DC['cracks'],            # area fraction
+    'f_gb_defect':            _SA_DC['grain_boundaries'],  # area fraction
+    'crack_thickness_factor': OXIDE_DEFECTS['thickness_factor'],    # L_crack = f × L_oxide
+    'gb_diffusivity_factor':  OXIDE_DEFECTS['diffusivity_factor'],  # D_gb = f × D_oxide
+    # 'use_sieverts_pinhole' is NOT here: neither model wrapper reads it from the
+    # parameter dict. Surface_proposal.ipynb takes it from SIM['oxide_defects'],
+    # i.e. straight from OXIDE_DEFECTS, so that is where it lives.
+
+    # Level 4: grain structure  (MICROSTRUCTURE; Zhu 2021 baseline)
+    'grain_size':      MICROSTRUCTURE['grain_size'],       # m
+    'grain_shape':     MICROSTRUCTURE['grain_shape'],
+    'gb_type':         MICROSTRUCTURE['gb_type'],
+    'gb_thickness':    MICROSTRUCTURE['gb_thickness'],     # m
+    'lattice_density': MICROSTRUCTURE['lattice_density'],  # m⁻³
+
+    # Level 4: traps  (MICROSTRUCTURE['trap_list'])
+    # Lu 2022 binding energies + Young 1997 carbide density
+    'trap_dislocation_E_b': _sa_trap('dislocations')['binding_energy'],      # J/mol
+    'trap_dislocation_N_T': _sa_trap('dislocations')['density'],             # m⁻³
+    'trap_gb_E_b':          _sa_trap('grain_boundaries')['binding_energy'],  # J/mol
+    'trap_gb_N_T':          _sa_trap('grain_boundaries')['density'],         # m⁻³
+    'trap_vacancy_E_b':     _sa_trap('vacancies')['binding_energy'],         # J/mol
+    'trap_vacancy_N_T':     _sa_trap('vacancies')['density'],                # m⁻³
+    'trap_carbide_E_b':     _sa_trap('carbides')['binding_energy'],          # J/mol
+    'trap_carbide_N_T':     _sa_trap('carbides')['density'],                 # m⁻³
+
+    # Model options — how to run the model, not what it is; no config source
+    'include_gb_enhancement': True,
+    'include_trapping':       True,
+    'D_eff_method':           'average',
+}
+
+# -----------------------------------------------------------------------------
+# LEVEL 5L6 defaults — adds oxide + metal surface dissociation/recombination.
+# Inherits every Level 5 parameter via **DEFAULT_PARAMS_LEVEL5, which is what
+# keeps the two levels sharing one set of values for everything they have in common.
+# -----------------------------------------------------------------------------
+
+DEFAULT_PARAMS_LEVEL5L6 = {
+    **DEFAULT_PARAMS_LEVEL5,
+    # Oxide surface kinetics — OXIDES[ACTIVE_OXIDE]['surface_kinetics'] (Grant 1988)
+    'k_diss_ref':    _SA_OS['k_diss_ref'],   # mol/m²/s/Pa
+    'E_diss':        _SA_OS['E_diss'],       # J/mol
+    'K_eq_ref':      _SA_OS['K_eq_ref'],     # Pa⁻¹
+    'H_eq':          _SA_OS['H_eq'],         # J/mol
+    'T_ref_surface': _SA_OS['T_ref'],        # K
+
+    # Metal surface kinetics — METALS[ACTIVE_METAL]['surface_kinetics'] (Grant 1988)
+    'k_diss_metal_ref':    _SA_MS['k_diss_metal_ref'],  # mol/m²/s/Pa
+    'E_diss_metal':        _SA_MS['E_diss_metal'],      # J/mol
+    'K_eq_metal_ref':      _SA_MS['K_eq_metal_ref'],    # Pa⁻¹
+    'H_eq_metal':          _SA_MS['H_eq_metal'],        # J/mol
+    'T_ref_surface_metal': _SA_MS['T_ref'],             # K
+}
+
+
+
+
+# -----------------------------------------------------------------------------
+# SUGGESTED PARAMETER RANGES — Level 5 (28 parameters)   ** TUNE ME **
+#
+# Reference-point values span roughly ±2 decades around the reference; activation
+# energies span physically meaningful bounds. The four T_ref_* are commented out:
+# they are measurement metadata, redundant with the *_ref prefactors, and varying
+# them injects an artificial 10^3-10^4 prefactor sweep.
+# -----------------------------------------------------------------------------
+SUGGESTED_RANGES_LEVEL5 = {
+    # Metal transport (Incoloy 802, Schmidt 1985)
+    'D_ref':        [4.285e-11, 4.285e-7],
+    # Widened from the Incoloy range [60000, 80000]: Hastelloy N's own E_D is
+    # 55900 J/mol, so its measured value sat below the sweep floor and the SA
+    # would only ever have sampled it from above.
+    'E_D':          [50000, 80000],
+    'K_s_ref':      [1e-4, 0.1],
+    'H_s':          [1000, 50000],
+  
+
+    # Oxide transport (Cr2O3_sample4)
+    'D_ox_ref':     [7.800e-21, 7.800e-17],
+    'E_D_ox':       [69000, 71000],
+    'K_ox_ref':     [0.08, 0.4],
+    'H_sol_ox':     [20000, 170000],
+   
+
+    # Geometry
+    'metal_thickness': [5e-4, 5e-3],
+    'oxide_thickness': [1e-10, 1e-5],
+    'P_upstream':      [1e-7, 1e7],
+
+    # Oxide defects
+    'f_pinhole':              [1e-5, 0.1],
+    'f_crack':                [1e-5, 0.1],
+    'f_gb_defect':            [1e-5, 0.1],
+    'crack_thickness_factor': [0.01, 0.5],
+    'gb_diffusivity_factor':  [1.0, 100.0],
+
+    # Grain structure
+    'grain_size':      [1e-5, 5e-4],
+    'gb_thickness':    [3e-10, 1e-9],
+    'lattice_density': [8e28, 1.2e29],
+
+    # Traps (Lu 2022 + Young 1997; narrowed to physically motivated bounds)
+    'trap_dislocation_E_b': [15000, 25000],
+    'trap_dislocation_N_T': [8.16e10, 8.16e14],
+    'trap_gb_E_b':          [25000, 30000],
+    'trap_gb_N_T':          [6e12, 6e16],
+    'trap_vacancy_E_b':     [35000, 50000],
+    'trap_vacancy_N_T':     [1e24, 1e28],
+    'trap_carbide_E_b':     [20000, 40000],
+    'trap_carbide_N_T':     [2e23, 2e27],
+
+    # Operating conditions
+    'temperature': [573, 1273],
+}
+
+# -----------------------------------------------------------------------------
+# SUGGESTED PARAMETER RANGES — Level 5L6 (36 parameters)   ** TUNE ME **
+# Inherits all 28 Level 5 ranges and adds the surface-kinetics parameters.
+# -----------------------------------------------------------------------------
+SUGGESTED_RANGES_LEVEL5L6 = {
+    **SUGGESTED_RANGES_LEVEL5,
+    # Oxide surface kinetics (Cr2O3)
+    'k_diss_ref':          [9.487e-10, 9.487e-6],
+    'E_diss':              [40000, 70000],
+    # K_eq ranges are centred on the config values (Grant 1988) at ±2 decades, the
+    # same convention as every other *_ref parameter. They previously spanned
+    # [1e-14, 1e-6] and [1e-10, 1e-3], written around placeholder defaults of 1e-10
+    # and 1e-8: the config value 1e-4 fell 100x ABOVE its own sweep range, and
+    # K_eq_metal_ref's 1e-3 sat exactly ON its upper bound, so that parameter was
+    # only ever sampled below its nominal value.
+    'K_eq_ref':            [1e-6, 1e-2],
+    'H_eq':                [5000, 50000],
+    # Metal surface kinetics (Grant 1988)
+    'k_diss_metal_ref':    [1.346e-8, 1.346e-4],
+    'E_diss_metal':        [70000, 100000],
+    'K_eq_metal_ref':      [1e-5, 1e-1],
+    'H_eq_metal':          [5000, 40000],
+}
+
+
+# -----------------------------------------------------------------------------
+# REGIME-TARGETED SAMPLING PRESETS   ** TUNE ME **
+#
+# Targeting is not a convenience: over the default ranges L5L6 yields essentially
+# no surface-limited rows, and L5 is ~98% metal-limited with max frac_defect 0.415
+# — a single regime, nothing to stratify. The presets are what create the study.
+#
+# Each preset = the base ranges with ONLY the regime-controlling parameters
+# overridden, left as broad as possible so the per-regime sensitivity reflects
+# genuine physics rather than the targeting itself.
+# -----------------------------------------------------------------------------
+
+def _sa_ranges_with(base, overrides):
+    """`base` ranges with `overrides` applied — the single preset constructor.
+
+    Takes the base explicitly so L5 and L5L6 share one implementation instead of
+    two identical helpers differing only in which ranges dict they close over.
+    """
+    R = {k: list(v) for k, v in base.items()}
+    R.update({k: list(v) for k, v in overrides.items()})
+    return R
+
+
+# Preset building blocks — SHARED BETWEEN L5 AND L5L6. Each names one physical
+# intent, defined exactly once. Both levels compose their presets from these, so
+# the shared parts cannot drift: the slow-oxide block alone was previously written
+# out three times (L5L6 oxide, L5 oxide, L5 defect), and the suppressed-defect and
+# fast-metal blocks twice each. Editing one copy and missing the others would
+# silently make the two levels' oxide clusters non-comparable while every test
+# still passed. Surface blocks are L5L6-only — there is no surface step in L5.
+
+# thick, slow oxide -> the oxide is the bottleneck
+_SA_SLOW_OXIDE    = {'oxide_thickness': [1e-7, 1e-5],
+                     'D_ox_ref':        [7.8e-21, 7.8e-20]}
+
+# thin, fast metal -> the metal is NOT limiting
+_SA_FAST_METAL    = {'metal_thickness': [5e-5, 5e-4],
+                     'D_ref':           [4.3e-8, 4.3e-7]}
+
+# suppress the defect bypass so flux must cross the intact oxide
+_SA_DEFECTS_OFF   = {'f_pinhole':   [1e-7, 1e-5],
+                     'f_crack':     [1e-7, 1e-5],
+                     'f_gb_defect': [1e-7, 1e-5]}
+
+# large defect area -> the bypass can carry the majority of the flux.
+# NOTE total defect area reaches ~0.9 here: a heavily degraded coating, a wider
+# claim than the <=0.3 the default ranges imply. State it in any write-up.
+_SA_DEFECTS_LARGE = {'f_pinhole':   [0.05, 0.30],
+                     'f_crack':     [0.05, 0.30],
+                     'f_gb_defect': [0.05, 0.30]}
+
+# L5L6 only — fast surface (high pressure + fast dissociation)
+_SA_FAST_SURFACE  = {'P_upstream':  [1e4, 1e7],
+                     'k_diss_ref':  [9.5e-8, 9.5e-6]}
+
+# L5L6 only — slow surface (low pressure + slow dissociation on oxide and metal)
+_SA_SLOW_SURFACE  = {'P_upstream':       [1e-7, 1e1],
+                     'k_diss_ref':       [9.5e-12, 9.5e-9],
+                     'k_diss_metal_ref': [1.3e-10, 1.3e-7]}
+
+REGIME_PRESETS = {
+    'metal':   _sa_ranges_with(SUGGESTED_RANGES_LEVEL5L6, {}),
+    'surface': _sa_ranges_with(SUGGESTED_RANGES_LEVEL5L6, _SA_SLOW_SURFACE),
+    'oxide':   _sa_ranges_with(SUGGESTED_RANGES_LEVEL5L6,
+                               {**_SA_DEFECTS_OFF, **_SA_SLOW_OXIDE,
+                                **_SA_FAST_METAL, **_SA_FAST_SURFACE}),
+}
+
+# Level 5 presets (no surface kinetics). The L5 regimes are oxide / metal / defect,
+# the third being the PARALLEL bypass rather than a series resistance.
+# Yields measured on 300-draw LHS probes (seed 42):
+#   metal 97.0%,  oxide 77.7%,  defect 87.3% (max frac_defect 0.999)
+REGIME_PRESETS_L5 = {
+    'metal':  _sa_ranges_with(SUGGESTED_RANGES_LEVEL5, {}),
+    # same oxide-limiting intent as the L5L6 oxide preset, minus the surface block
+    'oxide':  _sa_ranges_with(SUGGESTED_RANGES_LEVEL5,
+                              {**_SA_DEFECTS_OFF, **_SA_SLOW_OXIDE, **_SA_FAST_METAL}),
+    # large defect area AND a slow intact oxide, so the bypass actually wins
+    'defect': _sa_ranges_with(SUGGESTED_RANGES_LEVEL5,
+                              {**_SA_DEFECTS_LARGE, **_SA_SLOW_OXIDE}),
+}
+
+
+# -----------------------------------------------------------------------------
+# SWEEP POINTS
+#
+# Draw counts and per-preset yields used to live here as measured constants. They
+# are gone: `calculations.sensitivity.size_draws_for_target()` now probes each
+# preset and sizes the run from the yield it actually observes. A cached yield
+# cannot notice that a range or a preset block was edited, or that the study
+# switched material, and silently unbalanced clusters make a cross-regime
+# comparison partly a comparison of estimator noise. TARGET_CLUSTER_SIZE lives in
+# sensitivity.py beside the code that consumes it.
+#
+# What remains here is study design, which no probe can infer.
+# -----------------------------------------------------------------------------
+
+# Temperatures for the isothermal L5 sweep. With temperature varying it monopolises
+# the variance of log10(flux) and leaves every other parameter at or below the noise
+# floor; sampling harder does not help, because the floor is flat in n (0.085 at
+# n=400, 0.092 at n=1500). The driver ranking genuinely shifts across this span.
+DEFAULT_SWEEP_TEMPERATURES = (773.0, 1073.0, 1273.0)
 
 
 # =============================================================================
@@ -376,8 +717,8 @@ def get_surface_kinetics_from_config(material_key, temperature_K, material_dict)
 
 
 def build_simulation_config(
-    metal='Hastelloy_N',
-    oxide='Cr2O3_sample4',
+    metal=ACTIVE_METAL,   # first entry of METALS — see ACTIVE_METAL above
+    oxide=ACTIVE_OXIDE,   # first entry of OXIDES
     T_operating=None,
     P_upstream=None,
     L_metal=None,
@@ -455,8 +796,8 @@ VALIDATION = {
         'P_ref':         1e5,
         'n_test':        50,
         'test_pressures': np.logspace(-2, 5, 50),
-        'test_temps_C':  np.array([700, 775, 850, 925]),
-        'test_temps_K':  np.array([700, 775, 850, 925]) + 273.15,
+        'test_temps_C':  np.array([700, 800, 900, 1000]),
+        'test_temps_K':  np.array([700, 800, 900, 1000]) + 273.15,
     },
 
     'L2b': {
@@ -487,18 +828,18 @@ VALIDATION = {
     'L4': {
         'P_fixed':            1e5,
         'P_down':             0,
-        'T_mode_comparison':  973,
+        'T_mode_comparison':  873,
         'T_min':              473,
         'T_max':              1173,
         'n_T_points':         40,
-        'T_grain_size':       973,
+        'T_grain_size':       873,
         'grain_size':         np.logspace(-8, -3, 30),
         'f_gb_max':           0.5,
     },
 
     'L5': {
         'P_down':         0,
-        'T_comparison':   973,
+        'T_comparison':   873,
         'T_min':          573,
         'T_max':          1173,
         'n_T_points':     20,
@@ -506,7 +847,7 @@ VALIDATION = {
         'T_sensitivity':  673,
         'P_sensitivity':  1e5,
         'f_defect_sweep': np.array([0.001, 0.01, 0.05, 0.1]),
-        'T_limit':       973,
+        'T_limit':        873,
     },
 
     'L6': {
@@ -522,9 +863,9 @@ VALIDATION = {
         #   - L3+L4+L6 → L5 (full defective system, no surface limit)
         # Parity plots show J_L*+L6(k_diss=1e-3) vs J_L* or J_analytical
         # ========================================================================
-        # 'k_diss_sweep_exp_range': (-15, -3),    # exponent range for log sweep
-        # 'k_diss_sweep_n_points': 7,              # number of points in sweep
-        # # Fast kinetics limit value (used in parity plots)
-        # 'k_diss_fast_limit': 1e-3,               # mol/m²/s/Pa — "fast" regime
+        'k_diss_sweep_exp_range': (-15, -3),    # exponent range for log sweep
+        'k_diss_sweep_n_points': 7,              # number of points in sweep
+        # Fast kinetics limit value (used in parity plots)
+        'k_diss_fast_limit': 1e-3,               # mol/m²/s/Pa — "fast" regime
     },
 }
