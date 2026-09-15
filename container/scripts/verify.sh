@@ -3,7 +3,7 @@
 # transfer of the image archive.
 set -uo pipefail
 
-IMAGE="${IMAGE:-hydrogen-model:1.0.1}"
+IMAGE="${IMAGE:-hydrogen-model:1.1.0}"
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PKG="$(cd "$HERE/.." && pwd)"
 

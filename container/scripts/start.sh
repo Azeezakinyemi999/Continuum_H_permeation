@@ -2,7 +2,7 @@
 # Start JupyterLab against the workspace. Ctrl-C to stop.
 set -euo pipefail
 
-IMAGE="${IMAGE:-hydrogen-model:1.0.1}"
+IMAGE="${IMAGE:-hydrogen-model:1.1.0}"
 PORT="${PORT:-8888}"
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PKG="$(cd "$HERE/.." && pwd)"

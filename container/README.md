@@ -11,10 +11,10 @@ Verified to run with networking fully disabled.
 ## What you received
 
 ```
-Hydrogen_Model_Environment_1.0.1/
+Hydrogen_Model_Environment_1.1.0/
 ├── image/
-│   ├── hydrogen-model-1.0.1.tar      the container image
-│   └── hydrogen-model-1.0.1.sha256   checksum for the above
+│   ├── hydrogen-model-1.1.0.tar      the container image
+│   └── hydrogen-model-1.1.0.sha256   checksum for the above
 ├── scripts/
 │   ├── verify.sh                     run the two acceptance gates
 │   └── start.sh                      launch JupyterLab
@@ -42,15 +42,15 @@ The container runs as a **non-root** user and needs no elevated privileges.
 **1. Check the archive is intact.** From the package root:
 
 ```bash
-shasum -a 256 -c image/hydrogen-model-1.0.1.sha256
+shasum -a 256 -c image/hydrogen-model-1.1.0.sha256
 ```
-Expect `image/hydrogen-model-1.0.1.tar: OK`. On Linux without `shasum`, use
+Expect `image/hydrogen-model-1.1.0.tar: OK`. On Linux without `shasum`, use
 `sha256sum -c`. If this fails, the transfer was corrupted — do not proceed.
 
 **2. Load the image.**
 
 ```bash
-docker load -i image/hydrogen-model-1.0.1.tar
+docker load -i image/hydrogen-model-1.1.0.tar
 docker images hydrogen-model
 ```
 
@@ -62,7 +62,7 @@ docker images hydrogen-model
 This runs with `--network none` and must end with:
 
 ```
-VERIFICATION PASSED — hydrogen-model:1.0.1 is the validated environment.
+VERIFICATION PASSED — hydrogen-model:1.1.0 is the validated environment.
 ```
 
 It checks two separate things: that all 106 pinned packages are exactly the
@@ -140,13 +140,33 @@ Please include:
 
 - the output of `./scripts/verify.sh` in full
 - `docker --version` and your OS
-- `docker image inspect hydrogen-model:1.0.1 --format '{{.Id}} {{.Architecture}}'`
+- `docker image inspect hydrogen-model:1.1.0 --format '{{.Id}} {{.Architecture}}'`
 - which notebook and which cell, with the error text
 
 ## Version
 
-`hydrogen-model:1.0.1` — Python 3.12, linux/amd64. Cite this tag alongside any
+`hydrogen-model:1.1.0` — Python 3.12, linux/amd64. Cite this tag alongside any
 results, so they can be tied back to a known environment.
+
+### Changes since 1.0.1
+
+The environment is byte-for-byte the same specification — identical Dockerfile,
+identical 106-package lock, so any result computed under 1.0.1 reproduces here.
+What changed is the model and the workspace:
+
+- **Multiple studies, one switch.** `calculations/config/studies/` now holds three
+  studies — Incoloy 802 / Cr2O3, Hastelloy N (Fuerst 2024), and 316L (Guo 2025).
+  `ACTIVE_STUDY` in `calculations/config/model_config.py` selects one, and every
+  module and notebook follows it. Nothing else needs editing.
+- **A study contract.** Selecting a study that is missing a required export now
+  fails immediately, naming the study and the missing names, instead of raising
+  deep inside an import.
+- **Sensitivity draw counts are measured, not cached.** The analysis probes each
+  regime preset and sizes the run from the yield it observes, so it stays correct
+  when ranges, presets, material or temperature change.
+- **`scripts/verify.sh` gate 2 is study-aware.** It holds reference values per
+  study and checks the active one. A study with no measured reference set fails
+  rather than passing silently.
 
 ### Changes since 1.0.0
 
