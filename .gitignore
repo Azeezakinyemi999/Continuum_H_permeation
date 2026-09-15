@@ -17,6 +17,7 @@ Level_3/
 analysis/
 data/
 docs/
+pdf/
 
 # Generated sensitivity-analysis output: LHS scans, cluster tables, comparison
 # matrices and the interactive figures. All of it is regenerable by re-running the
