@@ -16,7 +16,6 @@ Level_2/
 Level_3/
 analysis/
 data/
-docs/
 pdf/
 
 # Generated sensitivity-analysis output: LHS scans, cluster tables, comparison
@@ -35,3 +34,18 @@ __pycache__/
 *.pyc
 *.pyo
 release/
+
+# Sphinx build output. The source (docs/conf.py, docs/index.md, docs/api/) IS
+# tracked; only the generated HTML and doctrees are not. Rebuild with:
+#     conda activate mace_env && cd docs && make html
+docs/_build/
+
+# *.png above is a blanket ignore and would otherwise silently swallow any
+# figure added to the docs.
+!docs/_static/**/*.png
+!docs/_static/**/*.svg
+
+# Editable-install and build artefacts from pyproject.toml
+*.egg-info/
+build/
+dist/
