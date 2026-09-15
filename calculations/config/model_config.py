@@ -2,7 +2,7 @@
 
 This module is a SWITCH, not a config. It re-exports one module from
 `calculations/config/studies/`, and everything else in the codebase imports from
-here — so selecting a study is the single line below and no other file changes.
+here — so selecting a study is the single line below and no other file changes::
 
     calculations/*.py  ->  model_config  ->  studies/<the active one>.py
 

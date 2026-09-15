@@ -80,13 +80,14 @@ Typical ranges for austenitic steels:
 - Dislocation density: 10¹⁴ to 10¹⁶ m⁻³
 - Vacancy concentration: 10²⁰ to 10²³ m⁻³
 - Binding energies:
+
   - Dislocations: 20-30 kJ/mol
   - Grain boundaries: 40-50 kJ/mol
   - Vacancies: 40-45 kJ/mol
   - Precipitates: 60-90 kJ/mol
 
-Limitations::
-------------
+Limitations
+-----------
 1. Assumes Oriani local equilibrium (invalid for θ > 0.9)
 2. Independent trap types (no interaction)
 3. Uniform trap distribution (not segregated)
@@ -127,8 +128,8 @@ def trap_occupancy(temperature, binding_energy, trap_density, lattice_density,
     """
     Calculate hydrogen trap occupancy fraction using Oriani local equilibrium model.
     
-    Theory::
-    -------
+    Theory
+    ------
     At thermal equilibrium, the distribution of hydrogen between lattice sites and
     trap sites follows Fermi-Dirac statistics. For a single trap type, the 
     equilibrium is described by:
@@ -281,8 +282,8 @@ def grain_boundary_density(grain_size, gb_thickness=0.5e-9, sites_per_area=1e19,
     """
     Calculate grain boundary trap density from microstructure parameters.
     
-    Theory::
-    -------
+    Theory
+    ------
     Grain boundaries (GBs) are 2D defects that separate crystalline regions. The
     total GB area per unit volume depends on grain size and morphology. For 
     hydrogen trapping, we need to convert this geometric information into a
@@ -471,8 +472,8 @@ def gb_enhancement_factor(temperature, temperature_unit='K', gb_type='HAGB', dat
     """
     Calculate grain boundary diffusion enhancement factor D_gb/D_bulk.
     
-    Theory::
-    -------
+    Theory
+    ------
     Grain boundaries provide fast diffusion paths due to their more open atomic
     structure. The enhancement factor D_gb/D_bulk decreases with temperature as
     thermal activation makes bulk diffusion more competitive.
@@ -991,6 +992,7 @@ def calculate_effective_diffusivity_trapping(D_lattice, temperature, trap_list,
         - 'trapping_term': Σ(N_T,i × K_i / N_L), the denominator term [-]
         - 'theta_total': Sum of trap occupancy fractions Σθᵢ (for info) [-]
         - 'trap_contributions': List of dicts with details per trap type:
+
             - 'name': Trap identifier
             - 'theta': Trap occupancy fraction θᵢ [-]
             - 'binding_energy': E_b [J/mol]
@@ -998,6 +1000,7 @@ def calculate_effective_diffusivity_trapping(D_lattice, temperature, trap_list,
             - 'K_equilibrium': exp(E_b/RT) [-]
             - 'trapping_contribution': (N_T/N_L) × K, contribution to D_eff reduction [-]
             - 'trapped_concentration': [mol/m³]
+
         - 'reduction_factor': D_eff/D_lattice [-]
         - 'dominant_trap': Name of trap with highest contribution
         - 'mobile_fraction': Fraction of H that is mobile [-]

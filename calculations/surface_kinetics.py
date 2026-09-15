@@ -941,13 +941,17 @@ def calculate_mixed_defect_flux_L6(
 
     Parameters
     ----------
-    defect_config : dict — per-defect configuration, e.g.:
-        {
-            'pinhole':        {'area_fraction': 0.001},
-            'crack':          {'area_fraction': 0.005, 'thickness_factor': 0.1},
-            'grain_boundary': {'area_fraction': 0.02,  'diffusivity_factor': 100},
-        }
-    k_diss_metal, K_eq_metal : float|None — metal kinetics for pinhole path
+    defect_config : dict
+        Per-defect configuration, e.g.::
+
+            {
+                'pinhole':        {'area_fraction': 0.001},
+                'crack':          {'area_fraction': 0.005, 'thickness_factor': 0.1},
+                'grain_boundary': {'area_fraction': 0.02,  'diffusivity_factor': 100},
+            }
+
+    k_diss_metal, K_eq_metal : float or None
+        Metal kinetics for the pinhole path.
 
     Returns
     -------

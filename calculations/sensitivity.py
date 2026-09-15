@@ -566,12 +566,14 @@ def level5L6_model_wrapper(params_dict, return_full_record=False):
     -------
     dict
         All Level 5 outputs plus:
+
         - 'frac_surface': Flux-weighted surface resistance fraction
         - 'frac_oxide':   Flux-weighted oxide resistance fraction
         - 'frac_metal':   Flux-weighted metal resistance fraction
         - 'theta':        Surface coverage on intact path
         - 'regime':       Rate-limiting regime label via assign_regime() (argmax of
                           the flux-weighted fractions; 'undefined' on a failed solve)
+
         and, when return_full_record=True, 'system_rate_limiting' and 'dominant_path'.
     """
     from calculations.surface_kinetics import calculate_full_model_flux_L346_v2
@@ -834,6 +836,7 @@ def run_global_lhs_scan(param_ranges, N, seed=42, wrapper=None,
     (df, problem)
         df : tidy DataFrame — one row per LHS draw; columns = sampled parameter
              values (the SA inputs X) + SCAN_OUTPUT_FIELDS + SCAN_LABEL_FIELDS.
+
         problem : SALib problem dict (names/bounds) for reuse downstream.
     """
     if wrapper is None:
@@ -1168,8 +1171,10 @@ def givendata_sensitivity_by_regime(clusters, param_names, output_metrics=REGIME
 
     Returns
     -------
-    {regime: {metric: {'n': int, 'floor': float, 'pawn': Si_pawn, 'delta': Si_delta}}}
-    (an entry carries 'skipped' instead of indices if the cluster is too small/degenerate)
+    dict
+        Nested as ``{regime: {metric: {'n': int, 'floor': float, 'pawn': Si_pawn,
+        'delta': Si_delta}}}``. An entry carries ``'skipped'`` instead of indices
+        if the cluster is too small or degenerate.
     """
     param_names = list(param_names)
     dummy_names = [f'_dummy_{i}' for i in range(n_dummy)]
@@ -1316,6 +1321,7 @@ def regime_comparison_matrix(givendata_results, output_metric, param_names,
     restricted to the union of each regime's top-`top_union` parameters.
 
     index : 'delta' | 'pawn_median' | 'S1_givendata'
+
     normalize : None (raw values) | 'column' (divide each column by its own max,
         so every regime peaks at 1.0 and rows read as *relative* importance
         within that regime). The top-`top_union` selection always uses the raw
@@ -1478,10 +1484,13 @@ def parallel_coordinates_samples(df, dimensions, color_by='regime', log_dims=(),
     Per-sample parallel-coordinates plot (covers views A/B/D).
 
     dimensions : list of column names → one axis each (heavy-tailed ones listed in
-                 `log_dims` are shown as log10).
+                 ``log_dims`` are shown as log10).
+
     color_by   : 'regime' → discrete colouring (surface/oxide/metal); otherwise a
                  numeric column ('flux'/'permeability' are coloured on log10).
+
     save_html  : optional path to write a standalone interactive HTML.
+
     width      : figure width in px; default scales with the number of axes so the
                  axis titles don't overlap. height/labelangle tune layout.
     """

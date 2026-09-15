@@ -706,6 +706,38 @@ def build_simulation_config(
     microstructure_overrides=None,
     defect_overrides=None,
 ):
+    """Assemble a solver-ready configuration dict for one metal/oxide pair.
+
+    Pulls the chosen entries out of METALS and OXIDES and merges them with the
+    operating conditions in CONDITIONS, so a caller hands the model a single dict
+    instead of threading a dozen parameters through by hand.
+
+    The oxide defect fractions in OXIDE_DEFECTS are also translated here into the
+    per-path ``defect_config`` format the Level 3 solvers expect. A pinhole, crack
+    or grain-boundary path is included only when its area fraction is non-zero, so
+    setting a fraction to zero removes that transport path entirely rather than
+    leaving a zero-weighted one in the parallel sum.
+
+    Parameters
+    ----------
+    metal, oxide : str
+        Keys into METALS and OXIDES. Default to ACTIVE_METAL / ACTIVE_OXIDE, which
+        are the first entry of each dict.
+    T_operating, P_upstream, L_metal, L_oxide : float, optional
+        Override the corresponding CONDITIONS value. L_oxide falls back to the
+        oxide entry's own 'thickness' before CONDITIONS. Note these use ``or``, so
+        a falsy 0 also takes the default — pass a small positive number instead.
+    microstructure_overrides, defect_overrides : dict, optional
+        Shallow-merged onto MICROSTRUCTURE and OXIDE_DEFECTS respectively. The
+        defect overrides are applied BEFORE ``defect_config`` is derived, so they
+        do change which paths exist.
+
+    Returns
+    -------
+    dict
+        Material properties, operating conditions and sweep ranges, plus both the
+        raw 'oxide_defects' block and the derived 'defect_config'.
+    """
     od = OXIDE_DEFECTS.copy()
     if defect_overrides:
         od.update(defect_overrides)

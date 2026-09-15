@@ -35,7 +35,7 @@ def molecular_diffusion_flux(D_ox, K_ox, thickness, P_up, P_down):
     float
         Flux through oxide (mol/m²/s)
     
-    Physics Note:
+    Physics Note
     ------------
     C = K_ox * P (Henry's law, NOT Sieverts' law)
     J = -D * dC/dx = D * (C_up - C_down) / thickness
@@ -116,7 +116,7 @@ def calculate_metal_resistance(D_metal, K_s_metal, thickness, P_interface):
     float
         Metal resistance at given interface pressure (Pa·s·m²/mol)
     
-    Physics Note:
+    Physics Note
     ------------
     For metal with Sieverts' law:
     J = (D * K_s / thickness) * (√P_up - √P_down)
