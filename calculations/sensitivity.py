@@ -19,7 +19,6 @@ from calculations.config.model_config import (
     DEFAULT_PARAMS_LEVEL5, DEFAULT_PARAMS_LEVEL5L6,
     SUGGESTED_RANGES_LEVEL5, SUGGESTED_RANGES_LEVEL5L6,
     REGIME_PRESETS, REGIME_PRESETS_L5,
-    DEFAULT_N_PER_REGIME,
 )
 
 
@@ -984,10 +983,71 @@ def plot_regime_exploration(partition, output_metrics=('flux', 'permeability', '
 
 
 
+TARGET_CLUSTER_SIZE = 1500   # rows wanted in each regime cluster; see below
+
+
+def size_draws_for_target(presets, regimes, target_cluster=TARGET_CLUSTER_SIZE,
+                          probe_n=250, seed=42, safety=1.15, n_max=200_000,
+                          wrapper=None, verbose=True, **scan_kw):
+    """
+    Choose a draw count per regime by MEASURING each preset's yield first.
+
+    The draw count you want is `target / yield`, but the yield is only knowable by
+    running the preset -- so it used to be measured once by hand and pasted into the
+    config as MEASURED_YIELDS_*. That cache goes stale silently: edit any range or
+    preset block and the numbers still look authoritative while the clusters come
+    out unbalanced, which makes a cross-regime comparison partly a comparison of
+    estimator noise rather than of sensitivity.
+
+    This breaks the circularity with a cheap probe instead. Cost is `probe_n` draws
+    per regime against the thousands the real scan needs -- roughly 15% -- and it is
+    correct for whatever study, material, temperature and preset are active.
+
+    safety : the probe yield is a binomial estimate. At the hardest preset observed
+        (surface, p ~ 0.23) a 250-draw probe has se ~ 0.027, about 12% relative, so
+        without a margin the cluster lands short about half the time.
+    n_max : refuse to size a run larger than this, and say why. A preset that
+        targets an unreachable regime otherwise asks for a silently impossible scan.
+
+    The probe is its own LHS and is discarded -- the analysis then runs one clean,
+    correctly sized design rather than concatenated batches.
+
+    Returns {regime: n_draws}.
+    """
+    sized = {}
+    for r in regimes:
+        df, _ = run_global_lhs_scan(presets[r], probe_n, seed=seed, wrapper=wrapper,
+                                    save_path=None, verbose=False, **scan_kw)
+        hits = int((df['regime'] == r).sum()) if len(df) else 0
+        y = hits / len(df) if len(df) else 0.0
+
+        if y <= 0:
+            raise ValueError(
+                f"preset {r!r} produced no in-regime rows in {probe_n} probe draws, "
+                f"so no draw count can reach a {target_cluster}-row cluster. The "
+                f"preset is not targeting the regime it claims -- widen it, or drop "
+                f"{r!r} from `regimes`."
+            )
+
+        n = int(np.ceil(target_cluster * safety / y))
+        if n > n_max:
+            raise ValueError(
+                f"preset {r!r} yielded {y*100:.1f}% in {probe_n} probe draws; "
+                f"reaching a {target_cluster}-row cluster needs ~{n:,} draws, over "
+                f"the n_max={n_max:,} guard. Loosen the preset, lower "
+                f"target_cluster, or raise n_max deliberately."
+            )
+        sized[r] = n
+        if verbose:
+            print(f"  probe {r:8s}: {hits}/{probe_n} in-regime ({y*100:.1f}%) "
+                  f"-> N={n:,}")
+    return sized
+
+
 def run_targeted_regime_scans(N_per_regime=None, regimes=('metal', 'surface', 'oxide'),
                               seed=42, wrapper=None, save_dir=None,
                               presets=None, min_cluster=300, verbose=True,
-                              **scan_kw):
+                              target_cluster=None, probe_n=250, **scan_kw):
     """
     Phase 1: one LHS scan per regime over its targeted preset, keeping
     the in-regime rows (argmax label). Feeds Route B (given-data).
@@ -1012,8 +1072,18 @@ def run_targeted_regime_scans(N_per_regime=None, regimes=('metal', 'surface', 'o
     if presets is None:
         presets = REGIME_PRESETS
     if N_per_regime is None:
-        N_per_regime = dict(DEFAULT_N_PER_REGIME)
-    if isinstance(N_per_regime, int):
+        # Measure each preset's yield, then size the run from it. Prefer this to a
+        # hardcoded table: it stays correct when ranges, presets, material or
+        # temperature change, none of which a cached yield notices.
+        if target_cluster is None:
+            target_cluster = TARGET_CLUSTER_SIZE
+        if verbose:
+            print(f"--- sizing probe ({probe_n} draws/regime, "
+                  f"target {target_cluster} per cluster) ---")
+        N_per_regime = size_draws_for_target(
+            presets, regimes, target_cluster=target_cluster, probe_n=probe_n,
+            seed=seed, wrapper=wrapper, verbose=verbose, **scan_kw)
+    elif isinstance(N_per_regime, int):
         N_per_regime = {r: N_per_regime for r in regimes}
 
     missing = [r for r in regimes if r not in presets]
