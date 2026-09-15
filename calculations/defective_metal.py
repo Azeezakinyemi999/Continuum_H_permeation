@@ -384,7 +384,6 @@ def grain_boundary_density(grain_size, gb_thickness=0.5e-9, sites_per_area=1e19,
     ... )
     >>> print(f"GB trap density: {result['trap_density']:.2e} m⁻³")
     """
-    import numpy as np
     import warnings
     
     # Input validation
@@ -1311,7 +1310,6 @@ def calculate_gb_enhanced_diffusivity(D_bulk, temperature, grain_size,
     ... )
     >>> print(f"Enhancement: {result['enhancement_ratio']:.2f}×")
     """
-    import numpy as np
     import warnings
     
     # Input validation
@@ -1546,7 +1544,6 @@ def combined_microstructure_model(D_lattice, temperature, microstructure_params,
     ... )
     >>> print(f"D_eff = {result['D_eff']:.2e} m²/s")
     """
-    import numpy as np
     import warnings
     
     # Initialize warnings list

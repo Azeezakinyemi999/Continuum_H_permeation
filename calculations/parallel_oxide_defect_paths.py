@@ -11,23 +11,15 @@ References:
 - Zhang et al. (2018), Int. J. Hydrogen Energy, 43:3353-3365
 """
 
-import numpy as np
-from scipy.optimize import brentq
 
 # Import from Level 1
 from calculations.permeation_calc import calculate_simple_metal_flux
 
 # Import from Level 2
 from calculations.interface_solver import calculate_oxide_metal_system
-from calculations.oxide_permeation import molecular_diffusion_flux
 
 # Centralized regime classification utilities
 from calculations.classify_regime import (
-    classify_regime_level2,
-    classify_regime_level3,
-    classify_regime_level4_metal,
-    classify_regime_level14,
-    classify_regime_level24,
     classify_regime_level34,
 )
 
@@ -310,18 +302,6 @@ def calculate_parallel_path_flux(P_upstream, P_downstream, oxide_props, metal_pr
     # # Calculate enhancement factor vs perfect oxide
     # enhancement = flux_total / j_intact if j_intact > 0 else float('inf')
     
-    # return {
-    #     'flux_total': flux_total,
-    #     'flux_intact_contribution': flux_intact_contribution,
-    #     'flux_defect_contribution': flux_defect_contribution,
-    #     'flux_intact_per_area': j_intact,
-    #     'flux_defect_per_area': j_defect,
-    #     'dominant_path': dominant,
-    #     'defect_enhancement_factor': enhancement,
-    #     'area_fraction_defect': f_defect,
-    #     'P_interface_intact': intact_result.get('P_interface', None),
-    #     'regime_intact': intact_result.get('regime', None)
-    # }
     # Enhancement factor vs perfect oxide with defective metal
     enhancement = flux_total / j_intact if j_intact > 0 else float('inf')
     
@@ -791,28 +771,6 @@ def calculate_parallel_path_flux_defective_metal(P_upstream, P_downstream, oxide
     # # Enhancement factor vs perfect oxide with defective metal
     # enhancement = flux_total / j_intact if j_intact > 0 else float('inf')
     
-    # return {
-    #     'flux_total': flux_total,
-    #     'flux_intact_contribution': flux_intact_contribution,
-    #     'flux_defect_contribution': flux_defect_contribution,
-    #     'flux_intact_per_area': j_intact,
-    #     'flux_defect_per_area': j_defect,
-    #     'dominant_path': dominant,
-    #     'defect_enhancement_factor': enhancement,
-    #     'area_fraction_defect': f_defect,
-        
-    #     # Level 4 details from intact path
-    #     'D_eff_metal': intact_result.get('D_eff'),
-    #     'modification_factor': intact_result.get('modification_factor'),
-    #     'level4_converged': intact_result.get('level4_converged'),
-        
-    #     # Interface and regime info
-    #     'P_interface_intact': intact_result.get('P_interface'),
-    #     'regime_intact': intact_result.get('regime'),
-        
-    #     # Microstructure details
-    #     'microstructure_details': intact_result.get('microstructure_details', {})
-    # }
     # Enhancement factor vs perfect oxide with defective metal
     enhancement = flux_total / j_intact if j_intact > 0 else float('inf')
     
