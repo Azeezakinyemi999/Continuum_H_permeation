@@ -1,0 +1,63 @@
+# Packaging metadata for the hierarchical hydrogen permeation model.
+#
+# The purpose is narrow: make `from calculations.config.model_config import ...`
+# work from any working directory without a sys.path.insert, and give
+# docs/conf.py a version to read back.
+#
+# The released container does NOT use this file. container/Dockerfile bind-mounts
+# the code and sets PYTHONPATH=/workspace, so runtime pins for the image live in
+# container/requirements.lock.txt and are unaffected by anything here.
+
+[build-system]
+requires = ["setuptools>=64"]          # >=64 for PEP 660 editable installs
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "continuum-h-permeation"                # import name stays `calculations`
+version = "1.1.0"                      # matches the hydrogen-model:1.1.0 release
+description = "Analytical hierarchy (Levels 1-6) for hydrogen permeation through oxide-coated structural alloys"
+readme = "README.md"
+requires-python = ">=3.9"              # mace_env is 3.9.23; the container is 3.12
+authors = [{ name = "Azeez Akinyemi", email = "akinyemi.az@northeastern.edu" }]
+keywords = ["hydrogen", "permeation", "tritium", "oxide", "trapping", "sensitivity-analysis"]
+classifiers = [
+    "Private :: Do Not Upload",        # hard-fails an accidental `twine upload`
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Physics",
+]
+
+# RANGES, not pins. container/requirements.lock.txt is the reproducibility
+# artefact; these only have to be satisfied by what is already installed, so that
+# `pip install -e .` resolves to a no-op in an existing environment. The bounds
+# mirror the reasoning in container/requirements.in, they do not restate its pins.
+dependencies = [
+    "numpy>=1.24,<2",        # <2 is load-bearing: torch 2.2.0 and SALib 1.5.0 both need it
+    "scipy>=1.10,<2",        # brentq/root_scalar -> every interface-pressure solve
+    "pandas>=2.0,<3",        # the SA scan/cluster CSVs are written and re-read by pandas
+    "matplotlib>=3.7",       # module-level import in calculations/sensitivity.py
+    "SALib>=1.5,<1.5.1",     # 1.5.1+ calls np.trapezoid, which needs numpy>=2
+]
+
+[project.optional-dependencies]
+# Docs toolchain. Deliberately NOT in container/requirements.in: the docs are not
+# part of the shipped image. The upper bounds are Python 3.9 ceilings, not
+# caprice — sphinx 8.x and myst-parser 3.x both require Python >=3.10.
+docs = [
+    "sphinx>=7.2,<8",
+    "myst-parser>=2,<3",
+    "furo>=2024.1",
+]
+
+[tool.setuptools]
+# EXPLICIT. Auto-discovery is wrong here twice over: the repo root has many
+# sibling top-level directories, and calculations/config/ only became a real
+# package alongside this file. Discovery would ship `calculations` on its own and
+# every `from calculations.config.model_config import ...` would break from an
+# installed wheel.
+packages = [
+    "calculations",
+    "calculations.config",
+    "calculations.config.studies",
+]
+include-package-data = false           # nothing non-.py belongs in the distribution
