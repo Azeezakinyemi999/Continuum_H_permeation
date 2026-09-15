@@ -290,7 +290,6 @@ def level5_model_wrapper(params_dict, return_full_record=False):
             'gb_type':               full_params['gb_type'],
             'gb_thickness':          gb_thickness,
             'trap_list':             trap_list,
-            'gb_enhancement_factor': full_params.get('gb_enhancement_factor', 100),
         }
 
         f_pin = full_params.get('f_pinhole', 0.0)
@@ -652,7 +651,6 @@ def level5L6_model_wrapper(params_dict, return_full_record=False):
             'gb_type':               full_params.get('gb_type', 'LAGB'),
             'gb_thickness':          gb_thickness,
             'trap_list':             trap_list,
-            'gb_enhancement_factor': full_params.get('gb_enhancement_factor', 100),
         }
 
         include_gb   = full_params.get('include_gb_enhancement', True)
@@ -1597,93 +1595,6 @@ def _sweep_grid(lo, hi, n):
     if lo > 0 and hi / lo >= 10.0:
         return np.logspace(np.log10(lo), np.log10(hi), n)
     return np.linspace(lo, hi, n)
-
-
-def conditional_sweep(cluster_df, param_names, ranges, wrapper=None, fixed_params=None,
-                      n_baselines=25, n_grid=9, metric='flux', regime_col='regime',
-                      seed=42, verbose=True):
-    """
-    Sweep each parameter across `ranges` from baselines drawn out of `cluster_df`.
-
-    Parameters
-    ----------
-    cluster_df : DataFrame
-        One regime's cluster; supplies the baseline parameter vectors.
-    param_names : list[str]
-        Parameters to sweep (one sweep each, all others held at the baseline).
-    ranges : {param: [lo, hi]}
-        Bounds to sweep over. Pass the global ranges to ask "what if this took any
-        plausible value", or the regime's own preset to stay inside the regime —
-        the two answer different questions, so run both if it matters.
-    fixed_params : dict, optional
-        Merged into every model call (e.g. a pinned temperature) — kept out of the
-        swept set.
-    n_baselines, n_grid : int
-        Baselines per parameter, and grid points per sweep. Cost is
-        len(param_names) * n_baselines * n_grid model calls.
-
-    Returns
-    -------
-    DataFrame, one row per (parameter, baseline):
-        swing        log10(max metric / min metric) across the grid — the response size
-        n_regimes    distinct regime labels seen along the sweep (>1 = crossed a boundary)
-        regime_start / regime_end
-        n_valid      grid points that produced a usable value
-    """
-    if wrapper is None:
-        wrapper = level5_model_wrapper
-    fixed_params = dict(fixed_params or {})
-    param_names = [p for p in param_names if p in ranges]
-
-    rng = np.random.default_rng(seed)
-    idx = rng.choice(len(cluster_df), size=min(n_baselines, len(cluster_df)),
-                     replace=False)
-    baselines = cluster_df.iloc[idx].reset_index(drop=True)
-    base_cols = [c for c in ranges if c in baselines.columns]
-
-    rows = []
-    for k, p in enumerate(param_names):
-        grid = _sweep_grid(*ranges[p], n_grid)
-        for b in range(len(baselines)):
-            base = {c: float(baselines.loc[b, c]) for c in base_cols}
-            vals, regs = [], []
-            for g in grid:
-                rec = wrapper({**base, **{p: float(g)}, **fixed_params},
-                              return_full_record=True)
-                y = rec.get(metric, np.nan)
-                if np.isfinite(y) and y > 0:
-                    vals.append(y)
-                    regs.append(rec.get(regime_col, 'undefined'))
-            if len(vals) >= 2:
-                swing = float(np.log10(max(vals) / min(vals)))
-            else:
-                swing = np.nan
-            rows.append({'parameter': p, 'baseline': b, 'swing': swing,
-                         'n_regimes': len(set(regs)) if regs else 0,
-                         'regime_start': regs[0] if regs else 'undefined',
-                         'regime_end': regs[-1] if regs else 'undefined',
-                         'n_valid': len(vals)})
-        if verbose:
-            print(f"    swept {k+1}/{len(param_names)}: {p}")
-    return pd.DataFrame(rows)
-
-
-def summarize_conditional_sweep(sweep_df):
-    """Median/IQR swing per parameter, plus how often the sweep left its regime.
-
-    Sort by `swing_med`. A large `swing_iqr` relative to `swing_med` means the
-    response depends strongly on the rest of the parameters — i.e. the effect is
-    interaction-driven, which is exactly what a global index can miss.
-    """
-    g = sweep_df.groupby('parameter')['swing']
-    out = pd.DataFrame({
-        'swing_med': g.median(),
-        'swing_iqr': g.quantile(0.75) - g.quantile(0.25),
-        'swing_max': g.max(),
-        'frac_left_regime': sweep_df.groupby('parameter')['n_regimes']
-                                    .apply(lambda s: float((s > 1).mean())),
-    })
-    return out.sort_values('swing_med', ascending=False)
 
 
 # =============================================================================
