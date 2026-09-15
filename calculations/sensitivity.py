@@ -614,6 +614,12 @@ def level5L6_model_wrapper(params_dict, return_full_record=False):
         L_ox = full_params['oxide_thickness']
         L_m  = full_params['metal_thickness']
         P_up = full_params['P_upstream']
+        # Read rather than hardcoded: the L5 wrapper honours P_downstream, and a
+        # hardcoded 0.0 here made the two levels agree only because the config
+        # value happens to be 0. A non-zero downstream pressure would have been
+        # silently ignored at L5L6 while L5 applied it, leaving the two levels
+        # non-comparable with nothing to signal it.
+        P_down = full_params['P_downstream']
         lattice_density = full_params['lattice_density']
         method = full_params.get('D_eff_method', 'average')
 
@@ -680,7 +686,7 @@ def level5L6_model_wrapper(params_dict, return_full_record=False):
             defect_config['crack'] = {'area_fraction': 1e-6}
 
         r = calculate_full_model_flux_L346_v2(
-            P_up=P_up, P_down=0.0, L_m=L_m, temperature=T,
+            P_up=P_up, P_down=P_down, L_m=L_m, temperature=T,
             k_diss=k_diss, K_eq=K_eq,
             D_ox=D_ox, K_ox=K_ox, L_ox=L_ox,
             D_lattice=D_metal, K_s_m=K_s_met,
