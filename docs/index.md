@@ -36,6 +36,7 @@ getting-started
 theory/foundations
 theory/equilibrium-models
 STEADY_STATE
+theory/level1-metal
 ```
 
 ```{toctree}
