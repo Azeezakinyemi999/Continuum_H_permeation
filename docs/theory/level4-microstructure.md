@@ -226,4 +226,4 @@ metal is Level 5, and it is not a matter of multiplying the two corrections —
 each defect path through the oxide sits above its own patch of metal and must be
 solved with the microstructural diffusivity in place.
 
-Dissociation remains infinitely fast, which the Level 6 chapter addresses.
+Dissociation remains infinitely fast, which {doc}`level6-surface-kinetics` addresses.

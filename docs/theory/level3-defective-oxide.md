@@ -145,7 +145,7 @@ answer is in `dominant_path`, which reports `intact_oxide`.
 `calculate_parallel_path_flux_defective_metal` and
 `calculate_PRF_defective_metal` are the Level 3+4 versions, which replace the
 perfect-lattice metal beneath each path with the microstructural model of
-the Level 4 chapter. Their `D_eff_metal`, `modification_factor` and
+{doc}`level4-microstructure`. Their `D_eff_metal`, `modification_factor` and
 `level4_converged` keys are `None` in the pure Level 3 functions — a signal that
 no microstructural calculation ran, not that it failed.
 
@@ -155,7 +155,7 @@ The metal beneath every path is still a perfect lattice: no traps, no
 grain-boundary enhancement, a diffusivity that is a pure material constant. For
 the active study that is the dominant remaining approximation, precisely because
 the wall is metal-limited — the layer being modelled most crudely is the one
-carrying 98% of the resistance. the Level 4 chapter addresses it.
+carrying 98% of the resistance. {doc}`level4-microstructure` addresses it.
 
-Dissociation is also still infinitely fast, which the Level 6 chapter
+Dissociation is also still infinitely fast, which {doc}`level6-surface-kinetics`
 addresses.

@@ -41,6 +41,7 @@ theory/level2-oxide
 theory/level3-defective-oxide
 theory/level4-microstructure
 theory/level5-full-system
+theory/level6-surface-kinetics
 ```
 
 ```{toctree}
