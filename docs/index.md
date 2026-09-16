@@ -48,6 +48,8 @@ PACKAGING_1.0.0
 - Not included by design: the notebooks (`Application/*.ipynb` and the three
   study directories, whose outputs are committed and large) and the LaTeX
   derivation `latex/Model_Equations.tex`.
-- Partially documented: `surface_kinetics` writes some parameter blocks in a
-  compressed one-line form that napoleon reads as a type rather than a
-  description, so those entries render less well than the rest.
+- Docstrings follow NumPy style throughout, with `Theory`,
+  `Mathematical Derivation` and a few other project-specific sections registered
+  in `conf.py` as Notes-style admonitions. A section name not registered there
+  will fail the build, so add it to `napoleon_custom_sections` rather than
+  inventing a new heading.

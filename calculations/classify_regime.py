@@ -3,7 +3,7 @@ calculations/classify_regime.py
 
 Hierarchical regime classification utilities used by Level 1-4 models.
 
-This module centralizes the various `classify_regime_*` helper functions so
+This module centralizes the various ``classify_regime_*`` helper functions so
 that other calculation modules can import and reuse a single implementation.
 
 What "regime" means here
@@ -25,7 +25,7 @@ clusters and sensitivity tables all key off the strings produced here.
 The label vocabulary
 --------------------
 Tier 1, ``base_regime``, comes from the oxide/metal resistance ratio in
-:func:`calculations.interface_solver` (``R_oxide/R_metal`` > 10 gives
+:mod:`calculations.interface_solver` (``R_oxide/R_metal`` > 10 gives
 ``'oxide_limited'``, < 0.5 gives ``'metal_limited'``, otherwise
 ``'transition'``); callers pass ``'unknown'`` when no solve was done.
 

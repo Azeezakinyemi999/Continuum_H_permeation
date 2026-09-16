@@ -1,26 +1,26 @@
 """Active study configuration.
 
 This module is a SWITCH, not a config. It re-exports one module from
-`calculations/config/studies/`, and everything else in the codebase imports from
+``calculations/config/studies/``, and everything else in the codebase imports from
 here — so selecting a study is the single line below and no other file changes::
 
     calculations/*.py  ->  model_config  ->  studies/<the active one>.py
 
 To switch study: change ACTIVE_STUDY below, then restart any running kernel (the
-binding happens at import time, so `importlib.reload` on a notebook module is not
+binding happens at import time, so ``importlib.reload`` on a notebook module is not
 enough — the study's dicts are already bound into calculations.sensitivity).
 
 To add a study: copy a module in studies/ , edit it, set ACTIVE_STUDY to its
 module name. See studies/__init__.py for the full recipe and for why the studies
 live there rather than beside the notebooks.
 
-ACTIVE_STUDY is the ONLY switch. It used to be a literal `from studies.X import *`
+ACTIVE_STUDY is the ONLY switch. It used to be a literal ``from studies.X import *``
 with ACTIVE_STUDY as a separate label describing it, which let the two disagree —
 and they did: the label read one study while the import loaded another, and at one
 point BOTH studies were star-imported at once, so Python applied them in order and
 produced a hybrid. That state had Hastelloy N's material dicts with Incoloy's
 derived sensitivity parameters, and it moved L1 flux by a factor of ten while
-`ACTIVE_STUDY` still claimed Incoloy. Exactly one study is imported here now, named
+``ACTIVE_STUDY`` still claimed Incoloy. Exactly one study is imported here now, named
 by exactly one variable, so neither failure can recur.
 
 After switching, run:
@@ -75,12 +75,12 @@ REQUIRED_EXPORTS = frozenset({
 def _load_active_study(name):
     """Import one study module and copy its public names into this namespace.
 
-    `from studies.<name> import *` cannot be written with a variable — a star import
+    ``from studies.<name> import *`` cannot be written with a variable — a star import
     is a static statement whose module path is resolved at compile time. So the
     re-export is done by hand, reproducing star-import semantics exactly: every
     non-underscore name, honouring __all__ if the study defines one.
 
-    Note that includes `np`, which the studies import for their VALIDATION arrays.
+    Note that includes ``np``, which the studies import for their VALIDATION arrays.
     The old star import leaked it into this namespace too; it is kept so switching
     to this mechanism changes nothing observable.
     """

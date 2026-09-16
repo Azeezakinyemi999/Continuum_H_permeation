@@ -157,7 +157,7 @@ def get_oxide_properties_at_T(oxide_name, temperature_K, oxides=None):
     temperature_K : float
         Temperature in Kelvin
     oxides : dict, optional
-        Registry to look `oxide_name` up in. Defaults to model_config.OXIDES;
+        Registry to look ``oxide_name`` up in. Defaults to model_config.OXIDES;
         pass another study's OXIDES dict to resolve names it defines instead.
 
     Returns
@@ -208,7 +208,7 @@ def get_metal_properties_at_T(metal_name, temperature_K, metals=None):
     temperature_K : float
         Temperature in Kelvin
     metals : dict, optional
-        Registry to look `metal_name` up in. Defaults to model_config.METALS;
+        Registry to look ``metal_name`` up in. Defaults to model_config.METALS;
         pass another study's METALS dict to resolve names it defines instead.
 
     Returns

@@ -250,7 +250,7 @@ CONDITIONS = {
 
 
 def _first_key(d, what):
-    """First key of `d`, with a clear error instead of a bare StopIteration."""
+    """First key of ``d``, with a clear error instead of a bare StopIteration."""
     try:
         return next(iter(d))
     except StopIteration:
@@ -464,7 +464,7 @@ SUGGESTED_RANGES_LEVEL5L6 = {
 # -----------------------------------------------------------------------------
 
 def _sa_ranges_with(base, overrides):
-    """`base` ranges with `overrides` applied — the single preset constructor.
+    """``base`` ranges with ``overrides`` applied — the single preset constructor.
 
     Takes the base explicitly so L5 and L5L6 share one implementation instead of
     two identical helpers differing only in which ranges dict they close over.

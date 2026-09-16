@@ -166,16 +166,26 @@ def solve_steady_state_flux_L1L6(P_up, P_down, L_m, k_diss, K_eq, D_m, K_s_m):
 
     Parameters
     ----------
-    P_up, P_down : float — upstream/downstream H2 pressure [Pa]
-    L_m          : float — metal thickness [m]
-    k_diss       : float — dissociation rate constant [mol/m²/s/Pa]
-    K_eq         : float — surface equilibrium constant [Pa⁻¹]
-    D_m          : float — metal diffusivity [m²/s]
-    K_s_m        : float — metal Sieverts constant [mol/m³/Pa^0.5]
+    P_up : float
+        Upstream H2 pressure [Pa].
+    P_down : float
+        Downstream H2 pressure [Pa].
+    L_m : float
+        Metal thickness [m].
+    k_diss : float
+        Dissociation rate constant [mol/m²/s/Pa].
+    K_eq : float
+        Surface equilibrium constant [Pa⁻¹].
+    D_m : float
+        Metal diffusivity [m²/s].
+    K_s_m : float
+        Metal Sieverts constant [mol/m³/Pa^0.5].
 
     Returns
     -------
-    dict : theta, P_int, J_ss, beta, rate_limiting, resistances
+    dict
+        Keys: ``theta``, ``P_int``, ``J_ss``, ``beta``, ``rate_limiting``,
+        ``resistances``.
     """
     beta = D_m * K_s_m / L_m
 
@@ -238,16 +248,26 @@ def solve_steady_state_flux_L2aL6(P_up, P_down, k_diss, K_eq, D_ox, K_ox, L_ox):
 
     Parameters
     ----------
-    P_up, P_down : float — upstream/downstream H2 pressure [Pa]
-    k_diss       : float — dissociation rate constant [mol/m²/s/Pa]
-    K_eq         : float — surface equilibrium constant [Pa⁻¹]
-    D_ox         : float — oxide diffusivity [m²/s]
-    K_ox         : float — oxide Sieverts constant [mol/m³/Pa^0.5]
-    L_ox         : float — oxide thickness [m]
+    P_up : float
+        Upstream H2 pressure [Pa].
+    P_down : float
+        Downstream H2 pressure [Pa].
+    k_diss : float
+        Dissociation rate constant [mol/m²/s/Pa].
+    K_eq : float
+        Surface equilibrium constant [Pa⁻¹].
+    D_ox : float
+        Oxide diffusivity [m²/s].
+    K_ox : float
+        Oxide Sieverts constant [mol/m³/Pa^0.5].
+    L_ox : float
+        Oxide thickness [m].
 
     Returns
     -------
-    dict : theta, P_surf, J_ss, alpha, rate_limiting, resistances
+    dict
+        Keys: ``theta``, ``P_surf``, ``J_ss``, ``alpha``, ``rate_limiting``,
+        ``resistances``.
     """
     alpha = D_ox * K_ox / L_ox
 
@@ -300,16 +320,24 @@ def solve_steady_state_flux(P_up, P_down, L_m, oxide_name, metal_name, temperatu
 
     Parameters
     ----------
-    P_up, P_down  : float — upstream/downstream H2 pressure [Pa]
-    L_m           : float — metal thickness [m]
-    oxide_name    : str   — key in model_config.OXIDES
-    metal_name    : str   — key in model_config.METALS
-    temperature_K : float — temperature [K]
+    P_up : float
+        Upstream H2 pressure [Pa].
+    P_down : float
+        Downstream H2 pressure [Pa].
+    L_m : float
+        Metal thickness [m].
+    oxide_name : str
+        Key in model_config.OXIDES.
+    metal_name : str
+        Key in model_config.METALS.
+    temperature_K : float
+        Temperature [K].
 
     Returns
     -------
-    dict : theta, P_int, J_ss, J_surface, J_oxide, J_metal,
-           alpha, beta, rate_limiting, resistances
+    dict
+        Keys: ``theta``, ``P_int``, ``J_ss``, ``J_surface``, ``J_oxide``,
+        ``J_metal``, ``alpha``, ``beta``, ``rate_limiting``, ``resistances``.
     """
     props = get_all_properties(oxide_name, metal_name, temperature_K)
     alpha   = props['D_ox'] * props['K_ox'] / props['L_ox']
@@ -374,20 +402,32 @@ def solve_steady_state_flux_direct(P_up, P_down, L_m, k_diss, K_eq,
 
     Parameters
     ----------
-    P_up, P_down : float — upstream/downstream H2 pressure [Pa]
-    L_m          : float — metal thickness [m]
-    k_diss       : float — dissociation rate constant [mol/m²/s/Pa]
-    K_eq         : float — surface equilibrium constant [Pa⁻¹]
-    D_ox         : float — oxide diffusivity [m²/s]
-    K_ox         : float — oxide Sieverts constant [mol/m³/Pa^0.5]
-    L_ox         : float — oxide thickness [m]
-    D_m          : float — metal diffusivity [m²/s]
-    K_s_m        : float — metal Sieverts constant [mol/m³/Pa^0.5]
+    P_up : float
+        Upstream H2 pressure [Pa].
+    P_down : float
+        Downstream H2 pressure [Pa].
+    L_m : float
+        Metal thickness [m].
+    k_diss : float
+        Dissociation rate constant [mol/m²/s/Pa].
+    K_eq : float
+        Surface equilibrium constant [Pa⁻¹].
+    D_ox : float
+        Oxide diffusivity [m²/s].
+    K_ox : float
+        Oxide Sieverts constant [mol/m³/Pa^0.5].
+    L_ox : float
+        Oxide thickness [m].
+    D_m : float
+        Metal diffusivity [m²/s].
+    K_s_m : float
+        Metal Sieverts constant [mol/m³/Pa^0.5].
 
     Returns
     -------
-    dict : theta, P_int, J_ss, J_surface, J_oxide, J_metal,
-           alpha, beta, rate_limiting, resistances
+    dict
+        Keys: ``theta``, ``P_int``, ``J_ss``, ``J_surface``, ``J_oxide``,
+        ``J_metal``, ``alpha``, ``beta``, ``rate_limiting``, ``resistances``.
     """
     alpha = D_ox * K_ox / L_ox
     beta  = D_m  * K_s_m / L_m
@@ -466,23 +506,40 @@ def calculate_defective_metal_flux_L6(
 
     Parameters
     ----------
-    P_up, P_down      : float — upstream/downstream H2 pressure [Pa]
-    thickness         : float — metal thickness [m]
-    temperature       : float — temperature [K]
-    k_diss, K_eq      : float — surface kinetics parameters
-    D_ox, K_ox, L_ox  : float — oxide transport properties
-    D_lattice, K_s_m  : float — metal lattice properties
-    microstructure_params : dict — grain size, traps, etc.
-    lattice_density   : float — lattice site density [sites/m³]
-    method            : str  — D_eff averaging: 'average', 'harmonic', 'inlet', 'outlet'
-    n_points          : int  — concentration profile discretisation points
-    mode              : str  — microstructure mode: 'both', 'gb_only', 'trapping_only', 'none'
-    max_iterations    : int  — convergence iteration limit
-    tolerance         : float — relative tolerance for D_eff convergence
+    P_up : float
+        Upstream H2 pressure [Pa].
+    P_down : float
+        Downstream H2 pressure [Pa].
+    thickness : float
+        Metal thickness [m].
+    temperature : float
+        Temperature [K].
+    k_diss, K_eq : float
+        Surface kinetics parameters.
+    D_ox, K_ox, L_ox : float
+        Oxide transport properties.
+    D_lattice, K_s_m : float
+        Metal lattice properties.
+    microstructure_params : dict
+        Grain size, traps, etc.
+    lattice_density : float
+        Lattice site density [sites/m³].
+    method : str
+        D_eff averaging: 'average', 'harmonic', 'inlet', 'outlet'
+    n_points : int
+        Concentration profile discretisation points.
+    mode : str
+        Microstructure mode: 'both', 'gb_only', 'trapping_only', 'none'
+    max_iterations : int
+        Convergence iteration limit.
+    tolerance : float
+        Relative tolerance for D_eff convergence.
 
     Returns
     -------
-    dict : flux, theta_surface, P_int, D_eff, profiles, rate_limiting, resistances, convergence
+    dict
+        Keys: ``flux``, ``theta_surface``, ``P_int``, ``D_eff``, ``profiles``,
+        ``rate_limiting``, ``resistances``, ``convergence``.
     """
     if P_up < 0 or P_down < 0:
         raise ValueError("Pressures must be non-negative")
@@ -680,19 +737,31 @@ def calculate_path_flux_L6(
 
     Parameters
     ----------
-    P_up, P_down     : float      — upstream/downstream H2 pressure [Pa]
-    L_m              : float      — metal thickness [m]
-    k_diss, K_eq     : float      — oxide surface kinetics parameters
-    alpha            : float      — oxide permeance (np.inf for pinhole)
-    D_m, K_s_m       : float      — metal transport properties
-    path_type        : str        — 'intact', 'pinhole', 'crack', 'grain_boundary'
-    k_diss_metal     : float|None — metal surface dissociation rate [mol/m²/s/Pa]
-    K_eq_metal       : float|None — metal surface equilibrium constant [Pa⁻¹]
+    P_up : float
+        Upstream H2 pressure [Pa].
+    P_down : float
+        Downstream H2 pressure [Pa].
+    L_m : float
+        Metal thickness [m].
+    k_diss, K_eq : float
+        Oxide surface kinetics parameters.
+    alpha : float
+        Oxide permeance (np.inf for pinhole).
+    D_m, K_s_m : float
+        Metal transport properties.
+    path_type : str
+        'intact', 'pinhole', 'crack', 'grain_boundary'
+    k_diss_metal : float|None
+        Metal surface dissociation rate [mol/m²/s/Pa].
+    K_eq_metal : float|None
+        Metal surface equilibrium constant [Pa⁻¹].
 
     Returns
     -------
-    dict : flux, theta, P_int, path_type, alpha, beta,
-           kinetics_used, flux_balance, resistances, rate_limiting
+    dict
+        Keys: ``flux``, ``theta``, ``P_int``, ``path_type``, ``alpha``,
+        ``beta``, ``kinetics_used``, ``flux_balance``, ``resistances``,
+        ``rate_limiting``.
     """
     beta        = D_m * K_s_m / L_m
     sqrt_P_down = np.sqrt(max(P_down, 0))
@@ -856,16 +925,22 @@ def calculate_parallel_path_flux_L6(
 
     Parameters
     ----------
-    defect_area_fraction : float — area fraction with defects (0 to 1)
-    defect_type          : str  — 'pinhole', 'crack', or 'grain_boundary'
-    thickness_factor     : float — γ for crack (L_crack = γ × L_ox)
-    diffusivity_factor   : float — δ for GB (D_gb = δ × D_ox)
-    k_diss_metal, K_eq_metal : float|None — metal kinetics for pinhole
+    defect_area_fraction : float
+        Area fraction with defects (0 to 1).
+    defect_type : str
+        'pinhole', 'crack', or 'grain_boundary'
+    thickness_factor : float
+        Γ for crack (L_crack = γ × L_ox).
+    diffusivity_factor : float
+        Δ for GB (D_gb = δ × D_ox).
+    k_diss_metal, K_eq_metal : float|None
+        Metal kinetics for pinhole.
 
     Returns
     -------
-    dict : J_total, enhancement_factor, dominant_path,
-           intact_path, defect_path, alpha_intact, alpha_defect
+    dict
+        Keys: ``J_total``, ``enhancement_factor``, ``dominant_path``,
+        ``intact_path``, ``defect_path``, ``alpha_intact``, ``alpha_defect``.
     """
     if not 0 <= defect_area_fraction <= 1:
         raise ValueError(f"defect_area_fraction must be in [0, 1], got {defect_area_fraction}")
@@ -955,8 +1030,10 @@ def calculate_mixed_defect_flux_L6(
 
     Returns
     -------
-    dict : J_total, enhancement_factor, dominant_path, flux_breakdown,
-           intact_path, defect_paths, system_rate_limiting
+    dict
+        Keys: ``J_total``, ``enhancement_factor``, ``dominant_path``,
+        ``flux_breakdown``, ``intact_path``, ``defect_paths``,
+        ``system_rate_limiting``.
     """
     valid_defect_types  = ['pinhole', 'crack', 'grain_boundary']
     total_defect_fraction = 0.0
@@ -1102,26 +1179,45 @@ def calculate_path_flux_L346_v2(
 
     Parameters
     ----------
-    P_up, P_down         : float      — upstream/downstream H2 pressure [Pa]
-    L_m                  : float      — metal thickness [m]
-    temperature          : float      — temperature [K]
-    k_diss, K_eq         : float      — oxide surface kinetics
-    alpha                : float      — oxide permeance (np.inf for pinhole)
-    D_lattice, K_s_m     : float      — metal lattice properties
-    microstructure_params : dict      — grain size, traps, etc.
-    path_type            : str        — 'intact', 'pinhole', 'crack', 'grain_boundary'
-    lattice_density      : float      — lattice site density [sites/m³]
-    method               : str        — D_eff averaging method
-    n_points             : int        — profile discretisation points
-    mode                 : str        — microstructure mode
-    max_iterations       : int        — D_eff convergence limit
-    tolerance            : float      — relative tolerance for D_eff convergence
-    k_diss_metal, K_eq_metal : float|None — metal kinetics for pinhole path
+    P_up : float
+        Upstream H2 pressure [Pa].
+    P_down : float
+        Downstream H2 pressure [Pa].
+    L_m : float
+        Metal thickness [m].
+    temperature : float
+        Temperature [K].
+    k_diss, K_eq : float
+        Oxide surface kinetics.
+    alpha : float
+        Oxide permeance (np.inf for pinhole).
+    D_lattice, K_s_m : float
+        Metal lattice properties.
+    microstructure_params : dict
+        Grain size, traps, etc.
+    path_type : str
+        'intact', 'pinhole', 'crack', 'grain_boundary'
+    lattice_density : float
+        Lattice site density [sites/m³].
+    method : str
+        D_eff averaging method.
+    n_points : int
+        Profile discretisation points.
+    mode : str
+        Microstructure mode.
+    max_iterations : int
+        D_eff convergence limit.
+    tolerance : float
+        Relative tolerance for D_eff convergence.
+    k_diss_metal, K_eq_metal : float|None
+        Metal kinetics for pinhole path.
 
     Returns
     -------
-    dict : flux, theta, P_int, D_eff, modification_factor, profiles,
-           resistances, rate_limiting, convergence
+    dict
+        Keys: ``flux``, ``theta``, ``P_int``, ``D_eff``,
+        ``modification_factor``, ``profiles``, ``resistances``,
+        ``rate_limiting``, ``convergence``.
     """
     is_pinhole  = (path_type == 'pinhole' or alpha == np.inf or alpha > 1e10)
     sqrt_P_down = np.sqrt(max(P_down, 0))
@@ -1334,15 +1430,26 @@ def calculate_full_model_flux_L346_v2(
 
     Parameters
     ----------
-    P_up, P_down         : float — upstream/downstream H2 pressure [Pa]
-    L_m                  : float — metal thickness [m]
-    temperature          : float — temperature [K]
-    k_diss, K_eq         : float — oxide surface kinetics
-    D_ox, K_ox, L_ox     : float — intact oxide properties
-    D_lattice, K_s_m     : float — metal lattice properties
-    microstructure_params : dict — grain size, traps, etc.
-    defect_config        : dict — oxide defect configuration (see below)
-    k_diss_metal, K_eq_metal : float|None — metal surface kinetics for pinhole
+    P_up : float
+        Upstream H2 pressure [Pa].
+    P_down : float
+        Downstream H2 pressure [Pa].
+    L_m : float
+        Metal thickness [m].
+    temperature : float
+        Temperature [K].
+    k_diss, K_eq : float
+        Oxide surface kinetics.
+    D_ox, K_ox, L_ox : float
+        Intact oxide properties.
+    D_lattice, K_s_m : float
+        Metal lattice properties.
+    microstructure_params : dict
+        Grain size, traps, etc.
+    defect_config : dict
+        Oxide defect configuration (see below).
+    k_diss_metal, K_eq_metal : float|None
+        Metal surface kinetics for pinhole.
 
     defect_config example
     ---------------------
@@ -1354,8 +1461,10 @@ def calculate_full_model_flux_L346_v2(
 
     Returns
     -------
-    dict : J_total, enhancement_vs_intact, dominant_path, flux_breakdown,
-           D_eff_avg, system_rate_limiting, alpha_intact
+    dict
+        Keys: ``J_total``, ``enhancement_vs_intact``, ``dominant_path``,
+        ``flux_breakdown``, ``D_eff_avg``, ``system_rate_limiting``,
+        ``alpha_intact``.
     """
     valid_defect_types    = ['pinhole', 'crack', 'grain_boundary']
     total_defect_fraction = 0.0

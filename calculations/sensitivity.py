@@ -73,16 +73,16 @@ LOG_METRICS_L5       = ('flux', 'permeability', 'PRF')   # PRF spans decades too
 
 
 def presets_without(presets, *drop):
-    """Copy of `presets` with the named parameters removed from every range dict.
+    """Copy of ``presets`` with the named parameters removed from every range dict.
 
     Used to take a parameter OUT of the sampled set so it can be pinned via
     run_global_lhs_scan(fixed_params=...) instead. The motivating case is
-    `temperature`: it enters D, K_s, D_ox and K_ox exponentially over 573-1273 K
+    ``temperature``: it enters D, K_s, D_ox and K_ox exponentially over 573-1273 K
     and so monopolises the variance of log10(flux) — a dummy-parameter test on the
     varying-T clusters put every other parameter at or below the noise floor
     (delta ~0.09), while temperature scored ~0.5. Pinning it lets the remaining
-    parameters compete; in a T-banded probe `H_sol_ox` then reached 5x the floor in
-    the oxide regime and `f_crack` surfaced in the defect regime.
+    parameters compete; in a T-banded probe ``H_sol_ox`` then reached 5x the floor in
+    the oxide regime and ``f_crack`` surfaced in the defect regime.
 
     >>> presets_without(REGIME_PRESETS_L5, 'temperature')
     """
@@ -91,7 +91,7 @@ def presets_without(presets, *drop):
 
 
 def _preset_overrides(preset, base):
-    """Which entries of `preset` actually differ from its base ranges."""
+    """Which entries of ``preset`` actually differ from its base ranges."""
     return {k: list(v) for k, v in preset.items()
             if k in base and list(v) != list(base[k])}
 
@@ -525,7 +525,7 @@ def assign_regime(frac_surface, frac_oxide, frac_metal, rule='argmax', threshold
     rule : {'argmax', 'threshold'}
         'argmax'     : regime = whichever fraction is largest (default; always a
                        single label, no 'mixed' bucket).
-        'threshold'  : regime = the largest fraction only if it exceeds `threshold`,
+        'threshold'  : regime = the largest fraction only if it exceeds ``threshold``,
                        otherwise 'mixed' (matches the notebook's dominant-step rule).
     threshold : float
         Dominance cutoff used only when rule='threshold'.
@@ -999,14 +999,14 @@ def size_draws_for_target(presets, regimes, target_cluster=TARGET_CLUSTER_SIZE,
     """
     Choose a draw count per regime by MEASURING each preset's yield first.
 
-    The draw count you want is `target / yield`, but the yield is only knowable by
+    The draw count you want is ``target / yield``, but the yield is only knowable by
     running the preset -- so it used to be measured once by hand and pasted into the
     config as MEASURED_YIELDS_*. That cache goes stale silently: edit any range or
     preset block and the numbers still look authoritative while the clusters come
     out unbalanced, which makes a cross-regime comparison partly a comparison of
     estimator noise rather than of sensitivity.
 
-    This breaks the circularity with a cheap probe instead. Cost is `probe_n` draws
+    This breaks the circularity with a cheap probe instead. Cost is ``probe_n`` draws
     per regime against the thousands the real scan needs -- roughly 15% -- and it is
     correct for whatever study, material, temperature and preset are active.
 
@@ -1299,7 +1299,7 @@ def plot_givendata_results(results, regime, output_metric, param_names, top_n=15
 
 def _column_normalize(mat):
     """
-    Divide every column of `mat` by its own maximum, so each column peaks at 1.0.
+    Divide every column of ``mat`` by its own maximum, so each column peaks at 1.0.
 
     Columns whose max is non-finite or <= 0 are left untouched — max-division is
     meaningless there (relevant for 'S1_givendata', which can come out slightly
@@ -1318,13 +1318,13 @@ def regime_comparison_matrix(givendata_results, output_metric, param_names,
                              index='delta', top_union=12, normalize=None):
     """
     Build a (parameter × regime) matrix of a chosen Route-B index for one metric,
-    restricted to the union of each regime's top-`top_union` parameters.
+    restricted to the union of each regime's top-``top_union`` parameters.
 
     index : 'delta' | 'pawn_median' | 'S1_givendata'
 
     normalize : None (raw values) | 'column' (divide each column by its own max,
         so every regime peaks at 1.0 and rows read as *relative* importance
-        within that regime). The top-`top_union` selection always uses the raw
+        within that regime). The top-``top_union`` selection always uses the raw
         values, so the same parameters appear either way; only the row ordering
         (by row mean) shifts, since it is computed on whatever is returned.
 
@@ -1358,7 +1358,7 @@ def plot_regime_comparison_heatmap(givendata_results, output_metric, param_names
 
     normalize : 'column' (default) colours each cell by its column-normalized
         value, so every regime spans a full 0->1 scale and within-regime contrast
-        is visible. Without this, the dominant parameter (usually `temperature`)
+        is visible. Without this, the dominant parameter (usually ``temperature``)
         saturates the single global colour scale and everything else reads white.
         Pass None for the raw, un-normalized heatmap.
     show_raw : when normalizing, also print the raw value in a small box in each
@@ -1537,12 +1537,12 @@ def parallel_coordinates_sensitivity(matrix_df, regimes=('metal', 'oxide', 'surf
                                      top_n=None):
     """
     Sensitivity-shift PCP (view C): one line per PARAMETER, one axis per regime,
-    axis value = the index in `matrix_df` (e.g. δ from compare_delta_flux.csv).
+    axis value = the index in ``matrix_df`` (e.g. δ from compare_delta_flux.csv).
 
     A leftmost categorical axis labels each line with its parameter name (sorted by
     mean importance, highest at top) so individual lines are identifiable —
     go.Parcoords has no per-line legend/hover. Line colour = mean importance.
-    `top_n` keeps only the most important N parameters to reduce clutter.
+    ``top_n`` keeps only the most important N parameters to reduce clutter.
     """
     import plotly.graph_objects as go
 
