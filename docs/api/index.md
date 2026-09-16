@@ -1,7 +1,7 @@
 # API Reference
 
 Ten modules, no classes. Ordered by model Level rather than alphabetically, to
-match the hierarchy described in {doc}`../README`.
+match the hierarchy described in {doc}`../getting-started`.
 
 ```{toctree}
 :maxdepth: 1

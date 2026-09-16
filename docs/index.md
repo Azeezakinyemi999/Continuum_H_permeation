@@ -16,7 +16,7 @@ invalidate it.
   in order. They build up one physical effect at a time.
 - **Looking up a parameter or a returned quantity** — {doc}`PARAMETERS`
   and {doc}`OUTPUTS`.
-- **Running an analysis** — the sensitivity-analysis how-to (in progress) for the
+- **Running an analysis** — {doc}`how-to/sensitivity-analysis` for the
   regime-stratified sensitivity workflow, {doc}`how-to/switch-study` to change
   material system.
 - **Reading the code** — {doc}`api/index`, generated from the
@@ -42,6 +42,7 @@ theory/level3-defective-oxide
 theory/level4-microstructure
 theory/level5-full-system
 theory/level6-surface-kinetics
+theory/equations
 ```
 
 ```{toctree}
@@ -49,6 +50,7 @@ theory/level6-surface-kinetics
 :caption: How-to
 
 how-to/switch-study
+how-to/sensitivity-analysis
 CONTAINER
 ```
 
@@ -67,14 +69,18 @@ api/index
 
 TRAPPING_VALIDATION
 PACKAGING_1.0.0
+references
 ```
 
 ```{note}
-This documentation is mid-rewrite. The theory chapters and how-to guides are
-being authored from the project's earlier design notes, with every claim checked
-against the current code; the pages still carrying their original uppercase
-filenames are the ones not yet absorbed. Source material awaiting absorption sits
-in `docs/_source_material/` and is excluded from the build.
+The theory chapters and how-to guides have been authored from the project's
+earlier design notes, with every factual claim re-checked against the current
+code. That absorption is complete — the original notes have been retired.
+
+The pages still carrying uppercase filenames (`PARAMETERS`, `OUTPUTS`,
+`STEADY_STATE`, `TRAPPING_VALIDATION`, `PACKAGING_1.0.0`, `CONTAINER`) are
+generated or release-record documents that remain at the repository root so they
+stay readable on GitHub, and are included here rather than rewritten.
 ```
 
 ## How this documentation is kept honest
