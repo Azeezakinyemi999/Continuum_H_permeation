@@ -38,6 +38,7 @@ theory/equilibrium-models
 STEADY_STATE
 theory/level1-metal
 theory/level2-oxide
+theory/level3-defective-oxide
 ```
 
 ```{toctree}
