@@ -104,9 +104,17 @@ def main() -> int:
         txt = page.read_text()
         rel = page.relative_to(ROOT)
 
+        # A page may deliberately name something that does not exist — e.g. to
+        # warn that an inherited design note referenced a phantom function.
+        # Declare those with an HTML comment so the check stays strict elsewhere:
+        #     <!-- verify-docs: allow calculate_full_system_flux -->
+        allowed = set()
+        for decl in re.findall(r'<!--\s*verify-docs:\s*allow\s+([^>]+?)\s*-->', txt):
+            allowed |= {n.strip() for n in decl.replace(",", " ").split()}
+
         called = set(fn_ref.findall(txt)) | set(proj_ref.findall(txt))
         for name in sorted(called):
-            if name in IGNORE or name in funcs:
+            if name in IGNORE or name in funcs or name in allowed:
                 continue
             findings.append(f"{rel}: `{name}()` does not exist")
 
