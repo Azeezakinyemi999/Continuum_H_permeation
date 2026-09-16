@@ -37,18 +37,17 @@ CONTAINER
 PACKAGING_1.0.0
 ```
 
-## Known gaps
+## Scope and conventions
 
-- Links from the included pages into the source tree (for example
-  `calculations/defective_metal.py#L280`) are GitHub-relative and do not resolve
-  in this HTML build. They are suppressed via `suppress_warnings` in `conf.py`;
-  the fix is to rewrite them as absolute `github.com` URLs, which work in both
-  renderers.
-- The notebooks (`Application/*.ipynb` and the three study directories) and the
-  LaTeX derivation `latex/Model_Equations.tex` are intentionally not included
-  here.
-- `README.md` and Appendix C of `TRAPPING_VALIDATION.md` still reference the
-  removed `data/` package; each carries a warning banner until they are rewritten.
-- The docstring section headers in `oxide_permeation`, `defective_metal`,
-  `interface_solver` and `parallel_oxide_defect_paths` use a non-standard
-  `Parameters:` form; those four pages are pending cleanup.
+- **This build is strict.** `docs/Makefile` passes `-W --keep-going`, so a
+  malformed docstring section or a repo-relative link to a source file fails it.
+  Links from these pages into the source tree are absolute `github.com` URLs on
+  the `main` branch, which resolve both here and on GitHub. Keep them that way.
+- **Links point at `main`.** Work merged to `main` after a page was written will
+  be reflected; work still on a feature branch will not.
+- Not included by design: the notebooks (`Application/*.ipynb` and the three
+  study directories, whose outputs are committed and large) and the LaTeX
+  derivation `latex/Model_Equations.tex`.
+- Partially documented: `surface_kinetics` writes some parameter blocks in a
+  compressed one-line form that napoleon reads as a type rather than a
+  description, so those entries render less well than the rest.
