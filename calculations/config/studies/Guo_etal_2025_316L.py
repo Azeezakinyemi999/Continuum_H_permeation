@@ -656,15 +656,19 @@ def apply_style(ax, x, y, style_key, label=None, log=False):
 # =============================================================================
 
 def get_surface_kinetics_from_config(material_key, temperature_K, material_dict):
-    """
+    r"""
     Compute temperature-dependent surface kinetics from a METALS or OXIDES entry.
 
     Uses the 'surface_kinetics' sub-dict within the material entry.
-    Arrhenius form::
+    Arrhenius form:
 
-        k_diss(T) = k_diss_ref × exp(-E_diss/R × (1/T - 1/T_ref))
-        K_eq(T)   = K_eq_ref   × exp(-H_eq/R   × (1/T - 1/T_ref))
-        k_recomb  = k_diss / K_eq
+    .. math::
+
+        k_{diss}(T) &= k_{diss,ref}\exp\!\left[\frac{-E_{diss}}{R}
+            \left(\frac{1}{T} - \frac{1}{T_{ref}}\right)\right] \\
+        K_{eq}(T) &= K_{eq,ref}\exp\!\left[\frac{-H_{eq}}{R}
+            \left(\frac{1}{T} - \frac{1}{T_{ref}}\right)\right] \\
+        k_{recomb} &= \frac{k_{diss}}{K_{eq}}
 
     Parameters
     ----------

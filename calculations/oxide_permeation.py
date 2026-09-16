@@ -58,13 +58,18 @@ def molecular_diffusion_flux(D_ox, K_ox, thickness, P_up, P_down):
 
 
 def calculate_oxide_resistance(D_ox, K_ox, thickness):
-    """
+    r"""
     Calculate permeation resistance of oxide layer.
     
     Resistance is defined such that:
     Flux = ΔP / Resistance
     
-    For molecular diffusion: R = thickness / (D_ox * K_ox)
+    For molecular (Henry's-law) transport the resistance is independent of
+    pressure:
+
+    .. math::
+
+        R_{ox} = \frac{L_{ox}}{D_{ox} K_{ox}}
     
     Parameters
     ----------
@@ -94,10 +99,11 @@ def calculate_oxide_resistance(D_ox, K_ox, thickness):
 
 
 def calculate_metal_resistance(D_metal, K_s_metal, thickness, P_interface):
-    """
+    r"""
     Calculate permeation resistance of metal layer.
     
-    Metal resistance depends on interface pressure because of √P solubility!
+    The metal resistance depends on the interface pressure, because Sieverts'
+    law makes the flux law nonlinear in :math:`P`.
     This is a KEY DIFFERENCE from oxide resistance.
     
     Parameters
@@ -122,7 +128,9 @@ def calculate_metal_resistance(D_metal, K_s_metal, thickness, P_interface):
     J = (D * K_s / thickness) * (√P_up - √P_down)
     
     Linearizing around P_interface:
-    R_metal ≈ (thickness * 2 * √P_interface) / (D * K_s )
+    .. math::
+
+        R_{metal} \approx \frac{2 L \sqrt{P_{int}}}{D K_s}
     
     This is an approximation valid for small ΔP across metal.
     """

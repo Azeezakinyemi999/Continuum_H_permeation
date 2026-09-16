@@ -80,6 +80,42 @@ def config_names() -> set[str]:
     return names
 
 
+
+def docstring_latex_check() -> list[str]:
+    """Catch LaTeX corrupted by a non-raw docstring.
+
+    In a normal (non-raw) string literal Python interprets `\f` as a form feed
+    and `\r` as a carriage return, so `\frac` and `\right` are silently
+    mangled before Sphinx ever sees them. The build may still succeed and the
+    math simply renders wrong, which makes this invisible without a check.
+
+    Any docstring carrying LaTeX must use a raw string literal.
+    """
+    BAD = {"\x0c": "form feed (from \\frac or \\f...)",
+           "\r": "carriage return (from \\right or \\r...)",
+           "\x08": "backspace (from \\b...)",
+           "\x0b": "vertical tab (from \\v...)"}
+    findings = []
+    for path in sorted((ROOT / "calculations").rglob("*.py")):
+        rel = path.relative_to(ROOT)
+        tree = ast.parse(path.read_text())
+        for node in ast.walk(tree):
+            if not isinstance(node, (ast.Module, ast.FunctionDef,
+                                     ast.AsyncFunctionDef, ast.ClassDef)):
+                continue
+            doc = ast.get_docstring(node, clean=False)
+            if not doc:
+                continue
+            name = getattr(node, "name", "<module>")
+            for ch, why in BAD.items():
+                if ch in doc:
+                    findings.append(
+                        f"{rel}: docstring of {name} contains a {why} — "
+                        f"the LaTeX is mangled - make the docstring raw")
+                    break
+    return findings
+
+
 def doc_pages() -> list[pathlib.Path]:
     skip = {"_build", "_tools", "_static", ".mplcache", "_source_material"}
     return [p for p in sorted(DOCS.rglob("*.md"))
@@ -89,7 +125,7 @@ def doc_pages() -> list[pathlib.Path]:
 def main() -> int:
     funcs, mods = real_names()
     cfg = config_names()
-    findings: list[str] = []
+    findings: list[str] = docstring_latex_check()
 
     fn_ref  = re.compile(r'`([a-z_][a-z0-9_]{3,})\(')          # `name(
     mod_ref = re.compile(r'`(calculations\.[a-z_][a-z0-9_.]*)`')

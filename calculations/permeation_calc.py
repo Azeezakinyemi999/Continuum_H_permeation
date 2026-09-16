@@ -2,7 +2,7 @@ import numpy as np
 from calculations.classify_regime import classify_regime_level14
 
 def sieverts_concentration(K_s, pressure):
-    """
+    r"""
     Calculate hydrogen concentration at metal surface using Sieverts' law.
     
     Parameters
@@ -19,7 +19,12 @@ def sieverts_concentration(K_s, pressure):
     
     Notes
     -----
-    Sieverts' law: C = K_s * sqrt(P)
+    Sieverts' law:
+
+    .. math::
+
+        C = K_s \sqrt{P}
+
     Valid for molecular hydrogen dissociating at surface
     """
     if pressure < 0:
@@ -30,7 +35,7 @@ def sieverts_concentration(K_s, pressure):
 
 
 def fick_flux(D, C_up, C_down, thickness):
-    """
+    r"""
     Calculate diffusive flux using Fick's first law..
     
     Parameters
@@ -51,8 +56,15 @@ def fick_flux(D, C_up, C_down, thickness):
     
     Notes
     -----
-    Fick's first law: J = -D * dC/dx
-    For steady-state through flat plate: J = D * (C_up - C_down) / thickness
+    Fick's first law, and its steady-state form through a flat plate where the
+    concentration gradient is constant:
+
+    .. math::
+
+        J = -D\frac{dC}{dx}
+        \qquad\Longrightarrow\qquad
+        J = \frac{D\,(C_{up} - C_{down})}{L}
+
     Positive flux is from upstream to downstream
     """
     if thickness <= 0:
@@ -145,7 +157,7 @@ def calculate_defective_metal_flux(D_lattice, K_s, thickness, P_up, P_down,
                                     temperature, microstructure_params,
                                     lattice_density,
                                     method='average', n_points=10, mode='both'):
-    """
+    r"""
     Calculate hydrogen permeation flux through metal with microstructure effects.
     
     This is the Level 4 equivalent of calculate_simple_metal_flux().
@@ -216,8 +228,12 @@ def calculate_defective_metal_flux(D_lattice, K_s, thickness, P_up, P_down,
     ------
     For defective metal, the effective diffusivity combines:
     
-    1. GB enhancement: D_gb_enhanced = (1-f_gb)×D_bulk + f_gb×D_gb
-       where D_gb = α×D_bulk and α is temperature-dependent
+    1. Grain-boundary enhancement, as parallel fast paths:
+
+       .. math::
+
+           D_{gb\text{-}enh} = (1-f_{gb})D_{bulk} + f_{gb}D_{gb},
+           \qquad D_{gb} = \alpha(T)\,D_{bulk}
     
     2. Trapping reduction: D_eff = D_gb_enhanced/(1 + Σθᵢ)
        where θᵢ is trap occupancy (concentration-dependent)

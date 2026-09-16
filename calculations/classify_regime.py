@@ -174,7 +174,7 @@ def classify_regime_level3(base_regime, flux_intact_contribution, flux_defect_co
 
 
 def classify_regime_level4_metal(modification_factor, threshold_traps=0.5):
-    """Decide whether traps or the lattice control diffusion through the metal.
+    r"""Decide whether traps or the lattice control diffusion through the metal.
 
     Two microstructural effects pull in opposite directions inside the metal.
     Traps — dislocations, grain boundaries, vacancies, carbides — hold hydrogen
@@ -189,7 +189,7 @@ def classify_regime_level4_metal(modification_factor, threshold_traps=0.5):
     Parameters
     ----------
     modification_factor : float
-        ``D_eff / D_lattice`` [-], as produced by
+        :math:`D_{eff}/D_{lattice}` [-], as produced by
         :mod:`calculations.defective_metal` and carried through the interface
         solve. Below 1 means trapping dominates, above 1 means grain-boundary
         enhancement dominates, 1 means they cancel or neither is active.

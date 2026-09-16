@@ -41,10 +41,19 @@ def calculate_metal_flux_sieverts(D_metal, K_s_metal, thickness, P_interface, P_
 
 
 def flux_balance_equation(P_interface, P_upstream, P_downstream, oxide_props, metal_props):
-    """
+    r"""
     Flux balance equation that equals zero when fluxes match.
     
-    This is the key equation: flux_oxide - flux_metal = 0
+    The interface pressure is the root of
+
+    .. math::
+
+        f(P_{int}) = J_{oxide}(P_{int}) - J_{metal}(P_{int}) = 0
+
+    which is guaranteed to have exactly one solution in
+    :math:`[P_{down}, P_{up}]`: :math:`f > 0` at the lower bound (all the
+    driving force across the oxide, none across the metal) and :math:`f < 0` at
+    the upper bound, and :math:`f` is continuous and monotonic between them.
     
     Parameters
     ----------

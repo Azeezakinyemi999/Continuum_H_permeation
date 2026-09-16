@@ -89,10 +89,14 @@ def compute_permeances(props, L_m):
 
 
 def g_theta(theta, K_eq):
-    """
+    r"""
     Surface isotherm: converts coverage θ to effective √P at the surface.
 
-        g(θ) = θ / ((1 - θ) × √K_eq)
+    .. math::
+
+        g(\theta) = \frac{\theta}{(1-\theta)\sqrt{K_{eq}}}
+              = \sqrt{P_{virtual}(\theta)}
+
     """
     if theta >= 1.0:
         return np.inf
@@ -100,20 +104,27 @@ def g_theta(theta, K_eq):
 
 
 def sqrt_P_int_from_theta(theta, alpha, beta, K_eq, P_down):
-    """
+    r"""
     Analytical oxide-metal interface pressure from flux balance (L2+L6).
 
-        √P_int = (α × g(θ) + β × √P_down) / (α + β)
+    .. math::
+
+        \sqrt{P_{int}} = \frac{\alpha\,g(\theta)
+                       + \beta\sqrt{P_{down}}}{\alpha + \beta}
+
     """
     g = g_theta(theta, K_eq)
     return (alpha * g + beta * np.sqrt(P_down)) / (alpha + beta)
 
 
 def smooth_surface_resistance(k_diss_eff, P_up, theta, eps_theta=1e-12, eps_rate=1e-60):
-    """
+    r"""
     Smooth surface resistance with no hard cutoff.
 
-        R_surface ~ 1 / (k_diss × P_up × (1 - θ)²)
+    .. math::
+
+        R_{surface} \sim \frac{1}{k_{diss} P_{up} (1-\theta)^2}
+
     """
     theta_clamped = min(max(theta, 0.0), 1.0 - eps_theta)
     vacant = max(1.0 - theta_clamped, eps_theta)
@@ -921,7 +932,9 @@ def calculate_parallel_path_flux_L6(
     """
     Area-weighted flux for one intact + one defect path (L3+L6).
 
-        J_total = (1 - fraction_defect) × J_intact + fraction_defect × J_defect
+    .. math::
+
+        J_{total} = (1 - f_{defect})J_{intact} + f_{defect}J_{defect}
 
     Parameters
     ----------
@@ -1009,10 +1022,12 @@ def calculate_mixed_defect_flux_L6(
     k_diss_metal=None,
     K_eq_metal=None,
 ):
-    """
+    r"""
     Flux through oxide with multiple simultaneous defect types (L3+L6).
 
-        J_total = fraction_intact × J_intact + Σᵢ (fraction_i × J_i)
+    .. math::
+
+        J_{total} = f_{intact}J_{intact} + \sum_i f_i J_i
 
     Parameters
     ----------
@@ -1423,10 +1438,12 @@ def calculate_full_model_flux_L346_v2(
     k_diss_metal=None,
     K_eq_metal=None,
 ):
-    """
+    r"""
     Full L3+L4+L6 model: defective oxide + defective metal + surface kinetics.
 
-        J_total = fraction_intact × J_intact + Σᵢ (fraction_i × J_i)
+    .. math::
+
+        J_{total} = f_{intact}J_{intact} + \sum_i f_i J_i
 
     Parameters
     ----------

@@ -1,4 +1,4 @@
-"""
+r"""
 Defective Metal Model for Hydrogen Diffusion (Level 4)
 
 This module implements microstructure effects on hydrogen diffusion in polycrystalline
@@ -33,23 +33,27 @@ The effective diffusivity combines both effects:
     D_eff = [(1-f_gb)×D_bulk + f_gb×α×D_bulk] / (1 + Σ(N_T,i × K_i / N_L))
 
 where:
-    f_gb = 3δ/d = grain boundary volume fraction
-    α = gb_enhancement_factor(T) = D_gb/D_bulk
-    N_T,i = trap density for trap type i [m⁻³]
-    K_i = exp(E_b,i/RT) = equilibrium constant for trap i
-    N_L = lattice site density [m⁻³]
+    - :math:`f_{gb} = 3\delta/d` — grain boundary volume fraction
+    - :math:`\alpha(T) = D_{gb}/D_{bulk}` — enhancement factor
+    - :math:`N_{T,i}` — trap density for trap type i [m⁻³]
+    - :math:`K_i = \exp(E_{b,i}/RT)` — equilibrium constant for trap i
+    - :math:`N_L` — lattice site density [m⁻³]
     
 Oriani equilibrium (correct form):
     The trapping term in the denominator is:
-    Σ(N_T,i × K_i / N_L) = ratio of trapped to mobile hydrogen
+    :math:`\sum_i N_{T,i}K_i/N_L` is the ratio of trapped to mobile hydrogen.
     
     Critical trap density (where D_eff = D/2):
-    N_T* = N_L / K
+    .. math::
+
+        N_T^{*} = \frac{N_L}{K}
 
 Grain boundary diffusion enhancement:
-    D_gb/D_bulk = A × exp[(Q_bulk - Q_gb)/RT]
+    .. math::
+
+        \frac{D_{gb}}{D_{bulk}} = A\exp\!\left[\frac{Q_{bulk}-Q_{gb}}{RT}\right]
     
-where typically Q_gb ≈ 0.6×Q_bulk
+where typically :math:`Q_{gb} \approx 0.6\,Q_{bulk}`
 
 Module Structure
 ----------------
@@ -125,7 +129,7 @@ References
 
 def trap_occupancy(temperature, binding_energy, trap_density, lattice_density, 
                    lattice_concentration):
-    """
+    r"""
     Calculate hydrogen trap occupancy fraction using Oriani local equilibrium model.
     
     Theory
@@ -134,24 +138,38 @@ def trap_occupancy(temperature, binding_energy, trap_density, lattice_density,
     trap sites follows Fermi-Dirac statistics. For a single trap type, the 
     equilibrium is described by:
     
-        K = exp(E_b/RT) = θ_T/(1-θ_T) × (1-θ_L)/θ_L
+    .. math::
+
+        K = \exp\!\left(\frac{E_b}{RT}\right)
+          = \frac{\theta_T}{1-\theta_T}\cdot\frac{1-\theta_L}{\theta_L}
     
     where θ_T and θ_L are trap and lattice site occupancies respectively.
     
     For dilute solutions (θ_L << 1), this simplifies to:
-        θ_T = K × (C_L/N_L) / [1 + K × (C_L/N_L)]
+    .. math::
+
+        \theta_T = \frac{K\,(C_L/N_L)}{1 + K\,(C_L/N_L)}
     
     Mathematical Derivation
     -----------------------
     Starting from chemical potential equilibrium:
-        μ_T = μ_L
-        μ°_T + RT×ln(θ_T/(1-θ_T)) = μ°_L + RT×ln(θ_L/(1-θ_L))
+    .. math::
+
+        \mu_T &= \mu_L \\
+        \mu^{\circ}_T + RT\ln\!\frac{\theta_T}{1-\theta_T}
+            &= \mu^{\circ}_L + RT\ln\!\frac{\theta_L}{1-\theta_L}
     
-    With E_b = μ°_L - μ°_T (binding energy), we get:
-        θ_T/(1-θ_T) = exp(E_b/RT) × θ_L/(1-θ_L)
+    With :math:`E_b = \mu^{\circ}_L - \mu^{\circ}_T` (the binding energy):
+    .. math::
+
+        \frac{\theta_T}{1-\theta_T}
+            = \exp\!\left(\frac{E_b}{RT}\right)\frac{\theta_L}{1-\theta_L}
     
     For dilute lattice (θ_L << 1):
-        θ_T = exp(E_b/RT) × (C_L/N_L) / [1 + exp(E_b/RT) × (C_L/N_L)]
+    .. math::
+
+        \theta_T = \frac{\exp(E_b/RT)\,(C_L/N_L)}
+                        {1 + \exp(E_b/RT)\,(C_L/N_L)}
     
     Parameters
     ----------
@@ -279,7 +297,7 @@ def trap_occupancy(temperature, binding_energy, trap_density, lattice_density,
     }
 
 def grain_boundary_density(grain_size, gb_thickness=0.5e-9, sites_per_area=1e19, grain_shape='equiaxed'):
-    """
+    r"""
     Calculate grain boundary trap density from microstructure parameters.
     
     Theory
@@ -290,12 +308,16 @@ def grain_boundary_density(grain_size, gb_thickness=0.5e-9, sites_per_area=1e19,
     volumetric trap density.
     
     For randomly oriented equiaxed grains, stereology gives:
-        S_v = 3/d  (surface area per volume)
+    .. math::
+
+        S_v = \frac{3}{d}\quad\text{(boundary area per unit volume)}
     
     where d is the mean linear intercept (approximately the grain diameter).
     
     The volumetric trap density is then:
-        N_gb = S_v × ρ_gb = (3/d) × ρ_gb
+    .. math::
+
+        N_{gb} = S_v\,\rho_{gb} = \frac{3}{d}\rho_{gb}
     
     where ρ_gb is the areal density of trap sites on the GB.
     
@@ -307,7 +329,9 @@ def grain_boundary_density(grain_size, gb_thickness=0.5e-9, sites_per_area=1e19,
     3. Correction for shared boundaries: S_v = 3/d (factor varies 2-3)
     
     Volume fraction of GB:
-        f_gb = S_v × δ = (3δ)/d
+    .. math::
+
+        f_{gb} = S_v\,\delta = \frac{3\delta}{d}
     
     where δ is the GB thickness.
     
@@ -469,7 +493,7 @@ def grain_boundary_density(grain_size, gb_thickness=0.5e-9, sites_per_area=1e19,
     }
 
 def gb_enhancement_factor(temperature, temperature_unit='K', gb_type='HAGB', data_source='default'):
-    """
+    r"""
     Calculate grain boundary diffusion enhancement factor D_gb/D_bulk.
     
     Theory
@@ -479,7 +503,9 @@ def gb_enhancement_factor(temperature, temperature_unit='K', gb_type='HAGB', dat
     thermal activation makes bulk diffusion more competitive.
     
     The temperature dependence follows:
-        D_gb/D_bulk = A × exp[(Q_bulk - Q_gb)/(RT)]
+        .. math::
+
+        \frac{D_{gb}}{D_{bulk}} = A\exp\!\left[\frac{Q_{bulk}-Q_{gb}}{RT}\right]
     
     where typically Q_gb ≈ 0.6 × Q_bulk, meaning grain boundary diffusion has
     lower activation energy. At low homologous temperatures (T/T_m < 0.5), GB
@@ -496,7 +522,9 @@ def gb_enhancement_factor(temperature, temperature_unit='K', gb_type='HAGB', dat
         D_gb/D_bulk = (D₀_gb/D₀_bulk) × exp[(Q_bulk - Q_gb)/RT]
     
     With Q_gb ≈ 0.6 × Q_bulk (empirical):
-        D_gb/D_bulk ≈ A × exp[0.4 × Q_bulk/RT]
+        .. math::
+
+        \frac{D_{gb}}{D_{bulk}} \approx A\exp\!\left[\frac{0.4\,Q_{bulk}}{RT}\right]
     
     This predicts log-linear behavior in 1/T space.
     
@@ -679,7 +707,7 @@ def gb_enhancement_factor(temperature, temperature_unit='K', gb_type='HAGB', dat
     }
 
 def vacancy_concentration(temperature, material='Incoloy800', condition='equilibrium', quench_temperature=None):
-    """
+    r"""
     Calculate thermal vacancy concentration in metals.
     
     Theory
@@ -688,7 +716,10 @@ def vacancy_concentration(temperature, material='Incoloy800', condition='equilib
     balance between formation enthalpy (energy cost) and configurational entropy
     (disorder gain). The equilibrium concentration follows:
     
-        C_v = N × exp(-G_f^v / kT) ≈ N × exp(-E_f^v / RT)
+        .. math::
+
+        C_v = N\exp\!\left(\frac{-G_f^v}{kT}\right)
+            \approx N\exp\!\left(\frac{-E_f^v}{RT}\right)
     
     where G_f^v is the Gibbs free energy of formation. At high temperatures,
     the entropy term T×S_f^v becomes significant, but for most metals below
@@ -703,7 +734,10 @@ def vacancy_concentration(temperature, material='Incoloy800', condition='equilib
         S_config = k_B × ln[N!/(N_v!(N-N_v)!)]
     
     Using Stirling's approximation and ∂G/∂N_v = 0:
-        N_v/N = exp(-G_f^v/kT) ≈ exp(-E_f^v/RT)
+        .. math::
+
+        \frac{N_v}{N} = \exp\!\left(\frac{-G_f^v}{kT}\right)
+            \approx \exp\!\left(\frac{-E_f^v}{RT}\right)
     
     For FCC metals, E_f^v ≈ 10-15 × k_B×T_melt (empirical rule).
     
@@ -919,7 +953,7 @@ def vacancy_concentration(temperature, material='Incoloy800', condition='equilib
 
 def calculate_effective_diffusivity_trapping(D_lattice, temperature, trap_list, 
                                             lattice_concentration, lattice_density):
-    """
+    r"""
     Calculate effective hydrogen diffusivity reduced by trapping effects.
     
     Theory
@@ -928,7 +962,9 @@ def calculate_effective_diffusivity_trapping(D_lattice, temperature, trap_list,
     reducing the effective diffusion coefficient. Using Oriani's local equilibrium
     assumption, the effective diffusivity is:
     
-        D_eff = D_lattice / (1 + Σ(N_T,i × K_i / N_L))
+        .. math::
+
+        D_{eff} = \frac{D_{lattice}}{1 + \sum_i N_{T,i}K_i/N_L}
     
     where:
         N_T,i = trap density for trap type i [m⁻³]
@@ -1192,7 +1228,7 @@ def calculate_effective_diffusivity_trapping(D_lattice, temperature, trap_list,
 def calculate_gb_enhanced_diffusivity(D_bulk, temperature, grain_size, 
                                      gb_thickness=0.5e-9, gb_type='HAGB', 
                                      model='parallel'):
-    """
+    r"""
     Calculate effective diffusivity with grain boundary fast diffusion paths.
     
     Theory
@@ -1202,23 +1238,34 @@ def calculate_gb_enhanced_diffusivity(D_bulk, temperature, grain_size,
     enhancement factor. Two models are implemented:
     
     1. Parallel Path Model (simple):
-       D_eff = f_bulk×D_bulk + f_gb×D_gb
+
+       .. math::
+
+           D_{eff} = f_{bulk}D_{bulk} + f_{gb}D_{gb}
     
     2. Hart Equation (accounts for GB connectivity):
        More accurate for higher GB fractions (f_gb > 0.01)
     
     The GB volume fraction is:
-       f_gb = 3δ/d
+
+    .. math::
+
+        f_{gb} = \frac{3\delta}{d}
     
     where δ is GB thickness and d is grain size.
     
     Mathematical Derivation
     -----------------------
     Parallel model assumes independent transport:
-       J_total = J_bulk + J_gb = -D_bulk×∇C×A_bulk - D_gb×∇C×A_gb
+       .. math::
+
+       J_{total} = J_{bulk} + J_{gb}
+           = -D_{bulk}\nabla C\,A_{bulk} - D_{gb}\nabla C\,A_{gb}
     
     With area fractions equal to volume fractions:
-       D_eff = (1-f_gb)×D_bulk + f_gb×D_gb
+       .. math::
+
+       D_{eff} = (1-f_{gb})D_{bulk} + f_{gb}D_{gb}
     
     Hart equation includes connectivity effects:
        D_eff/D_bulk = 1 + [f_gb/(1-f_gb)]×[(D_gb/D_bulk-1)]/[1+2(D_gb/D_bulk-1)f_gb/(3(1-f_gb))]
@@ -1423,7 +1470,7 @@ def calculate_gb_enhanced_diffusivity(D_bulk, temperature, grain_size,
 def combined_microstructure_model(D_lattice, temperature, microstructure_params,
                                  lattice_concentration, lattice_density,
                                  mode='both'):
-    """
+    r"""
     Calculate effective diffusivity combining grain boundary and trapping effects.
     
     Theory
@@ -1440,16 +1487,33 @@ def combined_microstructure_model(D_lattice, temperature, microstructure_params,
     
     Mathematical Model
     ------------------
-    Step 1 - GB enhancement:
-        D_gb_enhanced = (1-f_gb)×D_bulk + f_gb×D_gb
-        where D_gb = α×D_bulk, α = gb_enhancement_factor(T)
-    
-    Step 2 - Trapping reduction:
-        D_eff = D_gb_enhanced/(1 + Σθᵢ)
-        where θᵢ includes all trap types (dislocations, vacancies, GBs)
-    
+    Step 1 — grain-boundary enhancement:
+
+    .. math::
+
+        D_{gb\text{-}enh} = (1-f_{gb})D_{bulk} + f_{gb}D_{gb},
+        \qquad D_{gb} = \alpha(T)\,D_{bulk}
+
+    Step 2 — trapping reduction:
+
+    .. math::
+
+        D_{eff} = \frac{D_{gb\text{-}enh}}{1 + \sum_i N_{T,i}K_i/N_L}
+
+    .. important::
+
+       The denominator is the **trapping term** :math:`\sum_i N_{T,i}K_i/N_L`
+       (returned as ``trapping_term``), *not* the sum of trap occupancies
+       :math:`\sum_i \theta_i` (returned as ``theta_total``). The two differ by
+       roughly an order of magnitude, so substituting the occupancy sum
+       overestimates :math:`D_{eff}` by about 32% for the shipped configuration.
+
     Net result:
-        D_eff = [(1-f_gb)×D_bulk + f_gb×α×D_bulk]/(1 + Σθᵢ)
+
+    .. math::
+
+        D_{eff} = \frac{(1-f_{gb})D_{bulk} + f_{gb}\alpha D_{bulk}}
+                       {1 + \sum_i N_{T,i}K_i/N_L}
     
     Parameters
     ----------

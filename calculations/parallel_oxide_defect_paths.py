@@ -24,7 +24,7 @@ from calculations.classify_regime import (
 )
 
 def calculate_defect_path_flux(P_upstream, P_downstream, oxide_props, metal_props, defect_props):
-    """
+    r"""
     Calculate hydrogen flux through a defect in the oxide layer..
     
     Theory
@@ -45,16 +45,21 @@ def calculate_defect_path_flux(P_upstream, P_downstream, oxide_props, metal_prop
     Mathematical Derivation
     -----------------------
     For a pinhole (complete oxide absence):
-        J_defect = (D_metal * K_s_metal / L_metal) * (sqrt(P_up) - sqrt(P_down))
+    .. math::
+
+        J_{defect} = \frac{D_m K_{s,m}}{L_m}
+                   \left(\sqrt{P_{up}} - \sqrt{P_{down}}\right)
         This reduces to Level 1 metal-only permeation (Sieverts' law)
     
     For a crack with thin oxide:
-        The oxide thickness in crack: t_crack = α * t_oxide, where α < 1
+        Oxide is locally thinner: :math:`L_{crack} = \gamma L_{ox}` with
+        :math:`\gamma < 1`.
         Uses Level 2 model with modified oxide thickness
         Interface pressure solved automatically by Level 2 solver
     
     For grain boundaries:
-        D_gb = β * D_oxide, where β > 1 (enhanced diffusion)
+        Enhanced diffusion along the boundary:
+        :math:`D_{gb} = \psi D_{ox}` with :math:`\psi > 1`.
         Otherwise similar to oxide calculation with modified properties
     
     Parameters
@@ -196,7 +201,7 @@ def calculate_defect_path_flux(P_upstream, P_downstream, oxide_props, metal_prop
 
 def calculate_parallel_path_flux(P_upstream, P_downstream, oxide_props, metal_props, 
                                  defect_params):
-    """
+    r"""
     Calculate total hydrogen flux through oxide with defects using parallel path model..
     
     Theory
@@ -207,8 +212,9 @@ def calculate_parallel_path_flux(P_upstream, P_downstream, oxide_props, metal_pr
     recognizes that both intact oxide and defects contribute to permeation.
     
     The electrical resistance analogy:
-    For parallel resistors: 1/R_total = 1/R_1 + 1/R_2 + ... + 1/R_n
-    For permeation: J_total = J_intact * A_intact + J_defect * A_defect
+    Note this is an area-weighted **sum**, not the reciprocal sum used for
+    parallel electrical resistors (:math:`1/R = \sum_i 1/R_i`), because flux
+    is extensive: two paths side by side carry the sum of what each carries.
     where A represents area fractions.
     
     References
@@ -219,15 +225,19 @@ def calculate_parallel_path_flux(P_upstream, P_downstream, oxide_props, metal_pr
     
     Mathematical Derivation
     -----------------------
-    Total surface area: A_total = A_intact + A_defect
-    Area fractions: f_intact = A_intact/A_total, f_defect = A_defect/A_total
-    
-    Total flux: J_total = ∫∫ j(x,y) dA over total area
-    
-    Assuming uniform flux in each region:
-    J_total = (1/A_total) * [∫∫_intact j_intact dA + ∫∫_defect j_defect dA]
-    J_total = j_intact * (A_intact/A_total) + j_defect * (A_defect/A_total)
-    J_total = j_intact * f_intact + j_defect * f_defect
+    Split the wall area into intact and defective regions, so that
+    :math:`A_{total} = A_{intact} + A_{defect}`, with area fractions
+    :math:`f_i = A_i / A_{total}`.
+
+    Integrating the local flux density over the whole area and dividing by it,
+    then assuming the flux is uniform within each region:
+
+    .. math::
+
+        J_{total} &= \frac{1}{A_{total}}
+            \left[\iint_{intact} j_{intact}\,dA
+                 + \iint_{defect} j_{defect}\,dA\right] \\
+                  &= j_{intact} f_{intact} + j_{defect} f_{defect}
     
     Where:
     - j_intact: flux density through intact oxide (from Level 2)
@@ -343,7 +353,7 @@ def calculate_parallel_path_flux(P_upstream, P_downstream, oxide_props, metal_pr
     }
 
 def calculate_PRF(P_test, oxide_props, metal_props, defect_params=None, P_downstream=0):
-    """
+    r"""
     Calculate Permeation Reduction Factor (PRF) for defective oxide barrier..
     
     Theory
@@ -365,7 +375,9 @@ def calculate_PRF(P_test, oxide_props, metal_props, defect_params=None, P_downst
     
     Mathematical Derivation
     -----------------------
-    PRF = J_bare_metal / J_oxide_covered
+    .. math::
+
+        \mathrm{PRF} = \frac{J_{bare\ metal}}{J_{coated}}
     
     Where:
     J_bare_metal = Result from Level 1 model (Sieverts' law)
@@ -664,7 +676,7 @@ def calculate_parallel_path_flux_defective_metal(P_upstream, P_downstream, oxide
                                                   microstructure_params, lattice_density,
                                                   method='average', n_points=10,
                                                   max_iterations=10, tolerance=1e-6, mode='both'):
-    """
+    r"""
     Calculate total flux through defective oxide + defective metal (Level 3+4).
     
     This is the full Level 3+4 model combining:
@@ -675,7 +687,9 @@ def calculate_parallel_path_flux_defective_metal(P_upstream, P_downstream, oxide
     ------
     Total flux = Intact path contribution + Defect path contribution
     
-    J_total = j_intact × f_intact + j_defect × f_defect
+    .. math::
+
+        J_{total} = j_{intact} f_{intact} + j_{defect} f_{defect}
     
     Where both j_intact and j_defect now use Level 4 defective metal.
     

@@ -1,8 +1,11 @@
-"""
+r"""
 Utility functions for hydrogen permeation calculations.
 
-Uses REFERENCE-TEMPERATURE Arrhenius format:
-    k(T) = k_ref × exp((-E/R) × (1/T - 1/T_ref))
+Uses the REFERENCE-TEMPERATURE Arrhenius form
+
+.. math::
+
+    k(T) = k_{ref}\,\exp\!\left[\frac{-E}{R}\left(\frac{1}{T} - \frac{1}{T_{ref}}\right)\right]
 
 Reference values are read from material/oxide data dictionaries.
 """
@@ -14,7 +17,7 @@ R = 8.314  # J/mol/K
 
 
 def arrhenius(value_ref, activation_energy, temperature, T_ref):
-    """
+    r"""
     Calculate temperature-dependent property using reference-temperature Arrhenius equation.
     
     Parameters
@@ -35,7 +38,16 @@ def arrhenius(value_ref, activation_energy, temperature, T_ref):
     
     Notes
     -----
-    Reference-temperature Arrhenius: k(T) = k_ref × exp((-E/R) × (1/T - 1/T_ref))
+    Reference-temperature Arrhenius form:
+
+    .. math::
+
+        k(T) = k_{ref}\,\exp\!\left[\frac{-E}{R}
+               \left(\frac{1}{T} - \frac{1}{T_{ref}}\right)\right]
+
+    This is preferred over the classical :math:`k_0\exp(-E/RT)` because it is
+    anchored on a value measured at a stated temperature rather than on a
+    pre-exponential extrapolated to infinite temperature.
     """
     if temperature <= 0:
         raise ValueError(f"Temperature must be positive: {temperature} K")
