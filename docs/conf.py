@@ -22,11 +22,13 @@ from importlib.metadata import version as _dist_version
 # explicit `MPLBACKEND=... make html` still wins.
 os.environ.setdefault("MPLBACKEND", "Agg")
 
-# The same import triggers matplotlib's font-cache build. Keep it inside the build
-# tree so the docs never fail on an unwritable $HOME (same reasoning as
-# MPLCONFIGDIR=/tmp/.matplotlib in container/Dockerfile).
+# The same import triggers matplotlib's font-cache build. Keep it under docs/ so
+# the docs never fail on an unwritable $HOME (same reasoning as
+# MPLCONFIGDIR=/tmp/.matplotlib in container/Dockerfile) — but deliberately NOT
+# inside _build/, which `make clean` deletes: that would rebuild the font cache
+# on every clean build, costing ~15 s and emitting matplotlib log records.
 os.environ.setdefault(
-    "MPLCONFIGDIR", os.path.join(os.path.dirname(__file__), "_build", ".mplconfig")
+    "MPLCONFIGDIR", os.path.join(os.path.dirname(__file__), ".mplcache")
 )
 
 # --- project metadata ---------------------------------------------------------
@@ -99,6 +101,10 @@ napoleon_use_admonition_for_references = True  # nearly every function cites DOI
 # Non-standard sections this codebase actually uses, mapped onto rendering styles.
 # Registering them here means the docstring cleanup is a HEADER rename only — the
 # content never has to be rewritten into a `Notes` section.
+# Anything NOT registered here and not one of napoleon's built-in section names
+# is left unparsed, and docutils then reads the header + underline as an RST
+# section title inside a directive body — a CRITICAL "Unexpected section title".
+# So this list is load-bearing, not decorative.
 napoleon_custom_sections = [
     ("Theory", "notes"),
     ("Mathematical Derivation", "notes"),
@@ -108,6 +114,8 @@ napoleon_custom_sections = [
     ("Limitations", "notes"),
     ("Typical ranges", "notes"),
     ("Module Structure", "notes"),
+    ("Physical Parameters", "notes"),
+    ("Usage", "notes"),
 ]
 
 # --- autodoc ------------------------------------------------------------------
@@ -140,11 +148,10 @@ intersphinx_timeout = 5  # fail fast when building offline; the build still succ
 
 # --- warnings -----------------------------------------------------------------
 
-# The root .md files link into the source tree with GitHub-relative paths, e.g.
-# PARAMETERS.md -> calculations/defective_metal.py#L280. Those are correct on
-# GitHub and unresolvable from docs/. Suppressed for now; remove this once they
-# are rewritten to absolute github.com URLs, which work in BOTH renderers.
-suppress_warnings = ["myst.xref_missing"]
+# No suppression. The root .md files used to link into the source tree with
+# GitHub-relative paths, which are correct on GitHub and unresolvable from
+# docs/; they are now absolute github.com URLs, which work in both renderers.
+# Keep it that way — a relative link to a source file will now fail the build.
 
 nitpicky = False  # many functions document types as prose; nitpicky would drown the real signal
 

@@ -12,8 +12,8 @@ def calculate_metal_flux_sieverts(D_metal, K_s_metal, thickness, P_interface, P_
     """
     Calculate flux through metal using Sieverts' law.
     
-    Parameters:
-    -----------
+    Parameters
+    ----------
     D_metal : float
         Diffusion coefficient in metal (m²/s)
     K_s_metal : float
@@ -25,8 +25,8 @@ def calculate_metal_flux_sieverts(D_metal, K_s_metal, thickness, P_interface, P_
     P_downstream : float
         Downstream pressure (Pa)
     
-    Returns:
-    --------
+    Returns
+    -------
     float
         Flux through metal (mol/m²/s)
     """
@@ -46,8 +46,8 @@ def flux_balance_equation(P_interface, P_upstream, P_downstream, oxide_props, me
     
     This is the key equation: flux_oxide - flux_metal = 0
     
-    Parameters:
-    -----------
+    Parameters
+    ----------
     P_interface : float
         Interface pressure to solve for (Pa)
     P_upstream : float
@@ -59,8 +59,8 @@ def flux_balance_equation(P_interface, P_upstream, P_downstream, oxide_props, me
     metal_props : dict
         Contains D_metal, K_s_metal, thickness
     
-    Returns:
-    --------
+    Returns
+    -------
     float
         Flux difference (should be zero at solution)
     """
@@ -90,8 +90,8 @@ def solve_interface_pressure(P_upstream, P_downstream, oxide_props, metal_props,
     """
     Solve for interface pressure where oxide and metal fluxes match.
     
-    Parameters:
-    -----------
+    Parameters
+    ----------
     P_upstream : float
         Upstream pressure (Pa)
     P_downstream : float
@@ -103,8 +103,8 @@ def solve_interface_pressure(P_upstream, P_downstream, oxide_props, metal_props,
     method : str
         Solver method ('brentq' or 'root_scalar')
     
-    Returns:
-    --------
+    Returns
+    -------
     dict
         Contains P_interface, flux, convergence info
     """
@@ -241,8 +241,8 @@ def calculate_oxide_metal_system(P_upstream, P_downstream, oxide_props, metal_pr
     """
     Main function to calculate flux through oxide+metal system.
     
-    Parameters:
-    -----------
+    Parameters
+    ----------
     P_upstream : float
         Upstream pressure (Pa)
     P_downstream : float
@@ -254,8 +254,8 @@ def calculate_oxide_metal_system(P_upstream, P_downstream, oxide_props, metal_pr
     T_K : float, optional
         Temperature in Kelvin (for T-dependent properties)
     
-    Returns:
-    --------
+    Returns
+    -------
     dict
         Complete system solution including flux, pressures, regime
     """
@@ -304,8 +304,8 @@ def calculate_concentration_profile(P_upstream, P_downstream, oxide_props, metal
     """
     Calculate concentration profile through oxide and metal layers.
     
-    Parameters:
-    -----------
+    Parameters
+    ----------
     P_upstream, P_downstream : float
         Boundary pressures (Pa)
     oxide_props, metal_props : dict
@@ -313,8 +313,8 @@ def calculate_concentration_profile(P_upstream, P_downstream, oxide_props, metal
     n_points : int
         Number of points in each layer
     
-    Returns:
-    --------
+    Returns
+    -------
     dict
         Contains position and concentration arrays
     """

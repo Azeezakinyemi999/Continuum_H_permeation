@@ -5,8 +5,8 @@ This module implements microstructure effects on hydrogen diffusion in polycryst
 metals, incorporating both enhancement (grain boundaries) and reduction (trapping) 
 mechanisms. It provides the core physics for Level 4 of the hierarchical permeation model.
 
-Theory:
--------
+Theory
+------
 Real metals exhibit competing microstructure effects on hydrogen transport:
 
 1. Grain Boundary Enhancement:
@@ -26,8 +26,8 @@ Real metals exhibit competing microstructure effects on hydrogen transport:
    - Net effect can enhance OR reduce diffusion
    - Temperature and concentration dependent
 
-Mathematical Framework:
------------------------
+Mathematical Framework
+----------------------
 The effective diffusivity combines both effects:
 
     D_eff = [(1-f_gb)×D_bulk + f_gb×α×D_bulk] / (1 + Σ(N_T,i × K_i / N_L))
@@ -51,8 +51,8 @@ Grain boundary diffusion enhancement:
     
 where typically Q_gb ≈ 0.6×Q_bulk
 
-Module Structure:
------------------
+Module Structure
+----------------
 Core Functions (7)::
 1. trap_occupancy() - Calculate trap site occupancy fraction
 2. grain_boundary_density() - Convert grain size to trap density
@@ -62,8 +62,8 @@ Core Functions (7)::
 6. calculate_gb_enhanced_diffusivity() - Apply GB enhancement
 7. combined_microstructure_model() - Combine all effects
 
-Usage:
-------
+Usage
+-----
 This module is used by higher-level functions in:
 - permeation_calc.py: calculate_defective_metal_flux()
 - interface_solver.py: solve_interface_pressure_defective_metal()
@@ -72,8 +72,8 @@ This module is used by higher-level functions in:
 The functions can be used individually for specific effects or combined
 via combined_microstructure_model() for complete microstructure modeling.
 
-Physical Parameters:
---------------------
+Physical Parameters
+-------------------
 Typical ranges for austenitic steels:
 - Grain size: 10⁻⁸ to 10⁻³ m
 - GB thickness: 0.5-1.0 nm
@@ -98,8 +98,8 @@ Limitations
 For high trap occupancy (θ > 0.9) or transient conditions, 
 consider McNabb-Foster kinetic model instead.
 
-References:
------------
+References
+----------
 1. Oriani, R.A. (1970). "The diffusion and trapping of hydrogen in steel."
    Acta Metallurgica 18, 147-157. DOI: 10.1016/0001-6160(70)90078-7
 
@@ -141,8 +141,8 @@ def trap_occupancy(temperature, binding_energy, trap_density, lattice_density,
     For dilute solutions (θ_L << 1), this simplifies to:
         θ_T = K × (C_L/N_L) / [1 + K × (C_L/N_L)]
     
-    Mathematical Derivation:
-    ------------------------
+    Mathematical Derivation
+    -----------------------
     Starting from chemical potential equilibrium:
         μ_T = μ_L
         μ°_T + RT×ln(θ_T/(1-θ_T)) = μ°_L + RT×ln(θ_L/(1-θ_L))
@@ -153,8 +153,8 @@ def trap_occupancy(temperature, binding_energy, trap_density, lattice_density,
     For dilute lattice (θ_L << 1):
         θ_T = exp(E_b/RT) × (C_L/N_L) / [1 + exp(E_b/RT) × (C_L/N_L)]
     
-    Parameters:
-    -----------
+    Parameters
+    ----------
     temperature : float
         Absolute temperature in Kelvin [K]
         Must be positive and typically 300-1200 K for fusion applications
@@ -176,8 +176,8 @@ def trap_occupancy(temperature, binding_energy, trap_density, lattice_density,
         Hydrogen concentration in lattice sites [mol/m³]
         This is the mobile/diffusible hydrogen concentration
     
-    Returns:
-    --------
+    Returns
+    -------
     dict
         Dictionary containing:
         - 'theta_T': Trap occupancy fraction (0 ≤ θ ≤ 1) [-]
@@ -187,23 +187,23 @@ def trap_occupancy(temperature, binding_energy, trap_density, lattice_density,
         - 'saturation_warning': True if θ > 0.9
         - 'trap_concentration': Actual trapped H concentration [mol/m³]
     
-    Raises:
-    -------
+    Raises
+    ------
     ValueError
         If temperature ≤ 0 K
         If any density/concentration is negative
         If lattice_concentration > lattice_density (unphysical)
     
-    References:
-    -----------
+    References
+    ----------
     1. Oriani, R.A. (1970). "The diffusion and trapping of hydrogen in steel."
        Acta Metallurgica, 18, 147-157. DOI: 10.1016/0001-6160(70)90078-7
     
     2. McNabb, A., Foster, P.K. (1963). "A new analysis of diffusion of hydrogen
        in iron and ferritic steels." Trans. Metall. Soc. AIME, 227, 618-627.
     
-    Example:
-    --------
+    Example
+    -------
     >>> result = trap_occupancy(
     ...     temperature=800,  # K
     ...     binding_energy=27e3,  # J/mol (dislocations)
@@ -299,8 +299,8 @@ def grain_boundary_density(grain_size, gb_thickness=0.5e-9, sites_per_area=1e19,
     
     where ρ_gb is the areal density of trap sites on the GB.
     
-    Mathematical Derivation:
-    ------------------------
+    Mathematical Derivation
+    -----------------------
     Starting from stereological relationships:
     1. For random polycrystal: <N_L> = 2/d (intercepts per unit length)
     2. Surface area per volume: S_v = 2×<N_L> = 4/d
@@ -311,8 +311,8 @@ def grain_boundary_density(grain_size, gb_thickness=0.5e-9, sites_per_area=1e19,
     
     where δ is the GB thickness.
     
-    Parameters:
-    -----------
+    Parameters
+    ----------
     grain_size : float
         Average grain diameter in meters [m]
         Typical ranges:
@@ -338,8 +338,8 @@ def grain_boundary_density(grain_size, gb_thickness=0.5e-9, sites_per_area=1e19,
         - 'columnar': 2D boundaries (e.g., directionally solidified)
         - 'planar': 1D boundaries (e.g., lamellar structure)
     
-    Returns:
-    --------
+    Returns
+    -------
     dict
         Dictionary containing:
         - 'trap_density': GB trap sites per unit volume [m⁻³]
@@ -348,23 +348,23 @@ def grain_boundary_density(grain_size, gb_thickness=0.5e-9, sites_per_area=1e19,
         - 'mean_intercept': Mean linear intercept length [m]
         - 'warnings': List of any warnings about parameters
     
-    Raises:
-    -------
+    Raises
+    ------
     ValueError
         If grain_size ≤ 0
         If gb_thickness ≤ 0 or > grain_size/10
         If sites_per_area ≤ 0
         If grain_shape is not recognized
     
-    Warnings:
-    ---------
+    Warnings
+    --------
     Issues warnings for:
         - Grain size < 10 nm (approaching amorphous limit)
         - Grain size > 10 mm (unusually coarse)
         - Volume fraction > 0.1 (GB phase percolation)
     
-    References:
-    -----------
+    References
+    ----------
     1. Palumbo, G., Aust, K.T. (1990). "Structure-dependence of intergranular
        corrosion in high purity nickel." Acta Metall. Mater. 38, 2343-2352.
        DOI: 10.1016/0956-7151(90)90101-L
@@ -375,8 +375,8 @@ def grain_boundary_density(grain_size, gb_thickness=0.5e-9, sites_per_area=1e19,
        diffusion and trapping of hydrogen in pure nickel." Acta Mater. 60, 
        6814-6828. DOI: 10.1016/j.actamat.2012.09.004
     
-    Example:
-    --------
+    Example
+    -------
     >>> result = grain_boundary_density(
     ...     grain_size=50e-6,  # 50 μm
     ...     gb_thickness=0.5e-9,  # 0.5 nm
@@ -486,8 +486,8 @@ def gb_enhancement_factor(temperature, temperature_unit='K', gb_type='HAGB', dat
     diffusion can be 100-1000× faster than bulk. At high temperatures (T/T_m > 0.8),
     the enhancement reduces to 10-20×.
     
-    Mathematical Derivation:
-    ------------------------
+    Mathematical Derivation
+    -----------------------
     Starting from Arrhenius expressions:
         D_bulk = D₀_bulk × exp(-Q_bulk/RT)
         D_gb = D₀_gb × exp(-Q_gb/RT)
@@ -500,8 +500,8 @@ def gb_enhancement_factor(temperature, temperature_unit='K', gb_type='HAGB', dat
     
     This predicts log-linear behavior in 1/T space.
     
-    Parameters:
-    -----------
+    Parameters
+    ----------
     temperature : float
         Temperature value [K or °C depending on temperature_unit]
         Typical range: 300-1300 K for fusion applications
@@ -524,8 +524,8 @@ def gb_enhancement_factor(temperature, temperature_unit='K', gb_type='HAGB', dat
         - dict: Custom data as {T_celsius: enhancement_factor}
         Default: 'default'
     
-    Returns:
-    --------
+    Returns
+    -------
     dict
         Dictionary containing:
         - 'enhancement_factor': D_gb/D_bulk ratio [-]
@@ -535,22 +535,22 @@ def gb_enhancement_factor(temperature, temperature_unit='K', gb_type='HAGB', dat
         - 'gb_type_factor': Scaling factor applied for GB type [-]
         - 'data_range': Temperature range of source data [K]
     
-    Raises:
-    -------
+    Raises
+    ------
     ValueError
         If temperature ≤ 0 K
         If temperature_unit not recognized
         If gb_type not recognized
         If temperature far outside data range (>200K extrapolation)
     
-    Warnings:
-    ---------
+    Warnings
+    --------
     UserWarning
         If temperature requires extrapolation beyond data range
         If enhancement factor seems unphysical (>10000 or <1)
     
-    References:
-    -----------
+    References
+    ----------
     1. Tsuru, T., Latanision, R.M. (1982). "Grain boundary transport of hydrogen
        in nickel." Scripta Metall. 16, 575-578.
        DOI: 10.1016/0036-9748(82)90273-3
@@ -562,8 +562,8 @@ def gb_enhancement_factor(temperature, temperature_unit='K', gb_type='HAGB', dat
        grain boundaries in nickel." Acta Mater. 44, 3823-3831.
        DOI: 10.1016/1359-6454(95)00446-7
     
-    Example:
-    --------
+    Example
+    -------
     >>> result = gb_enhancement_factor(
     ...     temperature=800,  # °C
     ...     temperature_unit='C',
@@ -682,8 +682,8 @@ def vacancy_concentration(temperature, material='Incoloy800', condition='equilib
     """
     Calculate thermal vacancy concentration in metals.
     
-    Theory:
-    -------
+    Theory
+    ------
     Vacancies are thermodynamic defects that exist in equilibrium due to the
     balance between formation enthalpy (energy cost) and configurational entropy
     (disorder gain). The equilibrium concentration follows:
@@ -694,8 +694,8 @@ def vacancy_concentration(temperature, material='Incoloy800', condition='equilib
     the entropy term T×S_f^v becomes significant, but for most metals below
     0.8×T_melt, the enthalpy E_f^v dominates.
     
-    Mathematical Derivation:
-    ------------------------
+    Mathematical Derivation
+    -----------------------
     From statistical mechanics, minimizing Gibbs free energy:
         G = N_v×G_f^v - T×S_config
     
@@ -707,8 +707,8 @@ def vacancy_concentration(temperature, material='Incoloy800', condition='equilib
     
     For FCC metals, E_f^v ≈ 10-15 × k_B×T_melt (empirical rule).
     
-    Parameters:
-    -----------
+    Parameters
+    ----------
     temperature : float
         Current temperature in Kelvin [K]
         Valid range: 300 K to 0.95×T_melt
@@ -733,8 +733,8 @@ def vacancy_concentration(temperature, material='Incoloy800', condition='equilib
         Only used if condition='quenched'
         Must be > temperature and < T_melt
     
-    Returns:
-    --------
+    Returns
+    -------
     dict
         Dictionary containing:
         - 'concentration': Vacancy concentration [m⁻³]
@@ -745,8 +745,8 @@ def vacancy_concentration(temperature, material='Incoloy800', condition='equilib
         - 'effective_temperature': Temperature determining concentration [K]
         - 'warnings': List of any warnings issued
     
-    Raises:
-    -------
+    Raises
+    ------
     ValueError
         If temperature ≤ 0 K
         If temperature > 0.95×T_melt (model invalid near melting)
@@ -754,15 +754,15 @@ def vacancy_concentration(temperature, material='Incoloy800', condition='equilib
         If condition not 'equilibrium' or 'quenched'
         If quench_temperature invalid for quenched condition
     
-    Warnings:
-    ---------
+    Warnings
+    --------
     UserWarning
         If temperature > 0.85×T_melt (reduced model accuracy)
         If vacancy concentration exceeds 1% (clustering becomes important)
         If quench creates very high supersaturation (>100× equilibrium)
     
-    References:
-    -----------
+    References
+    ----------
     1. Kraftmakher, Y. (1998). "Equilibrium vacancies and thermophysical
        properties of metals." Physics Reports 299, 79-188.
        DOI: 10.1016/S0370-1573(97)00082-3
@@ -774,8 +774,8 @@ def vacancy_concentration(temperature, material='Incoloy800', condition='equilib
     3. Siegel, R.W. (1978). "Vacancy concentrations in metals." J. Nucl. Mater.
        69-70, 117-146. DOI: 10.1016/0022-3115(78)90240-4
     
-    Example:
-    --------
+    Example
+    -------
     >>> result = vacancy_concentration(
     ...     temperature=1000,  # K
     ...     material='Incoloy800',
@@ -922,8 +922,8 @@ def calculate_effective_diffusivity_trapping(D_lattice, temperature, trap_list,
     """
     Calculate effective hydrogen diffusivity reduced by trapping effects.
     
-    Theory:
-    -------
+    Theory
+    ------
     In the presence of traps, hydrogen atoms spend time immobilized in trap sites,
     reducing the effective diffusion coefficient. Using Oriani's local equilibrium
     assumption, the effective diffusivity is:
@@ -940,8 +940,8 @@ def calculate_effective_diffusivity_trapping(D_lattice, temperature, trap_list,
     2. Binding energy via K (stronger binding = stronger reduction)
     3. Normalization by lattice density N_L
     
-    Mathematical Derivation:
-    ------------------------
+    Mathematical Derivation
+    -----------------------
     From mass balance at equilibrium:
         C_total = C_L + Σ C_T,i
     
@@ -957,8 +957,8 @@ def calculate_effective_diffusivity_trapping(D_lattice, temperature, trap_list,
     Therefore:
         D_eff = D_lattice × f_mobile = D_lattice / (1 + Σ(N_T,i × K_i / N_L))
     
-    Parameters:
-    -----------
+    Parameters
+    ----------
     D_lattice : float
         Intrinsic lattice diffusion coefficient [m²/s]
         Typical range: 10⁻¹² to 10⁻⁷ m²/s for H in metals
@@ -983,8 +983,8 @@ def calculate_effective_diffusivity_trapping(D_lattice, temperature, trap_list,
         Number of interstitial lattice sites per volume [m⁻³]
         For FCC: ~10²⁹ m⁻³
     
-    Returns:
-    --------
+    Returns
+    -------
     dict
         Dictionary containing:
         - 'D_eff': Effective diffusion coefficient [m²/s]
@@ -1007,32 +1007,32 @@ def calculate_effective_diffusivity_trapping(D_lattice, temperature, trap_list,
         - 'saturation_warnings': List of traps approaching saturation (θ > 0.9)
         - 'temperature': Input temperature [K]
     
-    Raises:
-    -------
+    Raises
+    ------
     ValueError
         If D_lattice ≤ 0
         If temperature ≤ 0
         If any trap has invalid parameters
     
-    Warnings:
-    ---------
+    Warnings
+    --------
     UserWarning
         If any trap has θᵢ > 0.9 (approaching saturation)
         If reduction factor < 0.01 (essentially no diffusion)
     
-    Notes:
-    ------
+    Notes
+    -----
     - The trapping effect scales with trap density N_T
     - Critical trap density (where D_eff = D/2) is N_T* = N_L / K
     - For high trap occupancy (θ > 0.9), consider McNabb-Foster kinetic model
     
-    References:
-    -----------
+    References
+    ----------
     1. Oriani, R.A. (1970). "The diffusion and trapping of hydrogen in steel."
        Acta Metallurgica 18, 147-157. DOI: 10.1016/0001-6160(70)90078-7
     
-    Example:
-    --------
+    Example
+    -------
     >>> traps = [
     ...     {'name': 'dislocations', 'binding_energy': 27e3, 'density': 1e15},
     ...     {'name': 'vacancies', 'binding_energy': 48e3, 'density': 1e23}
@@ -1195,8 +1195,8 @@ def calculate_gb_enhanced_diffusivity(D_bulk, temperature, grain_size,
     """
     Calculate effective diffusivity with grain boundary fast diffusion paths.
     
-    Theory:
-    -------
+    Theory
+    ------
     Grain boundaries provide fast diffusion paths parallel to bulk diffusion.
     The effective diffusivity depends on the volume fraction of GBs and their
     enhancement factor. Two models are implemented:
@@ -1212,8 +1212,8 @@ def calculate_gb_enhanced_diffusivity(D_bulk, temperature, grain_size,
     
     where δ is GB thickness and d is grain size.
     
-    Mathematical Derivation:
-    ------------------------
+    Mathematical Derivation
+    -----------------------
     Parallel model assumes independent transport:
        J_total = J_bulk + J_gb = -D_bulk×∇C×A_bulk - D_gb×∇C×A_gb
     
@@ -1225,8 +1225,8 @@ def calculate_gb_enhanced_diffusivity(D_bulk, temperature, grain_size,
     
     This accounts for GB network percolation at high f_gb.
     
-    Parameters:
-    -----------
+    Parameters
+    ----------
     D_bulk : float
         Bulk lattice diffusion coefficient [m²/s]
         Typical: 10⁻¹² to 10⁻⁷ m²/s for H in metals
@@ -1259,8 +1259,8 @@ def calculate_gb_enhanced_diffusivity(D_bulk, temperature, grain_size,
         - 'parallel': Simple parallel path model (default)
         - 'hart': Hart equation with connectivity
     
-    Returns:
-    --------
+    Returns
+    -------
     dict
         Dictionary containing:
         - 'D_eff': Effective diffusion coefficient [m²/s]
@@ -1274,8 +1274,8 @@ def calculate_gb_enhanced_diffusivity(D_bulk, temperature, grain_size,
         - 'model_used': Which model was applied
         - 'percolation_warning': True if f_gb > 0.1
     
-    Raises:
-    -------
+    Raises
+    ------
     ValueError
         If D_bulk ≤ 0
         If temperature ≤ 0
@@ -1283,15 +1283,15 @@ def calculate_gb_enhanced_diffusivity(D_bulk, temperature, grain_size,
         If gb_thickness ≤ 0 or ≥ grain_size/2
         If model not recognized
     
-    Warnings:
-    ---------
+    Warnings
+    --------
     UserWarning
         If f_gb > 0.1 (GB percolation threshold)
         If f_gb > 0.5 (unphysical)
         If enhancement ratio > 100 (may indicate error)
     
-    References:
-    -----------
+    References
+    ----------
     1. Hart, E.W. (1957). "On the role of dislocations in bulk diffusion."
        Acta Metall. 5, 597. DOI: 10.1016/0001-6160(57)90127-X
     
@@ -1302,8 +1302,8 @@ def calculate_gb_enhanced_diffusivity(D_bulk, temperature, grain_size,
        polycrystalline nickel." Z. Metallkd. 99, 8-15.
        DOI: 10.3139/146.101686
     
-    Example:
-    --------
+    Example
+    -------
     >>> result = calculate_gb_enhanced_diffusivity(
     ...     D_bulk=1e-10,      # m²/s
     ...     temperature=800,    # K
@@ -1426,8 +1426,8 @@ def combined_microstructure_model(D_lattice, temperature, microstructure_params,
     """
     Calculate effective diffusivity combining grain boundary and trapping effects.
     
-    Theory:
-    -------
+    Theory
+    ------
     Real polycrystalline metals exhibit competing effects:
     1. Grain boundaries enhance diffusion (fast paths)
     2. Defects trap hydrogen (reduce mobility)
@@ -1438,8 +1438,8 @@ def combined_microstructure_model(D_lattice, temperature, microstructure_params,
     
     This sequential approach assumes uniform trapping across bulk and GB regions.
     
-    Mathematical Model:
-    -------------------
+    Mathematical Model
+    ------------------
     Step 1 - GB enhancement:
         D_gb_enhanced = (1-f_gb)×D_bulk + f_gb×D_gb
         where D_gb = α×D_bulk, α = gb_enhancement_factor(T)
@@ -1451,8 +1451,8 @@ def combined_microstructure_model(D_lattice, temperature, microstructure_params,
     Net result:
         D_eff = [(1-f_gb)×D_bulk + f_gb×α×D_bulk]/(1 + Σθᵢ)
     
-    Parameters:
-    -----------
+    Parameters
+    ----------
     D_lattice : float
         Intrinsic lattice diffusion coefficient [m²/s]
         This is the perfect crystal diffusivity
@@ -1482,8 +1482,8 @@ def combined_microstructure_model(D_lattice, temperature, microstructure_params,
         Number of interstitial lattice sites [m⁻³]
         For FCC: ~1.06e29 m⁻³
     
-    Returns:
-    --------
+    Returns
+    -------
     dict
         Comprehensive results dictionary:
         - 'D_eff': Final effective diffusivity [m²/s]
@@ -1498,26 +1498,26 @@ def combined_microstructure_model(D_lattice, temperature, microstructure_params,
         - 'calculation_sequence': Description of calculation steps
         - 'warnings': List of any warnings issued
     
-    Raises:
-    -------
+    Raises
+    ------
     ValueError
         If required keys missing from microstructure_params
         If parameters are unphysical
     
-    Warnings:
-    ---------
+    Warnings
+    --------
     UserWarning
         If competing effects nearly cancel (unstable)
         If parameters suggest model limitations
     
-    Notes:
-    ------
+    Notes
+    -----
     - Assumes uniform trap distribution (not segregated to GBs)
     - Valid for steady-state conditions
     - For transient or highly segregated systems, consider more complex models
     
-    References:
-    -----------
+    References
+    ----------
     1. Oudriss, A., et al. (2012). "Grain size and grain-boundary effects on
        diffusion and trapping of hydrogen." Acta Mater. 60, 6814-6828.
     
@@ -1527,8 +1527,8 @@ def combined_microstructure_model(D_lattice, temperature, microstructure_params,
     3. Tsuru, T., Latanision, R.M. (1982). "Grain boundary transport of hydrogen
        in nickel." Scripta Metall. 16, 575-578.
     
-    Example:
-    --------
+    Example
+    -------
     >>> microstructure = {
     ...     'grain_size': 50e-6,  # 50 μm
     ...     'grain_shape': 'equiaxed',

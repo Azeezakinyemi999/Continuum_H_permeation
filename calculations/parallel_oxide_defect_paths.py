@@ -27,8 +27,8 @@ def calculate_defect_path_flux(P_upstream, P_downstream, oxide_props, metal_prop
     """
     Calculate hydrogen flux through a defect in the oxide layer..
     
-    Theory:
-    -------
+    Theory
+    ------
     Based on Strehlow & Savage (1974) parallel path model for defective oxides.
     Defects create alternative permeation paths with reduced resistance compared
     to intact oxide. The defect can be:
@@ -36,14 +36,14 @@ def calculate_defect_path_flux(P_upstream, P_downstream, oxide_props, metal_prop
     2. Crack: Partial oxide with reduced thickness
     3. Grain boundary: Modified transport properties
     
-    Reference:
+    References
     ----------
     Strehlow, R.A. and Savage, H.C., "The permeation of hydrogen isotopes through 
     structural metals at low pressures and through metals with oxide film barriers," 
     Nuclear Technology, 22:127-137 (1974). DOI: 10.13182/NT74-A31383
     
-    Mathematical Derivation:
-    ------------------------
+    Mathematical Derivation
+    -----------------------
     For a pinhole (complete oxide absence):
         J_defect = (D_metal * K_s_metal / L_metal) * (sqrt(P_up) - sqrt(P_down))
         This reduces to Level 1 metal-only permeation (Sieverts' law)
@@ -57,8 +57,8 @@ def calculate_defect_path_flux(P_upstream, P_downstream, oxide_props, metal_prop
         D_gb = β * D_oxide, where β > 1 (enhanced diffusion)
         Otherwise similar to oxide calculation with modified properties
     
-    Parameters:
-    -----------
+    Parameters
+    ----------
     P_upstream : float
         Upstream hydrogen pressure (Pa)
     P_downstream : float
@@ -73,8 +73,8 @@ def calculate_defect_path_flux(P_upstream, P_downstream, oxide_props, metal_prop
         - 'thickness_factor': fraction of oxide thickness (for cracks)
         - 'diffusivity_factor': D multiplication factor (for GB)
     
-    Returns:
-    --------
+    Returns
+    -------
     float
         Hydrogen flux through defect path (mol/m²/s)
     """
@@ -199,8 +199,8 @@ def calculate_parallel_path_flux(P_upstream, P_downstream, oxide_props, metal_pr
     """
     Calculate total hydrogen flux through oxide with defects using parallel path model..
     
-    Theory:
-    -------
+    Theory
+    ------
     The Strehlow & Savage (1974) parallel path model treats defective oxide as
     parallel permeation paths with different resistances. Unlike the simplified
     area-defect model that assumes intact oxide is impermeable, this model 
@@ -211,14 +211,14 @@ def calculate_parallel_path_flux(P_upstream, P_downstream, oxide_props, metal_pr
     For permeation: J_total = J_intact * A_intact + J_defect * A_defect
     where A represents area fractions.
     
-    Reference:
+    References
     ----------
     1. Strehlow & Savage (1974), Nuclear Technology, 22:127-137
     2. Zarchy & Axtmann (1979), J. Nuclear Materials, 79:110-117
        - Showed even 6Å oxide affects permeation with ~1% defects
     
-    Mathematical Derivation:
-    ------------------------
+    Mathematical Derivation
+    -----------------------
     Total surface area: A_total = A_intact + A_defect
     Area fractions: f_intact = A_intact/A_total, f_defect = A_defect/A_total
     
@@ -234,8 +234,8 @@ def calculate_parallel_path_flux(P_upstream, P_downstream, oxide_props, metal_pr
     - j_defect: flux density through defects
     - f_intact + f_defect = 1
     
-    Parameters:
-    -----------
+    Parameters
+    ----------
     P_upstream : float
         Upstream hydrogen pressure (Pa)
     P_downstream : float  
@@ -249,8 +249,8 @@ def calculate_parallel_path_flux(P_upstream, P_downstream, oxide_props, metal_pr
         - 'type': defect type ('pinhole', 'crack', 'grain_boundary')
         - Additional parameters for specific defect types
     
-    Returns:
-    --------
+    Returns
+    -------
     dict
         'flux_total': Total hydrogen flux (mol/m²/s)
         'flux_intact_contribution': Flux through intact oxide (mol/m²/s)
@@ -346,8 +346,8 @@ def calculate_PRF(P_test, oxide_props, metal_props, defect_params=None, P_downst
     """
     Calculate Permeation Reduction Factor (PRF) for defective oxide barrier..
     
-    Theory:
-    -------
+    Theory
+    ------
     PRF quantifies the effectiveness of an oxide barrier in reducing hydrogen
     permeation compared to bare metal. It's defined as the ratio of flux through
     bare metal to flux through oxide-covered metal.
@@ -356,15 +356,15 @@ def calculate_PRF(P_test, oxide_props, metal_props, defect_params=None, P_downst
     PRF >> 1: Very effective barrier
     PRF ~ 1: Oxide has little effect
     
-    Reference:
+    References
     ----------
     Zhang, Q. et al., "Effects of surface oxide films on hydrogen permeation 
     and susceptibility to embrittlement of X80 steel under hydrogen atmosphere,"
     Int. J. Hydrogen Energy, 43(7):3353-3365 (2018). DOI: 10.1016/j.ijhydene.2017.12.170
     - Reported PRF up to 3828 for high-temperature oxidized steel
     
-    Mathematical Derivation:
-    ------------------------
+    Mathematical Derivation
+    -----------------------
     PRF = J_bare_metal / J_oxide_covered
     
     Where:
@@ -379,8 +379,8 @@ def calculate_PRF(P_test, oxide_props, metal_props, defect_params=None, P_downst
     
     The ratio PRF_actual/PRF_max indicates oxide quality
     
-    Parameters:
-    -----------
+    Parameters
+    ----------
     P_test : float
         Test pressure for PRF calculation (Pa)
         Note: PRF is pressure-dependent due to regime transitions
@@ -393,8 +393,8 @@ def calculate_PRF(P_test, oxide_props, metal_props, defect_params=None, P_downst
     P_downstream : float
         Downstream pressure (Pa), default 0 for standard PRF test
     
-    Returns:
-    --------
+    Returns
+    -------
     dict
         'PRF': Permeation reduction factor
         'PRF_perfect': PRF for defect-free oxide (theoretical max)
@@ -480,8 +480,8 @@ def calculate_defect_path_flux_defective_metal(P_upstream, P_downstream, oxide_p
     This extends calculate_defect_path_flux() to use Level 4 defective metal
     instead of clean metal for the metal layer.
     
-    Theory:
-    -------
+    Theory
+    ------
     Same as calculate_defect_path_flux(), but the metal layer now includes:
     - Grain boundary fast diffusion paths
     - Hydrogen trapping effects
@@ -671,8 +671,8 @@ def calculate_parallel_path_flux_defective_metal(P_upstream, P_downstream, oxide
     - Strehlow & Savage parallel path model for defective oxide
     - Level 4 microstructure effects in metal
     
-    Theory:
-    -------
+    Theory
+    ------
     Total flux = Intact path contribution + Defect path contribution
     
     J_total = j_intact × f_intact + j_defect × f_defect

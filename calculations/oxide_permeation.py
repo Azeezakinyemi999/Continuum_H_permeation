@@ -17,8 +17,8 @@ def molecular_diffusion_flux(D_ox, K_ox, thickness, P_up, P_down):
     - Concentration is linear in pressure (Henry's law)
     - Results in flux linear in pressure difference
     
-    Parameters:
-    -----------
+    Parameters
+    ----------
     D_ox : float
         Molecular diffusion coefficient in oxide (m²/s)
     K_ox : float
@@ -30,8 +30,8 @@ def molecular_diffusion_flux(D_ox, K_ox, thickness, P_up, P_down):
     P_down : float
         Downstream pressure (Pa)
     
-    Returns:
-    --------
+    Returns
+    -------
     float
         Flux through oxide (mol/m²/s)
     
@@ -66,8 +66,8 @@ def calculate_oxide_resistance(D_ox, K_ox, thickness):
     
     For molecular diffusion: R = thickness / (D_ox * K_ox)
     
-    Parameters:
-    -----------
+    Parameters
+    ----------
     D_ox : float
         Molecular diffusion coefficient in oxide (m²/s)
     K_ox : float
@@ -75,13 +75,13 @@ def calculate_oxide_resistance(D_ox, K_ox, thickness):
     thickness : float
         Oxide thickness (m)
     
-    Returns:
-    --------
+    Returns
+    -------
     float
         Oxide resistance (Pa·s·m²/mol)
     
-    Note:
-    -----
+    Note
+    ----
     This resistance is pressure-independent (linear transport)
     """
     if D_ox <= 0 or K_ox <= 0:
@@ -100,8 +100,8 @@ def calculate_metal_resistance(D_metal, K_s_metal, thickness, P_interface):
     Metal resistance depends on interface pressure because of √P solubility!
     This is a KEY DIFFERENCE from oxide resistance.
     
-    Parameters:
-    -----------
+    Parameters
+    ----------
     D_metal : float
         Atomic diffusion coefficient in metal (m²/s)
     K_s_metal : float
@@ -111,8 +111,8 @@ def calculate_metal_resistance(D_metal, K_s_metal, thickness, P_interface):
     P_interface : float
         Pressure at oxide/metal interface (Pa)
     
-    Returns:
-    --------
+    Returns
+    -------
     float
         Metal resistance at given interface pressure (Pa·s·m²/mol)
     
@@ -150,8 +150,8 @@ def get_oxide_properties_at_T(oxide_name, temperature_K, oxides=None):
     Uses reference-temperature Arrhenius format:
         k(T) = k_ref × exp((-E/R) × (1/T - 1/T_ref))
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     oxide_name : str
         Name of oxide material (e.g., 'Cr2O3')
     temperature_K : float
@@ -160,8 +160,8 @@ def get_oxide_properties_at_T(oxide_name, temperature_K, oxides=None):
         Registry to look `oxide_name` up in. Defaults to model_config.OXIDES;
         pass another study's OXIDES dict to resolve names it defines instead.
 
-    Returns:
-    --------
+    Returns
+    -------
     dict
         Contains D_ox, K_ox, thickness at specified temperature
     """
@@ -201,8 +201,8 @@ def get_metal_properties_at_T(metal_name, temperature_K, metals=None):
     Calculate temperature-dependent metal properties.
     Using your Level 1 material data.
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     metal_name : str
         Name of metal (e.g., 'Incoloy800')
     temperature_K : float
@@ -211,8 +211,8 @@ def get_metal_properties_at_T(metal_name, temperature_K, metals=None):
         Registry to look `metal_name` up in. Defaults to model_config.METALS;
         pass another study's METALS dict to resolve names it defines instead.
 
-    Returns:
-    --------
+    Returns
+    -------
     dict
         Contains D_metal, K_s_metal at specified temperature
     """
@@ -246,8 +246,8 @@ def compare_resistances(oxide_props, metal_props, P_interface):
     """
     Compare oxide and metal resistances to identify limiting mechanism.
     
-    Parameters:
-    -----------
+    Parameters
+    ----------
     oxide_props : dict
         Contains D_ox, K_ox, thickness
     metal_props : dict
@@ -255,8 +255,8 @@ def compare_resistances(oxide_props, metal_props, P_interface):
     P_interface : float
         Interface pressure (Pa)
     
-    Returns:
-    --------
+    Returns
+    -------
     dict
         Contains R_oxide, R_metal, ratio, limiting_mechanism
     """
@@ -295,15 +295,15 @@ def calculate_transition_pressure(oxide_props, metal_props):
     """
     Estimate the pressure where oxide and metal resistances are equal. This is approximately where the transition occurs.
     
-    Parameters:
-    -----------
+    Parameters
+    ----------
     oxide_props : dict
         Contains D_ox, K_ox, thickness
     metal_props : dict
         Contains D_metal, K_s_metal, thickness
     
-    Returns:
-    --------
+    Returns
+    -------
     float
         Approximate transition pressure (Pa)
     """
@@ -323,8 +323,8 @@ def pressure_dependence_analysis(P_range, oxide_props, metal_props, T_K, P_down=
     Analyze how system behavior changes with pressure.
     Useful for understanding regime transitions.
     
-    Parameters:
-    -----------
+    Parameters
+    ----------
     P_range : array-like
         Range of upstream pressures to analyze (Pa)
     oxide_props : dict or str
@@ -334,8 +334,8 @@ def pressure_dependence_analysis(P_range, oxide_props, metal_props, T_K, P_down=
     T_K : float
         Temperature in Kelvin
     
-    Returns:
-    --------
+    Returns
+    -------
     dict
         Arrays of fluxes, resistances, and regime classifications
     """
