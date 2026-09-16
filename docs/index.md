@@ -1,16 +1,49 @@
 # Hierarchical Hydrogen Permeation Model
 
-Steady-state analytical models for hydrogen permeation through an oxide-coated
+A steady-state analytical model for hydrogen permeation through an oxide-coated
 structural alloy wall, built as a hierarchy of increasing physical complexity
-(Levels 1–6). Which material system is modelled is selected by a single line in
-{py:mod}`calculations.config.model_config`.
+(Levels 1–6). Given a material, an operating temperature and a pressure
+difference, it predicts the hydrogen flux through the wall and — more usefully —
+says **which physical process is limiting that flux**.
+
+Every level is closed-form and steady-state. There is no time axis; see
+{doc}`STEADY_STATE` for why that is sufficient here and what would
+invalidate it.
+
+## Where to start
+
+- **New to the model** — read {doc}`getting-started`, then the theory chapters
+  in order. They build up one physical effect at a time.
+- **Looking up a parameter or a returned quantity** — {doc}`PARAMETERS`
+  and {doc}`OUTPUTS`.
+- **Running an analysis** — the sensitivity-analysis how-to (in progress) for the
+  regime-stratified sensitivity workflow, {doc}`how-to/switch-study` to change
+  material system.
+- **Reading the code** — {doc}`api/index`, generated from the
+  docstrings.
 
 ```{toctree}
 :maxdepth: 2
-:caption: Overview
+:caption: Getting started
 
-README
+getting-started
+```
+
+```{toctree}
+:maxdepth: 2
+:caption: Theory
+
+theory/foundations
+theory/equilibrium-models
 STEADY_STATE
+```
+
+```{toctree}
+:maxdepth: 2
+:caption: How-to
+
+how-to/switch-study
+CONTAINER
 ```
 
 ```{toctree}
@@ -24,32 +57,34 @@ api/index
 
 ```{toctree}
 :maxdepth: 2
-:caption: Validation
+:caption: Validation and release
 
 TRAPPING_VALIDATION
-```
-
-```{toctree}
-:maxdepth: 1
-:caption: Release and distribution
-
-CONTAINER
 PACKAGING_1.0.0
 ```
 
-## Scope and conventions
+```{note}
+This documentation is mid-rewrite. The theory chapters and how-to guides are
+being authored from the project's earlier design notes, with every claim checked
+against the current code; the pages still carrying their original uppercase
+filenames are the ones not yet absorbed. Source material awaiting absorption sits
+in `docs/_source_material/` and is excluded from the build.
+```
 
-- **This build is strict.** `docs/Makefile` passes `-W --keep-going`, so a
-  malformed docstring section or a repo-relative link to a source file fails it.
-  Links from these pages into the source tree are absolute `github.com` URLs on
-  the `main` branch, which resolve both here and on GitHub. Keep them that way.
-- **Links point at `main`.** Work merged to `main` after a page was written will
-  be reflected; work still on a feature branch will not.
-- Not included by design: the notebooks (`Application/*.ipynb` and the three
-  study directories, whose outputs are committed and large) and the LaTeX
-  derivation `latex/Model_Equations.tex`.
-- Docstrings follow NumPy style throughout, with `Theory`,
-  `Mathematical Derivation` and a few other project-specific sections registered
-  in `conf.py` as Notes-style admonitions. A section name not registered there
-  will fail the build, so add it to `napoleon_custom_sections` rather than
-  inventing a new heading.
+## How this documentation is kept honest
+
+Documentation about a model that has moved on is worse than none, so the factual
+claims here are machine-checked rather than trusted:
+
+- `docs/_tools/verify_docs.py` fails if a page names a function, module or
+  parameter that does not exist, or links to a source file with a
+  repo-relative path.
+- `docs/_tools/worked_values.py` regenerates every number quoted in the theory
+  chapters by running the current model. `--check` diffs against the stored copy,
+  so a model change surfaces as a diff rather than as quietly wrong prose.
+- The Sphinx build runs with `-W`, so a malformed docstring section or a broken
+  cross-reference fails it.
+
+Numbers in the theory chapters are therefore reproducible by construction. Where
+a chapter quotes a flux or a coverage, it is the value the code returns today for
+the active study — not a figure carried over from an earlier configuration.

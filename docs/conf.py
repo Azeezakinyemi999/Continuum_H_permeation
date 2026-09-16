@@ -58,7 +58,17 @@ extensions = [
 
 source_suffix = {".md": "markdown", ".rst": "restructuredtext"}
 root_doc = "index"
-exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
+exclude_patterns = [
+    "_build", "Thumbs.db", ".DS_Store",
+    # Tooling, not content: the doc verifier and the worked-values generator.
+    "_tools",
+    # Legacy documents awaiting absorption into theory/ and how-to/. They are
+    # kept in-tree so the rewrite can be diffed against them, but they are NOT
+    # part of the site — they contain the stale material the rewrite replaces.
+    # This directory should be empty (and this entry removed) when the rewrite
+    # is finished.
+    "_source_material",
+]
 templates_path = ["_templates"]
 
 # --- MyST ---------------------------------------------------------------------
