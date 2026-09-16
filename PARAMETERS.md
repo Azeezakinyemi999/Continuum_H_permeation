@@ -1,6 +1,6 @@
 # Complete Parameter Reference
 
-Every input required to run the model, extracted from [`calculations/`](calculations/) and the active study config. Generated against `ACTIVE_STUDY = 'Guo_etal_2025_316L'`; values change per study, names and units do not.
+Every input required to run the model, extracted from [`calculations/`](https://github.com/Azeezakinyemi999/Continuum_H_permeation/tree/main/calculations/) and the active study config. Generated against `ACTIVE_STUDY = 'Guo_etal_2025_316L'`; values change per study, names and units do not.
 
 **The authoritative flat set is `DEFAULT_PARAMS_LEVEL5L6` — 46 parameters.** `DEFAULT_PARAMS_LEVEL5` is the same set minus the 10 surface-kinetics entries (36 parameters).
 
@@ -80,7 +80,7 @@ Four populations × (binding energy, density).
 | `trap_carbide_E_b` | 26051 | J/mol | Lu 2022 M6C TDS (0.27 eV) |
 | `trap_carbide_N_T` | 2e25 | m⁻³ | Young 1997 upper bound |
 
-> ⚠️ **Two densities look dimensionally inconsistent.** `grain_boundary_density(grain_size=1e-4)` in [`defective_metal.py:280`](calculations/defective_metal.py#L280) returns **3.0e23 m⁻³**, while the config hardcodes 6e14 — a factor of 5e8. And EBSD GND density is reported in m⁻² (line length per volume); converting to trap sites needs $\rho/b \approx 3.3\times10^{22}\,\mathrm{m^{-3}}$, not the raw 8.16e12 used as m⁻³. Consequence: `vacancies` carries 97–99 % of the trapping term at every temperature, so the two TDS-derived traps currently contribute nothing.
+> ⚠️ **Two densities look dimensionally inconsistent.** `grain_boundary_density(grain_size=1e-4)` in [`defective_metal.py`](https://github.com/Azeezakinyemi999/Continuum_H_permeation/blob/main/calculations/defective_metal.py) returns **3.0e23 m⁻³**, while the config hardcodes 6e14 — a factor of 5e8. And EBSD GND density is reported in m⁻² (line length per volume); converting to trap sites needs $\rho/b \approx 3.3\times10^{22}\,\mathrm{m^{-3}}$, not the raw 8.16e12 used as m⁻³. Consequence: `vacancies` carries 97–99 % of the trapping term at every temperature, so the two TDS-derived traps currently contribute nothing.
 
 ## H. Model options — 3
 
@@ -120,7 +120,7 @@ Switches, not physical quantities. All **fixed** (never sampled).
 
 Reference temperatures are measurement anchors (varying them is meaningless), `P_downstream` is 0 by construction, and the rest are switches or categorical choices.
 
-`temperature` **is** in `SUGGESTED_RANGES_*` but is removed before sampling by `presets_without(REGIME_PRESETS, 'temperature')` and pinned via `fixed_params` — see [`sensitivity.py:75-90`](calculations/sensitivity.py#L75). So the SA samples **35** parameters, not 36.
+`temperature` **is** in `SUGGESTED_RANGES_*` but is removed before sampling by `presets_without(REGIME_PRESETS, 'temperature')` and pinned via `fixed_params` — see [`sensitivity.py`](https://github.com/Azeezakinyemi999/Continuum_H_permeation/blob/main/calculations/sensitivity.py). So the SA samples **35** parameters, not 36.
 
 ---
 
@@ -142,16 +142,16 @@ These live in structured config dicts or as function defaults, and never appear 
 
 | Parameter | Default | Function |
 |---|---|---|
-| `sites_per_area` | 1e19 m⁻² | [`grain_boundary_density`](calculations/defective_metal.py#L280) |
-| `n_points` | 100 | [`calculate_concentration_profile`](calculations/interface_solver.py#L303) |
-| `threshold_traps` | 0.5 | [`classify_regime_level4_metal`](calculations/classify_regime.py#L45) |
-| `rule`, `threshold` | `'argmax'`, 0.5 | [`assign_regime`](calculations/sensitivity.py#L511) |
-| `temperature_unit` | `'K'` | [`gb_enhancement_factor`](calculations/defective_metal.py#L470) |
-| `data_source` | `'default'` | [`gb_enhancement_factor`](calculations/defective_metal.py#L470) |
-| `material` | `'Incoloy800'` | [`vacancy_concentration`](calculations/defective_metal.py#L680) |
-| `condition` | `'equilibrium'` | [`vacancy_concentration`](calculations/defective_metal.py#L680) |
-| `quench_temperature` | `None` | [`vacancy_concentration`](calculations/defective_metal.py#L680) |
-| `method` | `'brentq'` | [`solve_interface_pressure`](calculations/interface_solver.py#L89) |
+| `sites_per_area` | 1e19 m⁻² | [`grain_boundary_density`](https://github.com/Azeezakinyemi999/Continuum_H_permeation/blob/main/calculations/defective_metal.py) |
+| `n_points` | 100 | [`calculate_concentration_profile`](https://github.com/Azeezakinyemi999/Continuum_H_permeation/blob/main/calculations/interface_solver.py) |
+| `threshold_traps` | 0.5 | [`classify_regime_level4_metal`](https://github.com/Azeezakinyemi999/Continuum_H_permeation/blob/main/calculations/classify_regime.py) |
+| `rule`, `threshold` | `'argmax'`, 0.5 | [`assign_regime`](https://github.com/Azeezakinyemi999/Continuum_H_permeation/blob/main/calculations/sensitivity.py) |
+| `temperature_unit` | `'K'` | [`gb_enhancement_factor`](https://github.com/Azeezakinyemi999/Continuum_H_permeation/blob/main/calculations/defective_metal.py) |
+| `data_source` | `'default'` | [`gb_enhancement_factor`](https://github.com/Azeezakinyemi999/Continuum_H_permeation/blob/main/calculations/defective_metal.py) |
+| `material` | `'Incoloy800'` | [`vacancy_concentration`](https://github.com/Azeezakinyemi999/Continuum_H_permeation/blob/main/calculations/defective_metal.py) |
+| `condition` | `'equilibrium'` | [`vacancy_concentration`](https://github.com/Azeezakinyemi999/Continuum_H_permeation/blob/main/calculations/defective_metal.py) |
+| `quench_temperature` | `None` | [`vacancy_concentration`](https://github.com/Azeezakinyemi999/Continuum_H_permeation/blob/main/calculations/defective_metal.py) |
+| `method` | `'brentq'` | [`solve_interface_pressure`](https://github.com/Azeezakinyemi999/Continuum_H_permeation/blob/main/calculations/interface_solver.py) |
 
 ### Sweep and SA controls
 

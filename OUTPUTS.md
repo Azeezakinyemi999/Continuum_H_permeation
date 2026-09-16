@@ -1,6 +1,6 @@
 # Complete Output Reference
 
-Every quantity the model returns, function by function, extracted by AST-parsing [`calculations/`](calculations/) and verified by execution where possible. Companion to [PARAMETERS.md](PARAMETERS.md).
+Every quantity the model returns, function by function, extracted by AST-parsing [`calculations/`](https://github.com/Azeezakinyemi999/Continuum_H_permeation/tree/main/calculations/) and verified by execution where possible. Companion to [PARAMETERS.md](PARAMETERS.md).
 
 Generated against `ACTIVE_STUDY = 'Guo_etal_2025_316L'`.
 
@@ -12,7 +12,7 @@ These are the two top-level entry points the sensitivity analysis calls. **Verif
 
 ### `level5_model_wrapper(params_dict)` → 20 keys
 
-[`sensitivity.py:188`](calculations/sensitivity.py#L188)
+[`sensitivity.py`](https://github.com/Azeezakinyemi999/Continuum_H_permeation/blob/main/calculations/sensitivity.py) — `level5_model_wrapper`
 
 | Key | Example | Units | Meaning |
 |---|---|---|---|
@@ -41,7 +41,7 @@ With `return_full_record=True`, adds 2 more: `regime_hierarchy`, `dominant_path`
 
 ### `level5L6_model_wrapper(params_dict)` → 22 keys
 
-[`sensitivity.py:548`](calculations/sensitivity.py#L548)
+[`sensitivity.py`](https://github.com/Azeezakinyemi999/Continuum_H_permeation/blob/main/calculations/sensitivity.py) — `level5L6_model_wrapper`
 
 Same as above except: **no** `flux_bare_metal`, `frac_defect`, `defect_enhancement`, `modification_factor`; **adds** these 6:
 
@@ -56,7 +56,7 @@ Same as above except: **no** `flux_bare_metal`, `frac_defect`, `defect_enhanceme
 
 With `return_full_record=True`, adds 2 more: `system_rate_limiting`, `dominant_path`.
 
-> ⚠️ Two things the verification run surfaced. `PRF` returns **NaN** from the L5L6 wrapper at default parameters (it is finite from L5). And `T_operating = 873 K` sits just below the GB-enhancement data range `[873.1, 1273.2] K`, so every default L5/L5L6 call emits an extrapolation warning from [`defective_metal.py:619`](calculations/defective_metal.py#L619).
+> ⚠️ Two things the verification run surfaced. `PRF` returns **NaN** from the L5L6 wrapper at default parameters (it is finite from L5). And `T_operating = 873 K` sits just below the GB-enhancement data range `[873.1, 1273.2] K`, so every default L5/L5L6 call emits an extrapolation warning from [`gb_enhancement_factor`](https://github.com/Azeezakinyemi999/Continuum_H_permeation/blob/main/calculations/defective_metal.py).
 
 ---
 

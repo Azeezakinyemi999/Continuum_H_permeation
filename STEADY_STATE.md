@@ -24,7 +24,7 @@ The permeation model sets the boundary condition, the accumulation model sets th
 
 ## 2. What the model has today
 
-Everything in [`calculations/`](calculations/) is **steady state**. That was verified, not assumed:
+Everything in [`calculations/`](https://github.com/Azeezakinyemi999/Continuum_H_permeation/tree/main/calculations/) is **steady state**. That was verified, not assumed:
 
 - No time-integration machinery anywhere. A search for `solve_ivp`, `odeint`, `scipy.integrate`, `RK45`, Euler stepping, `time_step`, `erfc`, `t_lag` and `breakthrough` returns **zero hits in executable code**. The word "transient" appears twice, both times in docstrings as a caveat about what the model cannot do.
 - All 26 solver call sites are `brentq` / `root_scalar` — **root finders, not integrators**. They solve algebraic flux-balance equations ("find the interface pressure at which flux in = flux out"), which is the definition of a steady state.
@@ -67,7 +67,7 @@ $$
 
 so **25.7 % of the hydrogen in the wall is trapped.** Cross-check: the trapped fraction computed this way agrees with `mobile_fraction = 0.7383` obtained independently from the $D_{eff}$ route, to within 0.5 %.
 
-> One correction worth recording. Although $D_{eff}$ is evaluated at every grid point, the Oriani form as implemented, $D_{eff} = D_L/\left(1+\sum_i (N_{T,i}/N_L)e^{E_{b,i}/RT}\right)$, has **no $C_L$ dependence** — only $N_T$, $E_b$, $N_L$ and $T$. So `profiles['D']` comes out flat (2.069e-11 m²/s across the wall) while `profiles['theta']` varies. That is correct physics in the dilute-trap limit, but the comment at [`interface_solver.py:497`](calculations/interface_solver.py#L497) claiming "$D_{eff}$ depends on concentration" does not match the implementation.
+> One correction worth recording. Although $D_{eff}$ is evaluated at every grid point, the Oriani form as implemented, $D_{eff} = D_L/\left(1+\sum_i (N_{T,i}/N_L)e^{E_{b,i}/RT}\right)$, has **no $C_L$ dependence** — only $N_T$, $E_b$, $N_L$ and $T$. So `profiles['D']` comes out flat (2.069e-11 m²/s across the wall) while `profiles['theta']` varies. That is correct physics in the dilute-trap limit, but the docstring of [`solve_interface_pressure_defective_metal`](https://github.com/Azeezakinyemi999/Continuum_H_permeation/blob/main/calculations/interface_solver.py) claiming "$D_{eff}$ depends on concentration" does not match the implementation.
 
 ---
 

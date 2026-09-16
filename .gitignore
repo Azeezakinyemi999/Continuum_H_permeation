@@ -40,6 +40,10 @@ release/
 #     conda activate mace_env && cd docs && make html
 docs/_build/
 
+# matplotlib font cache for the docs build; lives outside _build/ so `make clean`
+# does not force it to be rebuilt. See the comment in docs/conf.py.
+docs/.mplcache/
+
 # *.png above is a blanket ignore and would otherwise silently swallow any
 # figure added to the docs.
 !docs/_static/**/*.png

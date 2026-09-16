@@ -2,7 +2,7 @@
 
 **A zero-free-parameter test of `calculate_effective_diffusivity_trapping`, plus a typeset reference for the permeation / accumulation / embrittlement equation set.**
 
-Code: [`calculations/defective_metal.py`](calculations/defective_metal.py) · Preview this file with ⇧⌘V in VS Code to render the math.
+Code: [`calculations/defective_metal.py`](https://github.com/Azeezakinyemi999/Continuum_H_permeation/blob/main/calculations/defective_metal.py) · Preview this file with ⇧⌘V in VS Code to render the math.
 
 ---
 
@@ -152,7 +152,7 @@ TDS fixes both the knee location and the slope change **before** you look at the
 
 ## 5. Two caveats before trusting a pass
 
-**Oriani assumes low occupancy.** The code warns at $\theta > 0.9$ ([`defective_metal.py:1134`](calculations/defective_metal.py#L1134)). Heed it. Near saturation the local-equilibrium assumption fails and you need McNabb–Foster trapping kinetics instead. Note the tension: TDS charging is normally done *at* saturation, which is precisely the regime where the Oriani formula is least valid — so check $\theta$ at your **operating** concentration, not at the charging concentration.
+**Oriani assumes low occupancy.** The code warns at $\theta > 0.9$ (in [`calculate_effective_diffusivity_trapping`](https://github.com/Azeezakinyemi999/Continuum_H_permeation/blob/main/calculations/defective_metal.py)). Heed it. Near saturation the local-equilibrium assumption fails and you need McNabb–Foster trapping kinetics instead. Note the tension: TDS charging is normally done *at* saturation, which is precisely the regime where the Oriani formula is least valid — so check $\theta$ at your **operating** concentration, not at the charging concentration.
 
 **TDS and permeation must see the same specimen state.** Traps are microstructural, not compositional. Different heat treatment, different cold work, different oxide $\Rightarrow$ different $N_T$. Cut both specimens from the same plate with the same processing history, or the comparison means nothing.
 
@@ -301,10 +301,10 @@ $$
 
 | Quantity | Role | Source |
 |---|---|---|
-| $D_{\text{lattice}}$, $K_S$, $\Phi_{\text{oxide}}$ | **input** (intrinsic) | [`data/material_data.py`](data/material_data.py), [`data/oxide_properties.py`](data/oxide_properties.py) |
+| $D_{\text{lattice}}$, $K_S$, $\Phi_{\text{oxide}}$ | **input** (intrinsic) | [`config/studies/`](https://github.com/Azeezakinyemi999/Continuum_H_permeation/tree/main/calculations/config/studies/) — `METALS`, `OXIDES` |
 | $N_T$, $E_b$ | **input** (microstructural) | TDS — or fitted, which forfeits the test |
-| $D_{\text{eff}}$, `reduction_factor` | **output** (effective) | [`calculations/defective_metal.py`](calculations/defective_metal.py) |
-| $\Phi_{\text{eff}}$, PRF, regime | **output** (system) | [`calculations/classify_regime.py`](calculations/classify_regime.py) |
-| parameter ranges | SA only | [`data/sensitivity_parameters.csv`](data/sensitivity_parameters.csv) |
+| $D_{\text{eff}}$, `reduction_factor` | **output** (effective) | [`calculations/defective_metal.py`](https://github.com/Azeezakinyemi999/Continuum_H_permeation/blob/main/calculations/defective_metal.py) |
+| $\Phi_{\text{eff}}$, PRF, regime | **output** (system) | [`calculations/classify_regime.py`](https://github.com/Azeezakinyemi999/Continuum_H_permeation/blob/main/calculations/classify_regime.py) |
+| parameter ranges | SA only | [`config/studies/`](https://github.com/Azeezakinyemi999/Continuum_H_permeation/tree/main/calculations/config/studies/) — `SUGGESTED_RANGES_*` |
 
 The distinction in the first column is the important one: **intrinsic properties go in, effective properties come out.** The model does not derive $D_{\text{lattice}}$ or $K_S$ — it consumes them and predicts what a real, trapped, coated, defective wall will appear to have.
