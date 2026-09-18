@@ -31,6 +31,15 @@ getting-started
 
 ```{toctree}
 :maxdepth: 2
+:caption: How-to
+
+how-to/switch-study
+how-to/sensitivity-analysis
+CONTAINER
+```
+
+```{toctree}
+:maxdepth: 2
 :caption: Theory
 
 theory/two-models
@@ -45,15 +54,6 @@ theory/level5-full-system
 theory/level6-surface-kinetics
 theory/permeability
 theory/equations
-```
-
-```{toctree}
-:maxdepth: 2
-:caption: How-to
-
-how-to/switch-study
-how-to/sensitivity-analysis
-CONTAINER
 ```
 
 ```{toctree}
