@@ -53,12 +53,20 @@ SCAN_LABEL_FIELDS = ['regime', 'system_rate_limiting', 'dominant_path']
 # said it was "bulk-only by construction", which stopped being true when the
 # harmonic mean of material constants was replaced.
 #
-# 'eta_surf' is the metric to reach for on surface questions: Φ_app = Φ_transport ·
-# η_surf exactly, and Φ_transport is pressure-independent, so η_surf carries the
-# entire surface effect in one dimensionless number. 'theta' is the raw coverage
-# behind it. The regime-defining frac_* stay excluded — degenerate within their
-# own cluster.
-REGIME_SA_METRICS = ['flux', 'permeability', 'eta_surf', 'theta']
+# 'eta_surf' is deliberately NOT here, despite being the sharpest surface metric
+# available: Φ_app = Φ_transport · η_surf exactly, and Φ_transport is
+# pressure-independent, so η_surf carries the whole surface effect in one
+# dimensionless number. It is left out because analysing a fourth metric costs
+# ~33% more PAWN/delta work, and this cell already runs for hours on the largest
+# cluster (the 773 K oxide preset draws >100k samples). That is too steep a
+# standing price for something wanted occasionally.
+#
+# It is still written to every scan CSV by level5L6_model_wrapper, so the data is
+# there whenever you want it — add it to this list, or analyse the column
+# directly, when a run is specifically about surface kinetics. 'theta' is the raw
+# coverage behind it and stays. The regime-defining frac_* remain excluded —
+# degenerate within their own cluster.
+REGIME_SA_METRICS = ['flux', 'permeability', 'theta']
 
 # Metrics analysed on a log10 scale so the density estimators behind PAWN/delta
 # aren't dominated by a few huge values (raw flux spans ~10 decades).
