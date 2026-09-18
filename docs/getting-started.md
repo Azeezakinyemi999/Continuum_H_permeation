@@ -114,16 +114,33 @@ data range of [873.1, 1273.2] K.
 ```
 
 ```{warning}
-**`permeability` does not agree with `flux`, by construction.** It is a harmonic
-mean of the two *bulk* permeabilities,
+**`permeability` is an *apparent* permeability and must be quoted with its
+operating point.** It is derived from the flux the level actually solved,
 
-$$\frac{1}{\Phi_{\text{eff}}} = \frac{1}{D_{ox} K_{ox}} + \frac{1}{D_{eff} K_{s,m}}$$
+$$\Phi_{\text{app}} = \frac{J\,L_{\text{tot}}}{\sqrt{P_{\text{up}}} - \sqrt{P_{\text{down}}}}$$
 
-with no dependence on flux, defect paths, or surface kinetics. It is therefore
-identical for Level 5 and Level 5L6 even where their fluxes differ by 15%, and
-because $\Phi_{ox} \ll \Phi_{metal}$ it reads oxide-limited while `regime` reads
-metal. Use `flux` and `PRF` to reason about the wall; treat `permeability` as a
-bulk material property only.
+so it carries the defect paths, the metal microstructure and the surface
+kinetics, and it can no longer disagree with `flux`, `PRF` or `regime` — all of
+them are now functions of the same flux.
+
+What it is *not* is a material constant. It depends on the layer thicknesses, and
+under Model 2 it depends on pressure as well. Report it with
+$(T, P_{\text{up}}, P_{\text{down}})$ or not at all.
+
+Do not try to reconstruct it from $D$ and $K$ products. In Model 1 there is no
+stack permeability to reconstruct: the Henry oxide and the Sieverts metal are
+dimensionally incommensurable, so no weighting combines them. See
+{doc}`theory/permeability` for the four tiers of permeability this model
+supports, and {doc}`theory/two-models` for why the two halves of the level ladder
+differ.
+```
+
+```{note}
+An earlier version of this page described `permeability` as a harmonic mean of
+the two bulk permeabilities, disagreeing with `flux` by construction and to be
+treated as a bulk material property only. That was an accurate description of the
+old metric, which was a material-constant formula applied to a composite wall. It
+no longer describes what is computed.
 ```
 
 ```{warning}

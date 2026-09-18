@@ -1,5 +1,11 @@
 # Level 2 — the oxide layer
 
+```{note}
+**Model 1.** Dissociation sits at the oxide/metal interface, so the oxide carries
+intact H₂ under Henry's law. The Level 6 family makes a different choice — see
+{doc}`two-models` before comparing results across the two.
+```
+
 Level 2 comes in two parts. **Level 2a** is the oxide alone, which is mostly a
 vehicle for understanding how oxide transport differs from metal transport.
 **Level 2b** is the useful one: oxide and metal in series, coupled through an

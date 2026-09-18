@@ -1,5 +1,10 @@
 # Level 1 — the perfect metal
 
+```{note}
+**Model 1** by numbering, though nothing here turns on it: this level has no
+oxide, so the Henry/Sieverts fork of {doc}`two-models` does not bite.
+```
+
 ## What it models
 
 A bare metal wall of thickness $L$, with hydrogen gas at $P_{\text{up}}$ on one

@@ -1,5 +1,10 @@
 # Level 4 — metal microstructure
 
+```{note}
+**Model 1** by numbering, though nothing here turns on it: this level has no
+oxide, so the Henry/Sieverts fork of {doc}`two-models` does not bite.
+```
+
 Levels 1 to 3 treat the metal as a perfect lattice with a single diffusivity.
 Real alloys have grain boundaries, which conduct hydrogen *faster* than the
 lattice, and traps — vacancies, dislocations, carbides — which hold it and slow

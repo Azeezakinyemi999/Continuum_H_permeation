@@ -33,6 +33,7 @@ getting-started
 :maxdepth: 2
 :caption: Theory
 
+theory/two-models
 theory/foundations
 theory/equilibrium-models
 STEADY_STATE

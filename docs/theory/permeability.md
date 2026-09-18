@@ -6,39 +6,27 @@ Every number in this chapter comes from `docs/_tools/worked_values.py`, under
 up here rather than quietly rotting in the prose.
 ```
 
-## The mechanism decides everything: where does H₂ dissociate?
+## Starting point: which model are you in?
 
-Hydrogen changes chemical identity on its way through a coated wall, and the
-permeability question is settled entirely by **where** that change happens. This
-codebase contains two deliberate answers, and they are different physical
-hypotheses, not a discrepancy.
+Everything below follows from one fact established elsewhere and not repeated
+here: **Levels 1–5 and the Level 6 family give the oxide different sorption
+laws**, because they place dissociation in different locations.
 
-### Model 1 — dissociation at the oxide/metal interface
+- Model 1 (Levels 1–5) dissociates at the oxide/metal interface, so molecular H₂
+  crosses the oxide under Henry's law, $C = K_{ox}P$.
+- Model 2 (the Level 6 family) dissociates at the gas/oxide surface, so atomic H
+  crosses it under Sieverts' law, $C = K_{ox}\sqrt{P}$.
 
-H₂ dissolves in Cr₂O₃ **without breaking**. The molecule diffuses through the
-oxide intact, and only on reaching the metal does it dissociate, `H₂ → 2H`, to
-enter the lattice as atomic hydrogen.
+{doc}`two-models` gives the level-to-model map, the comparability rules and the
+units table. {doc}`equilibrium-models` derives the species change, lists where
+each law is enforced in the code, and records the unresolved `K_ox` calibration
+that follows from one constant serving both forms.
 
-$$C_{ox} = K_{ox}P \quad\text{(Henry)} \qquad\qquad C_m = K_s\sqrt{P} \quad\text{(Sieverts)}$$
-
-Two fluxes, matched at one internal interface. This is the L1–L5 family:
-`oxide_permeation.py` → `interface_solver.py` → `parallel_oxide_defect_paths.py`.
-
-### Model 2 — dissociation at the gas/oxide surface
-
-Dissociative adsorption happens on the **outer** surface, at a finite rate,
-described by a Langmuir–Hinshelwood coverage $\theta$. Everything downstream of
-that surface therefore carries **atomic** hydrogen — including the oxide. So the
-oxide obeys Sieverts too.
-
-$$J_{\text{surf}} = k_{\text{diss}}P(1-\theta)^2 - k_{\text{rec}}\theta^2$$
-
-Three fluxes — surface, oxide, metal — matched at two interfaces. This is the L6
-family, `surface_kinetics.py`.
-
-The sorption law of the oxide is thus a *consequence* of where dissociation is
-placed, not an independent modelling choice. Molecular transport through the
-oxide implies Henry; atomic transport implies Sieverts.
+The consequence *for permeability* is what this chapter is about, and it is
+severe: in Model 1 the oxide's permeability is measured per Pa and the metal's
+per Pa⁰·⁵, so the two cannot be combined by any weighting, and the wall has no
+single permeability at all. In Model 2 they share an exponent, and the stack
+collapses exactly.
 
 ## Why the sorption law decides whether permeability is intrinsic
 
