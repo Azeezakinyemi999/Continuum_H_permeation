@@ -89,29 +89,6 @@ literature tabulates $\Phi$, and why the configuration stores `Phi_ref`
 alongside `D_ref` and `K_s_ref` as an alternate parameterisation of the same
 data.
 
-```{warning}
-**The stored `Phi_ref` is not the permeability the model uses.** The
-configuration asserts the invariant in its own notes field — `Phi_ref = D_ref *
-Ks_ref` — but the values do not satisfy it:
-
-| | stored $\Phi_{\text{ref}}$ | $D_{\text{ref}}K_{\text{ref}}$ | disagreement |
-|---|---|---|---|
-| 316L metal | 1.0000e-12 | 1.0920e-12 | 9.2% |
-| Cr₂O₃ oxide | 3.4000e-19 | 2.7625e-19 | 18.7% |
-
-The activation energies, by contrast, satisfy their derived relations *exactly*:
-$Q_p = E_D + \Delta H_s$ (61750 = 52102 + 9648) and
-$Q_{p,ox} = E_{D,ox} + \Delta H_{sol,ox}$ (234000). The energies were obtained by
-arithmetic; the pre-factors were taken from separately reported and independently
-rounded measurements.
-
-No computed result is affected, because `Phi_ref`, `Phi_ox_ref`, `Q_p` and
-`Q_p_ox_J_per_mol` are **read by no solver** — the model always works from the
-`*_ref` + activation-energy pair. But anyone quoting `Phi_ref` from the
-configuration is reporting a permeability that differs from the model's by the
-amounts above, so cite $D_{\text{ref}}K_{s,\text{ref}}$ instead.
-```
-
 ### The resistance analogy, and where it breaks
 
 Rearranging to

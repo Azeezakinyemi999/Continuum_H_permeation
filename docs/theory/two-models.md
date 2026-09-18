@@ -100,17 +100,6 @@ This is the practical consequence, and the easiest thing to get wrong.
   - L4 is bare metal; L4+L6 adds a pristine oxide *and* the surface
 ```
 
-```{warning}
-The 15% flux difference between Level 5 and Level 5L6, and the factor-of-284 jump
-in `frac_oxide` between them, are **not** measurements of what surface kinetics
-cost. They are a change of surface model *and* a change of oxide sorption law,
-reported together. {doc}`level6-surface-kinetics` works through the `frac_oxide`
-jump; the size of it is inflated by the `K_ox` calibration issue recorded in
-{doc}`equilibrium-models`.
-
-If you want the cost of finite dissociation on its own, compare L1 against L1+L6.
-```
-
 ## Units, in one place
 
 The two models give the oxide's constants different dimensions. Nothing may be
@@ -138,7 +127,7 @@ defect that made the old `permeability` column unreadable; see {doc}`permeabilit
 
 The configuration declares `K_ox_ref` in mol m⁻³ Pa⁻⁰·⁵, which is right for
 Model 2 and wrong for Model 1. That is a known, recorded issue with a stated fix
-— see the warning in {doc}`equilibrium-models`.
+— see {doc}`../caveats`.
 ```
 
 ## Where to go next

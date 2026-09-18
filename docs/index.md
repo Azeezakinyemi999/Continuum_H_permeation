@@ -74,6 +74,13 @@ PACKAGING_1.0.0
 references
 ```
 
+```{toctree}
+:maxdepth: 2
+:caption: Warnings and caveats
+
+caveats
+```
+
 ```{note}
 The theory chapters and how-to guides have been authored from the project's
 earlier design notes, with every factual claim re-checked against the current

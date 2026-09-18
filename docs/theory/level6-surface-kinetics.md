@@ -97,26 +97,6 @@ $$\frac{P_{\text{up}}}{P_{\text{virtual}}} = 83.9861
 
 which is exactly the measured flux ratio, because flux scales as $\sqrt{P}$.
 
-```{warning}
-**`rate_limiting` and `fraction_surface` do not measure what the surface cost
-you.** They are computed at the *solved* operating point, so they answer "given
-this coverage, where does the remaining driving force drop?" — not "how much flux
-was lost relative to an infinitely fast surface?"
-
-The surface acts by **depressing the effective upstream pressure**, and that loss
-happens before the series decomposition begins. A surface holding 2.78% of the
-resistance can still be responsible for a ninefold flux reduction.
-
-This is why `calculations.sensitivity` documents `flux` as the primary metric —
-its comment notes it is *the only metric that responds to surface kinetics*.
-`permeability` is now derived from that same flux, so it does move with the
-surface — but only as the flux moves, and it remains an apparent value that means
-nothing without its operating point ({doc}`permeability`). `frac_surface` sees
-only the residual series share. If you want to know whether surface kinetics
-matter, compare fluxes with and without them, or inspect $\theta$ against
-$\theta_{eq}$.
-```
-
 ## Reading coverage
 
 $\theta$ is the most diagnostic single number Level 6 produces:

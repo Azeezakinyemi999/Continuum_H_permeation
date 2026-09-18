@@ -85,25 +85,6 @@ the mobile fraction:
 $$D_{\text{eff}} = D_L\frac{C_{\text{mobile}}}{C_{\text{total}}}
 = \frac{D_L}{1 + \sum_i N_{T,i}K_i/N_L}$$
 
-```{warning}
-**Two similar-sounding quantities are not the same, and confusing them is a 32%
-error.** The code distinguishes:
-
-| Key | Meaning | Value here |
-|---|---|---|
-| `trapping_term` | $\sum_i N_{T,i}K_i/N_L$ — the denominator | 0.354429 |
-| `theta_total` | $\sum_i \theta_i$, sum of trap *occupancies* | 0.026371 |
-
-`reduction_factor` $= 1/(1 + \texttt{trapping\_term})$, verified exact. The
-occupancy sum is carried "for info" and appears in **no** formula.
-
-The project's earlier design note wrote the denominator as $1 + \theta_{\text{total}}$,
-using the name the code gives the occupancy sum. Substituting the occupancy sum
-into the formula gives $D_{\text{eff}} = 2.304828\times10^{-10}$ instead of the
-correct $1.746573\times10^{-10}$ — **32% high**. If you have inherited that
-formula, check which quantity you fed it.
-```
-
 ### Where the trapping actually comes from
 
 The configured trap population, with each type's contribution to

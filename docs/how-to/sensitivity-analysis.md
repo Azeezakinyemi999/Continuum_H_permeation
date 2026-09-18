@@ -60,18 +60,6 @@ to analyse. Each regime therefore gets a *preset*: a set of parameter ranges
 biased toward producing that regime, with every draw still labelled and filtered
 on its actual computed regime, so no row is assumed into its cluster.
 
-```{warning}
-**Presets suppress the very parameters they pin.** A preset narrows or fixes
-parameter ranges to steer the sampling. A parameter that has been narrowed cannot
-show sensitivity, because it barely varies — so a low score for a
-preset-suppressed parameter carries no information at all.
-
-Always check a parameter's range in the preset before concluding it does not
-matter. `presets_without(presets, 'name')` removes a parameter from the sampled
-set so it can be pinned through `fixed_params` instead, which is the supported
-way to take something out of competition deliberately.
-```
-
 ### Why not Morris or Sobol
 
 Both need a *structured* sample — Morris needs intact trajectories, Sobol needs
@@ -133,19 +121,6 @@ resolved.
 `floor` and `delta_over_floor`. Because `floor = max(dummy indices)`, it is an
 order statistic over `n_dummy` samples.
 
-```{warning}
-**The default `n_dummy=3` is too small, and it inflates every margin.** With
-only three dummies the maximum underestimates the true noise ceiling.
-
-Measured on the L5 clusters, raising `n_dummy` from 3 to 20 lifted the floor by
-9–34% and cut the number of parameters scoring above 1.0× the floor **from 21 to
-8** in the defect regime. Two thirds of the apparently significant parameters
-were noise.
-
-Pass `n_dummy >= 20` for anything that will be published. The shipped default is
-convenient for exploration, not defensible for a result.
-```
-
 ### Below the floor does not mean "no physical effect"
 
 This is the caveat most easily got wrong. Puy, Lo Piano & Saltelli (2020) ran a
@@ -203,12 +178,6 @@ Property uncertainty is captured through the `*_ref` values and the activation
 energies instead. The *operating* temperature is varied, over 573–1273 K.
 ```
 
-```{warning}
-That operating range extrapolates well past the oxide's validated window of
-[473, 773] K, and the wrappers used by this pipeline do not warn about it — see
-{doc}`../getting-started`.
-```
-
 ## Validate the configuration first
 
 ```python
@@ -241,14 +210,6 @@ All verified to exist.
 The analysis runs in `sensitivity_regime_L5L6.ipynb` and its L5 counterpart; the
 parallel-coordinates views live in `regime_parallel_coords.ipynb` and
 `regime_parallel_coords_L5.ipynb`.
-
-```{warning}
-**Run the SA notebooks before the parallel-coordinates ones.** The SA notebooks
-write scan CSVs into `sa_results*/`, which is gitignored; the
-parallel-coordinates notebooks only *read* those files and cannot regenerate
-them. On a fresh clone the visualisation notebooks will fail until the scans have
-been produced.
-```
 
 Scans are cached on disk so a re-run does not repeat the model evaluations —
 `load_regime_scans` picks up an existing set. Given-data SA adds no model
