@@ -1,0 +1,635 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Equilibrium models: Sieverts, Henry and Langmuir" href="equilibrium-models.html"><link rel="prev" title="Two models, not six levels" href="two-models.html">
+
+    <!-- Generated with Sphinx 7.4.7 and Furo 2025.12.19 -->
+        <title>Foundations: chemical potential and the driving force - Hierarchical Hydrogen Permeation Model 1.1.0</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">Hierarchical Hydrogen Permeation Model 1.1.0</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  <span class="sidebar-brand-text">Hierarchical Hydrogen Permeation Model 1.1.0</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting-started.html">Getting started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">How-to</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../how-to/switch-study.html">How to switch material study</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../how-to/sensitivity-analysis.html">How to run a regime-stratified sensitivity analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CONTAINER.html">Hydrogen Permeation Model — Offline Analysis Environment</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Theory</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="two-models.html">Two models, not six levels</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Foundations: chemical potential and the driving force</a></li>
+<li class="toctree-l1"><a class="reference internal" href="equilibrium-models.html">Equilibrium models: Sieverts, Henry and Langmuir</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../STEADY_STATE.html">Steady State, Transients, and the Accumulation Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="level1-metal.html">Level 1 — the perfect metal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="level2-oxide.html">Level 2 — the oxide layer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="level3-defective-oxide.html">Level 3 — the defective oxide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="level4-microstructure.html">Level 4 — metal microstructure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="level5-full-system.html">Level 5 — the full system</a></li>
+<li class="toctree-l1"><a class="reference internal" href="level6-surface-kinetics.html">Level 6 — surface kinetics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="permeability.html">Permeability — two models, four tiers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="equations.html">Equation catalogue</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../PARAMETERS.html">Complete Parameter Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../OUTPUTS.html">Complete Output Reference</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/index.html">API Reference</a><input aria-label="Toggle navigation of API Reference" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/utils.html"><code class="docutils literal notranslate"><span class="pre">utils</span></code> — shared Arrhenius helpers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/permeation_calc.html"><code class="docutils literal notranslate"><span class="pre">permeation_calc</span></code> — Levels 1-2: Sieverts solubility and bulk diffusion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/oxide_permeation.html"><code class="docutils literal notranslate"><span class="pre">oxide_permeation</span></code> — Levels 2-3: molecular transport through the oxide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/interface_solver.html"><code class="docutils literal notranslate"><span class="pre">interface_solver</span></code> — the oxide/metal interface pressure solve</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/parallel_oxide_defect_paths.html"><code class="docutils literal notranslate"><span class="pre">parallel_oxide_defect_paths</span></code> — Level 3: defective oxide, parallel paths</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/defective_metal.html"><code class="docutils literal notranslate"><span class="pre">defective_metal</span></code> — Level 4: grain boundaries and trapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/surface_kinetics.html"><code class="docutils literal notranslate"><span class="pre">surface_kinetics</span></code> — Level 6: dissociation kinetics and Langmuir coverage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/classify_regime.html"><code class="docutils literal notranslate"><span class="pre">classify_regime</span></code> — hierarchical regime classification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/sensitivity.html"><code class="docutils literal notranslate"><span class="pre">sensitivity</span></code> — regime-stratified sensitivity analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/config.html"><code class="docutils literal notranslate"><span class="pre">config</span></code> — study selection</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Validation and release</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../TRAPPING_VALIDATION.html">Validating the Trapping Block Against TDS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TRAPPING_VALIDATION.html#appendix-a-symbols">Appendix A — Symbols</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TRAPPING_VALIDATION.html#appendix-b-equation-reference">Appendix B — Equation reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TRAPPING_VALIDATION.html#appendix-c-where-each-quantity-lives">Appendix C — Where each quantity lives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../PACKAGING_1.0.0.html">Packaging decisions — <code class="docutils literal notranslate"><span class="pre">hydrogen-model:1.0.0</span></code> offline container</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references.html">References</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Warnings and caveats</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../caveats.html">Warnings and caveats</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="../_sources/theory/foundations.md.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section class="tex2jax_ignore mathjax_ignore" id="foundations-chemical-potential-and-the-driving-force">
+<h1>Foundations: chemical potential and the driving force<a class="headerlink" href="#foundations-chemical-potential-and-the-driving-force" title="Link to this heading">¶</a></h1>
+<p>Every quantity the model tracks — pressure, surface coverage, dissolved
+concentration — is a different way of writing the same thing: the chemical
+potential of hydrogen at some point in the wall. Flux flows down that potential,
+and each level of the hierarchy is a different assumption about which step in the
+chain is slow enough to matter.</p>
+<p>This chapter establishes that chain, because it is what licenses the <span class="math notranslate nohighlight">\(\sqrt{P}\)</span>
+driving force the code actually uses.</p>
+<section id="the-gas-phase-sets-the-boundary-condition">
+<h2>1. The gas phase sets the boundary condition<a class="headerlink" href="#the-gas-phase-sets-the-boundary-condition" title="Link to this heading">¶</a></h2>
+<p>For molecular hydrogen in the gas,</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\mu_{H_2} = \mu^{\circ}_{H_2} + RT \ln(P/P_0)\]</div>
+</div>
+<p>with <span class="math notranslate nohighlight">\(\mu^{\circ}_{H_2}\)</span> the standard chemical potential at reference pressure
+<span class="math notranslate nohighlight">\(P_0\)</span>, and <span class="math notranslate nohighlight">\(R = 8.314\)</span> J/mol/K. Raising the pressure raises the thermodynamic
+availability of H₂ to react — it is the supply side of the whole problem.</p>
+</section>
+<section id="surface-coverage-and-the-langmuir-isotherm">
+<h2>2. Surface coverage and the Langmuir isotherm<a class="headerlink" href="#surface-coverage-and-the-langmuir-isotherm" title="Link to this heading">¶</a></h2>
+<p>Hydrogen adsorbs as atoms, so an adsorbed atom is in equilibrium with <em>half</em> a
+gas molecule:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\mu_{H,\text{ads}} = \tfrac{1}{2}\mu_{H_2}\]</div>
+</div>
+<p>Statistical thermodynamics gives the adsorbed atom’s potential in terms of the
+fractional coverage <span class="math notranslate nohighlight">\(\theta\)</span>:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\mu_{H,\text{ads}} = \mu^{\circ}_{H,\text{ads}} + RT \ln\!\left[\frac{\theta}{1-\theta}\right]\]</div>
+</div>
+<p>The <span class="math notranslate nohighlight">\(\theta/(1-\theta)\)</span> activity is what makes a surface saturate. As
+<span class="math notranslate nohighlight">\(\theta \to 0\)</span> there are empty sites everywhere and the potential is low; as
+<span class="math notranslate nohighlight">\(\theta \to 1\)</span> the last few sites become very expensive and the potential
+diverges.</p>
+<p>Equating the two expressions and collecting the standard-state terms into an
+equilibrium constant <span class="math notranslate nohighlight">\(K_{eq}\)</span> yields the Langmuir isotherm in the form the code
+uses:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\frac{\theta}{1-\theta} = \sqrt{K_{eq} P}
+\qquad\Longleftrightarrow\qquad
+\theta = \frac{\sqrt{K_{eq}P}}{1 + \sqrt{K_{eq}P}}\]</div>
+</div>
+<p>The square root is not cosmetic. It is the signature of a diatomic molecule
+dissociating into two atoms, and it propagates all the way to the flux law.</p>
+<section id="virtual-pressure">
+<h3>Virtual pressure<a class="headerlink" href="#virtual-pressure" title="Link to this heading">¶</a></h3>
+<p>Inverting the isotherm gives the pressure that <em>would</em> be in equilibrium with a
+given coverage:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[P_{\text{virtual}}(\theta) = \frac{1}{K_{eq}}\left[\frac{\theta}{1-\theta}\right]^2\]</div>
+</div>
+<p>This is the single most useful construct in the surface-kinetics level. It
+converts a coverage — which has no pressure units — into an equivalent pressure
+that can be compared directly against the gas:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(P &gt; P_{\text{virtual}}\)</span>: net adsorption; the surface is being filled</p></li>
+<li><p><span class="math notranslate nohighlight">\(P &lt; P_{\text{virtual}}\)</span>: net desorption</p></li>
+<li><p><span class="math notranslate nohighlight">\(P = P_{\text{virtual}}\)</span>: surface equilibrium, and surface kinetics have
+dropped out of the problem</p></li>
+</ul>
+<p>In the code this appears as <code class="docutils literal notranslate"><span class="pre">g_theta</span></code>, which returns <span class="math notranslate nohighlight">\(\sqrt{P_{\text{virtual}}}\)</span>
+rather than <span class="math notranslate nohighlight">\(P_{\text{virtual}}\)</span> because every downstream flux law wants the
+square root anyway:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[g(\theta) = \frac{\theta}{(1-\theta)\sqrt{K_{eq}}} = \sqrt{P_{\text{virtual}}(\theta)}\]</div>
+</div>
+</section>
+</section>
+<section id="dissolved-concentration-and-the-sieverts-connection">
+<h2>3. Dissolved concentration and the Sieverts connection<a class="headerlink" href="#dissolved-concentration-and-the-sieverts-connection" title="Link to this heading">¶</a></h2>
+<p>At the surface–subsurface boundary, dissolved hydrogen equilibrates with adsorbed
+hydrogen, <span class="math notranslate nohighlight">\(\mu_{H,\text{dissolved}} = \mu_{H,\text{ads}}\)</span>. Writing the dissolved
+potential in the ideal-dilute form <span class="math notranslate nohighlight">\(\mu^{\circ} + RT\ln(C/C_0)\)</span> and solving for
+<span class="math notranslate nohighlight">\(C\)</span> collects the standard states into the solubility constant:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[C_{ox,\text{up}} = \frac{K_{ox}}{\sqrt{K_{eq}}}\left[\frac{\theta}{1-\theta}\right]\]</div>
+</div>
+<p>which is exactly <span class="math notranslate nohighlight">\(K_{ox}\sqrt{P_{\text{virtual}}}\)</span>:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[K_{ox}\sqrt{P_{\text{eff}}}
+= K_{ox}\sqrt{\frac{1}{K_{eq}}\left[\frac{\theta}{1-\theta}\right]^2}
+= \frac{K_{ox}}{\sqrt{K_{eq}}}\left[\frac{\theta}{1-\theta}\right]\]</div>
+</div>
+<p>So the surface-kinetics levels do not replace Sieverts’ law — they replace the
+<em>pressure</em> that Sieverts’ law is evaluated at. The interface concentration is
+still <span class="math notranslate nohighlight">\(K\sqrt{P}\)</span>; it is just <span class="math notranslate nohighlight">\(P_{\text{virtual}}\)</span> rather than <span class="math notranslate nohighlight">\(P_{\text{gas}}\)</span>.
+That substitution is the whole content of Level 6, and it is why the two
+equilibrium descriptions coexist without contradiction — see
+<a class="reference internal" href="equilibrium-models.html"><span class="doc">Equilibrium models: Sieverts, Henry and Langmuir</span></a>.</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Condition</p></th>
+<th class="head"><p><span class="math notranslate nohighlight">\(P_{\text{eff}}\)</span> vs <span class="math notranslate nohighlight">\(P_{\text{gas}}\)</span></p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>equilibrium</p></td>
+<td><p><span class="math notranslate nohighlight">\(P_{\text{eff}} = P_{\text{gas}}\)</span></p></td>
+<td><p>surface kinetics not limiting</p></td>
+</tr>
+<tr class="row-odd"><td><p>surface-limited, upstream</p></td>
+<td><p><span class="math notranslate nohighlight">\(P_{\text{eff}} &lt; P_{\text{gas}}\)</span></p></td>
+<td><p>adsorption cannot keep up; surface starved</p></td>
+</tr>
+<tr class="row-even"><td><p>surface-limited, downstream</p></td>
+<td><p><span class="math notranslate nohighlight">\(P_{\text{eff}} &gt; P_{\text{gas}}\)</span></p></td>
+<td><p>desorption cannot keep up; hydrogen backs up</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="the-surface-rate-law-as-a-potential-difference">
+<h2>4. The surface rate law as a potential difference<a class="headerlink" href="#the-surface-rate-law-as-a-potential-difference" title="Link to this heading">¶</a></h2>
+<p>The net dissociation flux is the difference of forward and reverse rates,</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[J_{\text{surface}} = k_{\text{diss}} P (1-\theta)^2 - k_{\text{recomb}} \theta^2\]</div>
+</div>
+<p>which is <code class="docutils literal notranslate"><span class="pre">surface_flux</span></code> in the code. The <span class="math notranslate nohighlight">\((1-\theta)^2\)</span> and <span class="math notranslate nohighlight">\(\theta^2\)</span> factors
+are combinatorial: dissociation needs two adjacent empty sites, recombination
+needs two adjacent filled ones.</p>
+<p>Detailed balance ties the two rate constants to the isotherm. Setting
+<span class="math notranslate nohighlight">\(J_{\text{surface}} = 0\)</span> recovers the Langmuir isotherm exactly, which requires</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[K_{eq} = \frac{k_{\text{diss}}}{k_{\text{recomb}}}\]</div>
+</div>
+<p>and the code enforces this rather than storing <span class="math notranslate nohighlight">\(k_{\text{recomb}}\)</span>
+independently — <code class="docutils literal notranslate"><span class="pre">surface_flux</span></code> computes <code class="docutils literal notranslate"><span class="pre">k_recomb</span> <span class="pre">=</span> <span class="pre">k_diss</span> <span class="pre">/</span> <span class="pre">K_eq</span></code> internally, so
+the isotherm and the rate law cannot drift apart.</p>
+<p>Factoring the rate law reveals its thermodynamic content:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[J_{\text{surface}} = k_{\text{recomb}}(1-\theta)^2 K_{eq}\left[P - P_{\text{virtual}}(\theta)\right]\]</div>
+</div>
+<p>The flux is proportional to the <em>departure from surface equilibrium</em>, measured as
+a pressure difference — the Onsager form <span class="math notranslate nohighlight">\(J = L\,\Delta\mu\)</span> with
+<span class="math notranslate nohighlight">\(L_{\text{surf}}\)</span> absorbing the kinetic prefactor. When the surface is fast,
+<span class="math notranslate nohighlight">\(\theta\)</span> adjusts until <span class="math notranslate nohighlight">\(P_{\text{virtual}} \to P\)</span> and this term vanishes from the
+resistance budget.</p>
+</section>
+<section id="the-equilibrium-constant-is-the-thermodynamic-anchor">
+<h2>5. The equilibrium constant is the thermodynamic anchor<a class="headerlink" href="#the-equilibrium-constant-is-the-thermodynamic-anchor" title="Link to this heading">¶</a></h2>
+<p><span class="math notranslate nohighlight">\(K_{eq}\)</span> carries the temperature dependence of the surface:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[K_{eq}(T) = K_{eq,\text{ref}}\exp\left[\frac{-\Delta H_{\text{ads}}}{R}\left(\frac{1}{T} - \frac{1}{T_{\text{ref}}}\right)\right]\]</div>
+</div>
+<p>This is the reference-temperature Arrhenius form used throughout the project;
+<code class="docutils literal notranslate"><span class="pre">arrhenius</span></code> implements it, and every temperature-dependent property goes through
+it rather than through a bare <span class="math notranslate nohighlight">\(\exp(-E/RT)\)</span> with a pre-exponential.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p><span class="math notranslate nohighlight">\(T_{\text{ref}}\)</span> is a property of the <strong>material and the study</strong>, not a global
+constant. The values in the configuration are:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Material</p></th>
+<th class="head"><p><span class="math notranslate nohighlight">\(T_{\text{ref}}\)</span> [K]</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>316L metal surface (<code class="docutils literal notranslate"><span class="pre">Guo_etal_2025_316L</span></code>)</p></td>
+<td><p>673</p></td>
+</tr>
+<tr class="row-odd"><td><p>Hastelloy N metal surface (<code class="docutils literal notranslate"><span class="pre">fuerst_etal_2024</span></code>)</p></td>
+<td><p>965</p></td>
+</tr>
+<tr class="row-even"><td><p>Incoloy 802 metal surface (<code class="docutils literal notranslate"><span class="pre">incoloy802_cr2o3</span></code>)</p></td>
+<td><p>965</p></td>
+</tr>
+<tr class="row-odd"><td><p>Cr₂O₃ oxide surface (all three studies)</p></td>
+<td><p>1623</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Reference-temperature Arrhenius is used precisely because a measured value at a
+stated temperature is more trustworthy than an extrapolated pre-exponential, so
+quoting the wrong <span class="math notranslate nohighlight">\(T_{\text{ref}}\)</span> silently rescales the property.</p>
+</div>
+</section>
+<section id="the-chain-end-to-end">
+<h2>6. The chain, end to end<a class="headerlink" href="#the-chain-end-to-end" title="Link to this heading">¶</a></h2>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>μ_H₂(gas, upstream)          ← overall driving force →      μ_H₂(gas, downstream)
+        │                                                             ▲
+        ▼  finite-rate dissociation (Level 6)                         │
+μ_H₂(virtual, θ_up)          ← gradient through oxide →     μ_H₂(virtual, θ_down)
+        │                                                             ▲
+        ▼  local equilibrium (always assumed)                         │
+μ_H(dissolved, C_up)         ← Fickian diffusion →          μ_H(dissolved, C_down)
+</pre></div>
+</div>
+<p>Each variable in the code is one line of that diagram:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Code quantity</p></th>
+<th class="head"><p>Chemical potential it represents</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">P_upstream</span></code>, <code class="docutils literal notranslate"><span class="pre">P_downstream</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(\mu_{H_2} = \mu^{\circ} + RT\ln(P/P_0)\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">theta</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(\mu_{H,\text{ads}} = \mu^{\circ} + RT\ln[\theta/(1-\theta)]\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">C_up</span></code>, <code class="docutils literal notranslate"><span class="pre">C_down</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(\mu_{H,\text{diss}} = \mu^{\circ} + RT\ln(C/C_0)\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">k_diss</span></code>, <code class="docutils literal notranslate"><span class="pre">k_recomb</span></code></p></td>
+<td><p>kinetic coefficients in <span class="math notranslate nohighlight">\(J = L\,\Delta\mu\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">K_eq</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(\exp(-\Delta G^{\circ}/RT)\)</span> — sets equilibrium coverage</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="why-the-code-can-use-a-p-driving-force">
+<h2>7. Why the code can use a √P driving force<a class="headerlink" href="#why-the-code-can-use-a-p-driving-force" title="Link to this heading">¶</a></h2>
+<p>The total potential drop across the wall is</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\Delta\mu_{\text{total}} = \frac{RT}{2}\ln\!\left(\frac{P_{\text{up}}}{P_{\text{down}}}\right)
+= RT \ln\!\left(\frac{\sqrt{P_{\text{up}}}}{\sqrt{P_{\text{down}}}}\right)\]</div>
+</div>
+<p>and it decomposes across the series steps:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\Delta\mu_{\text{total}} = \Delta\mu_{\text{surface,up}} + \Delta\mu_{\text{oxide}} + \Delta\mu_{\text{metal}} + \Delta\mu_{\text{surface,down}}\]</div>
+</div>
+<p>with the surface terms present only when dissociation is finite-rate. For a
+Sieverts-law solid the concentration is <span class="math notranslate nohighlight">\(K\sqrt{P}\)</span>, so a gradient in
+<span class="math notranslate nohighlight">\(\sqrt{P}\)</span> <em>is</em> a gradient in concentration, and hence proportional to the
+gradient in <span class="math notranslate nohighlight">\(\mu\)</span>. This is why the metal flux laws are written with
+<span class="math notranslate nohighlight">\(\sqrt{P_{\text{up}}} - \sqrt{P_{\text{down}}}\)</span> rather than <span class="math notranslate nohighlight">\(P_{\text{up}} -
+P_{\text{down}}\)</span>.</p>
+<p>The oxide is the interesting case, because <strong>which law applies to it depends on
+the level</strong>. Below Level 6 there is no dissociation step, so hydrogen is assumed
+to dissolve and diffuse through the oxide as intact molecules — Henry’s law,
+linear in <span class="math notranslate nohighlight">\(P\)</span>. Once Level 6 models dissociative adsorption explicitly, the
+species entering the oxide is atomic, and its transport becomes Sieverts-like in
+<span class="math notranslate nohighlight">\(\sqrt{P}\)</span>. The species assumption changes with the level, and so does the
+pressure scaling. <a class="reference internal" href="equilibrium-models.html"><span class="doc">Equilibrium models: Sieverts, Henry and Langmuir</span></a> sets out both forms, where each
+applies, and an important unresolved consequence for the shared solubility
+constant.</p>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="equilibrium-models.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Equilibrium models: Sieverts, Henry and Langmuir</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="two-models.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Two models, not six levels</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2026, Azeez Akinyemi
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Foundations: chemical potential and the driving force</a><ul>
+<li><a class="reference internal" href="#the-gas-phase-sets-the-boundary-condition">1. The gas phase sets the boundary condition</a></li>
+<li><a class="reference internal" href="#surface-coverage-and-the-langmuir-isotherm">2. Surface coverage and the Langmuir isotherm</a><ul>
+<li><a class="reference internal" href="#virtual-pressure">Virtual pressure</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#dissolved-concentration-and-the-sieverts-connection">3. Dissolved concentration and the Sieverts connection</a></li>
+<li><a class="reference internal" href="#the-surface-rate-law-as-a-potential-difference">4. The surface rate law as a potential difference</a></li>
+<li><a class="reference internal" href="#the-equilibrium-constant-is-the-thermodynamic-anchor">5. The equilibrium constant is the thermodynamic anchor</a></li>
+<li><a class="reference internal" href="#the-chain-end-to-end">6. The chain, end to end</a></li>
+<li><a class="reference internal" href="#why-the-code-can-use-a-p-driving-force">7. Why the code can use a √P driving force</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/documentation_options.js?v=fc837d61"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    </body>
+</html>

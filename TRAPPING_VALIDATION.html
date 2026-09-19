@@ -1,0 +1,831 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="./">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="Packaging decisions — hydrogen-model:1.0.0 offline container" href="PACKAGING_1.0.0.html"><link rel="prev" title="config — study selection" href="api/config.html">
+
+    <!-- Generated with Sphinx 7.4.7 and Furo 2025.12.19 -->
+        <title>Validating the Trapping Block Against TDS - Hierarchical Hydrogen Permeation Model 1.1.0</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="index.html"><div class="brand">Hierarchical Hydrogen Permeation Model 1.1.0</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
+  
+  <span class="sidebar-brand-text">Hierarchical Hydrogen Permeation Model 1.1.0</span>
+  
+</a><form class="sidebar-search-container" method="get" action="search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">How-to</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="how-to/switch-study.html">How to switch material study</a></li>
+<li class="toctree-l1"><a class="reference internal" href="how-to/sensitivity-analysis.html">How to run a regime-stratified sensitivity analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CONTAINER.html">Hydrogen Permeation Model — Offline Analysis Environment</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Theory</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="theory/two-models.html">Two models, not six levels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory/foundations.html">Foundations: chemical potential and the driving force</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory/equilibrium-models.html">Equilibrium models: Sieverts, Henry and Langmuir</a></li>
+<li class="toctree-l1"><a class="reference internal" href="STEADY_STATE.html">Steady State, Transients, and the Accumulation Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory/level1-metal.html">Level 1 — the perfect metal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory/level2-oxide.html">Level 2 — the oxide layer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory/level3-defective-oxide.html">Level 3 — the defective oxide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory/level4-microstructure.html">Level 4 — metal microstructure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory/level5-full-system.html">Level 5 — the full system</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory/level6-surface-kinetics.html">Level 6 — surface kinetics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory/permeability.html">Permeability — two models, four tiers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory/equations.html">Equation catalogue</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="PARAMETERS.html">Complete Parameter Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="OUTPUTS.html">Complete Output Reference</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="api/index.html">API Reference</a><input aria-label="Toggle navigation of API Reference" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/utils.html"><code class="docutils literal notranslate"><span class="pre">utils</span></code> — shared Arrhenius helpers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/permeation_calc.html"><code class="docutils literal notranslate"><span class="pre">permeation_calc</span></code> — Levels 1-2: Sieverts solubility and bulk diffusion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/oxide_permeation.html"><code class="docutils literal notranslate"><span class="pre">oxide_permeation</span></code> — Levels 2-3: molecular transport through the oxide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/interface_solver.html"><code class="docutils literal notranslate"><span class="pre">interface_solver</span></code> — the oxide/metal interface pressure solve</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/parallel_oxide_defect_paths.html"><code class="docutils literal notranslate"><span class="pre">parallel_oxide_defect_paths</span></code> — Level 3: defective oxide, parallel paths</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/defective_metal.html"><code class="docutils literal notranslate"><span class="pre">defective_metal</span></code> — Level 4: grain boundaries and trapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/surface_kinetics.html"><code class="docutils literal notranslate"><span class="pre">surface_kinetics</span></code> — Level 6: dissociation kinetics and Langmuir coverage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/classify_regime.html"><code class="docutils literal notranslate"><span class="pre">classify_regime</span></code> — hierarchical regime classification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/sensitivity.html"><code class="docutils literal notranslate"><span class="pre">sensitivity</span></code> — regime-stratified sensitivity analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/config.html"><code class="docutils literal notranslate"><span class="pre">config</span></code> — study selection</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Validation and release</span></p>
+<ul class="current">
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Validating the Trapping Block Against TDS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#appendix-a-symbols">Appendix A — Symbols</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#appendix-b-equation-reference">Appendix B — Equation reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#appendix-c-where-each-quantity-lives">Appendix C — Where each quantity lives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PACKAGING_1.0.0.html">Packaging decisions — <code class="docutils literal notranslate"><span class="pre">hydrogen-model:1.0.0</span></code> offline container</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Warnings and caveats</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="caveats.html">Warnings and caveats</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="_sources/TRAPPING_VALIDATION.md.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section class="tex2jax_ignore mathjax_ignore" id="validating-the-trapping-block-against-tds">
+<h1>Validating the Trapping Block Against TDS<a class="headerlink" href="#validating-the-trapping-block-against-tds" title="Link to this heading">¶</a></h1>
+<p><strong>A zero-free-parameter test of <code class="docutils literal notranslate"><span class="pre">calculate_effective_diffusivity_trapping</span></code>, plus a typeset reference for the permeation / accumulation / embrittlement equation set.</strong></p>
+<p>Code: <a class="reference external" href="https://github.com/Azeezakinyemi999/Continuum_H_permeation/blob/main/calculations/defective_metal.py"><code class="docutils literal notranslate"><span class="pre">calculations/defective_metal.py</span></code></a> · Preview this file with ⇧⌘V in VS Code to render the math.</p>
+<hr class="docutils" />
+<section id="the-mechanism">
+<h2>1. The mechanism<a class="headerlink" href="#the-mechanism" title="Link to this heading">¶</a></h2>
+<p>Hydrogen dissolved in an alloy does not sit in one kind of site. Most of it occupies ordinary interstitial positions in the lattice, where it hops freely and carries flux. Some fraction is caught at <strong>traps</strong> — dislocation cores, carbide and oxide interfaces, grain boundaries, vacancies — which are energetically deeper by a binding energy <span class="math notranslate nohighlight">\(E_b\)</span> of roughly 20–60 kJ/mol. Hydrogen sitting in a trap is immobile on the timescale of a hop, so it contributes to <em>inventory</em> but not to <em>transport</em>.</p>
+<p>Two consequences follow, and they pull in opposite directions:</p>
+<ul class="simple">
+<li><p>Traps <strong>raise</strong> the total hydrogen content of the material (they add storage capacity).</p></li>
+<li><p>Traps <strong>lower</strong> the apparent diffusivity (they remove carriers from the mobile population).</p></li>
+</ul>
+<p>The second effect is what the trapping block computes, and it is what makes an alloy’s measured diffusivity depend on its cold work and heat treatment rather than on composition alone.</p>
+</section>
+<hr class="docutils" />
+<section id="the-problem-this-test-solves">
+<h2>2. The problem this test solves<a class="headerlink" href="#the-problem-this-test-solves" title="Link to this heading">¶</a></h2>
+<p>The trapping block takes <strong>two inputs per trap population</strong> and returns <strong>one number</strong>:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[
+\underbrace{N_{T,i},\; E_{b,i}}_{\text{inputs}}
+\;\longrightarrow\;
+\frac{D_{\text{eff}}}{D_{\text{lattice}}}
+= \frac{1}{1+\displaystyle\sum_i \frac{N_{T,i}}{N_L}\exp\!\left(\frac{E_{b,i}}{RT}\right)}
+\]</div>
+</div>
+<p>Most papers obtain <span class="math notranslate nohighlight">\(N_T\)</span> and <span class="math notranslate nohighlight">\(E_b\)</span> <strong>by fitting them to the permeation curve</strong>. Once that is done, the statement “the model reproduces the permeation data” carries no information — two adjustable knobs were tuned to hit one number. The comparison is circular.</p>
+<p><strong>Thermal desorption spectroscopy (TDS) breaks the circularity.</strong> It measures <span class="math notranslate nohighlight">\(N_T\)</span> and <span class="math notranslate nohighlight">\(E_b\)</span> from an entirely different physical signal: the rate at which hydrogen leaves a charged specimen during a temperature ramp. That signal has nothing to do with steady-state flux. So TDS supplies the inputs for free, and the ratio <span class="math notranslate nohighlight">\(D_{\text{eff}}/D_{\text{lattice}}\)</span> becomes a genuine prediction with no free parameters left to adjust.</p>
+</section>
+<hr class="docutils" />
+<section id="the-four-steps">
+<h2>3. The four steps<a class="headerlink" href="#the-four-steps" title="Link to this heading">¶</a></h2>
+<section id="step-1-tds-gives-you-trap-list">
+<h3>Step 1 — TDS gives you <code class="docutils literal notranslate"><span class="pre">trap_list</span></code><a class="headerlink" href="#step-1-tds-gives-you-trap-list" title="Link to this heading">¶</a></h3>
+<p>Charge a specimen to saturation, then heat it at a constant rate <span class="math notranslate nohighlight">\(\beta\)</span> while recording the desorption flux against temperature. The spectrum shows distinct peaks; each peak is one trap population.</p>
+<p><strong>Trap density, from peak area.</strong> Integrate the desorption rate across the peak:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[
+C_{T,i} = \int \frac{\mathrm{d}C}{\mathrm{d}t}\,\mathrm{d}t
+\qquad\Longrightarrow\qquad
+N_{T,i} \approx C_{T,i}\,N_A \quad (\text{for } \theta \to 1)
+\]</div>
+</div>
+<p>This is the <code class="docutils literal notranslate"><span class="pre">density</span></code> field.</p>
+<p><strong>Binding energy, from peak temperature.</strong> Repeat the ramp at 3–4 heating rates, record each peak temperature <span class="math notranslate nohighlight">\(T_p\)</span>, and apply a <strong>Kissinger</strong> analysis:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[
+\ln\!\left(\frac{\beta}{T_p^{2}}\right) = -\frac{E_a}{R\,T_p} + \text{const}
+\]</div>
+</div>
+<p>Plotting <span class="math notranslate nohighlight">\(\ln(\beta/T_p^2)\)</span> against <span class="math notranslate nohighlight">\(1/T_p\)</span> gives a straight line of slope <span class="math notranslate nohighlight">\(-E_a/R\)</span>.</p>
+<blockquote>
+<div><p>⚠️ <strong>Do not stop here.</strong> Kissinger returns the <strong>detrapping</strong> activation energy, not the binding energy:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[
+&gt; E_a = E_b + E_m \qquad\Longrightarrow\qquad E_b = E_a - E_m
+&gt; \]</div>
+</div>
+<p>where <span class="math notranslate nohighlight">\(E_m\)</span> is the lattice migration energy (the Arrhenius slope of <span class="math notranslate nohighlight">\(D_{\text{lattice}}\)</span>). The code expects <span class="math notranslate nohighlight">\(E_b\)</span>. Feeding <span class="math notranslate nohighlight">\(E_a\)</span> in directly overestimates <span class="math notranslate nohighlight">\(E_b\)</span> by 10–20 kJ/mol, and since it enters through <span class="math notranslate nohighlight">\(\exp(E_b/RT)\)</span> the error is exponential. This is the single most common mistake in this comparison.</p>
+</div></blockquote>
+</section>
+<section id="step-2-the-model-predicts-the-ratio">
+<h3>Step 2 — the model predicts the ratio<a class="headerlink" href="#step-2-the-model-predicts-the-ratio" title="Link to this heading">¶</a></h3>
+<p>Pass <code class="docutils literal notranslate"><span class="pre">trap_list</span></code> in at the operating temperature and read off <code class="docutils literal notranslate"><span class="pre">reduction_factor</span></code>. No parameter has been touched.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">calculations.defective_metal</span><span class="w"> </span><span class="kn">import</span> <span class="n">calculate_effective_diffusivity_trapping</span>
+
+<span class="n">traps</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;dislocations&#39;</span><span class="p">,</span> <span class="s1">&#39;binding_energy&#39;</span><span class="p">:</span> <span class="mf">30e3</span><span class="p">,</span> <span class="s1">&#39;density&#39;</span><span class="p">:</span> <span class="mf">1e26</span><span class="p">}]</span>
+<span class="n">r</span> <span class="o">=</span> <span class="n">calculate_effective_diffusivity_trapping</span><span class="p">(</span>
+        <span class="n">D_lattice</span><span class="o">=</span><span class="mf">1e-11</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="mi">573</span><span class="p">,</span> <span class="n">trap_list</span><span class="o">=</span><span class="n">traps</span><span class="p">,</span>
+        <span class="n">lattice_concentration</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span> <span class="n">lattice_density</span><span class="o">=</span><span class="mf">1e29</span><span class="p">)</span>
+<span class="n">r</span><span class="p">[</span><span class="s1">&#39;reduction_factor&#39;</span><span class="p">]</span>   <span class="c1"># -&gt; the prediction</span>
+</pre></div>
+</div>
+</section>
+<section id="step-3-permeation-measures-the-same-ratio-independently">
+<h3>Step 3 — permeation measures the same ratio, independently<a class="headerlink" href="#step-3-permeation-measures-the-same-ratio-independently" title="Link to this heading">¶</a></h3>
+<p>You need the numerator and the denominator separately, both from lag times:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[
+D_{\text{app}} = \frac{L^{2}}{6\,t_{\text{lag}}}
+\]</div>
+</div>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[
+D_{\text{app}} = \frac{L^{2}}{6\,t_{\text{lag}}(\text{low } T)}
+\qquad\qquad
+D_{\text{lattice}} = \frac{L^{2}}{6\,t_{\text{lag}}(\text{high } T)}
+\]</div>
+</div>
+<p>At high temperature the exponential collapses, <span class="math notranslate nohighlight">\(\exp(E_b/RT)\to 1\)</span>, and trapping switches itself off — so the <em>same specimen</em> hands you the denominator. That is the clean route: one specimen, one apparatus, systematic errors cancel between numerator and denominator. The alternatives are a fully annealed specimen or a literature single-crystal value, both of which reintroduce specimen-to-specimen scatter.</p>
+</section>
+<section id="step-4-compare-two-dimensionless-numbers">
+<h3>Step 4 — compare two dimensionless numbers<a class="headerlink" href="#step-4-compare-two-dimensionless-numbers" title="Link to this heading">¶</a></h3>
+<p>TDS-predicted against permeation-measured. For a model of this class, agreement within a factor of ~2 is a genuine pass.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="why-the-temperature-sweep-is-the-real-test">
+<h2>4. Why the temperature sweep is the real test<a class="headerlink" href="#why-the-temperature-sweep-is-the-real-test" title="Link to this heading">¶</a></h2>
+<p>A match at one temperature could be luck. The <strong>shape</strong> cannot be.</p>
+<p>Run at <span class="math notranslate nohighlight">\(E_b = 30\)</span> kJ/mol and <span class="math notranslate nohighlight">\(N_T = 10^{26}\,\mathrm{m^{-3}}\)</span> (so <span class="math notranslate nohighlight">\(N_T/N_L = 10^{-3}\)</span>, i.e. cold-worked):</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head text-right"><p><span class="math notranslate nohighlight">\(T\)</span> [K]</p></th>
+<th class="head text-right"><p><span class="math notranslate nohighlight">\(K = \exp(E_b/RT)\)</span></p></th>
+<th class="head text-right"><p><span class="math notranslate nohighlight">\((N_T/N_L)\,K\)</span></p></th>
+<th class="head text-right"><p><span class="math notranslate nohighlight">\(D_{\text{eff}}/D_{\text{lattice}}\)</span></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-right"><p>373</p></td>
+<td class="text-right"><p><span class="math notranslate nohighlight">\(1.590\times10^{4}\)</span></p></td>
+<td class="text-right"><p>15.898</p></td>
+<td class="text-right"><p>0.0592</p></td>
+</tr>
+<tr class="row-odd"><td class="text-right"><p>473</p></td>
+<td class="text-right"><p><span class="math notranslate nohighlight">\(2.056\times10^{3}\)</span></p></td>
+<td class="text-right"><p>2.056</p></td>
+<td class="text-right"><p>0.3272</p></td>
+</tr>
+<tr class="row-even"><td class="text-right"><p>573</p></td>
+<td class="text-right"><p><span class="math notranslate nohighlight">\(5.431\times10^{2}\)</span></p></td>
+<td class="text-right"><p>0.543</p></td>
+<td class="text-right"><p>0.6480</p></td>
+</tr>
+<tr class="row-odd"><td class="text-right"><p>673</p></td>
+<td class="text-right"><p><span class="math notranslate nohighlight">\(2.131\times10^{2}\)</span></p></td>
+<td class="text-right"><p>0.213</p></td>
+<td class="text-right"><p>0.8244</p></td>
+</tr>
+<tr class="row-even"><td class="text-right"><p>773</p></td>
+<td class="text-right"><p><span class="math notranslate nohighlight">\(1.065\times10^{2}\)</span></p></td>
+<td class="text-right"><p>0.106</p></td>
+<td class="text-right"><p>0.9038</p></td>
+</tr>
+<tr class="row-odd"><td class="text-right"><p>873</p></td>
+<td class="text-right"><p><span class="math notranslate nohighlight">\(6.238\times10^{1}\)</span></p></td>
+<td class="text-right"><p>0.062</p></td>
+<td class="text-right"><p>0.9413</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>A <strong>17× suppression at 373 K, decaying to essentially nothing by 873 K.</strong> The two parameters control different features of that curve:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(N_T/N_L\)</span> sets the <strong>depth</strong> of the suppression.</p></li>
+<li><p><span class="math notranslate nohighlight">\(E_b\)</span> sets the <strong>temperature at which it turns on</strong> — the position of the knee.</p></li>
+</ul>
+<p>So an Arrhenius plot of the <em>measured</em> <span class="math notranslate nohighlight">\(D_{\text{app}}\)</span> shows a kink:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[
+\text{above the knee:}\quad \frac{\mathrm{d}\ln D_{\text{app}}}{\mathrm{d}(1/T)} = -\frac{E_m}{R}
+\qquad\qquad
+\text{below the knee:}\quad \frac{\mathrm{d}\ln D_{\text{app}}}{\mathrm{d}(1/T)} = -\frac{E_m + E_b}{R}
+\]</div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>  ln D_app
+
+    │
+    │ ●●●                      slope = − E_m / R          (above the knee:
+    │    ●●●                                               trap-free lattice)
+    │       ●
+    │        ⌄  ← knee, position set by E_b
+    │         ●●
+    │           ●●●            slope = − (E_m + E_b) / R   (below the knee:
+    │              ●●●                                      trapping active)
+    └─────────────────────────  1/T
+</pre></div>
+</div>
+<p>TDS fixes both the knee location and the slope change <strong>before</strong> you look at the permeation data. That is falsifiable in a way a single flux number never is.</p>
+</section>
+<hr class="docutils" />
+<section id="two-caveats-before-trusting-a-pass">
+<h2>5. Two caveats before trusting a pass<a class="headerlink" href="#two-caveats-before-trusting-a-pass" title="Link to this heading">¶</a></h2>
+<p><strong>Oriani assumes low occupancy.</strong> The code warns at <span class="math notranslate nohighlight">\(\theta &gt; 0.9\)</span> (in <a class="reference external" href="https://github.com/Azeezakinyemi999/Continuum_H_permeation/blob/main/calculations/defective_metal.py"><code class="docutils literal notranslate"><span class="pre">calculate_effective_diffusivity_trapping</span></code></a>). Heed it. Near saturation the local-equilibrium assumption fails and you need McNabb–Foster trapping kinetics instead. Note the tension: TDS charging is normally done <em>at</em> saturation, which is precisely the regime where the Oriani formula is least valid — so check <span class="math notranslate nohighlight">\(\theta\)</span> at your <strong>operating</strong> concentration, not at the charging concentration.</p>
+<p><strong>TDS and permeation must see the same specimen state.</strong> Traps are microstructural, not compositional. Different heat treatment, different cold work, different oxide <span class="math notranslate nohighlight">\(\Rightarrow\)</span> different <span class="math notranslate nohighlight">\(N_T\)</span>. Cut both specimens from the same plate with the same processing history, or the comparison means nothing.</p>
+<section id="if-the-two-disagree-by-more-than-3">
+<h3>If the two disagree by more than ~3×<a class="headerlink" href="#if-the-two-disagree-by-more-than-3" title="Link to this heading">¶</a></h3>
+<p>Usual culprits, in order of likelihood:</p>
+<ol class="arabic simple">
+<li><p><span class="math notranslate nohighlight">\(E_m\)</span> was not subtracted from <span class="math notranslate nohighlight">\(E_a\)</span> (see the warning in Step 1).</p></li>
+<li><p>Peak deconvolution assigned area to the wrong trap population.</p></li>
+<li><p>A trap population TDS could not see, because it desorbs above the top temperature of the ramp.</p></li>
+</ol>
+</section>
+</section>
+</section>
+<hr class="docutils" />
+<section class="tex2jax_ignore mathjax_ignore" id="appendix-a-symbols">
+<h1>Appendix A — Symbols<a class="headerlink" href="#appendix-a-symbols" title="Link to this heading">¶</a></h1>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Symbol</p></th>
+<th class="head"><p>Meaning</p></th>
+<th class="head"><p>Units</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(N_{T,i}\)</span></p></td>
+<td><p>trap density, population <span class="math notranslate nohighlight">\(i\)</span></p></td>
+<td><p>m⁻³</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(N_L\)</span></p></td>
+<td><p>lattice interstitial site density (FCC <span class="math notranslate nohighlight">\(\approx 10^{29}\)</span>)</p></td>
+<td><p>m⁻³</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(E_{b,i}\)</span></p></td>
+<td><p>trap binding energy</p></td>
+<td><p>J/mol</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(E_a\)</span></p></td>
+<td><p>detrapping activation energy (Kissinger output)</p></td>
+<td><p>J/mol</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(E_m\)</span></p></td>
+<td><p>lattice migration energy</p></td>
+<td><p>J/mol</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(\theta_i\)</span></p></td>
+<td><p>trap occupancy — Oriani valid only for <span class="math notranslate nohighlight">\(\theta \lesssim 0.9\)</span></p></td>
+<td><p>–</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(K_i\)</span></p></td>
+<td><p>trap equilibrium constant, <span class="math notranslate nohighlight">\(\exp(E_{b,i}/RT)\)</span></p></td>
+<td><p>–</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(C_L,\;C_{T}\)</span></p></td>
+<td><p>lattice (mobile) and trapped H concentration</p></td>
+<td><p>mol/m³</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(D_{\text{lattice}}\)</span></p></td>
+<td><p>intrinsic lattice diffusivity</p></td>
+<td><p>m²/s</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(D_{\text{eff}},\;D_{\text{app}}\)</span></p></td>
+<td><p>effective / apparent diffusivity</p></td>
+<td><p>m²/s</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(K_S\)</span></p></td>
+<td><p>Sieverts solubility constant</p></td>
+<td><p>mol m⁻³ Pa⁻¹ᐟ²</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(\Phi\)</span></p></td>
+<td><p>permeability</p></td>
+<td><p>mol m⁻¹ s⁻¹ Pa⁻¹ᐟ²</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(V_H\)</span></p></td>
+<td><p>partial molar volume of H</p></td>
+<td><p>m³/mol</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(\sigma_h\)</span></p></td>
+<td><p>hydrostatic stress</p></td>
+<td><p>Pa</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(\beta\)</span></p></td>
+<td><p>TDS heating rate</p></td>
+<td><p>K/s</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(R\)</span></p></td>
+<td><p>gas constant, 8.314</p></td>
+<td><p>J mol⁻¹ K⁻¹</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<hr class="docutils" />
+<section class="tex2jax_ignore mathjax_ignore" id="appendix-b-equation-reference">
+<h1>Appendix B — Equation reference<a class="headerlink" href="#appendix-b-equation-reference" title="Link to this heading">¶</a></h1>
+<section id="b-1-trapping-oriani-local-equilibrium">
+<h2>B.1 Trapping (Oriani local equilibrium)<a class="headerlink" href="#b-1-trapping-oriani-local-equilibrium" title="Link to this heading">¶</a></h2>
+<p>Ratio of trapped to mobile hydrogen at each trap population:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[
+\frac{C_{T,i}}{C_L} = \frac{N_{T,i}}{N_L}\,K_i,
+\qquad K_i = \exp\!\left(\frac{E_{b,i}}{RT}\right)
+\]</div>
+</div>
+<p>Mobile fraction, from the mass balance <span class="math notranslate nohighlight">\(C_{\text{total}} = C_L + \sum_i C_{T,i}\)</span>:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[
+f_{\text{mobile}} = \frac{C_L}{C_{\text{total}}}
+= \frac{1}{1+\displaystyle\sum_i \frac{N_{T,i}}{N_L}K_i}
+\]</div>
+</div>
+<p>Only mobile hydrogen carries flux, so <span class="math notranslate nohighlight">\(D_{\text{eff}} = D_{\text{lattice}}\,f_{\text{mobile}}\)</span>:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[
+\boxed{\;D_{\text{eff}} = \frac{D_{\text{lattice}}}{1+\displaystyle\sum_i \frac{N_{T,i}}{N_L}\exp\!\left(\frac{E_{b,i}}{RT}\right)}\;}
+\]</div>
+</div>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[
+\frac{D_{\text{eff}}}{D_{\text{lattice}}} \equiv \texttt{reduction\_factor}
+\]</div>
+</div>
+<p>Critical trap density, at which <span class="math notranslate nohighlight">\(D_{\text{eff}} = D_{\text{lattice}}/2\)</span>:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[
+N_T^{*} = \frac{N_L}{K}
+\]</div>
+</div>
+<p>Parallel grain-boundary path (Level 4, combined with trapping):</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[
+D_{\text{eff}} = \frac{(1-f_{gb})D_{\text{bulk}} + f_{gb}\,\alpha\,D_{\text{bulk}}}{1+\sum_i N_{T,i}K_i/N_L}
+\]</div>
+</div>
+</section>
+<section id="b-2-permeation">
+<h2>B.2 Permeation<a class="headerlink" href="#b-2-permeation" title="Link to this heading">¶</a></h2>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[
+\text{Fick:}\quad J = -D\,\frac{\partial C}{\partial x}
+\qquad\qquad
+\text{Sieverts:}\quad C_0 = K_S\sqrt{p_{\mathrm{H_2}}}
+\]</div>
+</div>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[
+\text{Steady flux:}\quad J = \frac{\Phi\left(\sqrt{p_{\text{up}}}-\sqrt{p_{\text{down}}}\right)}{L}
+\]</div>
+</div>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[
+\text{Series stack:}\quad R_{\text{tot}} = \sum_i \frac{L_i}{\Phi_i},
+\qquad J = \frac{\Delta P_{\text{eff}}}{R_{\text{tot}}}
+\]</div>
+</div>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[
+\text{Barrier value:}\quad \mathrm{PRF} = \frac{J_{\text{bare}}}{J_{\text{coated}}}
+\qquad\qquad
+\text{Lag time:}\quad t_{\text{lag}} = \frac{L^{2}}{6D}
+\]</div>
+</div>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\text{Regime test:}\quad J \propto p^{\,n},
+\qquad
+n =
+\begin{cases}
+0.5 &amp; \text{diffusion-limited} \\
+\to 1 &amp; \text{surface-limited}
+\end{cases}
+\end{split}\]</div>
+</div>
+</section>
+<section id="b-3-accumulation-sofronismcmeeking">
+<h2>B.3 Accumulation (Sofronis–McMeeking)<a class="headerlink" href="#b-3-accumulation-sofronismcmeeking" title="Link to this heading">¶</a></h2>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[
+\underbrace{\frac{\partial C_L}{\partial t} + \frac{\partial C_T}{\partial t}}_{\text{lattice + trapped storage}}
+= \nabla\cdot\left(
+\underbrace{D\nabla C_L}_{\text{Fickian}}
+- \underbrace{\frac{D\,C_L V_H}{RT}\nabla\sigma_h}_{\text{stress-driven drift}}
+\right)
+\]</div>
+</div>
+<p>Hydrogen migrates <em>up</em> the hydrostatic stress gradient, concentrating at notch roots and crack tips.</p>
+</section>
+<section id="b-4-embrittlement-index">
+<h2>B.4 Embrittlement index<a class="headerlink" href="#b-4-embrittlement-index" title="Link to this heading">¶</a></h2>
+<p>Empirical susceptibility ratios from paired tests in hydrogen and in air:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[
+\mathrm{EI} = \frac{\varepsilon_{\text{air}}-\varepsilon_{\mathrm{H}}}{\varepsilon_{\text{air}}}
+\qquad\qquad
+\mathrm{RRA} = \frac{\mathrm{RA}_{\text{air}}-\mathrm{RA}_{\mathrm{H}}}{\mathrm{RA}_{\text{air}}}
+\]</div>
+</div>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[
+\text{Empirical fit:}\quad \mathrm{EI} = a + b\ln C_{\mathrm{H}}
+\qquad (C_{\mathrm{H}} &gt; C_{\text{th}})
+\]</div>
+</div>
+<p>Mechanism-based decohesion law (Serebrinsky–Carter–Ortiz), cohesive strength falling with H coverage <span class="math notranslate nohighlight">\(\theta\)</span>:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[
+\sigma_c(\theta) = \sigma_{c0}\left(1 - 1.0467\,\theta + 0.1687\,\theta^{2}\right)
+\]</div>
+</div>
+</section>
+</section>
+<hr class="docutils" />
+<section class="tex2jax_ignore mathjax_ignore" id="appendix-c-where-each-quantity-lives">
+<h1>Appendix C — Where each quantity lives<a class="headerlink" href="#appendix-c-where-each-quantity-lives" title="Link to this heading">¶</a></h1>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Quantity</p></th>
+<th class="head"><p>Role</p></th>
+<th class="head"><p>Source</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(D_{\text{lattice}}\)</span>, <span class="math notranslate nohighlight">\(K_S\)</span>, <span class="math notranslate nohighlight">\(\Phi_{\text{oxide}}\)</span></p></td>
+<td><p><strong>input</strong> (intrinsic)</p></td>
+<td><p><a class="reference external" href="https://github.com/Azeezakinyemi999/Continuum_H_permeation/tree/main/calculations/config/studies/"><code class="docutils literal notranslate"><span class="pre">config/studies/</span></code></a> — <code class="docutils literal notranslate"><span class="pre">METALS</span></code>, <code class="docutils literal notranslate"><span class="pre">OXIDES</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(N_T\)</span>, <span class="math notranslate nohighlight">\(E_b\)</span></p></td>
+<td><p><strong>input</strong> (microstructural)</p></td>
+<td><p>TDS — or fitted, which forfeits the test</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(D_{\text{eff}}\)</span>, <code class="docutils literal notranslate"><span class="pre">reduction_factor</span></code></p></td>
+<td><p><strong>output</strong> (effective)</p></td>
+<td><p><a class="reference external" href="https://github.com/Azeezakinyemi999/Continuum_H_permeation/blob/main/calculations/defective_metal.py"><code class="docutils literal notranslate"><span class="pre">calculations/defective_metal.py</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(\Phi_{\text{eff}}\)</span>, PRF, regime</p></td>
+<td><p><strong>output</strong> (system)</p></td>
+<td><p><a class="reference external" href="https://github.com/Azeezakinyemi999/Continuum_H_permeation/blob/main/calculations/classify_regime.py"><code class="docutils literal notranslate"><span class="pre">calculations/classify_regime.py</span></code></a></p></td>
+</tr>
+<tr class="row-even"><td><p>parameter ranges</p></td>
+<td><p>SA only</p></td>
+<td><p><a class="reference external" href="https://github.com/Azeezakinyemi999/Continuum_H_permeation/tree/main/calculations/config/studies/"><code class="docutils literal notranslate"><span class="pre">config/studies/</span></code></a> — <code class="docutils literal notranslate"><span class="pre">SUGGESTED_RANGES_*</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The distinction in the first column is the important one: <strong>intrinsic properties go in, effective properties come out.</strong> The model does not derive <span class="math notranslate nohighlight">\(D_{\text{lattice}}\)</span> or <span class="math notranslate nohighlight">\(K_S\)</span> — it consumes them and predicts what a real, trapped, coated, defective wall will appear to have.</p>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="PACKAGING_1.0.0.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Packaging decisions — <code class="docutils literal notranslate"><span class="pre">hydrogen-model:1.0.0</span></code> offline container</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="api/config.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title"><code class="docutils literal notranslate"><span class="pre">config</span></code> — study selection</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2026, Azeez Akinyemi
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Validating the Trapping Block Against TDS</a><ul>
+<li><a class="reference internal" href="#the-mechanism">1. The mechanism</a></li>
+<li><a class="reference internal" href="#the-problem-this-test-solves">2. The problem this test solves</a></li>
+<li><a class="reference internal" href="#the-four-steps">3. The four steps</a><ul>
+<li><a class="reference internal" href="#step-1-tds-gives-you-trap-list">Step 1 — TDS gives you <code class="docutils literal notranslate"><span class="pre">trap_list</span></code></a></li>
+<li><a class="reference internal" href="#step-2-the-model-predicts-the-ratio">Step 2 — the model predicts the ratio</a></li>
+<li><a class="reference internal" href="#step-3-permeation-measures-the-same-ratio-independently">Step 3 — permeation measures the same ratio, independently</a></li>
+<li><a class="reference internal" href="#step-4-compare-two-dimensionless-numbers">Step 4 — compare two dimensionless numbers</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#why-the-temperature-sweep-is-the-real-test">4. Why the temperature sweep is the real test</a></li>
+<li><a class="reference internal" href="#two-caveats-before-trusting-a-pass">5. Two caveats before trusting a pass</a><ul>
+<li><a class="reference internal" href="#if-the-two-disagree-by-more-than-3">If the two disagree by more than ~3×</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#appendix-a-symbols">Appendix A — Symbols</a></li>
+<li><a class="reference internal" href="#appendix-b-equation-reference">Appendix B — Equation reference</a><ul>
+<li><a class="reference internal" href="#b-1-trapping-oriani-local-equilibrium">B.1 Trapping (Oriani local equilibrium)</a></li>
+<li><a class="reference internal" href="#b-2-permeation">B.2 Permeation</a></li>
+<li><a class="reference internal" href="#b-3-accumulation-sofronismcmeeking">B.3 Accumulation (Sofronis–McMeeking)</a></li>
+<li><a class="reference internal" href="#b-4-embrittlement-index">B.4 Embrittlement index</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#appendix-c-where-each-quantity-lives">Appendix C — Where each quantity lives</a></li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="_static/documentation_options.js?v=fc837d61"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/scripts/furo.js?v=46bd48cc"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    </body>
+</html>

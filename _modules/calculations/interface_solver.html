@@ -1,0 +1,1162 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../../">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html">
+
+    <!-- Generated with Sphinx 7.4.7 and Furo 2025.12.19 -->
+        <title>calculations.interface_solver - Hierarchical Hydrogen Permeation Model 1.1.0</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../index.html"><div class="brand">Hierarchical Hydrogen Permeation Model 1.1.0</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
+  
+  <span class="sidebar-brand-text">Hierarchical Hydrogen Permeation Model 1.1.0</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting-started.html">Getting started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">How-to</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../how-to/switch-study.html">How to switch material study</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../how-to/sensitivity-analysis.html">How to run a regime-stratified sensitivity analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../CONTAINER.html">Hydrogen Permeation Model — Offline Analysis Environment</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Theory</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/two-models.html">Two models, not six levels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/foundations.html">Foundations: chemical potential and the driving force</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/equilibrium-models.html">Equilibrium models: Sieverts, Henry and Langmuir</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../STEADY_STATE.html">Steady State, Transients, and the Accumulation Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/level1-metal.html">Level 1 — the perfect metal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/level2-oxide.html">Level 2 — the oxide layer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/level3-defective-oxide.html">Level 3 — the defective oxide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/level4-microstructure.html">Level 4 — metal microstructure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/level5-full-system.html">Level 5 — the full system</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/level6-surface-kinetics.html">Level 6 — surface kinetics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/permeability.html">Permeability — two models, four tiers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/equations.html">Equation catalogue</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../PARAMETERS.html">Complete Parameter Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../OUTPUTS.html">Complete Output Reference</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../api/index.html">API Reference</a><input aria-label="Toggle navigation of API Reference" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api/utils.html"><code class="docutils literal notranslate"><span class="pre">utils</span></code> — shared Arrhenius helpers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/permeation_calc.html"><code class="docutils literal notranslate"><span class="pre">permeation_calc</span></code> — Levels 1-2: Sieverts solubility and bulk diffusion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/oxide_permeation.html"><code class="docutils literal notranslate"><span class="pre">oxide_permeation</span></code> — Levels 2-3: molecular transport through the oxide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/interface_solver.html"><code class="docutils literal notranslate"><span class="pre">interface_solver</span></code> — the oxide/metal interface pressure solve</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/parallel_oxide_defect_paths.html"><code class="docutils literal notranslate"><span class="pre">parallel_oxide_defect_paths</span></code> — Level 3: defective oxide, parallel paths</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/defective_metal.html"><code class="docutils literal notranslate"><span class="pre">defective_metal</span></code> — Level 4: grain boundaries and trapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/surface_kinetics.html"><code class="docutils literal notranslate"><span class="pre">surface_kinetics</span></code> — Level 6: dissociation kinetics and Langmuir coverage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/classify_regime.html"><code class="docutils literal notranslate"><span class="pre">classify_regime</span></code> — hierarchical regime classification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/sensitivity.html"><code class="docutils literal notranslate"><span class="pre">sensitivity</span></code> — regime-stratified sensitivity analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/config.html"><code class="docutils literal notranslate"><span class="pre">config</span></code> — study selection</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Validation and release</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../TRAPPING_VALIDATION.html">Validating the Trapping Block Against TDS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../TRAPPING_VALIDATION.html#appendix-a-symbols">Appendix A — Symbols</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../TRAPPING_VALIDATION.html#appendix-b-equation-reference">Appendix B — Equation reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../TRAPPING_VALIDATION.html#appendix-c-where-each-quantity-lives">Appendix C — Where each quantity lives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../PACKAGING_1.0.0.html">Packaging decisions — <code class="docutils literal notranslate"><span class="pre">hydrogen-model:1.0.0</span></code> offline container</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">References</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Warnings and caveats</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../caveats.html">Warnings and caveats</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <h1>Source code for calculations.interface_solver</h1><div class="highlight"><pre>
+<span></span><span class="c1"># calculations/interface_solver.py</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">brentq</span><span class="p">,</span> <span class="n">root_scalar</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">calculations.oxide_permeation</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">molecular_diffusion_flux</span><span class="p">,</span>
+    <span class="n">calculate_oxide_resistance</span><span class="p">,</span>
+    <span class="n">calculate_metal_resistance</span>
+<span class="p">)</span>
+
+<div class="viewcode-block" id="calculate_metal_flux_sieverts">
+<a class="viewcode-back" href="../../api/interface_solver.html#calculations.interface_solver.calculate_metal_flux_sieverts">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">calculate_metal_flux_sieverts</span><span class="p">(</span><span class="n">D_metal</span><span class="p">,</span> <span class="n">K_s_metal</span><span class="p">,</span> <span class="n">thickness</span><span class="p">,</span> <span class="n">P_interface</span><span class="p">,</span> <span class="n">P_downstream</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate flux through metal using Sieverts&#39; law.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    D_metal : float</span>
+<span class="sd">        Diffusion coefficient in metal (m²/s)</span>
+<span class="sd">    K_s_metal : float</span>
+<span class="sd">        Sieverts&#39; constant (mol/m³/Pa^0.5)</span>
+<span class="sd">    thickness : float</span>
+<span class="sd">        Metal thickness (m)</span>
+<span class="sd">    P_interface : float</span>
+<span class="sd">        Pressure at oxide/metal interface (Pa)</span>
+<span class="sd">    P_downstream : float</span>
+<span class="sd">        Downstream pressure (Pa)</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    float</span>
+<span class="sd">        Flux through metal (mol/m²/s)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">P_interface</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">P_downstream</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Pressures must be non-negative&quot;</span><span class="p">)</span>
+    
+    <span class="n">C_interface</span> <span class="o">=</span> <span class="n">K_s_metal</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">P_interface</span><span class="p">)</span>
+    <span class="n">C_downstream</span> <span class="o">=</span> <span class="n">K_s_metal</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">P_downstream</span><span class="p">)</span>
+    
+    <span class="n">flux</span> <span class="o">=</span> <span class="n">D_metal</span> <span class="o">*</span> <span class="p">(</span><span class="n">C_interface</span> <span class="o">-</span> <span class="n">C_downstream</span><span class="p">)</span> <span class="o">/</span> <span class="n">thickness</span>
+    <span class="k">return</span> <span class="n">flux</span></div>
+
+
+
+<div class="viewcode-block" id="flux_balance_equation">
+<a class="viewcode-back" href="../../api/interface_solver.html#calculations.interface_solver.flux_balance_equation">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">flux_balance_equation</span><span class="p">(</span><span class="n">P_interface</span><span class="p">,</span> <span class="n">P_upstream</span><span class="p">,</span> <span class="n">P_downstream</span><span class="p">,</span> <span class="n">oxide_props</span><span class="p">,</span> <span class="n">metal_props</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Flux balance equation that equals zero when fluxes match.</span>
+<span class="sd">    </span>
+<span class="sd">    The interface pressure is the root of</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        f(P_{int}) = J_{oxide}(P_{int}) - J_{metal}(P_{int}) = 0</span>
+
+<span class="sd">    which is guaranteed to have exactly one solution in</span>
+<span class="sd">    :math:`[P_{down}, P_{up}]`: :math:`f &gt; 0` at the lower bound (all the</span>
+<span class="sd">    driving force across the oxide, none across the metal) and :math:`f &lt; 0` at</span>
+<span class="sd">    the upper bound, and :math:`f` is continuous and monotonic between them.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    P_interface : float</span>
+<span class="sd">        Interface pressure to solve for (Pa)</span>
+<span class="sd">    P_upstream : float</span>
+<span class="sd">        Upstream pressure (Pa)</span>
+<span class="sd">    P_downstream : float</span>
+<span class="sd">        Downstream pressure (Pa)</span>
+<span class="sd">    oxide_props : dict</span>
+<span class="sd">        Contains D_ox, K_ox, thickness</span>
+<span class="sd">    metal_props : dict</span>
+<span class="sd">        Contains D_metal, K_s_metal, thickness</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    float</span>
+<span class="sd">        Flux difference (should be zero at solution)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Oxide flux (molecular diffusion)</span>
+    <span class="n">flux_oxide</span> <span class="o">=</span> <span class="n">molecular_diffusion_flux</span><span class="p">(</span>
+        <span class="n">oxide_props</span><span class="p">[</span><span class="s1">&#39;D_ox&#39;</span><span class="p">],</span>
+        <span class="n">oxide_props</span><span class="p">[</span><span class="s1">&#39;K_ox&#39;</span><span class="p">],</span>
+        <span class="n">oxide_props</span><span class="p">[</span><span class="s1">&#39;thickness&#39;</span><span class="p">],</span>
+        <span class="n">P_upstream</span><span class="p">,</span>
+        <span class="n">P_interface</span>
+    <span class="p">)</span>
+    
+    <span class="c1"># Metal flux (Sieverts&#39; law)</span>
+    <span class="n">flux_metal</span> <span class="o">=</span> <span class="n">calculate_metal_flux_sieverts</span><span class="p">(</span>
+        <span class="n">metal_props</span><span class="p">[</span><span class="s1">&#39;D_metal&#39;</span><span class="p">],</span>
+        <span class="n">metal_props</span><span class="p">[</span><span class="s1">&#39;K_s_metal&#39;</span><span class="p">],</span>
+        <span class="n">metal_props</span><span class="p">[</span><span class="s1">&#39;thickness&#39;</span><span class="p">],</span>
+        <span class="n">P_interface</span><span class="p">,</span>
+        <span class="n">P_downstream</span>
+    <span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">flux_oxide</span> <span class="o">-</span> <span class="n">flux_metal</span></div>
+
+
+<span class="c1"># Handle edge case where upstream pressure is too low</span>
+<span class="n">min_pressure</span> <span class="o">=</span> <span class="mf">1e-20</span>  <span class="c1"># Minimum meaningful pressure</span>
+<div class="viewcode-block" id="solve_interface_pressure">
+<a class="viewcode-back" href="../../api/interface_solver.html#calculations.interface_solver.solve_interface_pressure">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">solve_interface_pressure</span><span class="p">(</span><span class="n">P_upstream</span><span class="p">,</span> <span class="n">P_downstream</span><span class="p">,</span> <span class="n">oxide_props</span><span class="p">,</span> <span class="n">metal_props</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;brentq&#39;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Solve for interface pressure where oxide and metal fluxes match.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    P_upstream : float</span>
+<span class="sd">        Upstream pressure (Pa)</span>
+<span class="sd">    P_downstream : float</span>
+<span class="sd">        Downstream pressure (Pa)</span>
+<span class="sd">    oxide_props : dict</span>
+<span class="sd">        Oxide layer properties</span>
+<span class="sd">    metal_props : dict</span>
+<span class="sd">        Metal layer properties</span>
+<span class="sd">    method : str</span>
+<span class="sd">        Solver method (&#39;brentq&#39; or &#39;root_scalar&#39;)</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict</span>
+<span class="sd">        Contains P_interface, flux, convergence info</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Handle edge case where upstream pressure is too low</span>
+    <span class="n">min_pressure</span> <span class="o">=</span> <span class="mf">1e-20</span>  <span class="c1"># Minimum meaningful pressure</span>
+    
+    <span class="k">if</span> <span class="n">P_upstream</span> <span class="o">&lt;=</span> <span class="n">min_pressure</span><span class="p">:</span>
+        <span class="c1"># For extremely low pressures, interface pressure ≈ downstream pressure</span>
+        <span class="n">P_interface</span> <span class="o">=</span> <span class="n">P_downstream</span> <span class="o">+</span> <span class="n">min_pressure</span>
+        <span class="n">flux</span> <span class="o">=</span> <span class="n">molecular_diffusion_flux</span><span class="p">(</span>
+            <span class="n">oxide_props</span><span class="p">[</span><span class="s1">&#39;D_ox&#39;</span><span class="p">],</span>
+            <span class="n">oxide_props</span><span class="p">[</span><span class="s1">&#39;K_ox&#39;</span><span class="p">],</span>
+            <span class="n">oxide_props</span><span class="p">[</span><span class="s1">&#39;thickness&#39;</span><span class="p">],</span>
+            <span class="n">P_upstream</span><span class="p">,</span>
+            <span class="n">P_interface</span>
+        <span class="p">)</span>
+        
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s1">&#39;P_interface&#39;</span><span class="p">:</span> <span class="n">P_interface</span><span class="p">,</span>
+            <span class="s1">&#39;P_upstream&#39;</span><span class="p">:</span> <span class="n">P_upstream</span><span class="p">,</span>
+            <span class="s1">&#39;P_downstream&#39;</span><span class="p">:</span> <span class="n">P_downstream</span><span class="p">,</span>
+            <span class="s1">&#39;flux&#39;</span><span class="p">:</span> <span class="n">flux</span><span class="p">,</span>
+            <span class="s1">&#39;flux_error&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s1">&#39;converged&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>  <span class="c1"># Not actually solved, just approximated</span>
+            <span class="s1">&#39;P_interface_normalized&#39;</span><span class="p">:</span> <span class="mi">0</span>
+        <span class="p">}</span>
+    
+    <span class="c1"># Physical bounds: P_interface must be between downstream and upstream</span>
+    <span class="n">P_min</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">P_downstream</span> <span class="o">+</span> <span class="n">P_upstream</span> <span class="o">*</span> <span class="mf">1e-10</span><span class="p">,</span> <span class="n">min_pressure</span><span class="p">)</span>
+    <span class="n">P_max</span> <span class="o">=</span> <span class="n">P_upstream</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="mf">1e-10</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">P_min</span> <span class="o">&gt;=</span> <span class="n">P_max</span><span class="p">:</span>
+        <span class="c1"># If bounds are invalid, use geometric mean as guess</span>
+        <span class="n">P_interface</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">P_upstream</span> <span class="o">*</span> <span class="n">P_downstream</span><span class="p">,</span> <span class="n">min_pressure</span><span class="p">))</span>
+        <span class="n">flux</span> <span class="o">=</span> <span class="n">molecular_diffusion_flux</span><span class="p">(</span>
+            <span class="n">oxide_props</span><span class="p">[</span><span class="s1">&#39;D_ox&#39;</span><span class="p">],</span>
+            <span class="n">oxide_props</span><span class="p">[</span><span class="s1">&#39;K_ox&#39;</span><span class="p">],</span>
+            <span class="n">oxide_props</span><span class="p">[</span><span class="s1">&#39;thickness&#39;</span><span class="p">],</span>
+            <span class="n">P_upstream</span><span class="p">,</span>
+            <span class="n">P_interface</span>
+        <span class="p">)</span>
+        
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s1">&#39;P_interface&#39;</span><span class="p">:</span> <span class="n">P_interface</span><span class="p">,</span>
+            <span class="s1">&#39;P_upstream&#39;</span><span class="p">:</span> <span class="n">P_upstream</span><span class="p">,</span>
+            <span class="s1">&#39;P_downstream&#39;</span><span class="p">:</span> <span class="n">P_downstream</span><span class="p">,</span>
+            <span class="s1">&#39;flux&#39;</span><span class="p">:</span> <span class="n">flux</span><span class="p">,</span>
+            <span class="s1">&#39;flux_error&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s1">&#39;converged&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="s1">&#39;P_interface_normalized&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">P_interface</span> <span class="o">-</span> <span class="n">P_downstream</span><span class="p">)</span> <span class="o">/</span> <span class="nb">max</span><span class="p">(</span><span class="n">P_upstream</span> <span class="o">-</span> <span class="n">P_downstream</span><span class="p">,</span> <span class="n">min_pressure</span><span class="p">)</span>
+        <span class="p">}</span>
+    
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># Check if the function has different signs at boundaries</span>
+        <span class="n">f_min</span> <span class="o">=</span> <span class="n">flux_balance_equation</span><span class="p">(</span><span class="n">P_min</span><span class="p">,</span> <span class="n">P_upstream</span><span class="p">,</span> <span class="n">P_downstream</span><span class="p">,</span> <span class="n">oxide_props</span><span class="p">,</span> <span class="n">metal_props</span><span class="p">)</span>
+        <span class="n">f_max</span> <span class="o">=</span> <span class="n">flux_balance_equation</span><span class="p">(</span><span class="n">P_max</span><span class="p">,</span> <span class="n">P_upstream</span><span class="p">,</span> <span class="n">P_downstream</span><span class="p">,</span> <span class="n">oxide_props</span><span class="p">,</span> <span class="n">metal_props</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">f_min</span> <span class="o">*</span> <span class="n">f_max</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># Same sign at boundaries - no solution in this interval</span>
+            <span class="c1"># This typically means oxide is completely dominant</span>
+            <span class="n">P_interface</span> <span class="o">=</span> <span class="n">P_min</span>  <span class="c1"># Interface pressure drops to minimum</span>
+            <span class="n">converged</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;brentq&#39;</span><span class="p">:</span>
+                <span class="c1"># Brent&#39;s method - robust and fast</span>
+                <span class="n">P_interface</span> <span class="o">=</span> <span class="n">brentq</span><span class="p">(</span>
+                    <span class="n">flux_balance_equation</span><span class="p">,</span>
+                    <span class="n">P_min</span><span class="p">,</span> <span class="n">P_max</span><span class="p">,</span>
+                    <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">P_upstream</span><span class="p">,</span> <span class="n">P_downstream</span><span class="p">,</span> <span class="n">oxide_props</span><span class="p">,</span> <span class="n">metal_props</span><span class="p">),</span>
+                    <span class="n">xtol</span><span class="o">=</span><span class="mf">1e-12</span><span class="p">,</span>
+                    <span class="n">rtol</span><span class="o">=</span><span class="mf">1e-12</span>
+                <span class="p">)</span>
+                <span class="n">converged</span> <span class="o">=</span> <span class="kc">True</span>
+                
+            <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;root_scalar&#39;</span><span class="p">:</span>
+                <span class="c1"># Alternative solver with more diagnostics</span>
+                <span class="n">sol</span> <span class="o">=</span> <span class="n">root_scalar</span><span class="p">(</span>
+                    <span class="n">flux_balance_equation</span><span class="p">,</span>
+                    <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">P_upstream</span><span class="p">,</span> <span class="n">P_downstream</span><span class="p">,</span> <span class="n">oxide_props</span><span class="p">,</span> <span class="n">metal_props</span><span class="p">),</span>
+                    <span class="n">bracket</span><span class="o">=</span><span class="p">[</span><span class="n">P_min</span><span class="p">,</span> <span class="n">P_max</span><span class="p">],</span>
+                    <span class="n">method</span><span class="o">=</span><span class="s1">&#39;brentq&#39;</span>
+                <span class="p">)</span>
+                <span class="n">P_interface</span> <span class="o">=</span> <span class="n">sol</span><span class="o">.</span><span class="n">root</span>
+                <span class="n">converged</span> <span class="o">=</span> <span class="n">sol</span><span class="o">.</span><span class="n">converged</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown method: </span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            
+    <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">RuntimeError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="c1"># If solver fails, use approximation</span>
+        <span class="c1"># For oxide-dominated case, interface pressure is very low</span>
+        <span class="n">P_interface</span> <span class="o">=</span> <span class="n">P_min</span>
+        <span class="n">converged</span> <span class="o">=</span> <span class="kc">False</span>
+    
+    <span class="c1"># Calculate actual flux at solution</span>
+    <span class="n">flux</span> <span class="o">=</span> <span class="n">molecular_diffusion_flux</span><span class="p">(</span>
+        <span class="n">oxide_props</span><span class="p">[</span><span class="s1">&#39;D_ox&#39;</span><span class="p">],</span>
+        <span class="n">oxide_props</span><span class="p">[</span><span class="s1">&#39;K_ox&#39;</span><span class="p">],</span>
+        <span class="n">oxide_props</span><span class="p">[</span><span class="s1">&#39;thickness&#39;</span><span class="p">],</span>
+        <span class="n">P_upstream</span><span class="p">,</span>
+        <span class="n">P_interface</span>
+    <span class="p">)</span>
+    
+    <span class="c1"># Verify flux continuity (only if we have a valid solution)</span>
+    <span class="k">if</span> <span class="n">P_interface</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">flux_metal_check</span> <span class="o">=</span> <span class="n">calculate_metal_flux_sieverts</span><span class="p">(</span>
+            <span class="n">metal_props</span><span class="p">[</span><span class="s1">&#39;D_metal&#39;</span><span class="p">],</span>
+            <span class="n">metal_props</span><span class="p">[</span><span class="s1">&#39;K_s_metal&#39;</span><span class="p">],</span>
+            <span class="n">metal_props</span><span class="p">[</span><span class="s1">&#39;thickness&#39;</span><span class="p">],</span>
+            <span class="n">P_interface</span><span class="p">,</span>
+            <span class="n">P_downstream</span>
+        <span class="p">)</span>
+        <span class="n">flux_error</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">flux</span> <span class="o">-</span> <span class="n">flux_metal_check</span><span class="p">)</span> <span class="o">/</span> <span class="n">flux</span> <span class="k">if</span> <span class="n">flux</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">flux_error</span> <span class="o">=</span> <span class="mf">1.0</span>  <span class="c1"># Maximum error</span>
+    
+    <span class="c1"># Calculate normalized position safely</span>
+    <span class="k">if</span> <span class="n">P_upstream</span> <span class="o">&gt;</span> <span class="n">P_downstream</span><span class="p">:</span>
+        <span class="n">P_interface_normalized</span> <span class="o">=</span> <span class="p">(</span><span class="n">P_interface</span> <span class="o">-</span> <span class="n">P_downstream</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">P_upstream</span> <span class="o">-</span> <span class="n">P_downstream</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">P_interface_normalized</span> <span class="o">=</span> <span class="mi">0</span>
+    
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s1">&#39;P_interface&#39;</span><span class="p">:</span> <span class="n">P_interface</span><span class="p">,</span>
+        <span class="s1">&#39;P_upstream&#39;</span><span class="p">:</span> <span class="n">P_upstream</span><span class="p">,</span>
+        <span class="s1">&#39;P_downstream&#39;</span><span class="p">:</span> <span class="n">P_downstream</span><span class="p">,</span>
+        <span class="s1">&#39;flux&#39;</span><span class="p">:</span> <span class="n">flux</span><span class="p">,</span>
+        <span class="s1">&#39;flux_error&#39;</span><span class="p">:</span> <span class="n">flux_error</span><span class="p">,</span>
+        <span class="s1">&#39;converged&#39;</span><span class="p">:</span> <span class="n">converged</span><span class="p">,</span>
+        <span class="s1">&#39;P_interface_normalized&#39;</span><span class="p">:</span> <span class="n">P_interface_normalized</span>
+    <span class="p">}</span></div>
+
+
+
+<div class="viewcode-block" id="calculate_oxide_metal_system">
+<a class="viewcode-back" href="../../api/interface_solver.html#calculations.interface_solver.calculate_oxide_metal_system">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">calculate_oxide_metal_system</span><span class="p">(</span><span class="n">P_upstream</span><span class="p">,</span> <span class="n">P_downstream</span><span class="p">,</span> <span class="n">oxide_props</span><span class="p">,</span> <span class="n">metal_props</span><span class="p">,</span> <span class="n">T_K</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Main function to calculate flux through oxide+metal system.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    P_upstream : float</span>
+<span class="sd">        Upstream pressure (Pa)</span>
+<span class="sd">    P_downstream : float</span>
+<span class="sd">        Downstream pressure (Pa)</span>
+<span class="sd">    oxide_props : dict</span>
+<span class="sd">        Oxide properties (can include T-dependent parameters)</span>
+<span class="sd">    metal_props : dict</span>
+<span class="sd">        Metal properties (can include T-dependent parameters)</span>
+<span class="sd">    T_K : float, optional</span>
+<span class="sd">        Temperature in Kelvin (for T-dependent properties)</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict</span>
+<span class="sd">        Complete system solution including flux, pressures, regime</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Solve for interface pressure</span>
+    <span class="n">solution</span> <span class="o">=</span> <span class="n">solve_interface_pressure</span><span class="p">(</span><span class="n">P_upstream</span><span class="p">,</span> <span class="n">P_downstream</span><span class="p">,</span> <span class="n">oxide_props</span><span class="p">,</span> <span class="n">metal_props</span><span class="p">)</span>
+    
+    <span class="c1"># Calculate resistances for regime identification</span>
+    <span class="n">R_oxide</span> <span class="o">=</span> <span class="n">calculate_oxide_resistance</span><span class="p">(</span>
+        <span class="n">oxide_props</span><span class="p">[</span><span class="s1">&#39;D_ox&#39;</span><span class="p">],</span>
+        <span class="n">oxide_props</span><span class="p">[</span><span class="s1">&#39;K_ox&#39;</span><span class="p">],</span>
+        <span class="n">oxide_props</span><span class="p">[</span><span class="s1">&#39;thickness&#39;</span><span class="p">]</span>
+    <span class="p">)</span>
+    
+    <span class="c1"># Use a minimum pressure for resistance calculation to avoid errors</span>
+    <span class="n">P_interface_for_resistance</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">solution</span><span class="p">[</span><span class="s1">&#39;P_interface&#39;</span><span class="p">],</span> <span class="n">min_pressure</span><span class="p">)</span>
+    
+    <span class="n">R_metal</span> <span class="o">=</span> <span class="n">calculate_metal_resistance</span><span class="p">(</span>
+        <span class="n">metal_props</span><span class="p">[</span><span class="s1">&#39;D_metal&#39;</span><span class="p">],</span>
+        <span class="n">metal_props</span><span class="p">[</span><span class="s1">&#39;K_s_metal&#39;</span><span class="p">],</span>
+        <span class="n">metal_props</span><span class="p">[</span><span class="s1">&#39;thickness&#39;</span><span class="p">],</span>
+        <span class="n">P_interface_for_resistance</span>
+    <span class="p">)</span>
+    
+    <span class="c1"># Identify limiting mechanism</span>
+    <span class="n">ratio</span> <span class="o">=</span> <span class="n">R_oxide</span> <span class="o">/</span> <span class="n">R_metal</span>
+    <span class="k">if</span> <span class="n">ratio</span> <span class="o">&gt;</span> <span class="mi">10</span><span class="p">:</span>
+        <span class="n">regime</span> <span class="o">=</span> <span class="s2">&quot;oxide_limited&quot;</span>
+    <span class="k">elif</span> <span class="n">ratio</span> <span class="o">&lt;</span> <span class="mf">0.5</span><span class="p">:</span>
+        <span class="n">regime</span> <span class="o">=</span> <span class="s2">&quot;metal_limited&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">regime</span> <span class="o">=</span> <span class="s2">&quot;transition&quot;</span>
+    
+    <span class="c1"># Add additional information</span>
+    <span class="n">solution</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+        <span class="s1">&#39;R_oxide&#39;</span><span class="p">:</span> <span class="n">R_oxide</span><span class="p">,</span>
+        <span class="s1">&#39;R_metal&#39;</span><span class="p">:</span> <span class="n">R_metal</span><span class="p">,</span>
+        <span class="s1">&#39;resistance_ratio&#39;</span><span class="p">:</span> <span class="n">ratio</span><span class="p">,</span>
+        <span class="s1">&#39;regime&#39;</span><span class="p">:</span> <span class="n">regime</span><span class="p">,</span>
+        <span class="s1">&#39;temperature&#39;</span><span class="p">:</span> <span class="n">T_K</span>
+    <span class="p">})</span>
+    
+    <span class="k">return</span> <span class="n">solution</span></div>
+
+
+
+<div class="viewcode-block" id="calculate_concentration_profile">
+<a class="viewcode-back" href="../../api/interface_solver.html#calculations.interface_solver.calculate_concentration_profile">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">calculate_concentration_profile</span><span class="p">(</span><span class="n">P_upstream</span><span class="p">,</span> <span class="n">P_downstream</span><span class="p">,</span> <span class="n">oxide_props</span><span class="p">,</span> <span class="n">metal_props</span><span class="p">,</span> <span class="n">n_points</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate concentration profile through oxide and metal layers.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    P_upstream, P_downstream : float</span>
+<span class="sd">        Boundary pressures (Pa)</span>
+<span class="sd">    oxide_props, metal_props : dict</span>
+<span class="sd">        Layer properties</span>
+<span class="sd">    n_points : int</span>
+<span class="sd">        Number of points in each layer</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict</span>
+<span class="sd">        Contains position and concentration arrays</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># First solve for interface pressure</span>
+    <span class="n">solution</span> <span class="o">=</span> <span class="n">solve_interface_pressure</span><span class="p">(</span><span class="n">P_upstream</span><span class="p">,</span> <span class="n">P_downstream</span><span class="p">,</span> <span class="n">oxide_props</span><span class="p">,</span> <span class="n">metal_props</span><span class="p">)</span>
+    <span class="n">P_interface</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">solution</span><span class="p">[</span><span class="s1">&#39;P_interface&#39;</span><span class="p">],</span> <span class="n">min_pressure</span><span class="p">)</span>  <span class="c1"># Ensure positive for sqrt</span>
+    
+    <span class="c1"># Oxide layer positions and concentrations</span>
+    <span class="n">x_oxide</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">oxide_props</span><span class="p">[</span><span class="s1">&#39;thickness&#39;</span><span class="p">],</span> <span class="n">n_points</span><span class="p">)</span>
+    <span class="c1"># Linear profile in oxide</span>
+    <span class="n">C_oxide_up</span> <span class="o">=</span> <span class="n">oxide_props</span><span class="p">[</span><span class="s1">&#39;K_ox&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">P_upstream</span>
+    <span class="n">C_oxide_interface</span> <span class="o">=</span> <span class="n">oxide_props</span><span class="p">[</span><span class="s1">&#39;K_ox&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">P_interface</span>
+    <span class="n">C_oxide</span> <span class="o">=</span> <span class="n">C_oxide_up</span> <span class="o">-</span> <span class="p">(</span><span class="n">C_oxide_up</span> <span class="o">-</span> <span class="n">C_oxide_interface</span><span class="p">)</span> <span class="o">*</span> <span class="n">x_oxide</span> <span class="o">/</span> <span class="n">oxide_props</span><span class="p">[</span><span class="s1">&#39;thickness&#39;</span><span class="p">]</span>
+    
+    <span class="c1"># Metal layer positions and concentrations</span>
+    <span class="n">x_metal_start</span> <span class="o">=</span> <span class="n">oxide_props</span><span class="p">[</span><span class="s1">&#39;thickness&#39;</span><span class="p">]</span>
+    <span class="n">x_metal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">x_metal_start</span><span class="p">,</span> 
+                          <span class="n">x_metal_start</span> <span class="o">+</span> <span class="n">metal_props</span><span class="p">[</span><span class="s1">&#39;thickness&#39;</span><span class="p">],</span> 
+                          <span class="n">n_points</span><span class="p">)</span>
+    <span class="c1"># Square root profile in metal</span>
+    <span class="n">C_metal_interface</span> <span class="o">=</span> <span class="n">metal_props</span><span class="p">[</span><span class="s1">&#39;K_s_metal&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">P_interface</span><span class="p">)</span>
+    <span class="n">C_metal_down</span> <span class="o">=</span> <span class="n">metal_props</span><span class="p">[</span><span class="s1">&#39;K_s_metal&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">P_downstream</span><span class="p">)</span>
+    
+    <span class="c1"># Linear interpolation of sqrt(P), then calculate C</span>
+    <span class="n">x_normalized</span> <span class="o">=</span> <span class="p">(</span><span class="n">x_metal</span> <span class="o">-</span> <span class="n">x_metal_start</span><span class="p">)</span> <span class="o">/</span> <span class="n">metal_props</span><span class="p">[</span><span class="s1">&#39;thickness&#39;</span><span class="p">]</span>
+    <span class="n">sqrt_P</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">P_interface</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">P_interface</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">P_downstream</span><span class="p">))</span> <span class="o">*</span> <span class="n">x_normalized</span>
+    <span class="n">C_metal</span> <span class="o">=</span> <span class="n">metal_props</span><span class="p">[</span><span class="s1">&#39;K_s_metal&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">sqrt_P</span>
+    
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s1">&#39;x_oxide&#39;</span><span class="p">:</span> <span class="n">x_oxide</span><span class="p">,</span>
+        <span class="s1">&#39;C_oxide&#39;</span><span class="p">:</span> <span class="n">C_oxide</span><span class="p">,</span>
+        <span class="s1">&#39;x_metal&#39;</span><span class="p">:</span> <span class="n">x_metal</span><span class="p">,</span>
+        <span class="s1">&#39;C_metal&#39;</span><span class="p">:</span> <span class="n">C_metal</span><span class="p">,</span>
+        <span class="s1">&#39;x_all&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">x_oxide</span><span class="p">,</span> <span class="n">x_metal</span><span class="p">]),</span>
+        <span class="s1">&#39;C_all&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">C_oxide</span><span class="p">,</span> <span class="n">C_metal</span><span class="p">]),</span>
+        <span class="s1">&#39;P_interface&#39;</span><span class="p">:</span> <span class="n">P_interface</span><span class="p">,</span>
+        <span class="s1">&#39;C_discontinuity&#39;</span><span class="p">:</span> <span class="n">C_oxide_interface</span> <span class="o">-</span> <span class="n">C_metal_interface</span>
+    <span class="p">}</span></div>
+
+
+
+
+<span class="c1"># =============================================================================</span>
+<span class="c1"># LEVEL 4: Interface Solvers for Defective Metal</span>
+<span class="c1"># =============================================================================</span>
+
+<div class="viewcode-block" id="calculate_defective_metal_flux_sieverts">
+<a class="viewcode-back" href="../../api/interface_solver.html#calculations.interface_solver.calculate_defective_metal_flux_sieverts">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">calculate_defective_metal_flux_sieverts</span><span class="p">(</span><span class="n">D_lattice</span><span class="p">,</span> <span class="n">K_s_metal</span><span class="p">,</span> <span class="n">thickness</span><span class="p">,</span> 
+                                            <span class="n">P_interface</span><span class="p">,</span> <span class="n">P_downstream</span><span class="p">,</span>
+                                            <span class="n">temperature</span><span class="p">,</span> <span class="n">microstructure_params</span><span class="p">,</span>
+                                            <span class="n">lattice_density</span><span class="p">,</span>
+                                            <span class="n">method</span><span class="o">=</span><span class="s1">&#39;average&#39;</span><span class="p">,</span> <span class="n">n_points</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate flux through defective metal using Sieverts&#39; law boundary conditions.</span>
+<span class="sd">    </span>
+<span class="sd">    This is the Level 4 equivalent of calculate_metal_flux_sieverts().</span>
+<span class="sd">    Designed for use in iterative interface pressure solving.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    D_lattice : float</span>
+<span class="sd">        Intrinsic lattice diffusion coefficient [m²/s]</span>
+<span class="sd">    K_s_metal : float</span>
+<span class="sd">        Sieverts&#39; constant [mol/m³/Pa^0.5]</span>
+<span class="sd">    thickness : float</span>
+<span class="sd">        Metal thickness [m]</span>
+<span class="sd">    P_interface : float</span>
+<span class="sd">        Pressure at oxide/metal interface [Pa]</span>
+<span class="sd">    P_downstream : float</span>
+<span class="sd">        Downstream pressure [Pa]</span>
+<span class="sd">    temperature : float</span>
+<span class="sd">        Operating temperature [K] (properties should be pre-calculated at this T)</span>
+<span class="sd">    microstructure_params : dict</span>
+<span class="sd">        Microstructure specification (grain_size, grain_shape, gb_type, trap_list)</span>
+<span class="sd">    lattice_density : float, optional</span>
+<span class="sd">        Lattice site density [m⁻³]</span>
+<span class="sd">    method : str, optional</span>
+<span class="sd">        D_eff averaging method (&#39;average&#39;, &#39;harmonic&#39;, &#39;inlet&#39;, &#39;outlet&#39;)</span>
+<span class="sd">    n_points : int, optional</span>
+<span class="sd">        Points for integration</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    float</span>
+<span class="sd">        Flux through defective metal [mol/m²/s]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">calculations.permeation_calc</span><span class="w"> </span><span class="kn">import</span> <span class="n">calculate_defective_metal_flux</span>
+    
+    <span class="n">result</span> <span class="o">=</span> <span class="n">calculate_defective_metal_flux</span><span class="p">(</span>
+        <span class="n">D_lattice</span><span class="o">=</span><span class="n">D_lattice</span><span class="p">,</span>
+        <span class="n">K_s</span><span class="o">=</span><span class="n">K_s_metal</span><span class="p">,</span>
+        <span class="n">thickness</span><span class="o">=</span><span class="n">thickness</span><span class="p">,</span>
+        <span class="n">P_up</span><span class="o">=</span><span class="n">P_interface</span><span class="p">,</span>
+        <span class="n">P_down</span><span class="o">=</span><span class="n">P_downstream</span><span class="p">,</span>
+        <span class="n">temperature</span><span class="o">=</span><span class="n">temperature</span><span class="p">,</span>
+        <span class="n">microstructure_params</span><span class="o">=</span><span class="n">microstructure_params</span><span class="p">,</span>
+        <span class="n">lattice_density</span><span class="o">=</span><span class="n">lattice_density</span><span class="p">,</span>
+        <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
+        <span class="n">n_points</span><span class="o">=</span><span class="n">n_points</span><span class="p">,</span>
+        <span class="n">mode</span><span class="o">=</span><span class="n">mode</span>
+    <span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;flux&#39;</span><span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="flux_balance_equation_defective_metal">
+<a class="viewcode-back" href="../../api/interface_solver.html#calculations.interface_solver.flux_balance_equation_defective_metal">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">flux_balance_equation_defective_metal</span><span class="p">(</span><span class="n">P_interface</span><span class="p">,</span> <span class="n">P_upstream</span><span class="p">,</span> <span class="n">P_downstream</span><span class="p">,</span> 
+                                          <span class="n">oxide_props</span><span class="p">,</span> <span class="n">metal_props</span><span class="p">,</span> <span class="n">temperature</span><span class="p">,</span>
+                                          <span class="n">microstructure_params</span><span class="p">,</span> <span class="n">lattice_density</span><span class="p">,</span>
+                                          <span class="n">method</span><span class="o">=</span><span class="s1">&#39;average&#39;</span><span class="p">,</span> <span class="n">n_points</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Flux balance equation for oxide + defective metal system.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns zero when oxide flux equals defective metal flux.</span>
+<span class="sd">    Used by brentq solver.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    P_interface : float</span>
+<span class="sd">        Interface pressure to solve for [Pa]</span>
+<span class="sd">    P_upstream : float</span>
+<span class="sd">        Upstream pressure [Pa]</span>
+<span class="sd">    P_downstream : float</span>
+<span class="sd">        Downstream pressure [Pa]</span>
+<span class="sd">    oxide_props : dict</span>
+<span class="sd">        Oxide properties (D_ox, K_ox, thickness)</span>
+<span class="sd">    metal_props : dict</span>
+<span class="sd">        Metal properties (D_metal/D_lattice, K_s_metal, thickness)</span>
+<span class="sd">    temperature : float</span>
+<span class="sd">        Operating temperature [K] (properties should be pre-calculated at this T)</span>
+<span class="sd">    microstructure_params : dict</span>
+<span class="sd">        Microstructure specification</span>
+<span class="sd">    lattice_density : float</span>
+<span class="sd">        Lattice site density [m⁻³]</span>
+<span class="sd">    method : str</span>
+<span class="sd">        D_eff averaging method</span>
+<span class="sd">    n_points : int</span>
+<span class="sd">        Points for integration</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    float</span>
+<span class="sd">        Flux difference (oxide - metal), should be zero at solution</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">calculations.oxide_permeation</span><span class="w"> </span><span class="kn">import</span> <span class="n">molecular_diffusion_flux</span>
+    
+    <span class="c1"># Oxide flux (molecular diffusion - same as Level 2)</span>
+    <span class="n">flux_oxide</span> <span class="o">=</span> <span class="n">molecular_diffusion_flux</span><span class="p">(</span>
+        <span class="n">oxide_props</span><span class="p">[</span><span class="s1">&#39;D_ox&#39;</span><span class="p">],</span>
+        <span class="n">oxide_props</span><span class="p">[</span><span class="s1">&#39;K_ox&#39;</span><span class="p">],</span>
+        <span class="n">oxide_props</span><span class="p">[</span><span class="s1">&#39;thickness&#39;</span><span class="p">],</span>
+        <span class="n">P_upstream</span><span class="p">,</span>
+        <span class="n">P_interface</span>
+    <span class="p">)</span>
+    
+    <span class="c1"># Defective metal flux (Level 4)</span>
+    <span class="n">flux_metal</span> <span class="o">=</span> <span class="n">calculate_defective_metal_flux_sieverts</span><span class="p">(</span>
+        <span class="n">D_lattice</span><span class="o">=</span><span class="n">metal_props</span><span class="p">[</span><span class="s1">&#39;D_metal&#39;</span><span class="p">],</span>  <span class="c1"># This is D_lattice for Level 4</span>
+        <span class="n">K_s_metal</span><span class="o">=</span><span class="n">metal_props</span><span class="p">[</span><span class="s1">&#39;K_s_metal&#39;</span><span class="p">],</span>
+        <span class="n">thickness</span><span class="o">=</span><span class="n">metal_props</span><span class="p">[</span><span class="s1">&#39;thickness&#39;</span><span class="p">],</span>
+        <span class="n">P_interface</span><span class="o">=</span><span class="n">P_interface</span><span class="p">,</span>
+        <span class="n">P_downstream</span><span class="o">=</span><span class="n">P_downstream</span><span class="p">,</span>
+        <span class="n">temperature</span><span class="o">=</span><span class="n">temperature</span><span class="p">,</span>
+        <span class="n">microstructure_params</span><span class="o">=</span><span class="n">microstructure_params</span><span class="p">,</span>
+        <span class="n">lattice_density</span><span class="o">=</span><span class="n">lattice_density</span><span class="p">,</span>
+        <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
+        <span class="n">n_points</span><span class="o">=</span><span class="n">n_points</span><span class="p">,</span>
+        <span class="n">mode</span><span class="o">=</span><span class="n">mode</span>
+    <span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">flux_oxide</span> <span class="o">-</span> <span class="n">flux_metal</span></div>
+
+
+
+<div class="viewcode-block" id="solve_interface_pressure_defective_metal">
+<a class="viewcode-back" href="../../api/interface_solver.html#calculations.interface_solver.solve_interface_pressure_defective_metal">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">solve_interface_pressure_defective_metal</span><span class="p">(</span><span class="n">P_upstream</span><span class="p">,</span> <span class="n">P_downstream</span><span class="p">,</span> <span class="n">oxide_props</span><span class="p">,</span> 
+                                             <span class="n">metal_props</span><span class="p">,</span> <span class="n">temperature</span><span class="p">,</span> <span class="n">microstructure_params</span><span class="p">,</span>
+                                             <span class="n">lattice_density</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;average&#39;</span><span class="p">,</span>
+                                             <span class="n">n_points</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">solver_method</span><span class="o">=</span><span class="s1">&#39;brentq&#39;</span><span class="p">,</span>
+                                             <span class="n">max_iterations</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">tolerance</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Solve for interface pressure with Level 4 defective metal (iterative).</span>
+<span class="sd">    </span>
+<span class="sd">    This is the Level 4 equivalent of solve_interface_pressure().</span>
+<span class="sd">    Uses iterative approach since D_eff depends on concentration which</span>
+<span class="sd">    depends on P_interface.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    P_upstream : float</span>
+<span class="sd">        Upstream pressure [Pa]</span>
+<span class="sd">    P_downstream : float</span>
+<span class="sd">        Downstream pressure [Pa]</span>
+<span class="sd">    oxide_props : dict</span>
+<span class="sd">        Oxide layer properties (D_ox, K_ox, thickness)</span>
+<span class="sd">    metal_props : dict</span>
+<span class="sd">        Metal properties (D_metal as D_lattice, K_s_metal, thickness)</span>
+<span class="sd">    temperature : float</span>
+<span class="sd">        Operating temperature [K] (properties should be pre-calculated at this T)</span>
+<span class="sd">    microstructure_params : dict</span>
+<span class="sd">        Microstructure specification:</span>
+<span class="sd">        - &#39;grain_size&#39;: Average grain diameter [m]</span>
+<span class="sd">        - &#39;grain_shape&#39;: &#39;equiaxed&#39;, &#39;columnar&#39;, or &#39;planar&#39;</span>
+<span class="sd">        - &#39;gb_type&#39;: &#39;HAGB&#39;, &#39;LAGB&#39;, &#39;twin&#39;, or &#39;special&#39;</span>
+<span class="sd">        - &#39;trap_list&#39;: List of trap dictionaries</span>
+<span class="sd">    lattice_density : float, optional</span>
+<span class="sd">        Lattice site density [m⁻³] (default 1.06e29 for FCC)</span>
+<span class="sd">    method : str, optional</span>
+<span class="sd">        D_eff averaging method (&#39;average&#39;, &#39;harmonic&#39;, &#39;inlet&#39;, &#39;outlet&#39;)</span>
+<span class="sd">    n_points : int, optional</span>
+<span class="sd">        Points for D_eff integration (default 10)</span>
+<span class="sd">    solver_method : str, optional</span>
+<span class="sd">        Root finding method (&#39;brentq&#39; or &#39;root_scalar&#39;)</span>
+<span class="sd">    max_iterations : int, optional</span>
+<span class="sd">        Maximum outer iterations for D_eff convergence (default 10)</span>
+<span class="sd">    tolerance : float, optional</span>
+<span class="sd">        Relative convergence tolerance for P_interface (default 1e-6)</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict</span>
+<span class="sd">        Solution dictionary containing:</span>
+<span class="sd">        - &#39;P_interface&#39;: Solved interface pressure [Pa]</span>
+<span class="sd">        - &#39;P_upstream&#39;: Input upstream pressure [Pa]</span>
+<span class="sd">        - &#39;P_downstream&#39;: Input downstream pressure [Pa]</span>
+<span class="sd">        - &#39;flux&#39;: Steady-state flux [mol/m²/s]</span>
+<span class="sd">        - &#39;flux_error&#39;: Relative flux mismatch [-]</span>
+<span class="sd">        - &#39;converged&#39;: True if solver converged</span>
+<span class="sd">        - &#39;P_interface_normalized&#39;: (P_int - P_down)/(P_up - P_down)</span>
+<span class="sd">        </span>
+<span class="sd">        Level 4 specific:</span>
+<span class="sd">        - &#39;D_eff&#39;: Final effective metal diffusivity [m²/s]</span>
+<span class="sd">        - &#39;D_lattice&#39;: Input lattice diffusivity [m²/s]</span>
+<span class="sd">        - &#39;modification_factor&#39;: D_eff/D_lattice [-]</span>
+<span class="sd">        - &#39;level4_iterations&#39;: Number of outer iterations</span>
+<span class="sd">        - &#39;level4_converged&#39;: True if D_eff iteration converged</span>
+<span class="sd">        - &#39;microstructure_details&#39;: Dict with GB and trapping info</span>
+<span class="sd">    </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The iterative approach works as follows:</span>
+<span class="sd">    1. Initial guess: Use D_lattice to estimate P_interface</span>
+<span class="sd">    2. Calculate D_eff at estimated concentration profile</span>
+<span class="sd">    3. Re-solve for P_interface with updated D_eff</span>
+<span class="sd">    4. Repeat until P_interface converges</span>
+<span class="sd">    </span>
+<span class="sd">    This accounts for the coupling between interface pressure and</span>
+<span class="sd">    concentration-dependent effective diffusivity.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">calculations.oxide_permeation</span><span class="w"> </span><span class="kn">import</span> <span class="n">molecular_diffusion_flux</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">calculations.permeation_calc</span><span class="w"> </span><span class="kn">import</span> <span class="n">calculate_defective_metal_flux</span>
+    
+    <span class="c1"># Handle edge cases</span>
+    <span class="n">min_pressure</span> <span class="o">=</span> <span class="mf">1e-20</span>
+    
+    <span class="k">if</span> <span class="n">P_upstream</span> <span class="o">&lt;=</span> <span class="n">min_pressure</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s1">&#39;P_interface&#39;</span><span class="p">:</span> <span class="n">P_downstream</span> <span class="o">+</span> <span class="n">min_pressure</span><span class="p">,</span>
+            <span class="s1">&#39;P_upstream&#39;</span><span class="p">:</span> <span class="n">P_upstream</span><span class="p">,</span>
+            <span class="s1">&#39;P_downstream&#39;</span><span class="p">:</span> <span class="n">P_downstream</span><span class="p">,</span>
+            <span class="s1">&#39;flux&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+            <span class="s1">&#39;flux_error&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s1">&#39;converged&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="s1">&#39;P_interface_normalized&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s1">&#39;D_eff&#39;</span><span class="p">:</span> <span class="n">metal_props</span><span class="p">[</span><span class="s1">&#39;D_metal&#39;</span><span class="p">],</span>
+            <span class="s1">&#39;D_lattice&#39;</span><span class="p">:</span> <span class="n">metal_props</span><span class="p">[</span><span class="s1">&#39;D_metal&#39;</span><span class="p">],</span>
+            <span class="s1">&#39;modification_factor&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+            <span class="s1">&#39;level4_iterations&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s1">&#39;level4_converged&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="s1">&#39;microstructure_details&#39;</span><span class="p">:</span> <span class="p">{}</span>
+        <span class="p">}</span>
+    
+    <span class="c1"># Initial guess for P_interface (from Level 2 behavior)</span>
+    <span class="n">P_interface_old</span> <span class="o">=</span> <span class="n">P_upstream</span> <span class="o">/</span> <span class="mi">2</span>
+    <span class="n">D_eff_current</span> <span class="o">=</span> <span class="n">metal_props</span><span class="p">[</span><span class="s1">&#39;D_metal&#39;</span><span class="p">]</span>  <span class="c1"># Start with lattice value</span>
+    
+    <span class="c1"># Outer iteration loop for Level 4 coupling</span>
+    <span class="k">for</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_iterations</span><span class="p">):</span>
+        
+        <span class="c1"># Create effective metal props with current D_eff estimate</span>
+        <span class="n">effective_metal_props</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;D_metal&#39;</span><span class="p">:</span> <span class="n">D_eff_current</span><span class="p">,</span>
+            <span class="s1">&#39;K_s_metal&#39;</span><span class="p">:</span> <span class="n">metal_props</span><span class="p">[</span><span class="s1">&#39;K_s_metal&#39;</span><span class="p">],</span>
+            <span class="s1">&#39;thickness&#39;</span><span class="p">:</span> <span class="n">metal_props</span><span class="p">[</span><span class="s1">&#39;thickness&#39;</span><span class="p">]</span>
+        <span class="p">}</span>
+        
+        <span class="c1"># Solve for interface pressure using brentq</span>
+        <span class="n">P_min</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">P_downstream</span> <span class="o">+</span> <span class="n">P_upstream</span> <span class="o">*</span> <span class="mf">1e-10</span><span class="p">,</span> <span class="n">min_pressure</span><span class="p">)</span>
+        <span class="n">P_max</span> <span class="o">=</span> <span class="n">P_upstream</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="mf">1e-10</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">P_min</span> <span class="o">&gt;=</span> <span class="n">P_max</span><span class="p">:</span>
+            <span class="n">P_interface_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">P_upstream</span> <span class="o">*</span> <span class="n">P_downstream</span><span class="p">,</span> <span class="n">min_pressure</span><span class="p">))</span>
+            <span class="n">converged</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># Check if function has different signs at boundaries</span>
+                <span class="n">f_min</span> <span class="o">=</span> <span class="n">flux_balance_equation_defective_metal</span><span class="p">(</span>
+                    <span class="n">P_min</span><span class="p">,</span> <span class="n">P_upstream</span><span class="p">,</span> <span class="n">P_downstream</span><span class="p">,</span> <span class="n">oxide_props</span><span class="p">,</span> <span class="n">metal_props</span><span class="p">,</span>
+                    <span class="n">temperature</span><span class="p">,</span> <span class="n">microstructure_params</span><span class="p">,</span> <span class="n">lattice_density</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">n_points</span><span class="p">,</span> <span class="n">mode</span>
+                <span class="p">)</span>
+                <span class="n">f_max</span> <span class="o">=</span> <span class="n">flux_balance_equation_defective_metal</span><span class="p">(</span>
+                    <span class="n">P_max</span><span class="p">,</span> <span class="n">P_upstream</span><span class="p">,</span> <span class="n">P_downstream</span><span class="p">,</span> <span class="n">oxide_props</span><span class="p">,</span> <span class="n">metal_props</span><span class="p">,</span>
+                    <span class="n">temperature</span><span class="p">,</span> <span class="n">microstructure_params</span><span class="p">,</span> <span class="n">lattice_density</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">n_points</span><span class="p">,</span> <span class="n">mode</span>
+                <span class="p">)</span>
+                
+                <span class="k">if</span> <span class="n">f_min</span> <span class="o">*</span> <span class="n">f_max</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="c1"># Same sign - no solution in interval</span>
+                    <span class="n">P_interface_new</span> <span class="o">=</span> <span class="n">P_min</span>
+                    <span class="n">converged</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">P_interface_new</span> <span class="o">=</span> <span class="n">brentq</span><span class="p">(</span>
+                        <span class="n">flux_balance_equation_defective_metal</span><span class="p">,</span>
+                        <span class="n">P_min</span><span class="p">,</span> <span class="n">P_max</span><span class="p">,</span>
+                        <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">P_upstream</span><span class="p">,</span> <span class="n">P_downstream</span><span class="p">,</span> <span class="n">oxide_props</span><span class="p">,</span> <span class="n">metal_props</span><span class="p">,</span>
+                              <span class="n">temperature</span><span class="p">,</span> <span class="n">microstructure_params</span><span class="p">,</span> <span class="n">lattice_density</span><span class="p">,</span> 
+                              <span class="n">method</span><span class="p">,</span> <span class="n">n_points</span><span class="p">,</span> <span class="n">mode</span><span class="p">),</span>
+                        <span class="n">xtol</span><span class="o">=</span><span class="mf">1e-12</span><span class="p">,</span>
+                        <span class="n">rtol</span><span class="o">=</span><span class="mf">1e-12</span>
+                    <span class="p">)</span>
+                    <span class="n">converged</span> <span class="o">=</span> <span class="kc">True</span>
+                    
+            <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">RuntimeError</span><span class="p">):</span>
+                <span class="n">P_interface_new</span> <span class="o">=</span> <span class="n">P_min</span>
+                <span class="n">converged</span> <span class="o">=</span> <span class="kc">False</span>
+        
+        <span class="c1"># Update D_eff based on new P_interface</span>
+        <span class="n">metal_result</span> <span class="o">=</span> <span class="n">calculate_defective_metal_flux</span><span class="p">(</span>
+            <span class="n">D_lattice</span><span class="o">=</span><span class="n">metal_props</span><span class="p">[</span><span class="s1">&#39;D_metal&#39;</span><span class="p">],</span>
+            <span class="n">K_s</span><span class="o">=</span><span class="n">metal_props</span><span class="p">[</span><span class="s1">&#39;K_s_metal&#39;</span><span class="p">],</span>
+            <span class="n">thickness</span><span class="o">=</span><span class="n">metal_props</span><span class="p">[</span><span class="s1">&#39;thickness&#39;</span><span class="p">],</span>
+            <span class="n">P_up</span><span class="o">=</span><span class="n">P_interface_new</span><span class="p">,</span>
+            <span class="n">P_down</span><span class="o">=</span><span class="n">P_downstream</span><span class="p">,</span>
+            <span class="n">temperature</span><span class="o">=</span><span class="n">temperature</span><span class="p">,</span>
+            <span class="n">microstructure_params</span><span class="o">=</span><span class="n">microstructure_params</span><span class="p">,</span>
+            <span class="n">lattice_density</span><span class="o">=</span><span class="n">lattice_density</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
+            <span class="n">n_points</span><span class="o">=</span><span class="n">n_points</span><span class="p">,</span>
+            <span class="n">mode</span><span class="o">=</span><span class="n">mode</span>
+        <span class="p">)</span>
+        
+        <span class="n">D_eff_new</span> <span class="o">=</span> <span class="n">metal_result</span><span class="p">[</span><span class="s1">&#39;D_eff&#39;</span><span class="p">]</span>
+        
+        <span class="c1"># Check convergence of P_interface</span>
+        <span class="k">if</span> <span class="n">P_interface_old</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">rel_change</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">P_interface_new</span> <span class="o">-</span> <span class="n">P_interface_old</span><span class="p">)</span> <span class="o">/</span> <span class="n">P_interface_old</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">rel_change</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">P_interface_new</span> <span class="o">-</span> <span class="n">P_interface_old</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">rel_change</span> <span class="o">&lt;</span> <span class="n">tolerance</span> <span class="ow">and</span> <span class="n">iteration</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># Converged</span>
+            <span class="k">break</span>
+        
+        <span class="c1"># Update for next iteration</span>
+        <span class="n">P_interface_old</span> <span class="o">=</span> <span class="n">P_interface_new</span>
+        <span class="n">D_eff_current</span> <span class="o">=</span> <span class="n">D_eff_new</span>
+    
+    <span class="n">level4_converged</span> <span class="o">=</span> <span class="p">(</span><span class="n">rel_change</span> <span class="o">&lt;</span> <span class="n">tolerance</span><span class="p">)</span> <span class="k">if</span> <span class="n">iteration</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="kc">True</span>
+    
+    <span class="c1"># Calculate final flux</span>
+    <span class="n">flux</span> <span class="o">=</span> <span class="n">molecular_diffusion_flux</span><span class="p">(</span>
+        <span class="n">oxide_props</span><span class="p">[</span><span class="s1">&#39;D_ox&#39;</span><span class="p">],</span>
+        <span class="n">oxide_props</span><span class="p">[</span><span class="s1">&#39;K_ox&#39;</span><span class="p">],</span>
+        <span class="n">oxide_props</span><span class="p">[</span><span class="s1">&#39;thickness&#39;</span><span class="p">],</span>
+        <span class="n">P_upstream</span><span class="p">,</span>
+        <span class="n">P_interface_new</span>
+    <span class="p">)</span>
+    
+    <span class="c1"># Verify flux continuity</span>
+    <span class="n">flux_metal_check</span> <span class="o">=</span> <span class="n">metal_result</span><span class="p">[</span><span class="s1">&#39;flux&#39;</span><span class="p">]</span>
+    <span class="n">flux_error</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">flux</span> <span class="o">-</span> <span class="n">flux_metal_check</span><span class="p">)</span> <span class="o">/</span> <span class="n">flux</span> <span class="k">if</span> <span class="n">flux</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
+    
+    <span class="c1"># Calculate normalized position</span>
+    <span class="k">if</span> <span class="n">P_upstream</span> <span class="o">&gt;</span> <span class="n">P_downstream</span><span class="p">:</span>
+        <span class="n">P_interface_normalized</span> <span class="o">=</span> <span class="p">(</span><span class="n">P_interface_new</span> <span class="o">-</span> <span class="n">P_downstream</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">P_upstream</span> <span class="o">-</span> <span class="n">P_downstream</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">P_interface_normalized</span> <span class="o">=</span> <span class="mi">0</span>
+    
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="c1"># Standard interface solver outputs</span>
+        <span class="s1">&#39;P_interface&#39;</span><span class="p">:</span> <span class="n">P_interface_new</span><span class="p">,</span>
+        <span class="s1">&#39;P_upstream&#39;</span><span class="p">:</span> <span class="n">P_upstream</span><span class="p">,</span>
+        <span class="s1">&#39;P_downstream&#39;</span><span class="p">:</span> <span class="n">P_downstream</span><span class="p">,</span>
+        <span class="s1">&#39;flux&#39;</span><span class="p">:</span> <span class="n">flux</span><span class="p">,</span>
+        <span class="s1">&#39;flux_error&#39;</span><span class="p">:</span> <span class="n">flux_error</span><span class="p">,</span>
+        <span class="s1">&#39;converged&#39;</span><span class="p">:</span> <span class="n">converged</span><span class="p">,</span>
+        <span class="s1">&#39;P_interface_normalized&#39;</span><span class="p">:</span> <span class="n">P_interface_normalized</span><span class="p">,</span>
+        
+        <span class="c1"># Level 4 specific outputs</span>
+        <span class="s1">&#39;D_eff&#39;</span><span class="p">:</span> <span class="n">D_eff_new</span><span class="p">,</span>
+        <span class="s1">&#39;D_lattice&#39;</span><span class="p">:</span> <span class="n">metal_props</span><span class="p">[</span><span class="s1">&#39;D_metal&#39;</span><span class="p">],</span>
+        <span class="s1">&#39;modification_factor&#39;</span><span class="p">:</span> <span class="n">D_eff_new</span> <span class="o">/</span> <span class="n">metal_props</span><span class="p">[</span><span class="s1">&#39;D_metal&#39;</span><span class="p">],</span>
+        <span class="s1">&#39;level4_iterations&#39;</span><span class="p">:</span> <span class="n">iteration</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s1">&#39;level4_converged&#39;</span><span class="p">:</span> <span class="n">level4_converged</span><span class="p">,</span>
+        <span class="s1">&#39;microstructure_details&#39;</span><span class="p">:</span> <span class="n">metal_result</span><span class="p">[</span><span class="s1">&#39;microstructure_details&#39;</span><span class="p">],</span>
+        
+        <span class="c1"># Temperature for reference</span>
+        <span class="s1">&#39;temperature&#39;</span><span class="p">:</span> <span class="n">temperature</span>
+    <span class="p">}</span></div>
+
+
+
+<div class="viewcode-block" id="calculate_oxide_defective_metal_system">
+<a class="viewcode-back" href="../../api/interface_solver.html#calculations.interface_solver.calculate_oxide_defective_metal_system">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">calculate_oxide_defective_metal_system</span><span class="p">(</span><span class="n">P_upstream</span><span class="p">,</span> <span class="n">P_downstream</span><span class="p">,</span> <span class="n">oxide_props</span><span class="p">,</span> 
+                                           <span class="n">metal_props</span><span class="p">,</span> <span class="n">temperature</span><span class="p">,</span> <span class="n">microstructure_params</span><span class="p">,</span>
+                                           <span class="n">lattice_density</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;average&#39;</span><span class="p">,</span>
+                                           <span class="n">n_points</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">max_iterations</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">tolerance</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">,</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Main function to calculate flux through oxide + defective metal system.</span>
+<span class="sd">    </span>
+<span class="sd">    This is the Level 4 equivalent of calculate_oxide_metal_system().</span>
+<span class="sd">    Includes regime identification and resistance calculations.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    P_upstream : float</span>
+<span class="sd">        Upstream pressure [Pa]</span>
+<span class="sd">    P_downstream : float</span>
+<span class="sd">        Downstream pressure [Pa]</span>
+<span class="sd">    oxide_props : dict</span>
+<span class="sd">        Oxide properties (D_ox, K_ox, thickness)</span>
+<span class="sd">    metal_props : dict</span>
+<span class="sd">        Metal properties (D_metal as D_lattice, K_s_metal, thickness)</span>
+<span class="sd">    temperature : float</span>
+<span class="sd">        Operating temperature [K] (properties should be pre-calculated at this T)</span>
+<span class="sd">    microstructure_params : dict</span>
+<span class="sd">        Microstructure specification</span>
+<span class="sd">    lattice_density : float, optional</span>
+<span class="sd">        Lattice site density [m⁻³]</span>
+<span class="sd">    method : str, optional</span>
+<span class="sd">        D_eff averaging method</span>
+<span class="sd">    n_points : int, optional</span>
+<span class="sd">        Points for integration</span>
+<span class="sd">    max_iterations : int, optional</span>
+<span class="sd">        Max iterations for D_eff convergence</span>
+<span class="sd">    tolerance : float, optional</span>
+<span class="sd">        Convergence tolerance</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict</span>
+<span class="sd">        Complete system solution including:</span>
+<span class="sd">        - All outputs from solve_interface_pressure_defective_metal()</span>
+<span class="sd">        - &#39;R_oxide&#39;: Oxide resistance</span>
+<span class="sd">        - &#39;R_metal&#39;: Effective metal resistance</span>
+<span class="sd">        - &#39;resistance_ratio&#39;: R_oxide/R_metal</span>
+<span class="sd">        - &#39;regime&#39;: Operating regime classification</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">calculations.oxide_permeation</span><span class="w"> </span><span class="kn">import</span> <span class="n">calculate_oxide_resistance</span><span class="p">,</span> <span class="n">calculate_metal_resistance</span>
+    
+    <span class="c1"># Solve for interface pressure with Level 4</span>
+    <span class="n">solution</span> <span class="o">=</span> <span class="n">solve_interface_pressure_defective_metal</span><span class="p">(</span>
+        <span class="n">P_upstream</span><span class="p">,</span> <span class="n">P_downstream</span><span class="p">,</span> <span class="n">oxide_props</span><span class="p">,</span> <span class="n">metal_props</span><span class="p">,</span>
+        <span class="n">temperature</span><span class="p">,</span> <span class="n">microstructure_params</span><span class="p">,</span>
+        <span class="n">lattice_density</span><span class="o">=</span><span class="n">lattice_density</span><span class="p">,</span>
+        <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
+        <span class="n">n_points</span><span class="o">=</span><span class="n">n_points</span><span class="p">,</span>
+        <span class="n">max_iterations</span><span class="o">=</span><span class="n">max_iterations</span><span class="p">,</span>
+        <span class="n">tolerance</span><span class="o">=</span><span class="n">tolerance</span><span class="p">,</span>
+        <span class="n">mode</span><span class="o">=</span><span class="n">mode</span>
+    <span class="p">)</span>
+    
+    <span class="c1"># Calculate resistances for regime identification</span>
+    <span class="n">R_oxide</span> <span class="o">=</span> <span class="n">calculate_oxide_resistance</span><span class="p">(</span>
+        <span class="n">oxide_props</span><span class="p">[</span><span class="s1">&#39;D_ox&#39;</span><span class="p">],</span>
+        <span class="n">oxide_props</span><span class="p">[</span><span class="s1">&#39;K_ox&#39;</span><span class="p">],</span>
+        <span class="n">oxide_props</span><span class="p">[</span><span class="s1">&#39;thickness&#39;</span><span class="p">]</span>
+    <span class="p">)</span>
+    
+    <span class="c1"># Use effective D_metal for resistance calculation</span>
+    <span class="n">P_interface_for_resistance</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">solution</span><span class="p">[</span><span class="s1">&#39;P_interface&#39;</span><span class="p">],</span> <span class="mf">1e-20</span><span class="p">)</span>
+    
+    <span class="n">R_metal</span> <span class="o">=</span> <span class="n">calculate_metal_resistance</span><span class="p">(</span>
+        <span class="n">solution</span><span class="p">[</span><span class="s1">&#39;D_eff&#39;</span><span class="p">],</span>  <span class="c1"># Use effective diffusivity!</span>
+        <span class="n">metal_props</span><span class="p">[</span><span class="s1">&#39;K_s_metal&#39;</span><span class="p">],</span>
+        <span class="n">metal_props</span><span class="p">[</span><span class="s1">&#39;thickness&#39;</span><span class="p">],</span>
+        <span class="n">P_interface_for_resistance</span>
+    <span class="p">)</span>
+    
+    <span class="c1"># Identify limiting mechanism</span>
+    <span class="n">ratio</span> <span class="o">=</span> <span class="n">R_oxide</span> <span class="o">/</span> <span class="n">R_metal</span> <span class="k">if</span> <span class="n">R_metal</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;inf&#39;</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">ratio</span> <span class="o">&gt;</span> <span class="mi">10</span><span class="p">:</span>
+        <span class="n">regime</span> <span class="o">=</span> <span class="s2">&quot;oxide_limited&quot;</span>
+    <span class="k">elif</span> <span class="n">ratio</span> <span class="o">&lt;</span> <span class="mf">0.1</span><span class="p">:</span>
+        <span class="n">regime</span> <span class="o">=</span> <span class="s2">&quot;metal_limited&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">regime</span> <span class="o">=</span> <span class="s2">&quot;transition&quot;</span>
+    
+    <span class="c1"># Add resistance info to solution</span>
+    <span class="n">solution</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+        <span class="s1">&#39;R_oxide&#39;</span><span class="p">:</span> <span class="n">R_oxide</span><span class="p">,</span>
+        <span class="s1">&#39;R_metal&#39;</span><span class="p">:</span> <span class="n">R_metal</span><span class="p">,</span>
+        <span class="s1">&#39;resistance_ratio&#39;</span><span class="p">:</span> <span class="n">ratio</span><span class="p">,</span>
+        <span class="s1">&#39;regime&#39;</span><span class="p">:</span> <span class="n">regime</span>
+    <span class="p">})</span>
+    
+    <span class="k">return</span> <span class="n">solution</span></div>
+
+
+
+</pre></div>
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2026, Azeez Akinyemi
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script src="../../_static/documentation_options.js?v=fc837d61"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
+    </body>
+</html>

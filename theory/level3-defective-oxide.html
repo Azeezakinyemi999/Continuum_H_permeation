@@ -1,0 +1,605 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Level 4 — metal microstructure" href="level4-microstructure.html"><link rel="prev" title="Level 2 — the oxide layer" href="level2-oxide.html">
+
+    <!-- Generated with Sphinx 7.4.7 and Furo 2025.12.19 -->
+        <title>Level 3 — the defective oxide - Hierarchical Hydrogen Permeation Model 1.1.0</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">Hierarchical Hydrogen Permeation Model 1.1.0</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  <span class="sidebar-brand-text">Hierarchical Hydrogen Permeation Model 1.1.0</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting-started.html">Getting started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">How-to</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../how-to/switch-study.html">How to switch material study</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../how-to/sensitivity-analysis.html">How to run a regime-stratified sensitivity analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CONTAINER.html">Hydrogen Permeation Model — Offline Analysis Environment</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Theory</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="two-models.html">Two models, not six levels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="foundations.html">Foundations: chemical potential and the driving force</a></li>
+<li class="toctree-l1"><a class="reference internal" href="equilibrium-models.html">Equilibrium models: Sieverts, Henry and Langmuir</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../STEADY_STATE.html">Steady State, Transients, and the Accumulation Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="level1-metal.html">Level 1 — the perfect metal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="level2-oxide.html">Level 2 — the oxide layer</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Level 3 — the defective oxide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="level4-microstructure.html">Level 4 — metal microstructure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="level5-full-system.html">Level 5 — the full system</a></li>
+<li class="toctree-l1"><a class="reference internal" href="level6-surface-kinetics.html">Level 6 — surface kinetics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="permeability.html">Permeability — two models, four tiers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="equations.html">Equation catalogue</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../PARAMETERS.html">Complete Parameter Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../OUTPUTS.html">Complete Output Reference</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/index.html">API Reference</a><input aria-label="Toggle navigation of API Reference" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/utils.html"><code class="docutils literal notranslate"><span class="pre">utils</span></code> — shared Arrhenius helpers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/permeation_calc.html"><code class="docutils literal notranslate"><span class="pre">permeation_calc</span></code> — Levels 1-2: Sieverts solubility and bulk diffusion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/oxide_permeation.html"><code class="docutils literal notranslate"><span class="pre">oxide_permeation</span></code> — Levels 2-3: molecular transport through the oxide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/interface_solver.html"><code class="docutils literal notranslate"><span class="pre">interface_solver</span></code> — the oxide/metal interface pressure solve</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/parallel_oxide_defect_paths.html"><code class="docutils literal notranslate"><span class="pre">parallel_oxide_defect_paths</span></code> — Level 3: defective oxide, parallel paths</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/defective_metal.html"><code class="docutils literal notranslate"><span class="pre">defective_metal</span></code> — Level 4: grain boundaries and trapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/surface_kinetics.html"><code class="docutils literal notranslate"><span class="pre">surface_kinetics</span></code> — Level 6: dissociation kinetics and Langmuir coverage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/classify_regime.html"><code class="docutils literal notranslate"><span class="pre">classify_regime</span></code> — hierarchical regime classification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/sensitivity.html"><code class="docutils literal notranslate"><span class="pre">sensitivity</span></code> — regime-stratified sensitivity analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/config.html"><code class="docutils literal notranslate"><span class="pre">config</span></code> — study selection</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Validation and release</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../TRAPPING_VALIDATION.html">Validating the Trapping Block Against TDS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TRAPPING_VALIDATION.html#appendix-a-symbols">Appendix A — Symbols</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TRAPPING_VALIDATION.html#appendix-b-equation-reference">Appendix B — Equation reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TRAPPING_VALIDATION.html#appendix-c-where-each-quantity-lives">Appendix C — Where each quantity lives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../PACKAGING_1.0.0.html">Packaging decisions — <code class="docutils literal notranslate"><span class="pre">hydrogen-model:1.0.0</span></code> offline container</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references.html">References</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Warnings and caveats</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../caveats.html">Warnings and caveats</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="../_sources/theory/level3-defective-oxide.md.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section class="tex2jax_ignore mathjax_ignore" id="level-3-the-defective-oxide">
+<h1>Level 3 — the defective oxide<a class="headerlink" href="#level-3-the-defective-oxide" title="Link to this heading">¶</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>Model 1.</strong> Dissociation sits at the oxide/metal interface, so the oxide carries
+intact H₂ under Henry’s law. The Level 6 family makes a different choice — see
+<a class="reference internal" href="two-models.html"><span class="doc">Two models, not six levels</span></a> before comparing results across the two.</p>
+</div>
+<p>Real oxide layers are not continuous. They contain pinholes where the coating
+never formed or spalled off, cracks from thermal cycling and growth stress, and
+grain boundaries that conduct faster than the lattice. Level 3 adds those paths.</p>
+<p>The standard claim about coating defects is that a tiny area fraction dominates
+transport. That claim is <strong>conditional</strong>, and the condition is the subject of this
+chapter.</p>
+<section id="the-parallel-path-model">
+<h2>The parallel-path model<a class="headerlink" href="#the-parallel-path-model" title="Link to this heading">¶</a></h2>
+<p>Divide the wall’s area into intact and defective regions,
+<span class="math notranslate nohighlight">\(f_{\text{intact}} + f_{\text{defect}} = 1\)</span>. Each region passes its own flux per
+unit area, and the total flux per unit wall area is the area-weighted sum:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\boxed{\;J_{\text{total}} = j_{\text{intact}}f_{\text{intact}} + j_{\text{defect}}f_{\text{defect}}\;}\]</div>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>This is an <strong>additive</strong> combination, not a reciprocal one. Parallel electrical
+resistors combine as <span class="math notranslate nohighlight">\(1/R = \sum 1/R_i\)</span>; parallel permeation paths combine as
+<span class="math notranslate nohighlight">\(J = \sum j_i f_i\)</span>. The difference is that flux is extensive — two paths side by
+side carry the sum of what each carries — whereas resistance is intensive.</p>
+<p>Getting this backwards is a natural mistake for anyone carrying the resistance
+analogy over from Level 2, where the layers really are in series.</p>
+</div>
+<p>Rearranging for a single defect type makes the leverage explicit:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[J_{\text{total}} = j_{\text{intact}} + \left(j_{\text{defect}} - j_{\text{intact}}\right)f_{\text{defect}}\]</div>
+</div>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\eta \equiv \frac{J_{\text{total}}}{j_{\text{intact}}}
+= 1 + \left(\frac{j_{\text{defect}}}{j_{\text{intact}}} - 1\right)f_{\text{defect}}\]</div>
+</div>
+<p>So the enhancement depends on the <em>contrast</em> <span class="math notranslate nohighlight">\(j_{\text{defect}}/j_{\text{intact}}\)</span>
+multiplied by the area fraction. A small fraction matters only when the contrast
+is large.</p>
+</section>
+<section id="the-three-defect-types">
+<h2>The three defect types<a class="headerlink" href="#the-three-defect-types" title="Link to this heading">¶</a></h2>
+<p>Each is modelled by re-running the Level 2 series solve with one property
+modified, rather than by a separate physical model:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Type</p></th>
+<th class="head"><p>Physical picture</p></th>
+<th class="head"><p>Implementation</p></th>
+<th class="head"><p>Configured</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Pinhole</p></td>
+<td><p>oxide absent; gas meets bare metal</p></td>
+<td><p>Level 1 metal-only flux</p></td>
+<td><p><span class="math notranslate nohighlight">\(f = 0.01\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>Crack</p></td>
+<td><p>oxide locally thinner</p></td>
+<td><p>Level 2b with <span class="math notranslate nohighlight">\(L_{\text{crack}} = \phi L_{ox}\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(f = 0.005\)</span>, <span class="math notranslate nohighlight">\(\phi = 0.1\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p>Grain boundary</p></td>
+<td><p>faster diffusion path through oxide</p></td>
+<td><p>Level 2b with <span class="math notranslate nohighlight">\(D_{gb} = \psi D_{ox}\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(f = 0.005\)</span>, <span class="math notranslate nohighlight">\(\psi = 10\)</span></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The three fractions sum to the declared total, <code class="docutils literal notranslate"><span class="pre">area_fraction</span> <span class="pre">=</span> <span class="pre">0.02</span></code> — verified
+to hold exactly for the active study. They are independent populations, so a wall
+can carry all three at once, and <code class="docutils literal notranslate"><span class="pre">calculate_mixed_defect_flux_L6</span></code> exists for that
+case at Level 6.</p>
+</section>
+<section id="when-do-defects-actually-matter">
+<h2>When do defects actually matter?<a class="headerlink" href="#when-do-defects-actually-matter" title="Link to this heading">¶</a></h2>
+<p>Here is the conditional claim made concrete. Holding the defect population fixed
+at the configured 2% and varying only the intact oxide thickness:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p><span class="math notranslate nohighlight">\(L_{ox}\)</span></p></th>
+<th class="head"><p><span class="math notranslate nohighlight">\(j_{\text{defect}}/j_{\text{intact}}\)</span></p></th>
+<th class="head"><p>defect share of flux</p></th>
+<th class="head"><p><span class="math notranslate nohighlight">\(\eta\)</span></p></th>
+<th class="head"><p>PRF</p></th>
+<th class="head"><p>PRF if perfect</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>48 nm (as configured)</p></td>
+<td><p>1.000</p></td>
+<td><p>2.000%</p></td>
+<td><p>1.000005</p></td>
+<td><p>1.0003</p></td>
+<td><p>1.0003</p></td>
+</tr>
+<tr class="row-odd"><td><p>48 µm (×10³)</p></td>
+<td><p>1.276</p></td>
+<td><p>2.538%</p></td>
+<td><p>1.0055</p></td>
+<td><p>1.2856</p></td>
+<td><p>1.2927</p></td>
+</tr>
+<tr class="row-even"><td><p>4.8 mm (×10⁵)</p></td>
+<td><p>30.79</p></td>
+<td><p>38.59%</p></td>
+<td><p>1.5959</p></td>
+<td><p>32.54</p></td>
+<td><p>51.93</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Read the third column against the fact that the defects occupy <strong>2% of the area
+in every row</strong>. At the configured thickness they carry exactly 2% of the flux —
+no leverage whatsoever. At 4.8 mm they carry 38.6%, nineteen times their area
+share.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p><strong>Defect leverage is a property of the barrier, not of the defects.</strong> The reason
+2% of the area can carry 39% of the flux is that the intact path is bad at its
+job; the defect path wins by comparison. When the intact oxide is already more
+permeable than the metal underneath it — as the active study’s 48 nm layer is, by
+a factor of 1926 — there is nothing for a defect to short-circuit, and
+<span class="math notranslate nohighlight">\(j_{\text{defect}} \approx j_{\text{intact}}\)</span>.</p>
+<p>So for the active study, Level 3 changes essentially nothing:
+<span class="math notranslate nohighlight">\(\eta = 1.000005\)</span> and PRF moves from 1.0003 to 1.0003. Any sensitivity analysis
+on this study will correctly report the defect parameters as unimportant, and
+that is a statement about this operating point, not about defects in general.</p>
+</div>
+<p>The last two columns separate two different questions. <code class="docutils literal notranslate"><span class="pre">PRF_perfect</span></code> is what the
+coating <em>could</em> deliver if it were flawless; <code class="docutils literal notranslate"><span class="pre">PRF</span></code> is what it actually delivers.
+At 4.8 mm the defects cost 37% of the achievable protection (32.5 against 51.9) —
+which is the regime where defect control is worth engineering effort.</p>
+</section>
+<section id="permeation-reduction-factor">
+<h2>Permeation Reduction Factor<a class="headerlink" href="#permeation-reduction-factor" title="Link to this heading">¶</a></h2>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\mathrm{PRF} = \frac{J_{\text{bare metal}}}{J_{\text{coated}}}\]</div>
+</div>
+<p>PRF is the coating-effectiveness metric: how many times less hydrogen crosses
+because the coating is there. PRF = 1 means no benefit, PRF = 100 means a
+hundredfold reduction. <code class="docutils literal notranslate"><span class="pre">calculate_PRF</span></code> returns both the achieved <code class="docutils literal notranslate"><span class="pre">PRF</span></code> and
+<code class="docutils literal notranslate"><span class="pre">PRF_perfect</span></code> for the same oxide without defects, so the gap between them
+attributes the shortfall to the defects specifically.</p>
+</section>
+<section id="verified-limit-checks">
+<h2>Verified limit checks<a class="headerlink" href="#verified-limit-checks" title="Link to this heading">¶</a></h2>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Check</p></th>
+<th class="head"><p>Expected</p></th>
+<th class="head"><p>Result</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(f_{\text{defect}} \to 0\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(J_{\text{total}} = j_{\text{intact}}\)</span></p></td>
+<td><p>exact — <code class="docutils literal notranslate"><span class="pre">4.326475e-06</span></code> both</p></td>
+</tr>
+<tr class="row-odd"><td><p>component fractions sum to the declared total</p></td>
+<td><p><span class="math notranslate nohighlight">\(0.01 + 0.005 + 0.005 = 0.02\)</span></p></td>
+<td><p>holds exactly</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(\eta \geq 1\)</span> whenever <span class="math notranslate nohighlight">\(j_{\text{defect}} \geq j_{\text{intact}}\)</span></p></td>
+<td><p>monotone</p></td>
+<td><p>holds across all three thicknesses</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="values-at-the-configured-operating-point">
+<h2>Values at the configured operating point<a class="headerlink" href="#values-at-the-configured-operating-point" title="Link to this heading">¶</a></h2>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>flux_total                  4.326496e-06  mol/m²/s
+flux_intact_contribution    4.239945e-06     (area-weighted)
+flux_defect_contribution    8.655084e-08     (area-weighted)
+flux_intact_per_area        4.326475e-06
+flux_defect_per_area        4.327542e-06
+defect_enhancement_factor   1.000005
+dominant_path               intact_oxide
+PRF                         1.000255
+regime                      metal_limited/lattice_limited
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>The returned key is <code class="docutils literal notranslate"><span class="pre">defect_enhancement_factor</span></code>, not <code class="docutils literal notranslate"><span class="pre">enhancement_factor</span></code>.</strong>
+There is no key by the shorter name, so <code class="docutils literal notranslate"><span class="pre">result.get('enhancement_factor',</span> <span class="pre">...)</span></code>
+silently returns your default — which is how a <code class="docutils literal notranslate"><span class="pre">nan</span></code> found its way into a draft
+of this chapter.</p>
+<p>Note also the two flux pairs. <code class="docutils literal notranslate"><span class="pre">flux_*_per_area</span></code> is the local flux density in each
+region; <code class="docutils literal notranslate"><span class="pre">flux_*_contribution</span></code> is that density multiplied by the region’s area
+fraction. Only the contributions sum to <code class="docutils literal notranslate"><span class="pre">flux_total</span></code>. Comparing a per-area value
+against a contribution understates the defect path by a factor of <span class="math notranslate nohighlight">\(1/f\)</span>.</p>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">regime</span></code> string is hierarchical — <code class="docutils literal notranslate"><span class="pre">metal_limited/lattice_limited</span></code>. Because
+tier 1 resolved to <code class="docutils literal notranslate"><span class="pre">metal_limited</span></code> rather than <code class="docutils literal notranslate"><span class="pre">oxide_limited</span></code>, the
+defect-versus-intact comparison was <strong>never applied</strong>: that test only subdivides
+an oxide-limited wall. This is intended behaviour, and
+<a class="reference internal" href="../api/classify_regime.html#module-calculations.classify_regime" title="calculations.classify_regime"><code class="xref py py-mod docutils literal notranslate"><span class="pre">calculations.classify_regime</span></code></a> explains why, but it means a reader
+looking for a defect verdict in <code class="docutils literal notranslate"><span class="pre">regime</span></code> will not find one for this study. The
+answer is in <code class="docutils literal notranslate"><span class="pre">dominant_path</span></code>, which reports <code class="docutils literal notranslate"><span class="pre">intact_oxide</span></code>.</p>
+</section>
+<section id="level-4-metal-underneath">
+<h2>Level 4 metal underneath<a class="headerlink" href="#level-4-metal-underneath" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">calculate_parallel_path_flux_defective_metal</span></code> and
+<code class="docutils literal notranslate"><span class="pre">calculate_PRF_defective_metal</span></code> are the Level 3+4 versions, which replace the
+perfect-lattice metal beneath each path with the microstructural model of
+<a class="reference internal" href="level4-microstructure.html"><span class="doc">Level 4 — metal microstructure</span></a>. Their <code class="docutils literal notranslate"><span class="pre">D_eff_metal</span></code>, <code class="docutils literal notranslate"><span class="pre">modification_factor</span></code> and
+<code class="docutils literal notranslate"><span class="pre">level4_converged</span></code> keys are <code class="docutils literal notranslate"><span class="pre">None</span></code> in the pure Level 3 functions — a signal that
+no microstructural calculation ran, not that it failed.</p>
+</section>
+<section id="what-level-3-cannot-tell-you">
+<h2>What Level 3 cannot tell you<a class="headerlink" href="#what-level-3-cannot-tell-you" title="Link to this heading">¶</a></h2>
+<p>The metal beneath every path is still a perfect lattice: no traps, no
+grain-boundary enhancement, a diffusivity that is a pure material constant. For
+the active study that is the dominant remaining approximation, precisely because
+the wall is metal-limited — the layer being modelled most crudely is the one
+carrying 98% of the resistance. <a class="reference internal" href="level4-microstructure.html"><span class="doc">Level 4 — metal microstructure</span></a> addresses it.</p>
+<p>Dissociation is also still infinitely fast, which <a class="reference internal" href="level6-surface-kinetics.html"><span class="doc">Level 6 — surface kinetics</span></a>
+addresses.</p>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="level4-microstructure.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Level 4 — metal microstructure</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="level2-oxide.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Level 2 — the oxide layer</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2026, Azeez Akinyemi
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Level 3 — the defective oxide</a><ul>
+<li><a class="reference internal" href="#the-parallel-path-model">The parallel-path model</a></li>
+<li><a class="reference internal" href="#the-three-defect-types">The three defect types</a></li>
+<li><a class="reference internal" href="#when-do-defects-actually-matter">When do defects actually matter?</a></li>
+<li><a class="reference internal" href="#permeation-reduction-factor">Permeation Reduction Factor</a></li>
+<li><a class="reference internal" href="#verified-limit-checks">Verified limit checks</a></li>
+<li><a class="reference internal" href="#values-at-the-configured-operating-point">Values at the configured operating point</a></li>
+<li><a class="reference internal" href="#level-4-metal-underneath">Level 4 metal underneath</a></li>
+<li><a class="reference internal" href="#what-level-3-cannot-tell-you">What Level 3 cannot tell you</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/documentation_options.js?v=fc837d61"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    </body>
+</html>

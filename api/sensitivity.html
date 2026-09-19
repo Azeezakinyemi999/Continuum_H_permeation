@@ -1,0 +1,824 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="config — study selection" href="config.html"><link rel="prev" title="classify_regime — hierarchical regime classification" href="classify_regime.html">
+
+    <!-- Generated with Sphinx 7.4.7 and Furo 2025.12.19 -->
+        <title>sensitivity — regime-stratified sensitivity analysis - Hierarchical Hydrogen Permeation Model 1.1.0</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">Hierarchical Hydrogen Permeation Model 1.1.0</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  <span class="sidebar-brand-text">Hierarchical Hydrogen Permeation Model 1.1.0</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting-started.html">Getting started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">How-to</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../how-to/switch-study.html">How to switch material study</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../how-to/sensitivity-analysis.html">How to run a regime-stratified sensitivity analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CONTAINER.html">Hydrogen Permeation Model — Offline Analysis Environment</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Theory</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../theory/two-models.html">Two models, not six levels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/foundations.html">Foundations: chemical potential and the driving force</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/equilibrium-models.html">Equilibrium models: Sieverts, Henry and Langmuir</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../STEADY_STATE.html">Steady State, Transients, and the Accumulation Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/level1-metal.html">Level 1 — the perfect metal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/level2-oxide.html">Level 2 — the oxide layer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/level3-defective-oxide.html">Level 3 — the defective oxide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/level4-microstructure.html">Level 4 — metal microstructure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/level5-full-system.html">Level 5 — the full system</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/level6-surface-kinetics.html">Level 6 — surface kinetics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/permeability.html">Permeability — two models, four tiers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/equations.html">Equation catalogue</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../PARAMETERS.html">Complete Parameter Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../OUTPUTS.html">Complete Output Reference</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">API Reference</a><input aria-label="Toggle navigation of API Reference" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="utils.html"><code class="docutils literal notranslate"><span class="pre">utils</span></code> — shared Arrhenius helpers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="permeation_calc.html"><code class="docutils literal notranslate"><span class="pre">permeation_calc</span></code> — Levels 1-2: Sieverts solubility and bulk diffusion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="oxide_permeation.html"><code class="docutils literal notranslate"><span class="pre">oxide_permeation</span></code> — Levels 2-3: molecular transport through the oxide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="interface_solver.html"><code class="docutils literal notranslate"><span class="pre">interface_solver</span></code> — the oxide/metal interface pressure solve</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parallel_oxide_defect_paths.html"><code class="docutils literal notranslate"><span class="pre">parallel_oxide_defect_paths</span></code> — Level 3: defective oxide, parallel paths</a></li>
+<li class="toctree-l2"><a class="reference internal" href="defective_metal.html"><code class="docutils literal notranslate"><span class="pre">defective_metal</span></code> — Level 4: grain boundaries and trapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="surface_kinetics.html"><code class="docutils literal notranslate"><span class="pre">surface_kinetics</span></code> — Level 6: dissociation kinetics and Langmuir coverage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classify_regime.html"><code class="docutils literal notranslate"><span class="pre">classify_regime</span></code> — hierarchical regime classification</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">sensitivity</span></code> — regime-stratified sensitivity analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="config.html"><code class="docutils literal notranslate"><span class="pre">config</span></code> — study selection</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Validation and release</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../TRAPPING_VALIDATION.html">Validating the Trapping Block Against TDS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TRAPPING_VALIDATION.html#appendix-a-symbols">Appendix A — Symbols</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TRAPPING_VALIDATION.html#appendix-b-equation-reference">Appendix B — Equation reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TRAPPING_VALIDATION.html#appendix-c-where-each-quantity-lives">Appendix C — Where each quantity lives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../PACKAGING_1.0.0.html">Packaging decisions — <code class="docutils literal notranslate"><span class="pre">hydrogen-model:1.0.0</span></code> offline container</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references.html">References</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Warnings and caveats</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../caveats.html">Warnings and caveats</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="../_sources/api/sensitivity.md.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section class="tex2jax_ignore mathjax_ignore" id="module-calculations.sensitivity">
+<span id="sensitivity-regime-stratified-sensitivity-analysis"></span><h1><code class="docutils literal notranslate"><span class="pre">sensitivity</span></code> — regime-stratified sensitivity analysis<a class="headerlink" href="#module-calculations.sensitivity" title="Link to this heading">¶</a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="calculations.sensitivity.presets_without">
+<span class="sig-prename descclassname"><span class="pre">calculations.sensitivity.</span></span><span class="sig-name descname"><span class="pre">presets_without</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">presets</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">drop</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/calculations/sensitivity.html#presets_without"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#calculations.sensitivity.presets_without" title="Link to this definition">¶</a></dt>
+<dd><p>Copy of <code class="docutils literal notranslate"><span class="pre">presets</span></code> with the named parameters removed from every range dict.</p>
+<p>Used to take a parameter OUT of the sampled set so it can be pinned via
+run_global_lhs_scan(fixed_params=…) instead. The motivating case is
+<code class="docutils literal notranslate"><span class="pre">temperature</span></code>: it enters D, K_s, D_ox and K_ox exponentially over 573-1273 K
+and so monopolises the variance of log10(flux) — a dummy-parameter test on the
+varying-T clusters put every other parameter at or below the noise floor
+(delta ~0.09), while temperature scored ~0.5. Pinning it lets the remaining
+parameters compete; in a T-banded probe <code class="docutils literal notranslate"><span class="pre">H_sol_ox</span></code> then reached 5x the floor in
+the oxide regime and <code class="docutils literal notranslate"><span class="pre">f_crack</span></code> surfaced in the defect regime.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">presets_without</span><span class="p">(</span><span class="n">REGIME_PRESETS_L5</span><span class="p">,</span> <span class="s1">&#39;temperature&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="calculations.sensitivity.check_against_config">
+<span class="sig-prename descclassname"><span class="pre">calculations.sensitivity.</span></span><span class="sig-name descname"><span class="pre">check_against_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raise_on_fail</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/calculations/sensitivity.html#check_against_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#calculations.sensitivity.check_against_config" title="Link to this definition">¶</a></dt>
+<dd><p>Validate the SENSITIVITY ANALYSIS PARAMETERS section of model_config.py.</p>
+<p>The defaults there are derived from METALS / OXIDES / MICROSTRUCTURE /
+OXIDE_DEFECTS / CONDITIONS, so value drift against the material data is
+impossible by construction. What this checks is everything derivation does NOT
+guarantee:</p>
+<ol class="arabic simple">
+<li><p>every derived value is a finite scalar — catches a config entry that has
+become a list or a sweep range (METALS[‘metal_thickness’] is already a list,
+which is why geometry reads from CONDITIONS)</p></li>
+<li><p>every swept parameter has a default</p></li>
+<li><p>every default lies strictly INSIDE its own sweep range. A default outside
+the range means the two disagree about what is plausible; a default sitting
+exactly ON a bound is only half-sampled, which is how K_eq_metal_ref once
+slipped through</p></li>
+<li><p>L5 and L5L6 still agree on every value they share — the inherited defaults
+and ranges, and the preset overrides both levels have in common</p></li>
+</ol>
+<p>Returns a list of problem strings (empty when clean).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="calculations.sensitivity.level5_model_wrapper">
+<span class="sig-prename descclassname"><span class="pre">calculations.sensitivity.</span></span><span class="sig-name descname"><span class="pre">level5_model_wrapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_full_record</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/calculations/sensitivity.html#level5_model_wrapper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#calculations.sensitivity.level5_model_wrapper" title="Link to this definition">¶</a></dt>
+<dd><p>Wrapper for LEVEL 5 complete hierarchical model (L3 + L4).</p>
+<p>Combines defective oxide (L3) and defective metal microstructure (L4).
+Uses reference-point Arrhenius: X(T) = X_ref * exp(-E/R * (1/T - 1/T_ref)).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>params_dict</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>) – Any subset of parameters from DEFAULT_PARAMS_LEVEL5.
+Missing parameters are filled from defaults.</p></li>
+<li><p><strong>return_full_record</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – When True, also attach the string diagnostics ‘regime_hierarchy’ and
+‘dominant_path’. Used by the regime-stratified scan (run_global_lhs_scan).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p>‘flux’: Total permeation flux [mol/m²/s]</p></li>
+<li><p>’permeability’: Apparent permeability J·L_tot/Δ√P [mol/m/s/Pa^0.5]
+(tier 4 — only meaningful with its (T, P_up, P_down))</p></li>
+<li><p>’PRF’: Permeation Reduction Factor [-]</p></li>
+<li><p>’D_eff’, ‘D_modification’, ‘P_interface’</p></li>
+<li><p>’flux_intact’, ‘flux_defect’, ‘flux_bare_metal’</p></li>
+<li><p>’frac_oxide’, ‘frac_metal’, ‘frac_defect’: regime fractions (sum ~1)</p></li>
+<li><p>’regime’: argmax label — ‘oxide’ | ‘metal’ | ‘defect’ | ‘undefined’</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a></p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>‘regime’ holds the argmax label used to build the regime clusters. The older
+hierarchical L3/L4 string (e.g. ‘metal_limited/traps_defect_limited’) moved to
+‘regime_hierarchy’ so that partition_by_regime() can key on ‘regime’ unchanged.</p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="calculations.sensitivity.assign_regime_L5">
+<span class="sig-prename descclassname"><span class="pre">calculations.sensitivity.</span></span><span class="sig-name descname"><span class="pre">assign_regime_L5</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frac_oxide</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frac_metal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frac_defect</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rule</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'argmax'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/calculations/sensitivity.html#assign_regime_L5"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#calculations.sensitivity.assign_regime_L5" title="Link to this definition">¶</a></dt>
+<dd><p>Regime label for the LEVEL 5 model (no surface kinetics).</p>
+<p>Without a surface step there are only two series resistances, so the third
+competitor is the <em>parallel</em> one: flux that bypasses the intact oxide through
+pinholes/cracks/grain-boundary paths. The three fractions come from
+level5_model_wrapper and sum to 1 by construction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>frac_oxide</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Share of the driving pressure dropped across the oxide / the metal,
+scaled by the fraction of flux taking the intact (series) path.</p></li>
+<li><p><strong>frac_metal</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Share of the driving pressure dropped across the oxide / the metal,
+scaled by the fraction of flux taking the intact (series) path.</p></li>
+<li><p><strong>frac_defect</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – J_defect / J_total — the parallel bypass share.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>One of ‘oxide’, ‘metal’, ‘defect’ (or ‘mixed’ for rule=’threshold’),
+or ‘undefined’ if any fraction is NaN/None.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#calculations.sensitivity.assign_regime" title="calculations.sensitivity.assign_regime"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assign_regime</span></code></a></dt><dd><p>the L5L6 counterpart (surface / oxide / metal).</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="calculations.sensitivity.assign_regime">
+<span class="sig-prename descclassname"><span class="pre">calculations.sensitivity.</span></span><span class="sig-name descname"><span class="pre">assign_regime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frac_surface</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frac_oxide</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frac_metal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rule</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'argmax'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/calculations/sensitivity.html#assign_regime"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#calculations.sensitivity.assign_regime" title="Link to this definition">¶</a></dt>
+<dd><p>Canonical rate-limiting-regime label from the flux-weighted resistance fractions.</p>
+<p>This is the single source of truth used by the regime-stratified sensitivity
+analysis (and anywhere else a regime label is needed), so the definition stays
+consistent across the codebase.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>frac_surface</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Flux-weighted resistance fractions (from
+calculate_full_model_flux_L346_v2 -&gt; ‘flux_weighted_resistances’).
+They should sum to ~1 on a valid solve.</p></li>
+<li><p><strong>frac_oxide</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Flux-weighted resistance fractions (from
+calculate_full_model_flux_L346_v2 -&gt; ‘flux_weighted_resistances’).
+They should sum to ~1 on a valid solve.</p></li>
+<li><p><strong>frac_metal</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Flux-weighted resistance fractions (from
+calculate_full_model_flux_L346_v2 -&gt; ‘flux_weighted_resistances’).
+They should sum to ~1 on a valid solve.</p></li>
+<li><p><strong>rule</strong> (<code class="docutils literal notranslate"><span class="pre">{'argmax',</span> <span class="pre">'threshold'}</span></code>) – <dl>
+<dt>‘argmax’<span class="classifier">regime = whichever fraction is largest (default; always a</span></dt><dd><p>single label, no ‘mixed’ bucket).</p>
+</dd>
+<dt>’threshold’<span class="classifier">regime = the largest fraction only if it exceeds <code class="docutils literal notranslate"><span class="pre">threshold</span></code>,</span></dt><dd><p>otherwise ‘mixed’ (matches the notebook’s dominant-step rule).</p>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>threshold</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Dominance cutoff used only when rule=’threshold’.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>One of ‘surface’, ‘oxide’, ‘metal’ (or ‘mixed’ for rule=’threshold’),
+or ‘undefined’ if any fraction is NaN/None (e.g. a failed solve).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="calculations.sensitivity.level5L6_model_wrapper">
+<span class="sig-prename descclassname"><span class="pre">calculations.sensitivity.</span></span><span class="sig-name descname"><span class="pre">level5L6_model_wrapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_full_record</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/calculations/sensitivity.html#level5L6_model_wrapper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#calculations.sensitivity.level5L6_model_wrapper" title="Link to this definition">¶</a></dt>
+<dd><p>Wrapper for LEVEL 5+L6 model: defective oxide + defective metal + surface kinetics.</p>
+<p>Extends Level 5 by adding Langmuir-Hinshelwood surface kinetics at both the
+gas-oxide interface (k_diss, K_eq) and the metal surface at pinholes
+(k_diss_metal, K_eq_metal). Calls calculate_full_model_flux_L346_v2.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>params_dict</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>) – Any subset of parameters from DEFAULT_PARAMS_LEVEL5L6.</p></li>
+<li><p><strong>return_full_record</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – When True, also attach the string diagnostics ‘system_rate_limiting’ and
+‘dominant_path’ to the returned dict. Used by the regime-stratified global
+scan (run_global_lhs_scan). Default False returns the scalar metrics only.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>All Level 5 outputs plus:</p>
+<ul class="simple">
+<li><p>’frac_surface’: Flux-weighted surface resistance fraction</p></li>
+<li><p>’frac_oxide’:   Flux-weighted oxide resistance fraction</p></li>
+<li><p>’frac_metal’:   Flux-weighted metal resistance fraction</p></li>
+<li><p>’theta’:        Surface coverage on intact path</p></li>
+<li><dl class="simple">
+<dt>’regime’:       Rate-limiting regime label via assign_regime() (argmax of</dt><dd><p>the flux-weighted fractions; ‘undefined’ on a failed solve)</p>
+</dd>
+</dl>
+</li>
+</ul>
+<p>and, when return_full_record=True, ‘system_rate_limiting’ and ‘dominant_path’.</p>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="calculations.sensitivity.run_global_lhs_scan">
+<span class="sig-prename descclassname"><span class="pre">calculations.sensitivity.</span></span><span class="sig-name descname"><span class="pre">run_global_lhs_scan</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param_ranges</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">42</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wrapper</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_fields</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_fields</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fixed_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/calculations/sensitivity.html#run_global_lhs_scan"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#calculations.sensitivity.run_global_lhs_scan" title="Link to this definition">¶</a></dt>
+<dd><p>Space-filling LHS over all parameters, evaluated once with the full record.</p>
+<p>This single pass feeds BOTH the descriptive partitioning and Route B
+(given-data SA on the true regime clusters) — zero further model evaluations
+are needed for Route B.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>param_ranges</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>) – {name: [lo, hi]}; e.g. SUGGESTED_RANGES_LEVEL5L6.</p></li>
+<li><p><strong>N</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) – LHS sample size. Choose so the rarest regime cluster has &gt;= a few hundred
+points (set by the rarest regime’s frequency).</p></li>
+<li><p><strong>seed</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) – Reproducibility seed for latin.sample.</p></li>
+<li><p><strong>wrapper</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">callable</span></code>) – Model wrapper (default level5L6_model_wrapper); called with
+return_full_record=True.</p></li>
+<li><p><strong>save_path</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>) – If given, persist the tidy DataFrame (CSV, or parquet by extension).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>df<span class="classifier">tidy DataFrame — one row per LHS draw; columns = sampled parameter</span></dt><dd><p>values (the SA inputs X) + SCAN_OUTPUT_FIELDS + SCAN_LABEL_FIELDS.</p>
+</dd>
+</dl>
+<p>problem : SALib problem dict (names/bounds) for reuse downstream.</p>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">(df</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">problem)</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="calculations.sensitivity.partition_by_regime">
+<span class="sig-prename descclassname"><span class="pre">calculations.sensitivity.</span></span><span class="sig-name descname"><span class="pre">partition_by_regime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regime_col</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'regime'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_cluster</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">300</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_undefined</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/calculations/sensitivity.html#partition_by_regime"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#calculations.sensitivity.partition_by_regime" title="Link to this definition">¶</a></dt>
+<dd><p>Split the scan DataFrame into {regime: sub_df}.</p>
+<p>‘undefined’ (failed-solve) rows are dropped from the clusters by default and
+reported separately. Warns when a cluster is too small for stable given-data
+indices (δ/PAWN).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="calculations.sensitivity.plot_regime_exploration">
+<span class="sig-prename descclassname"><span class="pre">calculations.sensitivity.</span></span><span class="sig-name descname"><span class="pre">plot_regime_exploration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">partition</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_metrics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('flux',</span> <span class="pre">'permeability',</span> <span class="pre">'theta')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scan_df</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cross_col</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/calculations/sensitivity.html#plot_regime_exploration"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#calculations.sensitivity.plot_regime_exploration" title="Link to this definition">¶</a></dt>
+<dd><p>Per-regime descriptive view: cluster sizes + output distributions by regime,
+and (if scan_df given) a cross-tab of the argmax regime against the solver’s
+own categorical verdict.</p>
+<dl class="simple">
+<dt>cross_col<span class="classifier">str, optional</span></dt><dd><p>Column holding that verdict. Defaults to whichever of
+‘system_rate_limiting’ (L5L6) / ‘regime_hierarchy’ (L5) is present.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="calculations.sensitivity.size_draws_for_target">
+<span class="sig-prename descclassname"><span class="pre">calculations.sensitivity.</span></span><span class="sig-name descname"><span class="pre">size_draws_for_target</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">presets</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regimes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_cluster</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">TARGET_CLUSTER_SIZE</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">probe_n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">250</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">42</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">safety</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.15</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">200_000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wrapper</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">scan_kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/calculations/sensitivity.html#size_draws_for_target"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#calculations.sensitivity.size_draws_for_target" title="Link to this definition">¶</a></dt>
+<dd><p>Choose a draw count per regime by MEASURING each preset’s yield first.</p>
+<p>The draw count you want is <code class="docutils literal notranslate"><span class="pre">target</span> <span class="pre">/</span> <span class="pre">yield</span></code>, but the yield is only knowable by
+running the preset – so it used to be measured once by hand and pasted into the
+config as MEASURED_YIELDS_*. That cache goes stale silently: edit any range or
+preset block and the numbers still look authoritative while the clusters come
+out unbalanced, which makes a cross-regime comparison partly a comparison of
+estimator noise rather than of sensitivity.</p>
+<p>This breaks the circularity with a cheap probe instead. Cost is <code class="docutils literal notranslate"><span class="pre">probe_n</span></code> draws
+per regime against the thousands the real scan needs – roughly 15% – and it is
+correct for whatever study, material, temperature and preset are active.</p>
+<dl class="simple">
+<dt>safety<span class="classifier">the probe yield is a binomial estimate. At the hardest preset observed</span></dt><dd><p>(surface, p ~ 0.23) a 250-draw probe has se ~ 0.027, about 12% relative, so
+without a margin the cluster lands short about half the time.</p>
+</dd>
+<dt>n_max<span class="classifier">refuse to size a run larger than this, and say why. A preset that</span></dt><dd><p>targets an unreachable regime otherwise asks for a silently impossible scan.</p>
+</dd>
+</dl>
+<p>The probe is its own LHS and is discarded – the analysis then runs one clean,
+correctly sized design rather than concatenated batches.</p>
+<p>Returns {regime: n_draws}.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="calculations.sensitivity.run_targeted_regime_scans">
+<span class="sig-prename descclassname"><span class="pre">calculations.sensitivity.</span></span><span class="sig-name descname"><span class="pre">run_targeted_regime_scans</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N_per_regime</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regimes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('metal',</span> <span class="pre">'surface',</span> <span class="pre">'oxide')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">42</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wrapper</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">presets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_cluster</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">300</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_cluster</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">probe_n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">250</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">scan_kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/calculations/sensitivity.html#run_targeted_regime_scans"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#calculations.sensitivity.run_targeted_regime_scans" title="Link to this definition">¶</a></dt>
+<dd><p>Phase 1: one LHS scan per regime over its targeted preset, keeping
+the in-regime rows (argmax label). Feeds Route B (given-data).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>presets</strong> (<code class="docutils literal notranslate"><span class="pre">{regime:</span> <span class="pre">{param:</span> <span class="pre">[lo,</span> <span class="pre">hi]}}</span></code>, <em>optional</em>) – Targeted ranges per regime. Defaults to REGIME_PRESETS (L5L6); pass
+REGIME_PRESETS_L5 together with regimes=REGIME_LABELS_L5 and
+wrapper=level5_model_wrapper to run the no-surface model instead.</p></li>
+<li><p><strong>**scan_kw</strong> – Forwarded to run_global_lhs_scan — e.g. output_fields / label_fields,
+which differ between the two model levels.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>clusters</strong> (<code class="docutils literal notranslate"><span class="pre">{regime:</span> <span class="pre">cluster_df}</span></code>   in-regime rows only (regime == target preset))</p></li>
+<li><p><strong>scans</strong> (<code class="docutils literal notranslate"><span class="pre">{regime:</span> <span class="pre">full_scan_df}</span></code> every draw from that preset (for yield diagnostics))</p></li>
+<li><p><strong>master</strong> (DataFrame              all clusters concatenated (+ <code class="docutils literal notranslate"><span class="pre">'target_preset'</span></code> col))</p></li>
+<li><p><strong>yields</strong> (<code class="docutils literal notranslate"><span class="pre">{regime:</span> <span class="pre">in_regime_fraction}</span></code>)</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="calculations.sensitivity.load_regime_scans">
+<span class="sig-prename descclassname"><span class="pre">calculations.sensitivity.</span></span><span class="sig-name descname"><span class="pre">load_regime_scans</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">save_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regimes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('metal',</span> <span class="pre">'surface',</span> <span class="pre">'oxide')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/calculations/sensitivity.html#load_regime_scans"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#calculations.sensitivity.load_regime_scans" title="Link to this definition">¶</a></dt>
+<dd><p>Reload scans saved by run_targeted_regime_scans(save_dir=…) and rebuild the
+clusters/master structures — so an analysis can reuse cached model evaluations
+instead of re-running the (expensive) scans.</p>
+<p>Returns (clusters, scans, master) matching run_targeted_regime_scans’ first three.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="calculations.sensitivity.givendata_sensitivity_by_regime">
+<span class="sig-prename descclassname"><span class="pre">calculations.sensitivity.</span></span><span class="sig-name descname"><span class="pre">givendata_sensitivity_by_regime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">clusters</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_metrics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">REGIME_SA_METRICS</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">methods</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('pawn',</span> <span class="pre">'delta')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pawn_S</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta_resamples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">42</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_metrics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">LOG_METRICS_DEFAULT</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_dummy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/calculations/sensitivity.html#givendata_sensitivity_by_regime"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#calculations.sensitivity.givendata_sensitivity_by_regime" title="Link to this definition">¶</a></dt>
+<dd><p>Route B (primary): for each (regime, metric), run PAWN and Borgonovo-delta on the
+TRUE in-regime cluster — valid on arbitrary scattered points, zero new model evals.</p>
+<dl class="simple">
+<dt>n_dummy<span class="classifier">int</span></dt><dd><p>Number of DUMMY inputs (uniform random columns the model never saw) appended
+to X purely to measure the estimator’s noise floor. delta is biased positive
+for an irrelevant input, and that bias does NOT shrink with n — measured flat
+at ~0.09 from n=400 to n=1500 — so without this an entire table of noise reads
+as a ranking. Each entry gains ‘floor’ = max dummy delta; treat any parameter
+not clearly above it as unresolved. Set 0 to disable.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Nested as <code class="docutils literal notranslate"><span class="pre">{regime:</span> <span class="pre">{metric:</span> <span class="pre">{'n':</span> <span class="pre">int,</span> <span class="pre">'floor':</span> <span class="pre">float,</span> <span class="pre">'pawn':</span> <span class="pre">Si_pawn,</span>
+<span class="pre">'delta':</span> <span class="pre">Si_delta}}}</span></code>. An entry carries <code class="docutils literal notranslate"><span class="pre">'skipped'</span></code> instead of indices
+if the cluster is too small or degenerate.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="calculations.sensitivity.summarize_givendata">
+<span class="sig-prename descclassname"><span class="pre">calculations.sensitivity.</span></span><span class="sig-name descname"><span class="pre">summarize_givendata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">results</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param_names</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/calculations/sensitivity.html#summarize_givendata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#calculations.sensitivity.summarize_givendata" title="Link to this definition">¶</a></dt>
+<dd><p>Flatten Route-B results into a tidy long DataFrame for tables/heatmaps.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="calculations.sensitivity.plot_givendata_results">
+<span class="sig-prename descclassname"><span class="pre">calculations.sensitivity.</span></span><span class="sig-name descname"><span class="pre">plot_givendata_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">results</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_metric</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">15</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/calculations/sensitivity.html#plot_givendata_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#calculations.sensitivity.plot_givendata_results" title="Link to this definition">¶</a></dt>
+<dd><p>Bar plots of PAWN median and Borgonovo-delta (with conf) for one regime+metric.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="calculations.sensitivity.regime_comparison_matrix">
+<span class="sig-prename descclassname"><span class="pre">calculations.sensitivity.</span></span><span class="sig-name descname"><span class="pre">regime_comparison_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">givendata_results</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_metric</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'delta'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_union</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">12</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/calculations/sensitivity.html#regime_comparison_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#calculations.sensitivity.regime_comparison_matrix" title="Link to this definition">¶</a></dt>
+<dd><p>Build a (parameter × regime) matrix of a chosen Route-B index for one metric,
+restricted to the union of each regime’s top-<code class="docutils literal notranslate"><span class="pre">top_union</span></code> parameters.</p>
+<p>index : ‘delta’ | ‘pawn_median’ | ‘S1_givendata’</p>
+<dl class="simple">
+<dt>normalize<span class="classifier">None (raw values) | ‘column’ (divide each column by its own max,</span></dt><dd><p>so every regime peaks at 1.0 and rows read as <em>relative</em> importance
+within that regime). The top-<code class="docutils literal notranslate"><span class="pre">top_union</span></code> selection always uses the raw
+values, so the same parameters appear either way; only the row ordering
+(by row mean) shifts, since it is computed on whatever is returned.</p>
+</dd>
+</dl>
+<p>Returns the DataFrame (params as rows, regimes as columns).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="calculations.sensitivity.plot_regime_comparison_heatmap">
+<span class="sig-prename descclassname"><span class="pre">calculations.sensitivity.</span></span><span class="sig-name descname"><span class="pre">plot_regime_comparison_heatmap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">givendata_results</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_metric</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'delta'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_union</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">12</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'column'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_raw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/calculations/sensitivity.html#plot_regime_comparison_heatmap"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#calculations.sensitivity.plot_regime_comparison_heatmap" title="Link to this definition">¶</a></dt>
+<dd><p>Heatmap of a Route-B index across regimes (rows=params, cols=regimes).</p>
+<dl class="simple">
+<dt>normalize<span class="classifier">‘column’ (default) colours each cell by its column-normalized</span></dt><dd><p>value, so every regime spans a full 0-&gt;1 scale and within-regime contrast
+is visible. Without this, the dominant parameter (usually <code class="docutils literal notranslate"><span class="pre">temperature</span></code>)
+saturates the single global colour scale and everything else reads white.
+Pass None for the raw, un-normalized heatmap.</p>
+</dd>
+<dt>show_raw<span class="classifier">when normalizing, also print the raw value in a small box in each</span></dt><dd><p>cell’s upper-right corner, so absolute magnitude is not lost. The large
+centred number is the normalized value.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="calculations.sensitivity.top_drivers">
+<span class="sig-prename descclassname"><span class="pre">calculations.sensitivity.</span></span><span class="sig-name descname"><span class="pre">top_drivers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">routeB_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'flux'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">by</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'delta'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/calculations/sensitivity.html#top_drivers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#calculations.sensitivity.top_drivers" title="Link to this definition">¶</a></dt>
+<dd><p>Pick a regime’s top-k driver parameters from the Route-B tidy table.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="calculations.sensitivity.parallel_coordinates_samples">
+<span class="sig-prename descclassname"><span class="pre">calculations.sensitivity.</span></span><span class="sig-name descname"><span class="pre">parallel_coordinates_samples</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dimensions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color_by</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'regime'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_dims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_html</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">520</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labelangle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/calculations/sensitivity.html#parallel_coordinates_samples"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#calculations.sensitivity.parallel_coordinates_samples" title="Link to this definition">¶</a></dt>
+<dd><p>Per-sample parallel-coordinates plot (covers views A/B/D).</p>
+<dl class="simple">
+<dt>dimensions<span class="classifier">list of column names → one axis each (heavy-tailed ones listed in</span></dt><dd><p><code class="docutils literal notranslate"><span class="pre">log_dims</span></code> are shown as log10).</p>
+</dd>
+<dt>color_by<span class="classifier">‘regime’ → discrete colouring (surface/oxide/metal); otherwise a</span></dt><dd><p>numeric column (‘flux’/’permeability’ are coloured on log10).</p>
+</dd>
+</dl>
+<p>save_html  : optional path to write a standalone interactive HTML.</p>
+<dl class="simple">
+<dt>width<span class="classifier">figure width in px; default scales with the number of axes so the</span></dt><dd><p>axis titles don’t overlap. height/labelangle tune layout.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="calculations.sensitivity.parallel_coordinates_sensitivity">
+<span class="sig-prename descclassname"><span class="pre">calculations.sensitivity.</span></span><span class="sig-name descname"><span class="pre">parallel_coordinates_sensitivity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">matrix_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regimes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('metal',</span> <span class="pre">'oxide',</span> <span class="pre">'surface')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param_col</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'parameter'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_html</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/calculations/sensitivity.html#parallel_coordinates_sensitivity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#calculations.sensitivity.parallel_coordinates_sensitivity" title="Link to this definition">¶</a></dt>
+<dd><p>Sensitivity-shift PCP (view C): one line per PARAMETER, one axis per regime,
+axis value = the index in <code class="docutils literal notranslate"><span class="pre">matrix_df</span></code> (e.g. δ from compare_delta_flux.csv).</p>
+<p>A leftmost categorical axis labels each line with its parameter name (sorted by
+mean importance, highest at top) so individual lines are identifiable —
+go.Parcoords has no per-line legend/hover. Line colour = mean importance.
+<code class="docutils literal notranslate"><span class="pre">top_n</span></code> keeps only the most important N parameters to reduce clutter.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="calculations.sensitivity.plot_regime_geometry">
+<span class="sig-prename descclassname"><span class="pre">calculations.sensitivity.</span></span><span class="sig-name descname"><span class="pre">plot_regime_geometry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">clusters</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(9,</span> <span class="pre">6.5)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/calculations/sensitivity.html#plot_regime_geometry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#calculations.sensitivity.plot_regime_geometry" title="Link to this definition">¶</a></dt>
+<dd><p>Project the Phase 1 regime clusters onto two parameters.</p>
+<p>Each regime’s points are scattered in its own colour and outlined with the
+10-90 percentile band of the two plotted parameters, so cluster overlap (and
+the curvature of the true regime boundary) is visible.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>clusters</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">dict[str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">pd.DataFrame]</span></code>) – {regime: cluster_df} from run_targeted_regime_scans / load_regime_scans.</p></li>
+<li><p><strong>axes</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">(str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str)</span></code>) – Two parameter names to project on.</p></li>
+<li><p><strong>log_x</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – Log-scale the corresponding axis.</p></li>
+<li><p><strong>log_y</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – Log-scale the corresponding axis.</p></li>
+<li><p><strong>figsize</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">usual</span> <span class="pre">matplotlib</span> <span class="pre">knobs.</span></code>)</p></li>
+<li><p><strong>save_path</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">usual</span> <span class="pre">matplotlib</span> <span class="pre">knobs.</span></code>)</p></li>
+<li><p><strong>title</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">usual</span> <span class="pre">matplotlib</span> <span class="pre">knobs.</span></code>)</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">plot_regime_geometry</span><span class="p">(</span><span class="n">clusters</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;k_diss_ref&#39;</span><span class="p">,</span> <span class="s1">&#39;P_upstream&#39;</span><span class="p">),</span> <span class="n">log_x</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plot_regime_geometry</span><span class="p">(</span><span class="n">clusters</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">regime_topk</span><span class="p">(</span><span class="s1">&#39;metal&#39;</span><span class="p">)[:</span><span class="mi">2</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</dd></dl>
+
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="config.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title"><code class="docutils literal notranslate"><span class="pre">config</span></code> — study selection</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="classify_regime.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title"><code class="docutils literal notranslate"><span class="pre">classify_regime</span></code> — hierarchical regime classification</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2026, Azeez Akinyemi
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">sensitivity</span></code> — regime-stratified sensitivity analysis</a><ul>
+<li><a class="reference internal" href="#calculations.sensitivity.presets_without"><code class="docutils literal notranslate"><span class="pre">presets_without()</span></code></a></li>
+<li><a class="reference internal" href="#calculations.sensitivity.check_against_config"><code class="docutils literal notranslate"><span class="pre">check_against_config()</span></code></a></li>
+<li><a class="reference internal" href="#calculations.sensitivity.level5_model_wrapper"><code class="docutils literal notranslate"><span class="pre">level5_model_wrapper()</span></code></a></li>
+<li><a class="reference internal" href="#calculations.sensitivity.assign_regime_L5"><code class="docutils literal notranslate"><span class="pre">assign_regime_L5()</span></code></a></li>
+<li><a class="reference internal" href="#calculations.sensitivity.assign_regime"><code class="docutils literal notranslate"><span class="pre">assign_regime()</span></code></a></li>
+<li><a class="reference internal" href="#calculations.sensitivity.level5L6_model_wrapper"><code class="docutils literal notranslate"><span class="pre">level5L6_model_wrapper()</span></code></a></li>
+<li><a class="reference internal" href="#calculations.sensitivity.run_global_lhs_scan"><code class="docutils literal notranslate"><span class="pre">run_global_lhs_scan()</span></code></a></li>
+<li><a class="reference internal" href="#calculations.sensitivity.partition_by_regime"><code class="docutils literal notranslate"><span class="pre">partition_by_regime()</span></code></a></li>
+<li><a class="reference internal" href="#calculations.sensitivity.plot_regime_exploration"><code class="docutils literal notranslate"><span class="pre">plot_regime_exploration()</span></code></a></li>
+<li><a class="reference internal" href="#calculations.sensitivity.size_draws_for_target"><code class="docutils literal notranslate"><span class="pre">size_draws_for_target()</span></code></a></li>
+<li><a class="reference internal" href="#calculations.sensitivity.run_targeted_regime_scans"><code class="docutils literal notranslate"><span class="pre">run_targeted_regime_scans()</span></code></a></li>
+<li><a class="reference internal" href="#calculations.sensitivity.load_regime_scans"><code class="docutils literal notranslate"><span class="pre">load_regime_scans()</span></code></a></li>
+<li><a class="reference internal" href="#calculations.sensitivity.givendata_sensitivity_by_regime"><code class="docutils literal notranslate"><span class="pre">givendata_sensitivity_by_regime()</span></code></a></li>
+<li><a class="reference internal" href="#calculations.sensitivity.summarize_givendata"><code class="docutils literal notranslate"><span class="pre">summarize_givendata()</span></code></a></li>
+<li><a class="reference internal" href="#calculations.sensitivity.plot_givendata_results"><code class="docutils literal notranslate"><span class="pre">plot_givendata_results()</span></code></a></li>
+<li><a class="reference internal" href="#calculations.sensitivity.regime_comparison_matrix"><code class="docutils literal notranslate"><span class="pre">regime_comparison_matrix()</span></code></a></li>
+<li><a class="reference internal" href="#calculations.sensitivity.plot_regime_comparison_heatmap"><code class="docutils literal notranslate"><span class="pre">plot_regime_comparison_heatmap()</span></code></a></li>
+<li><a class="reference internal" href="#calculations.sensitivity.top_drivers"><code class="docutils literal notranslate"><span class="pre">top_drivers()</span></code></a></li>
+<li><a class="reference internal" href="#calculations.sensitivity.parallel_coordinates_samples"><code class="docutils literal notranslate"><span class="pre">parallel_coordinates_samples()</span></code></a></li>
+<li><a class="reference internal" href="#calculations.sensitivity.parallel_coordinates_sensitivity"><code class="docutils literal notranslate"><span class="pre">parallel_coordinates_sensitivity()</span></code></a></li>
+<li><a class="reference internal" href="#calculations.sensitivity.plot_regime_geometry"><code class="docutils literal notranslate"><span class="pre">plot_regime_geometry()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/documentation_options.js?v=fc837d61"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
+    </body>
+</html>

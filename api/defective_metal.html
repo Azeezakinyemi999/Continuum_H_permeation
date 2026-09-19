@@ -1,0 +1,1356 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="surface_kinetics — Level 6: dissociation kinetics and Langmuir coverage" href="surface_kinetics.html"><link rel="prev" title="parallel_oxide_defect_paths — Level 3: defective oxide, parallel paths" href="parallel_oxide_defect_paths.html">
+
+    <!-- Generated with Sphinx 7.4.7 and Furo 2025.12.19 -->
+        <title>defective_metal — Level 4: grain boundaries and trapping - Hierarchical Hydrogen Permeation Model 1.1.0</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">Hierarchical Hydrogen Permeation Model 1.1.0</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  <span class="sidebar-brand-text">Hierarchical Hydrogen Permeation Model 1.1.0</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting-started.html">Getting started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">How-to</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../how-to/switch-study.html">How to switch material study</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../how-to/sensitivity-analysis.html">How to run a regime-stratified sensitivity analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CONTAINER.html">Hydrogen Permeation Model — Offline Analysis Environment</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Theory</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../theory/two-models.html">Two models, not six levels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/foundations.html">Foundations: chemical potential and the driving force</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/equilibrium-models.html">Equilibrium models: Sieverts, Henry and Langmuir</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../STEADY_STATE.html">Steady State, Transients, and the Accumulation Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/level1-metal.html">Level 1 — the perfect metal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/level2-oxide.html">Level 2 — the oxide layer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/level3-defective-oxide.html">Level 3 — the defective oxide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/level4-microstructure.html">Level 4 — metal microstructure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/level5-full-system.html">Level 5 — the full system</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/level6-surface-kinetics.html">Level 6 — surface kinetics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/permeability.html">Permeability — two models, four tiers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/equations.html">Equation catalogue</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../PARAMETERS.html">Complete Parameter Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../OUTPUTS.html">Complete Output Reference</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">API Reference</a><input aria-label="Toggle navigation of API Reference" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="utils.html"><code class="docutils literal notranslate"><span class="pre">utils</span></code> — shared Arrhenius helpers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="permeation_calc.html"><code class="docutils literal notranslate"><span class="pre">permeation_calc</span></code> — Levels 1-2: Sieverts solubility and bulk diffusion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="oxide_permeation.html"><code class="docutils literal notranslate"><span class="pre">oxide_permeation</span></code> — Levels 2-3: molecular transport through the oxide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="interface_solver.html"><code class="docutils literal notranslate"><span class="pre">interface_solver</span></code> — the oxide/metal interface pressure solve</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parallel_oxide_defect_paths.html"><code class="docutils literal notranslate"><span class="pre">parallel_oxide_defect_paths</span></code> — Level 3: defective oxide, parallel paths</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">defective_metal</span></code> — Level 4: grain boundaries and trapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="surface_kinetics.html"><code class="docutils literal notranslate"><span class="pre">surface_kinetics</span></code> — Level 6: dissociation kinetics and Langmuir coverage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classify_regime.html"><code class="docutils literal notranslate"><span class="pre">classify_regime</span></code> — hierarchical regime classification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sensitivity.html"><code class="docutils literal notranslate"><span class="pre">sensitivity</span></code> — regime-stratified sensitivity analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="config.html"><code class="docutils literal notranslate"><span class="pre">config</span></code> — study selection</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Validation and release</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../TRAPPING_VALIDATION.html">Validating the Trapping Block Against TDS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TRAPPING_VALIDATION.html#appendix-a-symbols">Appendix A — Symbols</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TRAPPING_VALIDATION.html#appendix-b-equation-reference">Appendix B — Equation reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TRAPPING_VALIDATION.html#appendix-c-where-each-quantity-lives">Appendix C — Where each quantity lives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../PACKAGING_1.0.0.html">Packaging decisions — <code class="docutils literal notranslate"><span class="pre">hydrogen-model:1.0.0</span></code> offline container</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references.html">References</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Warnings and caveats</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../caveats.html">Warnings and caveats</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="../_sources/api/defective_metal.md.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section class="tex2jax_ignore mathjax_ignore" id="module-calculations.defective_metal">
+<span id="defective-metal-level-4-grain-boundaries-and-trapping"></span><h1><code class="docutils literal notranslate"><span class="pre">defective_metal</span></code> — Level 4: grain boundaries and trapping<a class="headerlink" href="#module-calculations.defective_metal" title="Link to this heading">¶</a></h1>
+<p>Defective Metal Model for Hydrogen Diffusion (Level 4)</p>
+<p>This module implements microstructure effects on hydrogen diffusion in polycrystalline
+metals, incorporating both enhancement (grain boundaries) and reduction (trapping)
+mechanisms. It provides the core physics for Level 4 of the hierarchical permeation model.</p>
+<div class="admonition-notes admonition">
+<p class="admonition-title">Notes</p>
+<p>Real metals exhibit competing microstructure effects on hydrogen transport:</p>
+<ol class="arabic simple">
+<li><p>Grain Boundary Enhancement:
+- GBs provide fast diffusion paths (D_gb &gt;&gt; D_bulk)
+- Enhancement factor decreases with temperature
+- Volume fraction f_gb = 3δ/d_grain
+- Parallel path model: D_eff = (1-f_gb)×D_bulk + f_gb×D_gb</p></li>
+<li><p>Trapping Reduction:
+- Defects (dislocations, vacancies, GBs) trap hydrogen
+- Reduces effective diffusivity via Oriani model
+- D_eff = D_lattice / (1 + Σ(N_T,i × K_i / N_L))
+- K_i = exp(E_b,i/RT) = equilibrium constant</p></li>
+<li><p>Combined Effects:
+- Sequential application: GB enhancement then trapping
+- Net effect can enhance OR reduce diffusion
+- Temperature and concentration dependent</p></li>
+</ol>
+</div>
+<div class="admonition-notes admonition">
+<p class="admonition-title">Notes</p>
+<p>The effective diffusivity combines both effects:</p>
+<blockquote>
+<div><p>D_eff = [(1-f_gb)×D_bulk + f_gb×α×D_bulk] / (1 + Σ(N_T,i × K_i / N_L))</p>
+</div></blockquote>
+<dl>
+<dt>where:</dt><dd><ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(f_{gb} = 3\delta/d\)</span> — grain boundary volume fraction</p></li>
+<li><p><span class="math notranslate nohighlight">\(\alpha(T) = D_{gb}/D_{bulk}\)</span> — enhancement factor</p></li>
+<li><p><span class="math notranslate nohighlight">\(N_{T,i}\)</span> — trap density for trap type i [m⁻³]</p></li>
+<li><p><span class="math notranslate nohighlight">\(K_i = \exp(E_{b,i}/RT)\)</span> — equilibrium constant for trap i</p></li>
+<li><p><span class="math notranslate nohighlight">\(N_L\)</span> — lattice site density [m⁻³]</p></li>
+</ul>
+</dd>
+<dt>Oriani equilibrium (correct form):</dt><dd><p>The trapping term in the denominator is:
+<span class="math notranslate nohighlight">\(\sum_i N_{T,i}K_i/N_L\)</span> is the ratio of trapped to mobile hydrogen.</p>
+<p>Critical trap density (where D_eff = D/2):
+.. math:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">N_T</span><span class="o">^</span><span class="p">{</span><span class="o">*</span><span class="p">}</span> <span class="o">=</span> \<span class="n">frac</span><span class="p">{</span><span class="n">N_L</span><span class="p">}{</span><span class="n">K</span><span class="p">}</span>
+</pre></div>
+</div>
+</dd>
+<dt>Grain boundary diffusion enhancement:</dt><dd><div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\frac{D_{gb}}{D_{bulk}} = A\exp\!\left[\frac{Q_{bulk}-Q_{gb}}{RT}\right]\]</div>
+</div>
+</dd>
+</dl>
+<p>where typically <span class="math notranslate nohighlight">\(Q_{gb} \approx 0.6\,Q_{bulk}\)</span></p>
+</div>
+<div class="admonition-notes admonition">
+<p class="admonition-title">Notes</p>
+<p>Core Functions (7)::
+1. trap_occupancy() - Calculate trap site occupancy fraction
+2. grain_boundary_density() - Convert grain size to trap density
+3. gb_enhancement_factor() - Temperature-dependent GB enhancement
+4. vacancy_concentration() - Thermal vacancy concentration
+5. calculate_effective_diffusivity_trapping() - Apply trapping effects
+6. calculate_gb_enhanced_diffusivity() - Apply GB enhancement
+7. combined_microstructure_model() - Combine all effects</p>
+</div>
+<div class="admonition-notes admonition">
+<p class="admonition-title">Notes</p>
+<p>This module is used by higher-level functions in:
+- permeation_calc.py: calculate_defective_metal_flux()
+- interface_solver.py: solve_interface_pressure_defective_metal()
+- parallel_oxide_defect_paths.py: calculate_parallel_path_flux_defective_metal()</p>
+<p>The functions can be used individually for specific effects or combined
+via combined_microstructure_model() for complete microstructure modeling.</p>
+</div>
+<div class="admonition-notes admonition">
+<p class="admonition-title">Notes</p>
+<p>Typical ranges for austenitic steels:
+- Grain size: 10⁻⁸ to 10⁻³ m
+- GB thickness: 0.5-1.0 nm
+- Dislocation density: 10¹⁴ to 10¹⁶ m⁻³
+- Vacancy concentration: 10²⁰ to 10²³ m⁻³
+- Binding energies:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Dislocations: 20-30 kJ/mol</p></li>
+<li><p>Grain boundaries: 40-50 kJ/mol</p></li>
+<li><p>Vacancies: 40-45 kJ/mol</p></li>
+<li><p>Precipitates: 60-90 kJ/mol</p></li>
+</ul>
+</div></blockquote>
+</div>
+<div class="admonition-notes admonition">
+<p class="admonition-title">Notes</p>
+<ol class="arabic simple">
+<li><p>Assumes Oriani local equilibrium (invalid for θ &gt; 0.9)</p></li>
+<li><p>Independent trap types (no interaction)</p></li>
+<li><p>Uniform trap distribution (not segregated)</p></li>
+<li><p>Steady-state conditions</p></li>
+<li><p>Dilute hydrogen concentration</p></li>
+<li><p>No trap saturation effects</p></li>
+</ol>
+<p>For high trap occupancy (θ &gt; 0.9) or transient conditions,
+consider McNabb-Foster kinetic model instead.</p>
+</div>
+<div class="admonition-references admonition">
+<p class="admonition-title">References</p>
+<ol class="arabic simple">
+<li><p>Oriani, R.A. (1970). “The diffusion and trapping of hydrogen in steel.”
+Acta Metallurgica 18, 147-157. DOI: 10.1016/0001-6160(70)90078-7</p></li>
+<li><p>McNabb, A., Foster, P.K. (1963). “A new analysis of diffusion of hydrogen
+in iron and ferritic steels.” Trans. Metall. Soc. AIME 227, 618-627.</p></li>
+<li><p>Oudriss, A., et al. (2012). “Grain size and grain-boundary effects on
+diffusion and trapping of hydrogen in pure nickel.” Acta Mater. 60,
+6814-6828. DOI: 10.1016/j.actamat.2012.09.004</p></li>
+<li><p>Tsuru, T., Latanision, R.M. (1982). “Grain boundary transport of hydrogen
+in nickel.” Scripta Metall. 16, 575-578. DOI: 10.1016/0036-9748(82)90273-3</p></li>
+<li><p>Brass, A.M., Chêne, J. (2006). “Hydrogen uptake in 316L stainless steel:
+Consequences on the tensile properties.” Corros. Sci. 48, 3222-3242.
+DOI: 10.1016/j.corsci.2005.11.004</p></li>
+<li><p>Robertson, I.M. (1977). “The effect of hydrogen on dislocation dynamics.”
+Metall. Trans. A 8, 1709-1712. DOI: 10.1007/BF02646878</p></li>
+</ol>
+</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="calculations.defective_metal.trap_occupancy">
+<span class="sig-prename descclassname"><span class="pre">calculations.defective_metal.</span></span><span class="sig-name descname"><span class="pre">trap_occupancy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">temperature</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">binding_energy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trap_density</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lattice_density</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lattice_concentration</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/calculations/defective_metal.html#trap_occupancy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#calculations.defective_metal.trap_occupancy" title="Link to this definition">¶</a></dt>
+<dd><p>Calculate hydrogen trap occupancy fraction using Oriani local equilibrium model.</p>
+<div class="admonition-notes admonition">
+<p class="admonition-title">Notes</p>
+<p>At thermal equilibrium, the distribution of hydrogen between lattice sites and
+trap sites follows Fermi-Dirac statistics. For a single trap type, the
+equilibrium is described by:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[K = \exp\!\left(\frac{E_b}{RT}\right)
+  = \frac{\theta_T}{1-\theta_T}\cdot\frac{1-\theta_L}{\theta_L}\]</div>
+</div>
+<p>where θ_T and θ_L are trap and lattice site occupancies respectively.</p>
+<p>For dilute solutions (θ_L &lt;&lt; 1), this simplifies to:
+.. math:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>\<span class="n">theta_T</span> <span class="o">=</span> \<span class="n">frac</span><span class="p">{</span><span class="n">K</span>\<span class="p">,(</span><span class="n">C_L</span><span class="o">/</span><span class="n">N_L</span><span class="p">)}{</span><span class="mi">1</span> <span class="o">+</span> <span class="n">K</span>\<span class="p">,(</span><span class="n">C_L</span><span class="o">/</span><span class="n">N_L</span><span class="p">)}</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition-notes admonition">
+<p class="admonition-title">Notes</p>
+<p>Starting from chemical potential equilibrium:
+.. math:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>\mu_T &amp;= \mu_L \\
+\mu^{\circ}_T + RT\ln\!\frac{\theta_T}{1-\theta_T}
+    &amp;= \mu^{\circ}_L + RT\ln\!\frac{\theta_L}{1-\theta_L}
+</pre></div>
+</div>
+<p>With <span class="math notranslate nohighlight">\(E_b = \mu^{\circ}_L - \mu^{\circ}_T\)</span> (the binding energy):
+.. math:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>\frac{\theta_T}{1-\theta_T}
+    = \exp\!\left(\frac{E_b}{RT}\right)\frac{\theta_L}{1-\theta_L}
+</pre></div>
+</div>
+<p>For dilute lattice (θ_L &lt;&lt; 1):
+.. math:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>\<span class="n">theta_T</span> <span class="o">=</span> \<span class="n">frac</span><span class="p">{</span>\<span class="n">exp</span><span class="p">(</span><span class="n">E_b</span><span class="o">/</span><span class="n">RT</span><span class="p">)</span>\<span class="p">,(</span><span class="n">C_L</span><span class="o">/</span><span class="n">N_L</span><span class="p">)}</span>
+                <span class="p">{</span><span class="mi">1</span> <span class="o">+</span> \<span class="n">exp</span><span class="p">(</span><span class="n">E_b</span><span class="o">/</span><span class="n">RT</span><span class="p">)</span>\<span class="p">,(</span><span class="n">C_L</span><span class="o">/</span><span class="n">N_L</span><span class="p">)}</span>
+</pre></div>
+</div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>temperature</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Absolute temperature in Kelvin [K]
+Must be positive and typically 300-1200 K for fusion applications</p></li>
+<li><p><strong>binding_energy</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Trap binding energy in J/mol [J/mol]
+Positive value means trap is lower energy than lattice site
+Typical range: 20-100 kJ/mol for various defects</p></li>
+<li><p><strong>trap_density</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Number of trap sites per unit volume [m⁻³]
+Range: 10¹⁴-10²⁴ m⁻³ depending on defect type</p></li>
+<li><p><strong>lattice_density</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Number of interstitial lattice sites per unit volume [m⁻³]
+For FCC metals: ~10²⁹ m⁻³</p></li>
+<li><p><strong>lattice_concentration</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Hydrogen concentration in lattice sites [mol/m³]
+This is the mobile/diffusible hydrogen concentration</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary containing:
+- ‘theta_T’: Trap occupancy fraction (0 ≤ θ ≤ 1) [-]
+- ‘K_equilibrium’: Equilibrium constant [-]
+- ‘approximation_used’: ‘low_coverage’ or ‘full_equation’
+- ‘theta_lattice’: Lattice site occupancy fraction [-]
+- ‘saturation_warning’: True if θ &gt; 0.9
+- ‘trap_concentration’: Actual trapped H concentration [mol/m³]</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If temperature ≤ 0 K
+    If any density/concentration is negative
+    If lattice_concentration &gt; lattice_density (unphysical)</p>
+</dd>
+</dl>
+<div class="admonition-references admonition">
+<p class="admonition-title">References</p>
+<ol class="arabic simple">
+<li><p>Oriani, R.A. (1970). “The diffusion and trapping of hydrogen in steel.”
+Acta Metallurgica, 18, 147-157. DOI: 10.1016/0001-6160(70)90078-7</p></li>
+<li><p>McNabb, A., Foster, P.K. (1963). “A new analysis of diffusion of hydrogen
+in iron and ferritic steels.” Trans. Metall. Soc. AIME, 227, 618-627.</p></li>
+</ol>
+</div>
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">trap_occupancy</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">temperature</span><span class="o">=</span><span class="mi">800</span><span class="p">,</span>  <span class="c1"># K</span>
+<span class="gp">... </span>    <span class="n">binding_energy</span><span class="o">=</span><span class="mf">27e3</span><span class="p">,</span>  <span class="c1"># J/mol (dislocations)</span>
+<span class="gp">... </span>    <span class="n">trap_density</span><span class="o">=</span><span class="mf">1e15</span><span class="p">,</span>  <span class="c1"># m⁻³</span>
+<span class="gp">... </span>    <span class="n">lattice_density</span><span class="o">=</span><span class="mf">1.06e29</span><span class="p">,</span>  <span class="c1"># m⁻³ (FCC)</span>
+<span class="gp">... </span>    <span class="n">lattice_concentration</span><span class="o">=</span><span class="mf">1e-3</span>  <span class="c1"># mol/m³</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Trap occupancy: </span><span class="si">{</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;theta&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="calculations.defective_metal.grain_boundary_density">
+<span class="sig-prename descclassname"><span class="pre">calculations.defective_metal.</span></span><span class="sig-name descname"><span class="pre">grain_boundary_density</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">grain_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gb_thickness</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5e-9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sites_per_area</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e19</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grain_shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'equiaxed'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/calculations/defective_metal.html#grain_boundary_density"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#calculations.defective_metal.grain_boundary_density" title="Link to this definition">¶</a></dt>
+<dd><p>Calculate grain boundary trap density from microstructure parameters.</p>
+<div class="admonition-notes admonition">
+<p class="admonition-title">Notes</p>
+<p>Grain boundaries (GBs) are 2D defects that separate crystalline regions. The
+total GB area per unit volume depends on grain size and morphology. For
+hydrogen trapping, we need to convert this geometric information into a
+volumetric trap density.</p>
+<p>For randomly oriented equiaxed grains, stereology gives:
+.. math:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">S_v</span> <span class="o">=</span> \<span class="n">frac</span><span class="p">{</span><span class="mi">3</span><span class="p">}{</span><span class="n">d</span><span class="p">}</span>\<span class="n">quad</span>\<span class="n">text</span><span class="p">{(</span><span class="n">boundary</span> <span class="n">area</span> <span class="n">per</span> <span class="n">unit</span> <span class="n">volume</span><span class="p">)}</span>
+</pre></div>
+</div>
+<p>where d is the mean linear intercept (approximately the grain diameter).</p>
+<p>The volumetric trap density is then:
+.. math:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">N_</span><span class="p">{</span><span class="n">gb</span><span class="p">}</span> <span class="o">=</span> <span class="n">S_v</span>\<span class="p">,</span>\<span class="n">rho_</span><span class="p">{</span><span class="n">gb</span><span class="p">}</span> <span class="o">=</span> \<span class="n">frac</span><span class="p">{</span><span class="mi">3</span><span class="p">}{</span><span class="n">d</span><span class="p">}</span>\<span class="n">rho_</span><span class="p">{</span><span class="n">gb</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>where ρ_gb is the areal density of trap sites on the GB.</p>
+</div>
+<div class="admonition-notes admonition">
+<p class="admonition-title">Notes</p>
+<p>Starting from stereological relationships:
+1. For random polycrystal: &lt;N_L&gt; = 2/d (intercepts per unit length)
+2. Surface area per volume: S_v = 2×&lt;N_L&gt; = 4/d
+3. Correction for shared boundaries: S_v = 3/d (factor varies 2-3)</p>
+<p>Volume fraction of GB:
+.. math:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">f_</span><span class="p">{</span><span class="n">gb</span><span class="p">}</span> <span class="o">=</span> <span class="n">S_v</span>\<span class="p">,</span>\<span class="n">delta</span> <span class="o">=</span> \<span class="n">frac</span><span class="p">{</span><span class="mi">3</span>\<span class="n">delta</span><span class="p">}{</span><span class="n">d</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>where δ is the GB thickness.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>grain_size</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Average grain diameter in meters [m]
+Typical ranges:
+- Nanocrystalline: 1-100 nm
+- Ultrafine: 100 nm - 1 μm
+- Fine: 1-10 μm
+- Conventional: 10-100 μm
+- Coarse: &gt;100 μm</p></li>
+<li><p><strong>gb_thickness</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>, <em>optional</em>) – Grain boundary width in meters [m]
+Default: 0.5e-9 m (0.5 nm)
+Physical range: 0.3-1.0 nm for high-angle boundaries</p></li>
+<li><p><strong>sites_per_area</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>, <em>optional</em>) – Number of hydrogen trap sites per m² of GB surface [m⁻²]
+Default: 1e19 m⁻² (approximately one site per atom on GB)
+Range: 1e18-1e20 m⁻² depending on GB structure</p></li>
+<li><p><strong>grain_shape</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <em>optional</em>) – Grain morphology affecting GB density:
+- ‘equiaxed’: 3D random polycrystal (default)
+- ‘columnar’: 2D boundaries (e.g., directionally solidified)
+- ‘planar’: 1D boundaries (e.g., lamellar structure)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary containing:
+- ‘trap_density’: GB trap sites per unit volume [m⁻³]
+- ‘volume_fraction’: Volume fraction of GB phase [-]
+- ‘surface_per_volume’: GB surface area per unit volume [m⁻¹]
+- ‘mean_intercept’: Mean linear intercept length [m]
+- ‘warnings’: List of any warnings about parameters</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If grain_size ≤ 0
+    If gb_thickness ≤ 0 or &gt; grain_size/10
+    If sites_per_area ≤ 0
+    If grain_shape is not recognized</p>
+</dd>
+</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<dl class="simple">
+<dt>Issues warnings for:</dt><dd><ul class="simple">
+<li><p>Grain size &lt; 10 nm (approaching amorphous limit)</p></li>
+<li><p>Grain size &gt; 10 mm (unusually coarse)</p></li>
+<li><p>Volume fraction &gt; 0.1 (GB phase percolation)</p></li>
+</ul>
+</dd>
+</dl>
+</div>
+<div class="admonition-references admonition">
+<p class="admonition-title">References</p>
+<ol class="arabic simple">
+<li><p>Palumbo, G., Aust, K.T. (1990). “Structure-dependence of intergranular
+corrosion in high purity nickel.” Acta Metall. Mater. 38, 2343-2352.
+DOI: 10.1016/0956-7151(90)90101-L</p></li>
+<li><p>Underwood, E.E. (1970). “Quantitative Stereology.” Addison-Wesley.</p></li>
+<li><p>Oudriss, A., et al. (2012). “Grain size and grain-boundary effects on
+diffusion and trapping of hydrogen in pure nickel.” Acta Mater. 60,
+6814-6828. DOI: 10.1016/j.actamat.2012.09.004</p></li>
+</ol>
+</div>
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">grain_boundary_density</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">grain_size</span><span class="o">=</span><span class="mf">50e-6</span><span class="p">,</span>  <span class="c1"># 50 μm</span>
+<span class="gp">... </span>    <span class="n">gb_thickness</span><span class="o">=</span><span class="mf">0.5e-9</span><span class="p">,</span>  <span class="c1"># 0.5 nm</span>
+<span class="gp">... </span>    <span class="n">sites_per_area</span><span class="o">=</span><span class="mf">1e19</span><span class="p">,</span>  <span class="c1"># sites/m²</span>
+<span class="gp">... </span>    <span class="n">grain_shape</span><span class="o">=</span><span class="s1">&#39;equiaxed&#39;</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;GB trap density: </span><span class="si">{</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;trap_density&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2"> m⁻³&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="calculations.defective_metal.gb_enhancement_factor">
+<span class="sig-prename descclassname"><span class="pre">calculations.defective_metal.</span></span><span class="sig-name descname"><span class="pre">gb_enhancement_factor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">temperature</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature_unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'K'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gb_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'HAGB'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/calculations/defective_metal.html#gb_enhancement_factor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#calculations.defective_metal.gb_enhancement_factor" title="Link to this definition">¶</a></dt>
+<dd><p>Calculate grain boundary diffusion enhancement factor D_gb/D_bulk.</p>
+<div class="admonition-notes admonition">
+<p class="admonition-title">Notes</p>
+<p>Grain boundaries provide fast diffusion paths due to their more open atomic
+structure. The enhancement factor D_gb/D_bulk decreases with temperature as
+thermal activation makes bulk diffusion more competitive.</p>
+<dl>
+<dt>The temperature dependence follows:</dt><dd><div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\]</div>
+</div>
+<p>frac{D_{gb}}{D_{bulk}} = Aexp!left[frac{Q_{bulk}-Q_{gb}}{RT}right]</p>
+</dd>
+</dl>
+<p>where typically Q_gb ≈ 0.6 × Q_bulk, meaning grain boundary diffusion has
+lower activation energy. At low homologous temperatures (T/T_m &lt; 0.5), GB
+diffusion can be 100-1000× faster than bulk. At high temperatures (T/T_m &gt; 0.8),
+the enhancement reduces to 10-20×.</p>
+</div>
+<div class="admonition-notes admonition">
+<p class="admonition-title">Notes</p>
+<dl>
+<dt>Starting from Arrhenius expressions:</dt><dd><p>D_bulk = D₀_bulk × exp(-Q_bulk/RT)
+D_gb = D₀_gb × exp(-Q_gb/RT)</p>
+</dd>
+<dt>Taking the ratio:</dt><dd><p>D_gb/D_bulk = (D₀_gb/D₀_bulk) × exp[(Q_bulk - Q_gb)/RT]</p>
+</dd>
+<dt>With Q_gb ≈ 0.6 × Q_bulk (empirical):</dt><dd><div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\]</div>
+</div>
+<p>frac{D_{gb}}{D_{bulk}} approx Aexp!left[frac{0.4,Q_{bulk}}{RT}right]</p>
+</dd>
+</dl>
+<p>This predicts log-linear behavior in 1/T space.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>temperature</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Temperature value [K or °C depending on temperature_unit]
+Typical range: 300-1300 K for fusion applications</p></li>
+<li><p><strong>temperature_unit</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <em>optional</em>) – Temperature unit: ‘K’ for Kelvin or ‘C’ for Celsius
+Default: ‘K’</p></li>
+<li><p><strong>gb_type</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <em>optional</em>) – Grain boundary type:
+- ‘HAGB’: High-angle grain boundary (&gt;15° misorientation)
+- ‘LAGB’: Low-angle grain boundary (&lt;15° misorientation)
+- ‘twin’: Coherent twin boundary (special Σ3)
+- ‘special’: Other special boundaries (Σ5, Σ7, etc.)
+Default: ‘HAGB’ (most common and highest enhancement)</p></li>
+<li><p><strong>data_source</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>, <em>optional</em>) – Source of enhancement data:
+- ‘default’: Use built-in data for austenitic steel
+- dict: Custom data as {T_celsius: enhancement_factor}
+Default: ‘default’</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary containing:
+- ‘enhancement_factor’: D_gb/D_bulk ratio [-]
+- ‘uncertainty’: Estimated relative uncertainty (fractional)
+- ‘interpolation_method’: Method used (‘interpolation’, ‘extrapolation_warning’)
+- ‘temperature_K’: Temperature in Kelvin [K]
+- ‘gb_type_factor’: Scaling factor applied for GB type [-]
+- ‘data_range’: Temperature range of source data [K]</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If temperature ≤ 0 K
+    If temperature_unit not recognized
+    If gb_type not recognized
+    If temperature far outside data range (&gt;200K extrapolation)</p>
+</dd>
+</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<dl class="simple">
+<dt>UserWarning</dt><dd><p>If temperature requires extrapolation beyond data range
+If enhancement factor seems unphysical (&gt;10000 or &lt;1)</p>
+</dd>
+</dl>
+</div>
+<div class="admonition-references admonition">
+<p class="admonition-title">References</p>
+<ol class="arabic simple">
+<li><p>Tsuru, T., Latanision, R.M. (1982). “Grain boundary transport of hydrogen
+in nickel.” Scripta Metall. 16, 575-578.
+DOI: 10.1016/0036-9748(82)90273-3</p></li>
+<li><p>Harris, J.E., Masters, B.C. (1966). “The diffusivity of hydrogen in nickel.”
+British J. Appl. Phys. 17, 377. DOI: 10.1088/0508-3443/17/3/310</p></li>
+<li><p>Brass, A.M., Chanfreau, A. (1996). “Accelerated diffusion of hydrogen along
+grain boundaries in nickel.” Acta Mater. 44, 3823-3831.
+DOI: 10.1016/1359-6454(95)00446-7</p></li>
+</ol>
+</div>
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">gb_enhancement_factor</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">temperature</span><span class="o">=</span><span class="mi">800</span><span class="p">,</span>  <span class="c1"># °C</span>
+<span class="gp">... </span>    <span class="n">temperature_unit</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">gb_type</span><span class="o">=</span><span class="s1">&#39;HAGB&#39;</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;D_gb/D_bulk = </span><span class="si">{</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;enhancement_factor&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="calculations.defective_metal.vacancy_concentration">
+<span class="sig-prename descclassname"><span class="pre">calculations.defective_metal.</span></span><span class="sig-name descname"><span class="pre">vacancy_concentration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">temperature</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">material</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Incoloy800'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">condition</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'equilibrium'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quench_temperature</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/calculations/defective_metal.html#vacancy_concentration"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#calculations.defective_metal.vacancy_concentration" title="Link to this definition">¶</a></dt>
+<dd><p>Calculate thermal vacancy concentration in metals.</p>
+<div class="admonition-notes admonition">
+<p class="admonition-title">Notes</p>
+<p>Vacancies are thermodynamic defects that exist in equilibrium due to the
+balance between formation enthalpy (energy cost) and configurational entropy
+(disorder gain). The equilibrium concentration follows:</p>
+<blockquote>
+<div><div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\]</div>
+</div>
+<dl class="simple">
+<dt>C_v = Nexp!left(frac{-G_f^v}{kT}right)</dt><dd><p>approx Nexp!left(frac{-E_f^v}{RT}right)</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>where G_f^v is the Gibbs free energy of formation. At high temperatures,
+the entropy term T×S_f^v becomes significant, but for most metals below
+0.8×T_melt, the enthalpy E_f^v dominates.</p>
+</div>
+<div class="admonition-notes admonition">
+<p class="admonition-title">Notes</p>
+<dl>
+<dt>From statistical mechanics, minimizing Gibbs free energy:</dt><dd><p>G = N_v×G_f^v - T×S_config</p>
+</dd>
+<dt>where configurational entropy:</dt><dd><p>S_config = k_B × ln[N!/(N_v!(N-N_v)!)]</p>
+</dd>
+<dt>Using Stirling’s approximation and ∂G/∂N_v = 0:</dt><dd><div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\]</div>
+</div>
+<dl class="simple">
+<dt>frac{N_v}{N} = exp!left(frac{-G_f^v}{kT}right)</dt><dd><p>approx exp!left(frac{-E_f^v}{RT}right)</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>For FCC metals, E_f^v ≈ 10-15 × k_B×T_melt (empirical rule).</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>temperature</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Current temperature in Kelvin [K]
+Valid range: 300 K to 0.95×T_melt
+Above 0.85×T_melt, model accuracy decreases</p></li>
+<li><p><strong>material</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <em>optional</em>) – Material name for property lookup:
+- ‘Incoloy800’: Default austenitic alloy
+- ‘Ni’: Pure nickel
+- ‘Fe_austenitic’: Austenitic iron
+- ‘custom’: Use with custom parameters
+Default: ‘Incoloy800’</p></li>
+<li><p><strong>condition</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <em>optional</em>) – Vacancy condition:
+- ‘equilibrium’: Vacancies in thermal equilibrium at temperature
+- ‘quenched’: Supersaturated vacancies frozen from quench_temperature
+Default: ‘equilibrium’</p></li>
+<li><p><strong>quench_temperature</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>, <em>optional</em>) – Temperature from which material was quenched [K]
+Only used if condition=’quenched’
+Must be &gt; temperature and &lt; T_melt</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary containing:
+- ‘concentration’: Vacancy concentration [m⁻³]
+- ‘site_fraction’: Fraction of lattice sites vacant [-]
+- ‘formation_energy’: Vacancy formation energy used [J/mol]
+- ‘lattice_sites’: Total lattice sites per m³ [m⁻³]
+- ‘is_equilibrium’: True if equilibrium, False if quenched
+- ‘effective_temperature’: Temperature determining concentration [K]
+- ‘warnings’: List of any warnings issued</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If temperature ≤ 0 K
+    If temperature &gt; 0.95×T_melt (model invalid near melting)
+    If material not recognized
+    If condition not ‘equilibrium’ or ‘quenched’
+    If quench_temperature invalid for quenched condition</p>
+</dd>
+</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<dl class="simple">
+<dt>UserWarning</dt><dd><p>If temperature &gt; 0.85×T_melt (reduced model accuracy)
+If vacancy concentration exceeds 1% (clustering becomes important)
+If quench creates very high supersaturation (&gt;100× equilibrium)</p>
+</dd>
+</dl>
+</div>
+<div class="admonition-references admonition">
+<p class="admonition-title">References</p>
+<ol class="arabic simple">
+<li><p>Kraftmakher, Y. (1998). “Equilibrium vacancies and thermophysical
+properties of metals.” Physics Reports 299, 79-188.
+DOI: 10.1016/S0370-1573(97)00082-3</p></li>
+<li><p>Fukai, Y., Okuma, N. (1994). “Formation of superabundant vacancies in
+metal hydrides.” Jpn. J. Appl. Phys. 32, L1256.
+DOI: 10.1143/JJAP.32.L1256</p></li>
+<li><p>Siegel, R.W. (1978). “Vacancy concentrations in metals.” J. Nucl. Mater.
+69-70, 117-146. DOI: 10.1016/0022-3115(78)90240-4</p></li>
+</ol>
+</div>
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">vacancy_concentration</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">temperature</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>  <span class="c1"># K</span>
+<span class="gp">... </span>    <span class="n">material</span><span class="o">=</span><span class="s1">&#39;Incoloy800&#39;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">condition</span><span class="o">=</span><span class="s1">&#39;equilibrium&#39;</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Vacancy concentration: </span><span class="si">{</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;concentration&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2"> m⁻³&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="calculations.defective_metal.calculate_effective_diffusivity_trapping">
+<span class="sig-prename descclassname"><span class="pre">calculations.defective_metal.</span></span><span class="sig-name descname"><span class="pre">calculate_effective_diffusivity_trapping</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">D_lattice</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trap_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lattice_concentration</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lattice_density</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/calculations/defective_metal.html#calculate_effective_diffusivity_trapping"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#calculations.defective_metal.calculate_effective_diffusivity_trapping" title="Link to this definition">¶</a></dt>
+<dd><p>Calculate effective hydrogen diffusivity reduced by trapping effects.</p>
+<div class="admonition-notes admonition">
+<p class="admonition-title">Notes</p>
+<p>In the presence of traps, hydrogen atoms spend time immobilized in trap sites,
+reducing the effective diffusion coefficient. Using Oriani’s local equilibrium
+assumption, the effective diffusivity is:</p>
+<blockquote>
+<div><div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\]</div>
+</div>
+<p>D_{eff} = frac{D_{lattice}}{1 + sum_i N_{T,i}K_i/N_L}</p>
+</div></blockquote>
+<dl class="simple">
+<dt>where:</dt><dd><p>N_T,i = trap density for trap type i [m⁻³]
+K_i = exp(E_b,i / RT) = equilibrium constant for trap type i [-]
+N_L = lattice site density [m⁻³]</p>
+</dd>
+</dl>
+<p>This formula correctly accounts for:
+1. Trap density N_T (more traps = stronger reduction)
+2. Binding energy via K (stronger binding = stronger reduction)
+3. Normalization by lattice density N_L</p>
+</div>
+<div class="admonition-notes admonition">
+<p class="admonition-title">Notes</p>
+<dl class="simple">
+<dt>From mass balance at equilibrium:</dt><dd><p>C_total = C_L + Σ C_T,i</p>
+</dd>
+</dl>
+<p>where C_L is mobile (lattice) hydrogen and C_T,i is trapped hydrogen.</p>
+<dl class="simple">
+<dt>At Oriani equilibrium:</dt><dd><p>C_T,i / C_L = (N_T,i / N_L) × K_i</p>
+</dd>
+<dt>The mobile fraction is:</dt><dd><dl class="simple">
+<dt>f_mobile = C_L / C_total = 1 / (1 + Σ(C_T,i / C_L))</dt><dd><p>= 1 / (1 + Σ(N_T,i × K_i / N_L))</p>
+</dd>
+</dl>
+</dd>
+<dt>Therefore:</dt><dd><p>D_eff = D_lattice × f_mobile = D_lattice / (1 + Σ(N_T,i × K_i / N_L))</p>
+</dd>
+</dl>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>D_lattice</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Intrinsic lattice diffusion coefficient [m²/s]
+Typical range: 10⁻¹² to 10⁻⁷ m²/s for H in metals</p></li>
+<li><p><strong>temperature</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Operating temperature [K] (all properties should be evaluated at this T)
+Valid range: 300-1500 K for typical applications</p></li>
+<li><p><strong>trap_list</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>) – List of trap specifications, each containing:
+- ‘name’: str, trap identifier (e.g., ‘dislocations’)
+- ‘binding_energy’: float, trap binding energy [J/mol]
+- ‘density’: float, trap site density [m⁻³]
+Empty list means perfect crystal (no traps)</p></li>
+<li><p><strong>lattice_concentration</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Hydrogen concentration in lattice sites [mol/m³]
+This is the mobile/diffusible hydrogen concentration
+(Used for calculating trap occupancy θ for saturation warnings)</p></li>
+<li><p><strong>lattice_density</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Number of interstitial lattice sites per volume [m⁻³]
+For FCC: ~10²⁹ m⁻³</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>Dictionary containing:
+- ‘D_eff’: Effective diffusion coefficient [m²/s]
+- ‘D_lattice’: Input lattice diffusivity [m²/s]
+- ‘trapping_term’: Σ(N_T,i × K_i / N_L), the denominator term [-]
+- ‘theta_total’: Sum of trap occupancy fractions Σθᵢ (for info) [-]
+- ‘trap_contributions’: List of dicts with details per trap type:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>’name’: Trap identifier</p></li>
+<li><p>’theta’: Trap occupancy fraction θᵢ [-]</p></li>
+<li><p>’binding_energy’: E_b [J/mol]</p></li>
+<li><p>’density’: N_T [m⁻³]</p></li>
+<li><p>’K_equilibrium’: exp(E_b/RT) [-]</p></li>
+<li><p>’trapping_contribution’: (N_T/N_L) × K, contribution to D_eff reduction [-]</p></li>
+<li><p>’trapped_concentration’: [mol/m³]</p></li>
+</ul>
+</div></blockquote>
+<ul class="simple">
+<li><p>’reduction_factor’: D_eff/D_lattice [-]</p></li>
+<li><p>’dominant_trap’: Name of trap with highest contribution</p></li>
+<li><p>’mobile_fraction’: Fraction of H that is mobile [-]</p></li>
+<li><p>’saturation_warnings’: List of traps approaching saturation (θ &gt; 0.9)</p></li>
+<li><p>’temperature’: Input temperature [K]</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If D_lattice ≤ 0
+    If temperature ≤ 0
+    If any trap has invalid parameters</p>
+</dd>
+</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<dl class="simple">
+<dt>UserWarning</dt><dd><p>If any trap has θᵢ &gt; 0.9 (approaching saturation)
+If reduction factor &lt; 0.01 (essentially no diffusion)</p>
+</dd>
+</dl>
+</div>
+<div class="admonition-notes admonition">
+<p class="admonition-title">Notes</p>
+<ul class="simple">
+<li><p>The trapping effect scales with trap density N_T</p></li>
+<li><p>Critical trap density (where D_eff = D/2) is N_T* = N_L / K</p></li>
+<li><p>For high trap occupancy (θ &gt; 0.9), consider McNabb-Foster kinetic model</p></li>
+</ul>
+</div>
+<div class="admonition-references admonition">
+<p class="admonition-title">References</p>
+<ol class="arabic simple">
+<li><p>Oriani, R.A. (1970). “The diffusion and trapping of hydrogen in steel.”
+Acta Metallurgica 18, 147-157. DOI: 10.1016/0001-6160(70)90078-7</p></li>
+</ol>
+</div>
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">traps</span> <span class="o">=</span> <span class="p">[</span>
+<span class="gp">... </span>    <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;dislocations&#39;</span><span class="p">,</span> <span class="s1">&#39;binding_energy&#39;</span><span class="p">:</span> <span class="mf">27e3</span><span class="p">,</span> <span class="s1">&#39;density&#39;</span><span class="p">:</span> <span class="mf">1e15</span><span class="p">},</span>
+<span class="gp">... </span>    <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;vacancies&#39;</span><span class="p">,</span> <span class="s1">&#39;binding_energy&#39;</span><span class="p">:</span> <span class="mf">48e3</span><span class="p">,</span> <span class="s1">&#39;density&#39;</span><span class="p">:</span> <span class="mf">1e23</span><span class="p">}</span>
+<span class="gp">... </span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">calculate_effective_diffusivity_trapping</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">D_lattice</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">,</span>  <span class="c1"># m²/s</span>
+<span class="gp">... </span>    <span class="n">temperature</span><span class="o">=</span><span class="mi">800</span><span class="p">,</span>   <span class="c1"># K</span>
+<span class="gp">... </span>    <span class="n">trap_list</span><span class="o">=</span><span class="n">traps</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">lattice_concentration</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span>  <span class="c1"># mol/m³</span>
+<span class="gp">... </span>    <span class="n">lattice_density</span><span class="o">=</span><span class="mf">1.06e29</span>  <span class="c1"># m⁻³</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;D_eff = </span><span class="si">{</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;D_eff&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2"> m²/s&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Trapping term = </span><span class="si">{</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;trapping_term&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="calculations.defective_metal.calculate_gb_enhanced_diffusivity">
+<span class="sig-prename descclassname"><span class="pre">calculations.defective_metal.</span></span><span class="sig-name descname"><span class="pre">calculate_gb_enhanced_diffusivity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">D_bulk</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grain_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gb_thickness</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5e-9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gb_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'HAGB'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'parallel'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/calculations/defective_metal.html#calculate_gb_enhanced_diffusivity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#calculations.defective_metal.calculate_gb_enhanced_diffusivity" title="Link to this definition">¶</a></dt>
+<dd><p>Calculate effective diffusivity with grain boundary fast diffusion paths.</p>
+<div class="admonition-notes admonition">
+<p class="admonition-title">Notes</p>
+<p>Grain boundaries provide fast diffusion paths parallel to bulk diffusion.
+The effective diffusivity depends on the volume fraction of GBs and their
+enhancement factor. Two models are implemented:</p>
+<ol class="arabic">
+<li><p>Parallel Path Model (simple):</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[D_{eff} = f_{bulk}D_{bulk} + f_{gb}D_{gb}\]</div>
+</div>
+</li>
+<li><p>Hart Equation (accounts for GB connectivity):
+More accurate for higher GB fractions (f_gb &gt; 0.01)</p></li>
+</ol>
+<p>The GB volume fraction is:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[f_{gb} = \frac{3\delta}{d}\]</div>
+</div>
+<p>where δ is GB thickness and d is grain size.</p>
+</div>
+<div class="admonition-notes admonition">
+<p class="admonition-title">Notes</p>
+<dl>
+<dt>Parallel model assumes independent transport:</dt><dd><div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\]</div>
+</div>
+<dl class="simple">
+<dt>J_{total} = J_{bulk} + J_{gb}</dt><dd><p>= -D_{bulk}nabla C,A_{bulk} - D_{gb}nabla C,A_{gb}</p>
+</dd>
+</dl>
+</dd>
+<dt>With area fractions equal to volume fractions:</dt><dd><div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\]</div>
+</div>
+<p>D_{eff} = (1-f_{gb})D_{bulk} + f_{gb}D_{gb}</p>
+</dd>
+<dt>Hart equation includes connectivity effects:</dt><dd><p>D_eff/D_bulk = 1 + [f_gb/(1-f_gb)]×[(D_gb/D_bulk-1)]/[1+2(D_gb/D_bulk-1)f_gb/(3(1-f_gb))]</p>
+</dd>
+</dl>
+<p>This accounts for GB network percolation at high f_gb.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>D_bulk</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Bulk lattice diffusion coefficient [m²/s]
+Typical: 10⁻¹² to 10⁻⁷ m²/s for H in metals</p></li>
+<li><p><strong>temperature</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Operating temperature [K] (all properties should be evaluated at this T)
+Used to calculate GB enhancement factor</p></li>
+<li><p><strong>grain_size</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Average grain diameter [m]
+Typical ranges:
+- Nanocrystalline: 10⁻⁹ to 10⁻⁷ m
+- Fine grain: 10⁻⁶ to 10⁻⁵ m
+- Coarse grain: 10⁻⁴ to 10⁻³ m</p></li>
+<li><p><strong>gb_thickness</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>, <em>optional</em>) – Grain boundary width [m]
+Default: 0.5e-9 m (0.5 nm)
+Range: 0.2-1.0 nm depending on boundary type</p></li>
+<li><p><strong>gb_type</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <em>optional</em>) – Grain boundary character:
+- ‘HAGB’: High-angle grain boundary (default)
+- ‘LAGB’: Low-angle grain boundary
+- ‘twin’: Coherent twin boundary
+- ‘special’: Special CSL boundaries</p></li>
+<li><p><strong>model</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <em>optional</em>) – Diffusion model:
+- ‘parallel’: Simple parallel path model (default)
+- ‘hart’: Hart equation with connectivity</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary containing:
+- ‘D_eff’: Effective diffusion coefficient [m²/s]
+- ‘D_bulk’: Input bulk diffusivity [m²/s]
+- ‘D_gb’: Grain boundary diffusivity [m²/s]
+- ‘f_gb’: Volume fraction of grain boundaries [-]
+- ‘f_bulk’: Volume fraction of bulk (1-f_gb) [-]
+- ‘enhancement_ratio’: D_eff/D_bulk [-]
+- ‘gb_enhancement_factor’: D_gb/D_bulk [-]
+- ‘regime’: ‘bulk_dominated’, ‘gb_dominated’, or ‘mixed’
+- ‘model_used’: Which model was applied
+- ‘percolation_warning’: True if f_gb &gt; 0.1</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If D_bulk ≤ 0
+    If temperature ≤ 0
+    If grain_size ≤ 0
+    If gb_thickness ≤ 0 or ≥ grain_size/2
+    If model not recognized</p>
+</dd>
+</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<dl class="simple">
+<dt>UserWarning</dt><dd><p>If f_gb &gt; 0.1 (GB percolation threshold)
+If f_gb &gt; 0.5 (unphysical)
+If enhancement ratio &gt; 100 (may indicate error)</p>
+</dd>
+</dl>
+</div>
+<div class="admonition-references admonition">
+<p class="admonition-title">References</p>
+<ol class="arabic simple">
+<li><p>Hart, E.W. (1957). “On the role of dislocations in bulk diffusion.”
+Acta Metall. 5, 597. DOI: 10.1016/0001-6160(57)90127-X</p></li>
+<li><p>Kaur, I., Mishin, Y., Gust, W. (1995). “Fundamentals of Grain and
+Interphase Boundary Diffusion.” John Wiley &amp; Sons.</p></li>
+<li><p>Divinski, S.V., Wilde, G. (2008). “Grain boundary self-diffusion in
+polycrystalline nickel.” Z. Metallkd. 99, 8-15.
+DOI: 10.3139/146.101686</p></li>
+</ol>
+</div>
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">calculate_gb_enhanced_diffusivity</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">D_bulk</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">,</span>      <span class="c1"># m²/s</span>
+<span class="gp">... </span>    <span class="n">temperature</span><span class="o">=</span><span class="mi">800</span><span class="p">,</span>    <span class="c1"># K</span>
+<span class="gp">... </span>    <span class="n">grain_size</span><span class="o">=</span><span class="mf">50e-6</span><span class="p">,</span>   <span class="c1"># 50 μm</span>
+<span class="gp">... </span>    <span class="n">gb_type</span><span class="o">=</span><span class="s1">&#39;HAGB&#39;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">model</span><span class="o">=</span><span class="s1">&#39;parallel&#39;</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Enhancement: </span><span class="si">{</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;enhancement_ratio&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">×&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="calculations.defective_metal.combined_microstructure_model">
+<span class="sig-prename descclassname"><span class="pre">calculations.defective_metal.</span></span><span class="sig-name descname"><span class="pre">combined_microstructure_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">D_lattice</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">microstructure_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lattice_concentration</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lattice_density</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'both'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/calculations/defective_metal.html#combined_microstructure_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#calculations.defective_metal.combined_microstructure_model" title="Link to this definition">¶</a></dt>
+<dd><p>Calculate effective diffusivity combining grain boundary and trapping effects.</p>
+<div class="admonition-notes admonition">
+<p class="admonition-title">Notes</p>
+<p>Real polycrystalline metals exhibit competing effects:
+1. Grain boundaries enhance diffusion (fast paths)
+2. Defects trap hydrogen (reduce mobility)</p>
+<p>The net effect depends on microstructure and conditions. We apply:
+- First: GB enhancement via parallel paths
+- Second: Trapping reduction via Oriani model</p>
+<p>This sequential approach assumes uniform trapping across bulk and GB regions.</p>
+</div>
+<div class="admonition-notes admonition">
+<p class="admonition-title">Notes</p>
+<p>Step 1 — grain-boundary enhancement:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[D_{gb\text{-}enh} = (1-f_{gb})D_{bulk} + f_{gb}D_{gb},
+\qquad D_{gb} = \alpha(T)\,D_{bulk}\]</div>
+</div>
+<p>Step 2 — trapping reduction:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[D_{eff} = \frac{D_{gb\text{-}enh}}{1 + \sum_i N_{T,i}K_i/N_L}\]</div>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>The denominator is the <strong>trapping term</strong> <span class="math notranslate nohighlight">\(\sum_i N_{T,i}K_i/N_L\)</span>
+(returned as <code class="docutils literal notranslate"><span class="pre">trapping_term</span></code>), <em>not</em> the sum of trap occupancies
+<span class="math notranslate nohighlight">\(\sum_i \theta_i\)</span> (returned as <code class="docutils literal notranslate"><span class="pre">theta_total</span></code>). The two differ by
+roughly an order of magnitude, so substituting the occupancy sum
+overestimates <span class="math notranslate nohighlight">\(D_{eff}\)</span> by about 32% for the shipped configuration.</p>
+</div>
+<p>Net result:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[D_{eff} = \frac{(1-f_{gb})D_{bulk} + f_{gb}\alpha D_{bulk}}
+               {1 + \sum_i N_{T,i}K_i/N_L}\]</div>
+</div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>D_lattice</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Intrinsic lattice diffusion coefficient [m²/s]
+This is the perfect crystal diffusivity</p></li>
+<li><p><strong>temperature</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Operating temperature [K] (all properties should be evaluated at this T)
+Affects both GB enhancement and trap occupancy</p></li>
+<li><p><strong>microstructure_params</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>) – <p>Complete microstructure specification:
+Required keys:
+- ‘grain_size’: float, average grain diameter [m]
+- ‘grain_shape’: str, morphology (‘equiaxed’, ‘columnar’, ‘planar’)
+- ‘gb_type’: str, boundary type (‘HAGB’, ‘LAGB’, ‘twin’, ‘special’)
+- ‘trap_list’: list of dict, trap specifications</p>
+<p>Optional keys:
+- ‘gb_thickness’: float, GB width [m] (default 0.5e-9)
+- ‘model’: str, ‘parallel’ or ‘hart’ (default ‘parallel’)
+- ‘include_gb_trapping’: bool, auto-add GB as traps (default True)</p>
+</p></li>
+<li><p><strong>lattice_concentration</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Hydrogen concentration in lattice [mol/m³]
+Mobile hydrogen available for trapping</p></li>
+<li><p><strong>lattice_density</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Number of interstitial lattice sites [m⁻³]
+For FCC: ~1.06e29 m⁻³</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Comprehensive results dictionary:
+- ‘D_eff’: Final effective diffusivity [m²/s]
+- ‘D_lattice’: Input lattice diffusivity [m²/s]
+- ‘D_gb_enhanced’: After GB enhancement [m²/s]
+- ‘gb_enhancement’: {Details of GB calculation}
+- ‘theta_total’: Total trap occupancy [-]
+- ‘trap_details’: {Details of trap calculation}
+- ‘overall_factor’: D_eff/D_lattice [-]
+- ‘dominant_effect’: ‘gb_enhancement’, ‘trapping’, or ‘balanced’
+- ‘regime’: Combined regime classification
+- ‘calculation_sequence’: Description of calculation steps
+- ‘warnings’: List of any warnings issued</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If required keys missing from microstructure_params
+    If parameters are unphysical</p>
+</dd>
+</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<dl class="simple">
+<dt>UserWarning</dt><dd><p>If competing effects nearly cancel (unstable)
+If parameters suggest model limitations</p>
+</dd>
+</dl>
+</div>
+<div class="admonition-notes admonition">
+<p class="admonition-title">Notes</p>
+<ul class="simple">
+<li><p>Assumes uniform trap distribution (not segregated to GBs)</p></li>
+<li><p>Valid for steady-state conditions</p></li>
+<li><p>For transient or highly segregated systems, consider more complex models</p></li>
+</ul>
+</div>
+<div class="admonition-references admonition">
+<p class="admonition-title">References</p>
+<ol class="arabic simple">
+<li><p>Oudriss, A., et al. (2012). “Grain size and grain-boundary effects on
+diffusion and trapping of hydrogen.” Acta Mater. 60, 6814-6828.</p></li>
+<li><p>Kumnick, A.J., Johnson, H.H. (1980). “Deep trapping states for hydrogen
+in deformed iron.” Acta Metall. 28, 33-39.</p></li>
+<li><p>Tsuru, T., Latanision, R.M. (1982). “Grain boundary transport of hydrogen
+in nickel.” Scripta Metall. 16, 575-578.</p></li>
+</ol>
+</div>
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">microstructure</span> <span class="o">=</span> <span class="p">{</span>
+<span class="gp">... </span>    <span class="s1">&#39;grain_size&#39;</span><span class="p">:</span> <span class="mf">50e-6</span><span class="p">,</span>  <span class="c1"># 50 μm</span>
+<span class="gp">... </span>    <span class="s1">&#39;grain_shape&#39;</span><span class="p">:</span> <span class="s1">&#39;equiaxed&#39;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="s1">&#39;gb_type&#39;</span><span class="p">:</span> <span class="s1">&#39;HAGB&#39;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="s1">&#39;trap_list&#39;</span><span class="p">:</span> <span class="p">[</span>
+<span class="gp">... </span>        <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;dislocations&#39;</span><span class="p">,</span> <span class="s1">&#39;density&#39;</span><span class="p">:</span> <span class="mf">1e15</span><span class="p">,</span> <span class="s1">&#39;binding_energy&#39;</span><span class="p">:</span> <span class="mf">27e3</span><span class="p">},</span>
+<span class="gp">... </span>        <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;vacancies&#39;</span><span class="p">,</span> <span class="s1">&#39;density&#39;</span><span class="p">:</span> <span class="mf">1e21</span><span class="p">,</span> <span class="s1">&#39;binding_energy&#39;</span><span class="p">:</span> <span class="mf">41e3</span><span class="p">}</span>
+<span class="gp">... </span>    <span class="p">]</span>
+<span class="gp">... </span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">combined_microstructure_model</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">D_lattice</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">temperature</span><span class="o">=</span><span class="mi">800</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">microstructure_params</span><span class="o">=</span><span class="n">microstructure</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">lattice_concentration</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">lattice_density</span><span class="o">=</span><span class="mf">1.06e29</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;D_eff = </span><span class="si">{</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;D_eff&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2"> m²/s&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</dd></dl>
+
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="surface_kinetics.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title"><code class="docutils literal notranslate"><span class="pre">surface_kinetics</span></code> — Level 6: dissociation kinetics and Langmuir coverage</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="parallel_oxide_defect_paths.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title"><code class="docutils literal notranslate"><span class="pre">parallel_oxide_defect_paths</span></code> — Level 3: defective oxide, parallel paths</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2026, Azeez Akinyemi
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">defective_metal</span></code> — Level 4: grain boundaries and trapping</a><ul>
+<li><a class="reference internal" href="#calculations.defective_metal.trap_occupancy"><code class="docutils literal notranslate"><span class="pre">trap_occupancy()</span></code></a></li>
+<li><a class="reference internal" href="#calculations.defective_metal.grain_boundary_density"><code class="docutils literal notranslate"><span class="pre">grain_boundary_density()</span></code></a></li>
+<li><a class="reference internal" href="#calculations.defective_metal.gb_enhancement_factor"><code class="docutils literal notranslate"><span class="pre">gb_enhancement_factor()</span></code></a></li>
+<li><a class="reference internal" href="#calculations.defective_metal.vacancy_concentration"><code class="docutils literal notranslate"><span class="pre">vacancy_concentration()</span></code></a></li>
+<li><a class="reference internal" href="#calculations.defective_metal.calculate_effective_diffusivity_trapping"><code class="docutils literal notranslate"><span class="pre">calculate_effective_diffusivity_trapping()</span></code></a></li>
+<li><a class="reference internal" href="#calculations.defective_metal.calculate_gb_enhanced_diffusivity"><code class="docutils literal notranslate"><span class="pre">calculate_gb_enhanced_diffusivity()</span></code></a></li>
+<li><a class="reference internal" href="#calculations.defective_metal.combined_microstructure_model"><code class="docutils literal notranslate"><span class="pre">combined_microstructure_model()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/documentation_options.js?v=fc837d61"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    </body>
+</html>

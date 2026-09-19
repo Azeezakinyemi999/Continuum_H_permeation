@@ -1,0 +1,694 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="sensitivity — regime-stratified sensitivity analysis" href="sensitivity.html"><link rel="prev" title="surface_kinetics — Level 6: dissociation kinetics and Langmuir coverage" href="surface_kinetics.html">
+
+    <!-- Generated with Sphinx 7.4.7 and Furo 2025.12.19 -->
+        <title>classify_regime — hierarchical regime classification - Hierarchical Hydrogen Permeation Model 1.1.0</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">Hierarchical Hydrogen Permeation Model 1.1.0</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  <span class="sidebar-brand-text">Hierarchical Hydrogen Permeation Model 1.1.0</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting-started.html">Getting started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">How-to</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../how-to/switch-study.html">How to switch material study</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../how-to/sensitivity-analysis.html">How to run a regime-stratified sensitivity analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CONTAINER.html">Hydrogen Permeation Model — Offline Analysis Environment</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Theory</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../theory/two-models.html">Two models, not six levels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/foundations.html">Foundations: chemical potential and the driving force</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/equilibrium-models.html">Equilibrium models: Sieverts, Henry and Langmuir</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../STEADY_STATE.html">Steady State, Transients, and the Accumulation Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/level1-metal.html">Level 1 — the perfect metal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/level2-oxide.html">Level 2 — the oxide layer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/level3-defective-oxide.html">Level 3 — the defective oxide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/level4-microstructure.html">Level 4 — metal microstructure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/level5-full-system.html">Level 5 — the full system</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/level6-surface-kinetics.html">Level 6 — surface kinetics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/permeability.html">Permeability — two models, four tiers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/equations.html">Equation catalogue</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../PARAMETERS.html">Complete Parameter Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../OUTPUTS.html">Complete Output Reference</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">API Reference</a><input aria-label="Toggle navigation of API Reference" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="utils.html"><code class="docutils literal notranslate"><span class="pre">utils</span></code> — shared Arrhenius helpers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="permeation_calc.html"><code class="docutils literal notranslate"><span class="pre">permeation_calc</span></code> — Levels 1-2: Sieverts solubility and bulk diffusion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="oxide_permeation.html"><code class="docutils literal notranslate"><span class="pre">oxide_permeation</span></code> — Levels 2-3: molecular transport through the oxide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="interface_solver.html"><code class="docutils literal notranslate"><span class="pre">interface_solver</span></code> — the oxide/metal interface pressure solve</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parallel_oxide_defect_paths.html"><code class="docutils literal notranslate"><span class="pre">parallel_oxide_defect_paths</span></code> — Level 3: defective oxide, parallel paths</a></li>
+<li class="toctree-l2"><a class="reference internal" href="defective_metal.html"><code class="docutils literal notranslate"><span class="pre">defective_metal</span></code> — Level 4: grain boundaries and trapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="surface_kinetics.html"><code class="docutils literal notranslate"><span class="pre">surface_kinetics</span></code> — Level 6: dissociation kinetics and Langmuir coverage</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">classify_regime</span></code> — hierarchical regime classification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sensitivity.html"><code class="docutils literal notranslate"><span class="pre">sensitivity</span></code> — regime-stratified sensitivity analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="config.html"><code class="docutils literal notranslate"><span class="pre">config</span></code> — study selection</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Validation and release</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../TRAPPING_VALIDATION.html">Validating the Trapping Block Against TDS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TRAPPING_VALIDATION.html#appendix-a-symbols">Appendix A — Symbols</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TRAPPING_VALIDATION.html#appendix-b-equation-reference">Appendix B — Equation reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TRAPPING_VALIDATION.html#appendix-c-where-each-quantity-lives">Appendix C — Where each quantity lives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../PACKAGING_1.0.0.html">Packaging decisions — <code class="docutils literal notranslate"><span class="pre">hydrogen-model:1.0.0</span></code> offline container</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references.html">References</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Warnings and caveats</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../caveats.html">Warnings and caveats</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="../_sources/api/classify_regime.md.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section class="tex2jax_ignore mathjax_ignore" id="module-calculations.classify_regime">
+<span id="classify-regime-hierarchical-regime-classification"></span><h1><code class="docutils literal notranslate"><span class="pre">classify_regime</span></code> — hierarchical regime classification<a class="headerlink" href="#module-calculations.classify_regime" title="Link to this heading">¶</a></h1>
+<p>calculations/classify_regime.py</p>
+<p>Hierarchical regime classification utilities used by Level 1-4 models.</p>
+<p>This module centralizes the various <code class="docutils literal notranslate"><span class="pre">classify_regime_*</span></code> helper functions so
+that other calculation modules can import and reuse a single implementation.</p>
+<section id="what-regime-means-here">
+<h2>What “regime” means here<a class="headerlink" href="#what-regime-means-here" title="Link to this heading">¶</a></h2>
+<p>Hydrogen crossing an oxide-coated wall meets several resistances in series and
+in parallel: dissociation at the gas-facing surface, molecular diffusion through
+the intact oxide, short-circuit transport through oxide defects, and atomic
+diffusion through the metal where traps compete with grain-boundary fast paths.
+Only one of these usually sets the flux. Naming that one is what a “regime”
+label does, and it is the first thing to look at when a flux moves unexpectedly:
+a change in a parameter the regime does not depend on should do nothing.</p>
+<p>These functions compute NO physics. Every number they inspect was already
+computed upstream; they only interpret it and assemble the labels. Keeping that
+interpretation in one place is why the module exists — the thresholds below are
+the project’s definition of a regime boundary, and the plot legends, regime
+clusters and sensitivity tables all key off the strings produced here.</p>
+</section>
+<section id="the-label-vocabulary">
+<h2>The label vocabulary<a class="headerlink" href="#the-label-vocabulary" title="Link to this heading">¶</a></h2>
+<p>Tier 1, <code class="docutils literal notranslate"><span class="pre">base_regime</span></code>, comes from the oxide/metal resistance ratio in
+<a class="reference internal" href="interface_solver.html#module-calculations.interface_solver" title="calculations.interface_solver"><code class="xref py py-mod docutils literal notranslate"><span class="pre">calculations.interface_solver</span></code></a> (<code class="docutils literal notranslate"><span class="pre">R_oxide/R_metal</span></code> &gt; 10 gives
+<code class="docutils literal notranslate"><span class="pre">'oxide_limited'</span></code>, &lt; 0.5 gives <code class="docutils literal notranslate"><span class="pre">'metal_limited'</span></code>, otherwise
+<code class="docutils literal notranslate"><span class="pre">'transition'</span></code>); callers pass <code class="docutils literal notranslate"><span class="pre">'unknown'</span></code> when no solve was done.</p>
+<p>Tier 2, <code class="docutils literal notranslate"><span class="pre">regime_detail</span></code>, subdivides tier 1 and is the reason this module is
+hierarchical rather than flat:</p>
+<ul class="simple">
+<li><p>under <code class="docutils literal notranslate"><span class="pre">'oxide_limited'</span></code> — <code class="docutils literal notranslate"><span class="pre">'defect_limited'</span></code> if the defect paths carry more
+flux than the intact oxide, else <code class="docutils literal notranslate"><span class="pre">'regime_intact_oxide'</span></code></p></li>
+<li><p>under <code class="docutils literal notranslate"><span class="pre">'metal_limited'</span></code> — <code class="docutils literal notranslate"><span class="pre">'traps_defect_limited'</span></code> if trapping has cut the
+effective diffusivity by more than the threshold, else <code class="docutils literal notranslate"><span class="pre">'lattice_limited'</span></code></p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">regime_hierarchy</span></code> joins the filled tiers with <code class="docutils literal notranslate"><span class="pre">/</span></code> (e.g.
+<code class="docutils literal notranslate"><span class="pre">'metal_limited/traps_defect_limited'</span></code>) and is the string to use for grouping
+and labelling. <code class="docutils literal notranslate"><span class="pre">classification_depth</span></code> says how many tiers were resolved.
+<code class="docutils literal notranslate"><span class="pre">regime_subdetail</span></code> is always <code class="docutils literal notranslate"><span class="pre">None</span></code> — a third tier that was never defined.</p>
+</section>
+<section id="which-of-these-are-live">
+<h2>Which of these are live<a class="headerlink" href="#which-of-these-are-live" title="Link to this heading">¶</a></h2>
+<p><a class="reference internal" href="#calculations.classify_regime.classify_regime_level14" title="calculations.classify_regime.classify_regime_level14"><code class="xref py py-func docutils literal notranslate"><span class="pre">classify_regime_level14()</span></code></a> (from
+<a class="reference internal" href="permeation_calc.html#calculations.permeation_calc.calculate_defective_metal_flux" title="calculations.permeation_calc.calculate_defective_metal_flux"><code class="xref py py-func docutils literal notranslate"><span class="pre">calculations.permeation_calc.calculate_defective_metal_flux()</span></code></a>) and
+<a class="reference internal" href="#calculations.classify_regime.classify_regime_level34" title="calculations.classify_regime.classify_regime_level34"><code class="xref py py-func docutils literal notranslate"><span class="pre">classify_regime_level34()</span></code></a> (from
+<a class="reference internal" href="parallel_oxide_defect_paths.html#module-calculations.parallel_oxide_defect_paths" title="calculations.parallel_oxide_defect_paths"><code class="xref py py-mod docutils literal notranslate"><span class="pre">calculations.parallel_oxide_defect_paths</span></code></a>) are the two the model calls.
+<a class="reference internal" href="#calculations.classify_regime.classify_regime_level4_metal" title="calculations.classify_regime.classify_regime_level4_metal"><code class="xref py py-func docutils literal notranslate"><span class="pre">classify_regime_level4_metal()</span></code></a> is their shared tier-2 helper.</p>
+<p><a class="reference internal" href="#calculations.classify_regime.classify_regime_level2" title="calculations.classify_regime.classify_regime_level2"><code class="xref py py-func docutils literal notranslate"><span class="pre">classify_regime_level2()</span></code></a>, <a class="reference internal" href="#calculations.classify_regime.classify_regime_level3" title="calculations.classify_regime.classify_regime_level3"><code class="xref py py-func docutils literal notranslate"><span class="pre">classify_regime_level3()</span></code></a> and
+<a class="reference internal" href="#calculations.classify_regime.classify_regime_level24" title="calculations.classify_regime.classify_regime_level24"><code class="xref py py-func docutils literal notranslate"><span class="pre">classify_regime_level24()</span></code></a> have no callers in the current source tree. They
+were reachable from the archived <code class="docutils literal notranslate"><span class="pre">plot&amp;docs/analysis.ipynb</span></code>, and the 1.0.1
+release imported all six names into <code class="docutils literal notranslate"><span class="pre">parallel_oxide_defect_paths</span></code> while
+calling only <code class="docutils literal notranslate"><span class="pre">level34</span></code> — those unused imports were trimmed for 1.1.0. They are
+kept because they complete the Level 1-4 matrix and their return shapes are
+published in <code class="docutils literal notranslate"><span class="pre">OUTPUTS.md</span></code>; treat them as API, not as dead code to delete
+silently.</p>
+<p>Note that Level 5 and Level 5+L6 do <strong>not</strong> use this module. They assign a
+single flat label from resistance fractions via <code class="docutils literal notranslate"><span class="pre">assign_regime_L5</span></code> /
+<code class="docutils literal notranslate"><span class="pre">assign_regime</span></code> in <a class="reference internal" href="sensitivity.html#module-calculations.sensitivity" title="calculations.sensitivity"><code class="xref py py-mod docutils literal notranslate"><span class="pre">calculations.sensitivity</span></code></a> — <code class="docutils literal notranslate"><span class="pre">oxide</span></code> / <code class="docutils literal notranslate"><span class="pre">metal</span></code> /
+<code class="docutils literal notranslate"><span class="pre">defect</span></code> without surface kinetics, <code class="docutils literal notranslate"><span class="pre">surface</span></code> / <code class="docutils literal notranslate"><span class="pre">oxide</span></code> / <code class="docutils literal notranslate"><span class="pre">metal</span></code> with
+them. So the hierarchical <code class="docutils literal notranslate"><span class="pre">a/b</span></code> strings built here and the flat L5 labels are
+two separate vocabularies; do not mix them when grouping results.</p>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py" id="calculations.classify_regime.classify_regime_level2">
+<span class="sig-prename descclassname"><span class="pre">calculations.classify_regime.</span></span><span class="sig-name descname"><span class="pre">classify_regime_level2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_regime</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/calculations/classify_regime.html#classify_regime_level2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#calculations.classify_regime.classify_regime_level2" title="Link to this definition">¶</a></dt>
+<dd><p>Wrap a Level 2 regime label in the standard classification dict.</p>
+<p>Level 2 is a perfect oxide on a perfect metal: two resistances in series and
+nothing inside either one to subdivide. So this is a pass-through that
+records the tier-1 label and reports depth 1, existing only so Level 2
+results carry the same dict shape as the deeper levels.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>base_regime</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – Tier-1 label from the interface solve: ‘oxide_limited’, ‘metal_limited’,
+‘transition’ or ‘unknown’.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Keys <code class="docutils literal notranslate"><span class="pre">model_level</span></code>, <code class="docutils literal notranslate"><span class="pre">base_regime</span></code>, <code class="docutils literal notranslate"><span class="pre">regime_hierarchy</span></code>,
+<code class="docutils literal notranslate"><span class="pre">regime_detail</span></code> (None), <code class="docutils literal notranslate"><span class="pre">regime_subdetail</span></code> (None) and
+<code class="docutils literal notranslate"><span class="pre">classification_depth</span></code> (1). <code class="docutils literal notranslate"><span class="pre">regime_hierarchy</span></code> equals
+<code class="docutils literal notranslate"><span class="pre">base_regime</span></code>, with no <code class="docutils literal notranslate"><span class="pre">/</span></code> since there is no second tier.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a></p>
+</dd>
+</dl>
+<div class="admonition-notes admonition">
+<p class="admonition-title">Notes</p>
+<p>No caller in the current source tree — see the module docstring.</p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="calculations.classify_regime.classify_regime_level3">
+<span class="sig-prename descclassname"><span class="pre">calculations.classify_regime.</span></span><span class="sig-name descname"><span class="pre">classify_regime_level3</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_regime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flux_intact_contribution</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flux_defect_contribution</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/calculations/classify_regime.html#classify_regime_level3"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#calculations.classify_regime.classify_regime_level3" title="Link to this definition">¶</a></dt>
+<dd><p>Classify a Level 3 result, subdividing an oxide-limited wall by defect path.</p>
+<p>Level 3 adds pinholes, cracks and oxide grain boundaries, which carry
+hydrogen around the intact oxide rather than through it. When the oxide is
+what limits the flux, the question becomes which oxide path dominates: the
+defects are a short circuit whose area fraction is tiny but whose local
+permeability is large, so either side can win depending on defect density.
+Whichever contribution is larger names the tier-2 regime.</p>
+<p>The comparison is on total contributions (area-weighted), not on
+per-area flux, so a defect population can dominate transport while still
+occupying a negligible fraction of the wall.</p>
+<p>If the wall is not oxide-limited, the defects cannot be controlling and no
+second tier is assigned.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>base_regime</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – Tier-1 label: ‘oxide_limited’, ‘metal_limited’, ‘transition’ or
+‘unknown’. Only ‘oxide_limited’ triggers subdivision.</p></li>
+<li><p><strong>flux_intact_contribution</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Flux carried by the intact oxide, area-weighted [mol/m²/s].</p></li>
+<li><p><strong>flux_defect_contribution</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Flux carried by all defect paths combined, area-weighted [mol/m²/s].</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The standard classification keys plus
+<code class="docutils literal notranslate"><span class="pre">flux_ratio_defect_to_intact</span></code>, the defect/intact contribution ratio.
+Under ‘oxide_limited’, <code class="docutils literal notranslate"><span class="pre">regime_detail</span></code> is ‘defect_limited’ or
+‘regime_intact_oxide’ and depth is 2; otherwise <code class="docutils literal notranslate"><span class="pre">regime_detail</span></code> is
+None and depth is 1.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a></p>
+</dd>
+</dl>
+<div class="admonition-notes admonition">
+<p class="admonition-title">Notes</p>
+<p><code class="docutils literal notranslate"><span class="pre">flux_ratio_defect_to_intact</span></code> is <code class="docutils literal notranslate"><span class="pre">inf</span></code> when the intact contribution is
+zero — a fully short-circuited oxide, not an error. It is reported
+regardless of <code class="docutils literal notranslate"><span class="pre">base_regime</span></code>, so it stays readable even when no second tier
+was assigned.</p>
+<p>No caller in the current source tree — see the module docstring. The live
+Level 3 path is <a class="reference internal" href="#calculations.classify_regime.classify_regime_level34" title="calculations.classify_regime.classify_regime_level34"><code class="xref py py-func docutils literal notranslate"><span class="pre">classify_regime_level34()</span></code></a>, which applies this same
+test.</p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="calculations.classify_regime.classify_regime_level4_metal">
+<span class="sig-prename descclassname"><span class="pre">calculations.classify_regime.</span></span><span class="sig-name descname"><span class="pre">classify_regime_level4_metal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">modification_factor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold_traps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/calculations/classify_regime.html#classify_regime_level4_metal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#calculations.classify_regime.classify_regime_level4_metal" title="Link to this definition">¶</a></dt>
+<dd><p>Decide whether traps or the lattice control diffusion through the metal.</p>
+<p>Two microstructural effects pull in opposite directions inside the metal.
+Traps — dislocations, grain boundaries, vacancies, carbides — hold hydrogen
+at binding energies of tens of kJ/mol and slow its net advance, while grain
+boundaries also offer fast paths that speed it up. Their combined outcome is
+the ratio of effective to lattice diffusivity, and the sign of the deviation
+from 1 says which effect won.</p>
+<p>This is the shared tier-2 helper for every level combination that includes
+Level 4. It returns the detail fields only, not a full classification dict.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>modification_factor</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – <span class="math notranslate nohighlight">\(D_{eff}/D_{lattice}\)</span> [-], as produced by
+<a class="reference internal" href="defective_metal.html#module-calculations.defective_metal" title="calculations.defective_metal"><code class="xref py py-mod docutils literal notranslate"><span class="pre">calculations.defective_metal</span></code></a> and carried through the interface
+solve. Below 1 means trapping dominates, above 1 means grain-boundary
+enhancement dominates, 1 means they cancel or neither is active.</p></li>
+<li><p><strong>threshold_traps</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>, <em>optional</em>) – Boundary below which trapping is called controlling. Default 0.5, i.e.
+trapping must have at least halved the effective diffusivity. This is a
+project convention, not a physical constant — it defines the regime
+boundary rather than describing one.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">metal_regime_detail</span></code> (‘traps_defect_limited’ or ‘lattice_limited’),
+<code class="docutils literal notranslate"><span class="pre">modification_factor</span></code> echoed back, <code class="docutils literal notranslate"><span class="pre">trapping_significant</span></code> (bool) and
+<code class="docutils literal notranslate"><span class="pre">trapping_reduction_percent</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a></p>
+</dd>
+</dl>
+<div class="admonition-notes admonition">
+<p class="admonition-title">Notes</p>
+<p><code class="docutils literal notranslate"><span class="pre">trapping_reduction_percent</span></code> is <code class="docutils literal notranslate"><span class="pre">(1</span> <span class="pre">-</span> <span class="pre">modification_factor)</span> <span class="pre">*</span> <span class="pre">100</span></code>, so it
+goes <strong>negative</strong> when grain-boundary enhancement outweighs trapping and
+<code class="docutils literal notranslate"><span class="pre">modification_factor</span></code> exceeds 1. Read it as a signed change in
+diffusivity, not as a reduction that is always positive.</p>
+<p>Not called directly outside this module; reached via
+<a class="reference internal" href="#calculations.classify_regime.classify_regime_level14" title="calculations.classify_regime.classify_regime_level14"><code class="xref py py-func docutils literal notranslate"><span class="pre">classify_regime_level14()</span></code></a>, <a class="reference internal" href="#calculations.classify_regime.classify_regime_level24" title="calculations.classify_regime.classify_regime_level24"><code class="xref py py-func docutils literal notranslate"><span class="pre">classify_regime_level24()</span></code></a> and
+<a class="reference internal" href="#calculations.classify_regime.classify_regime_level34" title="calculations.classify_regime.classify_regime_level34"><code class="xref py py-func docutils literal notranslate"><span class="pre">classify_regime_level34()</span></code></a>.</p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="calculations.classify_regime.classify_regime_level14">
+<span class="sig-prename descclassname"><span class="pre">calculations.classify_regime.</span></span><span class="sig-name descname"><span class="pre">classify_regime_level14</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">modification_factor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold_traps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/calculations/classify_regime.html#classify_regime_level14"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#calculations.classify_regime.classify_regime_level14" title="Link to this definition">¶</a></dt>
+<dd><p>Classify a bare defective metal (Level 1+4) — always metal-limited.</p>
+<p>With no oxide on the wall there is no other resistance to compete with, so
+tier 1 is fixed at ‘metal_limited’ and is not inferred from anything. The
+only open question is the one inside the metal: traps or lattice. That makes
+this the simplest of the classifiers and the only one whose tier-1 label is
+a constant.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>modification_factor</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – <code class="docutils literal notranslate"><span class="pre">D_eff</span> <span class="pre">/</span> <span class="pre">D_lattice</span></code> [-]. See <a class="reference internal" href="#calculations.classify_regime.classify_regime_level4_metal" title="calculations.classify_regime.classify_regime_level4_metal"><code class="xref py py-func docutils literal notranslate"><span class="pre">classify_regime_level4_metal()</span></code></a>.</p></li>
+<li><p><strong>threshold_traps</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>, <em>optional</em>) – Trapping-significance boundary, default 0.5.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The standard classification keys with <code class="docutils literal notranslate"><span class="pre">base_regime</span></code> always
+‘metal_limited’ and <code class="docutils literal notranslate"><span class="pre">classification_depth</span></code> always 2, plus
+<code class="docutils literal notranslate"><span class="pre">modification_factor</span></code>, <code class="docutils literal notranslate"><span class="pre">trapping_significant</span></code> and
+<code class="docutils literal notranslate"><span class="pre">trapping_reduction_percent</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a></p>
+</dd>
+</dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">classify_regime_level14</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)[</span><span class="s1">&#39;regime_hierarchy&#39;</span><span class="p">]</span>
+<span class="go">&#39;metal_limited/traps_defect_limited&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">classify_regime_level14</span><span class="p">(</span><span class="mf">0.9</span><span class="p">)[</span><span class="s1">&#39;regime_hierarchy&#39;</span><span class="p">]</span>
+<span class="go">&#39;metal_limited/lattice_limited&#39;</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition-notes admonition">
+<p class="admonition-title">Notes</p>
+<p>Called by
+<a class="reference internal" href="permeation_calc.html#calculations.permeation_calc.calculate_defective_metal_flux" title="calculations.permeation_calc.calculate_defective_metal_flux"><code class="xref py py-func docutils literal notranslate"><span class="pre">calculations.permeation_calc.calculate_defective_metal_flux()</span></code></a>. Both
+labels above are pinned in <code class="docutils literal notranslate"><span class="pre">container/model_smoke_test.py</span></code>, so changing
+the threshold or the label strings will fail the release gate — which is the
+intent, since downstream plots and regime clusters match on these strings.</p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="calculations.classify_regime.classify_regime_level24">
+<span class="sig-prename descclassname"><span class="pre">calculations.classify_regime.</span></span><span class="sig-name descname"><span class="pre">classify_regime_level24</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_regime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modification_factor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold_traps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/calculations/classify_regime.html#classify_regime_level24"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#calculations.classify_regime.classify_regime_level24" title="Link to this definition">¶</a></dt>
+<dd><p>Classify a perfect oxide over a defective metal (Level 2+4).</p>
+<p>Here the oxide is intact but the metal has traps and grain boundaries, so
+unlike Level 1+4 the wall may well be oxide-limited. Subdividing by
+trapping is only meaningful when the metal is the bottleneck: if the oxide
+controls, hydrogen barely reaches the traps in quantity and the trap
+population cannot set the flux no matter how dense it is.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>base_regime</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – Tier-1 label: ‘oxide_limited’, ‘metal_limited’, ‘transition’ or
+‘unknown’. Only ‘metal_limited’ triggers subdivision.</p></li>
+<li><p><strong>modification_factor</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – <code class="docutils literal notranslate"><span class="pre">D_eff</span> <span class="pre">/</span> <span class="pre">D_lattice</span></code> [-]. See <a class="reference internal" href="#calculations.classify_regime.classify_regime_level4_metal" title="calculations.classify_regime.classify_regime_level4_metal"><code class="xref py py-func docutils literal notranslate"><span class="pre">classify_regime_level4_metal()</span></code></a>.</p></li>
+<li><p><strong>threshold_traps</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>, <em>optional</em>) – Trapping-significance boundary, default 0.5.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The standard classification keys plus <code class="docutils literal notranslate"><span class="pre">modification_factor</span></code>,
+<code class="docutils literal notranslate"><span class="pre">trapping_significant</span></code> and <code class="docutils literal notranslate"><span class="pre">trapping_reduction_percent</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a></p>
+</dd>
+</dl>
+<div class="admonition-notes admonition">
+<p class="admonition-title">Notes</p>
+<p>When <code class="docutils literal notranslate"><span class="pre">base_regime</span></code> is not ‘metal_limited’, <code class="docutils literal notranslate"><span class="pre">trapping_significant</span></code> is
+forced to False and <code class="docutils literal notranslate"><span class="pre">trapping_reduction_percent</span></code> to 0.0 even if the traps
+really did change the diffusivity. Those two fields describe whether
+trapping is <em>controlling the flux</em>, not whether it is present, and
+<code class="docutils literal notranslate"><span class="pre">modification_factor</span></code> is still echoed back unmodified if you need the
+underlying number.</p>
+<p>No caller in the current source tree — see the module docstring.</p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="calculations.classify_regime.classify_regime_level34">
+<span class="sig-prename descclassname"><span class="pre">calculations.classify_regime.</span></span><span class="sig-name descname"><span class="pre">classify_regime_level34</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_regime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flux_intact_contribution</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flux_defect_contribution</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modification_factor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold_traps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/calculations/classify_regime.html#classify_regime_level34"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#calculations.classify_regime.classify_regime_level34" title="Link to this definition">¶</a></dt>
+<dd><p>Classify a defective oxide over a defective metal (Level 3+4).</p>
+<p>This is the full picture below Level 5: defects short-circuit the oxide and
+traps impede the metal at the same time. Both mechanisms are available, but
+they sit on opposite sides of the wall, so only the one on the controlling
+side can be the explanation. Tier 1 therefore selects which tier-2 test is
+even asked — the defect/intact split if the oxide controls, the trap/lattice
+split if the metal does, and neither in the transition band where the two
+resistances are comparable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>base_regime</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – Tier-1 label: ‘oxide_limited’, ‘metal_limited’, ‘transition’ or
+‘unknown’.</p></li>
+<li><p><strong>flux_intact_contribution</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Area-weighted flux through the intact oxide and through all defect
+paths [mol/m²/s]. Used only when <code class="docutils literal notranslate"><span class="pre">base_regime</span></code> is ‘oxide_limited’.</p></li>
+<li><p><strong>flux_defect_contribution</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Area-weighted flux through the intact oxide and through all defect
+paths [mol/m²/s]. Used only when <code class="docutils literal notranslate"><span class="pre">base_regime</span></code> is ‘oxide_limited’.</p></li>
+<li><p><strong>modification_factor</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – <code class="docutils literal notranslate"><span class="pre">D_eff</span> <span class="pre">/</span> <span class="pre">D_lattice</span></code> [-]. Used only when <code class="docutils literal notranslate"><span class="pre">base_regime</span></code> is
+‘metal_limited’.</p></li>
+<li><p><strong>threshold_traps</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>, <em>optional</em>) – Trapping-significance boundary, default 0.5.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The standard classification keys plus <code class="docutils literal notranslate"><span class="pre">modification_factor</span></code>,
+<code class="docutils literal notranslate"><span class="pre">trapping_significant</span></code>, <code class="docutils literal notranslate"><span class="pre">trapping_reduction_percent</span></code> and
+<code class="docutils literal notranslate"><span class="pre">flux_ratio_defect_to_intact</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a></p>
+</dd>
+</dl>
+<div class="admonition-notes admonition">
+<p class="admonition-title">Notes</p>
+<p>Only the fields belonging to the branch that ran are populated, so the
+unused diagnostic is blanked rather than merely stale:</p>
+<ul class="simple">
+<li><p>oxide-limited: <code class="docutils literal notranslate"><span class="pre">flux_ratio_defect_to_intact</span></code> is set (<code class="docutils literal notranslate"><span class="pre">inf</span></code> if the
+intact contribution is zero); <code class="docutils literal notranslate"><span class="pre">trapping_significant</span></code> is forced False and
+<code class="docutils literal notranslate"><span class="pre">trapping_reduction_percent</span></code> to 0.0.</p></li>
+<li><p>metal-limited: the trapping fields are set;
+<code class="docutils literal notranslate"><span class="pre">flux_ratio_defect_to_intact</span></code> is None.</p></li>
+<li><p>transition or unknown: depth 1, no <code class="docutils literal notranslate"><span class="pre">regime_detail</span></code>, trapping fields
+blanked and <code class="docutils literal notranslate"><span class="pre">flux_ratio_defect_to_intact</span></code> None.</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">modification_factor</span></code> is echoed back in every branch, so a suppressed
+<code class="docutils literal notranslate"><span class="pre">trapping_significant</span></code> can always be re-derived. Unlike
+<a class="reference internal" href="#calculations.classify_regime.classify_regime_level3" title="calculations.classify_regime.classify_regime_level3"><code class="xref py py-func docutils literal notranslate"><span class="pre">classify_regime_level3()</span></code></a>, the flux ratio is <strong>not</strong> computed outside
+the oxide branch — do not read a None there as “no defects”.</p>
+<p>Called twice in <a class="reference internal" href="parallel_oxide_defect_paths.html#module-calculations.parallel_oxide_defect_paths" title="calculations.parallel_oxide_defect_paths"><code class="xref py py-mod docutils literal notranslate"><span class="pre">calculations.parallel_oxide_defect_paths</span></code></a>, for the
+perfect-metal and defective-metal parallel-path assemblies.</p>
+</div>
+</dd></dl>
+
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="sensitivity.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title"><code class="docutils literal notranslate"><span class="pre">sensitivity</span></code> — regime-stratified sensitivity analysis</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="surface_kinetics.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title"><code class="docutils literal notranslate"><span class="pre">surface_kinetics</span></code> — Level 6: dissociation kinetics and Langmuir coverage</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2026, Azeez Akinyemi
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">classify_regime</span></code> — hierarchical regime classification</a><ul>
+<li><a class="reference internal" href="#what-regime-means-here">What “regime” means here</a></li>
+<li><a class="reference internal" href="#the-label-vocabulary">The label vocabulary</a></li>
+<li><a class="reference internal" href="#which-of-these-are-live">Which of these are live</a></li>
+<li><a class="reference internal" href="#calculations.classify_regime.classify_regime_level2"><code class="docutils literal notranslate"><span class="pre">classify_regime_level2()</span></code></a></li>
+<li><a class="reference internal" href="#calculations.classify_regime.classify_regime_level3"><code class="docutils literal notranslate"><span class="pre">classify_regime_level3()</span></code></a></li>
+<li><a class="reference internal" href="#calculations.classify_regime.classify_regime_level4_metal"><code class="docutils literal notranslate"><span class="pre">classify_regime_level4_metal()</span></code></a></li>
+<li><a class="reference internal" href="#calculations.classify_regime.classify_regime_level14"><code class="docutils literal notranslate"><span class="pre">classify_regime_level14()</span></code></a></li>
+<li><a class="reference internal" href="#calculations.classify_regime.classify_regime_level24"><code class="docutils literal notranslate"><span class="pre">classify_regime_level24()</span></code></a></li>
+<li><a class="reference internal" href="#calculations.classify_regime.classify_regime_level34"><code class="docutils literal notranslate"><span class="pre">classify_regime_level34()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/documentation_options.js?v=fc837d61"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    </body>
+</html>

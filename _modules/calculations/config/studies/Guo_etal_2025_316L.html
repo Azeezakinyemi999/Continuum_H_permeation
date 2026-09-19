@@ -1,0 +1,1218 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../../../../">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex.html"><link rel="search" title="Search" href="../../../../search.html">
+
+    <!-- Generated with Sphinx 7.4.7 and Furo 2025.12.19 -->
+        <title>calculations.config.studies.Guo_etal_2025_316L - Hierarchical Hydrogen Permeation Model 1.1.0</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo-extensions.css?v=8dab3a3b" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../../../index.html"><div class="brand">Hierarchical Hydrogen Permeation Model 1.1.0</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../../index.html">
+  
+  <span class="sidebar-brand-text">Hierarchical Hydrogen Permeation Model 1.1.0</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../getting-started.html">Getting started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">How-to</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../how-to/switch-study.html">How to switch material study</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../how-to/sensitivity-analysis.html">How to run a regime-stratified sensitivity analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../CONTAINER.html">Hydrogen Permeation Model — Offline Analysis Environment</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Theory</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../theory/two-models.html">Two models, not six levels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../theory/foundations.html">Foundations: chemical potential and the driving force</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../theory/equilibrium-models.html">Equilibrium models: Sieverts, Henry and Langmuir</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../STEADY_STATE.html">Steady State, Transients, and the Accumulation Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../theory/level1-metal.html">Level 1 — the perfect metal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../theory/level2-oxide.html">Level 2 — the oxide layer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../theory/level3-defective-oxide.html">Level 3 — the defective oxide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../theory/level4-microstructure.html">Level 4 — metal microstructure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../theory/level5-full-system.html">Level 5 — the full system</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../theory/level6-surface-kinetics.html">Level 6 — surface kinetics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../theory/permeability.html">Permeability — two models, four tiers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../theory/equations.html">Equation catalogue</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../PARAMETERS.html">Complete Parameter Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../OUTPUTS.html">Complete Output Reference</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../api/index.html">API Reference</a><input aria-label="Toggle navigation of API Reference" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/utils.html"><code class="docutils literal notranslate"><span class="pre">utils</span></code> — shared Arrhenius helpers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/permeation_calc.html"><code class="docutils literal notranslate"><span class="pre">permeation_calc</span></code> — Levels 1-2: Sieverts solubility and bulk diffusion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/oxide_permeation.html"><code class="docutils literal notranslate"><span class="pre">oxide_permeation</span></code> — Levels 2-3: molecular transport through the oxide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/interface_solver.html"><code class="docutils literal notranslate"><span class="pre">interface_solver</span></code> — the oxide/metal interface pressure solve</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/parallel_oxide_defect_paths.html"><code class="docutils literal notranslate"><span class="pre">parallel_oxide_defect_paths</span></code> — Level 3: defective oxide, parallel paths</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/defective_metal.html"><code class="docutils literal notranslate"><span class="pre">defective_metal</span></code> — Level 4: grain boundaries and trapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/surface_kinetics.html"><code class="docutils literal notranslate"><span class="pre">surface_kinetics</span></code> — Level 6: dissociation kinetics and Langmuir coverage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/classify_regime.html"><code class="docutils literal notranslate"><span class="pre">classify_regime</span></code> — hierarchical regime classification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/sensitivity.html"><code class="docutils literal notranslate"><span class="pre">sensitivity</span></code> — regime-stratified sensitivity analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/config.html"><code class="docutils literal notranslate"><span class="pre">config</span></code> — study selection</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Validation and release</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../TRAPPING_VALIDATION.html">Validating the Trapping Block Against TDS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../TRAPPING_VALIDATION.html#appendix-a-symbols">Appendix A — Symbols</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../TRAPPING_VALIDATION.html#appendix-b-equation-reference">Appendix B — Equation reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../TRAPPING_VALIDATION.html#appendix-c-where-each-quantity-lives">Appendix C — Where each quantity lives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../PACKAGING_1.0.0.html">Packaging decisions — <code class="docutils literal notranslate"><span class="pre">hydrogen-model:1.0.0</span></code> offline container</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../references.html">References</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Warnings and caveats</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../caveats.html">Warnings and caveats</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <h1>Source code for calculations.config.studies.Guo_etal_2025_316L</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">================================================================================</span>
+<span class="sd">UNIFIED CONFIGURATION FOR HIERARCHICAL HYDROGEN PERMEATION MODEL</span>
+<span class="sd">================================================================================</span>
+<span class="sd">All material properties, operating conditions, and model parameters in one place.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="c1"># =============================================================================</span>
+<span class="c1"># PHYSICAL CONSTANTS</span>
+<span class="c1"># =============================================================================</span>
+<span class="n">R</span> <span class="o">=</span> <span class="mf">8.314</span>      <span class="c1"># J/mol/K — Universal gas constant</span>
+<span class="n">F</span> <span class="o">=</span> <span class="mi">96485</span>      <span class="c1"># C/mol  — Faraday constant (for eV conversions)</span>
+
+
+<span class="c1"># =============================================================================</span>
+<span class="c1"># METAL PROPERTIES (Level 1, 4)</span>
+<span class="c1"># =============================================================================</span>
+<span class="n">METALS</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;316L_Guo_2025&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;T_ref&#39;</span><span class="p">:</span>   <span class="mi">673</span><span class="p">,</span>           <span class="c1"># K</span>
+        <span class="s1">&#39;D_ref&#39;</span><span class="p">:</span>   <span class="mf">2.8e-11</span><span class="p">,</span>     <span class="c1"># m²/s at T_ref</span>
+        <span class="s1">&#39;E_D&#39;</span><span class="p">:</span>     <span class="mi">52102</span><span class="p">,</span>         <span class="c1"># J/mol</span>
+        <span class="s1">&#39;D_0&#39;</span><span class="p">:</span>     <span class="mf">3.1e-07</span><span class="p">,</span>      <span class="c1"># m²/s</span>
+        <span class="s1">&#39;K_s_ref&#39;</span><span class="p">:</span> <span class="mf">0.039</span><span class="p">,</span>      <span class="c1"># mol/m³/Pa^0.5 at T_ref</span>
+        <span class="s1">&#39;K_s0&#39;</span><span class="p">:</span>    <span class="mf">0.219</span><span class="p">,</span>      <span class="c1"># mol/m³/Pa^0.5</span>
+        <span class="s1">&#39;H_s&#39;</span><span class="p">:</span>     <span class="mi">9648</span><span class="p">,</span>         <span class="c1"># J/mol</span>
+        <span class="s1">&#39;Phi_ref&#39;</span><span class="p">:</span> <span class="mf">1.0e-12</span><span class="p">,</span>     <span class="c1"># mol/m/s/Pa^0.5 at T_ref</span>
+        <span class="s1">&#39;Q_p&#39;</span><span class="p">:</span>     <span class="mi">61750</span><span class="p">,</span>         <span class="c1"># J/mol</span>
+        <span class="s1">&#39;Phi_0&#39;</span><span class="p">:</span>   <span class="mf">6.79e-08</span><span class="p">,</span>      <span class="c1"># mol/m/s/Pa^0.5</span>
+        <span class="c1"># Guo et al. 2025</span>
+        <span class="c1"># ---------------------------------------------------------------</span>
+        <span class="c1"># SURFACE KINETICS — metal surface (for pinhole paths, L1+L6)</span>
+        <span class="c1"># ---------------------------------------------------------------</span>
+        <span class="s1">&#39;surface_kinetics&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;T_ref&#39;</span><span class="p">:</span>            <span class="mi">673</span><span class="p">,</span>        <span class="c1"># K</span>
+            <span class="s1">&#39;k_diss_metal_ref&#39;</span><span class="p">:</span> <span class="mf">2.6287e-11</span><span class="p">,</span>      <span class="c1"># mol/m²/s/Pa at T_ref</span>
+            <span class="s1">&#39;E_diss_metal&#39;</span><span class="p">:</span>     <span class="mi">54996</span><span class="p">,</span>      <span class="c1"># J/mol</span>
+            <span class="s1">&#39;K_eq_metal_ref&#39;</span><span class="p">:</span>   <span class="mf">1.52e-03</span><span class="p">,</span>       <span class="c1"># Pa⁻¹ at T_ref </span>
+            <span class="s1">&#39;H_eq_metal&#39;</span><span class="p">:</span>       <span class="mi">19297</span><span class="p">,</span>      <span class="c1"># J/mol </span>
+            <span class="s1">&#39;reference&#39;</span><span class="p">:</span>        <span class="s1">&#39;Guo et al. 2025&#39;</span><span class="p">,</span>
+        <span class="p">},</span>
+
+        <span class="s1">&#39;pressure&#39;</span><span class="p">:</span>       <span class="p">[],</span>
+        <span class="s1">&#39;reference&#39;</span><span class="p">:</span>      <span class="s1">&#39;Guo et al. 2025&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;temp_range&#39;</span><span class="p">:</span>     <span class="p">[</span><span class="mi">468</span><span class="p">,</span> <span class="mi">823</span><span class="p">],</span>
+        <span class="s1">&#39;pressure_range&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.33e2</span><span class="p">,</span> <span class="mf">1e5</span><span class="p">],</span>
+        <span class="s1">&#39;metal_thickness&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">5e-3</span><span class="p">],</span>
+        <span class="s1">&#39;gas&#39;</span><span class="p">:</span>            <span class="s1">&#39;H₂&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Notes&#39;</span><span class="p">:</span>          <span class="s1">&#39;Phi_ref = D_ref * Ks_ref.&#39;</span><span class="p">,</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+
+<span class="c1"># =============================================================================</span>
+<span class="c1"># OXIDE PROPERTIES (Level 2a, 2b, 3)</span>
+<span class="c1"># =============================================================================</span>
+<span class="n">OXIDES</span> <span class="o">=</span> <span class="p">{</span>
+
+        <span class="s1">&#39;Cr2O3_sample4&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="c1"># ---- Reference conditions ----</span>
+        <span class="s1">&#39;T_ref&#39;</span><span class="p">:</span>       <span class="mi">673</span><span class="p">,</span>        <span class="c1"># K (400 °C)</span>
+        <span class="s1">&#39;D_ox_ref&#39;</span><span class="p">:</span>    <span class="mf">7.800e-19</span><span class="p">,</span>  <span class="c1"># m²/s </span>
+        <span class="s1">&#39;K_ox_ref&#39;</span><span class="p">:</span>    <span class="mf">0.35417</span><span class="p">,</span>      <span class="c1"># mol/m³/Pa^0.5 </span>
+        <span class="c1"># ---- Activation energies ----</span>
+        <span class="s1">&#39;E_D_ox&#39;</span><span class="p">:</span>      <span class="mi">70434</span><span class="p">,</span>      <span class="c1"># J/mol (1.24 eV) </span>
+        <span class="s1">&#39;H_sol_ox&#39;</span><span class="p">:</span>    <span class="mi">163566</span><span class="p">,</span>      <span class="c1"># J/mol — Q_p − E_D </span>
+
+        <span class="c1"># ---- Pre-exponential factors (Sieverts, Pa^0.5) ----</span>
+        <span class="s1">&#39;D_ox_0&#39;</span><span class="p">:</span>      <span class="mf">2.813e-13</span><span class="p">,</span>   <span class="c1"># m²/s</span>
+        <span class="s1">&#39;K_ox_0&#39;</span><span class="p">:</span>      <span class="mf">1.757e+12</span><span class="p">,</span>   <span class="c1"># mol/m³/Pa^0.5</span>
+
+        <span class="c1"># ---- Permeability at T_ref (Sieverts, Pa^0.5) ----</span>
+        <span class="s1">&#39;Phi_ox_ref&#39;</span><span class="p">:</span>  <span class="mf">3.4e-19</span><span class="p">,</span>  <span class="c1"># mol/m/s/Pa^0.5</span>
+        <span class="s1">&#39;Q_p_ox_J_per_mol&#39;</span><span class="p">:</span> <span class="mi">234000</span><span class="p">,</span>
+
+
+        <span class="c1"># ---- Default geometry ----</span>
+        <span class="s1">&#39;thickness&#39;</span><span class="p">:</span>       <span class="mf">4.8e-08</span><span class="p">,</span>
+        <span class="s1">&#39;thickness_range&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1e-9</span><span class="p">,</span> <span class="mf">1e-5</span><span class="p">],</span>
+
+        <span class="c1"># ---------------------------------------------------------------</span>
+        <span class="c1"># SURFACE KINETICS — oxide surface (gas–oxide interface, L6)</span>
+        <span class="c1"># Used by: get_all_properties → solve_steady_state_flux,</span>
+        <span class="c1">#          solve_steady_state_flux_L2aL6, calculate_path_flux_L6,</span>
+        <span class="c1">#          calculate_path_flux_L346_v2</span>
+        <span class="c1"># Arrhenius form:</span>
+        <span class="c1">#   k_diss(T) = k_diss_ref × exp(-E_diss/R  × (1/T - 1/T_ref))</span>
+        <span class="c1">#   K_eq(T)   = K_eq_ref   × exp(-H_eq/R    × (1/T - 1/T_ref))</span>
+        <span class="c1">#   k_recomb  = k_diss / K_eq  (derived)</span>
+        <span class="c1"># ---------------------------------------------------------------</span>
+        <span class="s1">&#39;surface_kinetics&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;T_ref&#39;</span><span class="p">:</span>       <span class="mi">1623</span><span class="p">,</span>        <span class="c1"># K — same as transport T_ref</span>
+            <span class="s1">&#39;k_diss_ref&#39;</span><span class="p">:</span>  <span class="mf">9.487e-08</span><span class="p">,</span>       <span class="c1"># mol/m²/s/Pa at T_ref</span>
+            <span class="s1">&#39;E_diss&#39;</span><span class="p">:</span>      <span class="mi">57950</span><span class="p">,</span>       <span class="c1"># J/mol</span>
+            <span class="s1">&#39;K_eq_ref&#39;</span><span class="p">:</span>    <span class="mf">1e-4</span><span class="p">,</span>       <span class="c1"># Pa⁻¹ at T_ref PLACEHOLDER. Changed from 1e-10 to 1e-4</span>
+            <span class="s1">&#39;H_eq&#39;</span><span class="p">:</span>        <span class="mi">20000</span><span class="p">,</span>       <span class="c1"># J/mol PLACEHOLDER</span>
+            <span class="s1">&#39;reference&#39;</span><span class="p">:</span>   <span class="s1">&#39;Grant et al. 1988: Grant DM, Cummings DL, Blackburn DA	J. Nuclear Materials 152	1988	DOI: 10.1016/0022-3115(88)90128-7	316 steel H₂ transport. ONLY source with full surface kinetics k1 (3 conditions).	Oxide Surface Kinetics&#39;</span><span class="p">,</span>
+        <span class="p">},</span>
+
+        <span class="c1"># ---- Metadata ----</span>
+        <span class="s1">&#39;reference&#39;</span><span class="p">:</span> <span class="p">(</span>
+            <span class="s2">&quot;Nemanic et al. 2023 (Phi, D), Stover 1986 (Q_p) and Chen 2011 (E_D): Undamaged chromia limit from Stover 1986 Fig.7 (sample Cr2)&quot;</span>
+        <span class="p">),</span>
+        <span class="c1"># Validity range of the Nemanic/Stover data; read by</span>
+        <span class="c1"># oxide_permeation.get_oxide_properties_at_T to warn on extrapolation.</span>
+        <span class="s1">&#39;temperature_range&#39;</span><span class="p">:</span>  <span class="p">[</span><span class="mi">473</span><span class="p">,</span> <span class="mi">773</span><span class="p">],</span>
+    <span class="p">},</span>
+    
+<span class="p">}</span>
+
+<span class="n">MICROSTRUCTURE</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;grain_size&#39;</span><span class="p">:</span>          <span class="mf">100e-6</span><span class="p">,</span>      <span class="c1"># m  (midpoint 50-150 um, Zhu 2021)</span>
+    <span class="s1">&#39;gb_thickness&#39;</span><span class="p">:</span>        <span class="mf">0.5e-9</span><span class="p">,</span>      <span class="c1"># m  (unchanged -- no Has-N measurement)</span>
+    <span class="s1">&#39;grain_shape&#39;</span><span class="p">:</span>         <span class="s1">&#39;equiaxed&#39;</span><span class="p">,</span>  <span class="c1"># confirmed Zhu 2021</span>
+    <span class="s1">&#39;gb_type&#39;</span><span class="p">:</span>             <span class="s1">&#39;LAGB&#39;</span><span class="p">,</span>     <span class="c1"># ~50% Sigma3 (0 eV) + ~50% HAGB (0.27 eV)</span>
+    <span class="s1">&#39;include_gb_trapping&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>       <span class="c1"># keep False for baseline; True for sensitivity</span>
+
+    <span class="s1">&#39;trap_list&#39;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s1">&#39;name&#39;</span><span class="p">:</span>           <span class="s1">&#39;vacancies&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;binding_energy&#39;</span><span class="p">:</span> <span class="mf">0.43</span> <span class="o">*</span> <span class="n">F</span><span class="p">,</span>  <span class="c1"># J/mol  (Ni est. vs placeholder 0.50)</span>
+            <span class="s1">&#39;density&#39;</span><span class="p">:</span>        <span class="mf">1e26</span><span class="p">,</span>       <span class="c1"># m^-3   (no Has-N data -- keep)</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s1">&#39;name&#39;</span><span class="p">:</span>           <span class="s1">&#39;dislocations&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;binding_energy&#39;</span><span class="p">:</span> <span class="mf">0.20</span> <span class="o">*</span> <span class="n">F</span><span class="p">,</span>  <span class="c1"># J/mol  (Lu 2022: 0.186-0.215 eV, was 0.70)</span>
+            <span class="s1">&#39;density&#39;</span><span class="p">:</span>        <span class="mf">8.16e12</span><span class="p">,</span>   <span class="c1"># m^-3   (Zhu 2021 GND, was 1e22 -- 4 orders too high)</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s1">&#39;name&#39;</span><span class="p">:</span>           <span class="s1">&#39;grain_boundaries&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;binding_energy&#39;</span><span class="p">:</span> <span class="mf">0.27</span> <span class="o">*</span> <span class="n">F</span><span class="p">,</span>  <span class="c1"># J/mol  (Lu 2022 Peak 2: 0.258-0.281, was 0.90)</span>
+            <span class="s1">&#39;density&#39;</span><span class="p">:</span>        <span class="mf">6e14</span><span class="p">,</span>      <span class="c1"># m^-3   (geometric from 100 um grain, was 1e24)</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s1">&#39;name&#39;</span><span class="p">:</span>           <span class="s1">&#39;Carbides&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;binding_energy&#39;</span><span class="p">:</span> <span class="mf">0.27</span> <span class="o">*</span> <span class="n">F</span><span class="p">,</span>  <span class="c1"># J/mol  (M6C Lu 2022: 0.258-0.281, was 0.0)</span>
+            <span class="s1">&#39;density&#39;</span><span class="p">:</span>        <span class="mf">2e25</span><span class="p">,</span>      <span class="c1"># m^-3   (Young 1997 upper bound, was 0)</span>
+        <span class="p">},</span>
+    <span class="p">],</span>
+
+
+    <span class="c1"># -------------------------------------------------------------------</span>
+    <span class="c1"># LATTICE SITE DENSITY</span>
+    <span class="c1"># -------------------------------------------------------------------</span>
+    <span class="s1">&#39;lattice_density&#39;</span><span class="p">:</span>     <span class="mf">8.774e28</span><span class="p">,</span>     <span class="c1"># m⁻³ — Fe BCC; update for your alloy</span>
+<span class="p">}</span>
+<span class="c1"># &#39;N_L&#39; is the same quantity under the symbol the derivations use, and</span>
+<span class="c1"># Application/Proposal.ipynb reads it 14 times. Aliased rather than written out</span>
+<span class="c1"># twice: two literals of the same number drift the moment one is edited.</span>
+<span class="n">MICROSTRUCTURE</span><span class="p">[</span><span class="s1">&#39;N_L&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">MICROSTRUCTURE</span><span class="p">[</span><span class="s1">&#39;lattice_density&#39;</span><span class="p">]</span>
+
+
+<span class="c1"># =============================================================================</span>
+<span class="c1"># OXIDE DEFECT PARAMETERS (Level 3, 5)</span>
+<span class="c1"># =============================================================================</span>
+<span class="n">OXIDE_DEFECTS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;area_fraction&#39;</span><span class="p">:</span>    <span class="mf">0.02</span><span class="p">,</span>
+    <span class="s1">&#39;type&#39;</span><span class="p">:</span>             <span class="s1">&#39;mixed&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;components&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;pinholes&#39;</span><span class="p">:</span>         <span class="mf">0.01</span><span class="p">,</span>
+        <span class="s1">&#39;cracks&#39;</span><span class="p">:</span>           <span class="mf">0.005</span><span class="p">,</span>
+        <span class="s1">&#39;grain_boundaries&#39;</span><span class="p">:</span> <span class="mf">0.005</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s1">&#39;thickness_factor&#39;</span><span class="p">:</span>   <span class="mf">0.1</span><span class="p">,</span>    <span class="c1"># crack: L_crack = 0.1 × L_oxide</span>
+    <span class="s1">&#39;diffusivity_factor&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>     <span class="c1"># GB: D_gb = 10 × D_oxide</span>
+    <span class="s1">&#39;use_sieverts_pinhole&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>   <span class="c1"># ← ADD THIS</span>
+    <span class="c1"># False = use metal surface kinetics from METALS[&#39;surface_kinetics&#39;]</span>
+    <span class="c1"># True  = assume fast metal kinetics (Sieverts limit, no k_diss_metal needed)</span>
+<span class="p">}</span>
+
+
+<span class="c1"># =============================================================================</span>
+<span class="c1"># OPERATING CONDITIONS</span>
+<span class="c1"># =============================================================================</span>
+<span class="n">CONDITIONS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;T_operating&#39;</span><span class="p">:</span>    <span class="mi">873</span><span class="p">,</span>              <span class="c1"># K</span>
+    <span class="s1">&#39;T_range&#39;</span><span class="p">:</span>        <span class="p">(</span><span class="mi">623</span><span class="p">,</span> <span class="mi">1200</span><span class="p">),</span>      <span class="c1"># K</span>
+    <span class="s1">&#39;n_T_points&#39;</span><span class="p">:</span>     <span class="mi">20</span><span class="p">,</span>
+
+    <span class="s1">&#39;P_upstream&#39;</span><span class="p">:</span>     <span class="mf">1e5</span><span class="p">,</span>              <span class="c1"># Pa</span>
+    <span class="s1">&#39;P_downstream&#39;</span><span class="p">:</span>   <span class="mi">0</span><span class="p">,</span>                <span class="c1"># Pa</span>
+    <span class="s1">&#39;P_range&#39;</span><span class="p">:</span>        <span class="p">(</span><span class="mf">1e-4</span><span class="p">,</span> <span class="mf">1e12</span><span class="p">),</span>      <span class="c1"># Pa</span>
+    <span class="s1">&#39;n_P_points&#39;</span><span class="p">:</span>     <span class="mi">40</span><span class="p">,</span>
+
+    <span class="s1">&#39;L_metal&#39;</span><span class="p">:</span>        <span class="mf">1e-3</span><span class="p">,</span>             <span class="c1"># m</span>
+    <span class="s1">&#39;L_oxide&#39;</span><span class="p">:</span>        <span class="mf">1e-6</span><span class="p">,</span>             <span class="c1"># m</span>
+    <span class="s1">&#39;L_metal_range&#39;</span><span class="p">:</span>  <span class="p">(</span><span class="mf">0.1e-3</span><span class="p">,</span> <span class="mf">5e-3</span><span class="p">),</span>  <span class="c1"># m</span>
+    <span class="s1">&#39;L_oxide_range&#39;</span><span class="p">:</span>  <span class="p">(</span><span class="mf">1e-7</span><span class="p">,</span> <span class="mf">1e-5</span><span class="p">),</span>    <span class="c1"># m</span>
+    <span class="s1">&#39;n_L_points&#39;</span><span class="p">:</span>     <span class="mi">20</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+
+
+<span class="c1"># =============================================================================</span>
+<span class="c1"># =============================================================================</span>
+<span class="c1"># SENSITIVITY ANALYSIS PARAMETERS</span>
+<span class="c1">#</span>
+<span class="c1"># Everything the regime-stratified sensitivity analysis lets you tune lives here,</span>
+<span class="c1"># so there is one file to open when you want to change what the study explores.</span>
+<span class="c1"># Consumed by calculations/sensitivity.py; nothing here imports it back.</span>
+<span class="c1">#</span>
+<span class="c1"># Two kinds of thing, and the distinction matters:</span>
+<span class="c1">#</span>
+<span class="c1">#   DEFAULT_PARAMS_*   are DERIVED from METALS / OXIDES / MICROSTRUCTURE /</span>
+<span class="c1">#                      OXIDE_DEFECTS / CONDITIONS above. Do not hardcode a number</span>
+<span class="c1">#                      into them — change the source dict instead. They were once</span>
+<span class="c1">#                      hand-copied literals and had already drifted: the defect</span>
+<span class="c1">#                      area fractions, the operating temperature and both surface</span>
+<span class="c1">#                      equilibrium constants disagreed with the values above by up</span>
+<span class="c1">#                      to six orders of magnitude.</span>
+<span class="c1">#</span>
+<span class="c1">#   SUGGESTED_RANGES_*, REGIME_PRESETS_*, draw counts and sweep temperatures are</span>
+<span class="c1">#                      STUDY DESIGN — deliberately literal. A preset that</span>
+<span class="c1">#                      suppresses f_pinhole to force an oxide-limited cluster</span>
+<span class="c1">#                      expresses intent about the analysis, not a material</span>
+<span class="c1">#                      property, so it is written out explicitly.</span>
+<span class="c1">#</span>
+<span class="c1"># Run calculations.sensitivity.check_against_config() after editing.</span>
+<span class="c1"># =============================================================================</span>
+<span class="c1"># =============================================================================</span>
+
+<span class="c1"># Which METALS / OXIDES entry the sensitivity analysis characterises: THE FIRST</span>
+<span class="c1"># ENTRY of each dict. Taken positionally rather than spelled out, so adding or</span>
+<span class="c1"># renaming a material needs no edit here and the name cannot fall out of sync with</span>
+<span class="c1"># the dict it indexes.</span>
+<span class="c1">#</span>
+<span class="c1"># The convention this encodes: the first entry is the active one. Dicts preserve</span>
+<span class="c1"># insertion order (Python 3.7+), so that means the first literal in the file. If you</span>
+<span class="c1"># add a second material, put it BELOW the active one — inserting above silently</span>
+<span class="c1"># switches every derived default.</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_first_key</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">what</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;First key of ``d``, with a clear error instead of a bare StopIteration.&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">d</span><span class="p">))</span>
+    <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">what</span><span class="si">}</span><span class="s2"> is empty — cannot determine the active material&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="kc">None</span>
+
+
+<span class="n">ACTIVE_METAL</span> <span class="o">=</span> <span class="n">_first_key</span><span class="p">(</span><span class="n">METALS</span><span class="p">,</span> <span class="s1">&#39;METALS&#39;</span><span class="p">)</span>
+<span class="n">ACTIVE_OXIDE</span> <span class="o">=</span> <span class="n">_first_key</span><span class="p">(</span><span class="n">OXIDES</span><span class="p">,</span> <span class="s1">&#39;OXIDES&#39;</span><span class="p">)</span>
+
+<span class="n">_SA_M</span>  <span class="o">=</span> <span class="n">METALS</span><span class="p">[</span><span class="n">ACTIVE_METAL</span><span class="p">]</span>
+<span class="n">_SA_O</span>  <span class="o">=</span> <span class="n">OXIDES</span><span class="p">[</span><span class="n">ACTIVE_OXIDE</span><span class="p">]</span>
+<span class="n">_SA_MS</span> <span class="o">=</span> <span class="n">_SA_M</span><span class="p">[</span><span class="s1">&#39;surface_kinetics&#39;</span><span class="p">]</span>          <span class="c1"># metal surface kinetics</span>
+<span class="n">_SA_OS</span> <span class="o">=</span> <span class="n">_SA_O</span><span class="p">[</span><span class="s1">&#39;surface_kinetics&#39;</span><span class="p">]</span>          <span class="c1"># oxide surface kinetics</span>
+<span class="n">_SA_DC</span> <span class="o">=</span> <span class="n">OXIDE_DEFECTS</span><span class="p">[</span><span class="s1">&#39;components&#39;</span><span class="p">]</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_sa_trap</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;MICROSTRUCTURE trap entry by name (case-insensitive — config uses &#39;Carbides&#39;).&quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">MICROSTRUCTURE</span><span class="p">[</span><span class="s1">&#39;trap_list&#39;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">t</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">t</span>
+    <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;no trap named </span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2"> in MICROSTRUCTURE[&#39;trap_list&#39;]; &quot;</span>
+                   <span class="sa">f</span><span class="s2">&quot;have </span><span class="si">{</span><span class="p">[</span><span class="n">t</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">MICROSTRUCTURE</span><span class="p">[</span><span class="s1">&#39;trap_list&#39;</span><span class="p">]]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="c1"># LEVEL 5 defaults — defective oxide (L3) + defective metal microstructure (L4)</span>
+<span class="c1">#</span>
+<span class="c1"># Reference-point Arrhenius: X(T) = X_ref * exp(-E/R * (1/T - 1/T_ref))</span>
+<span class="c1">#   Incoloy 802 (X40 NiCrAlTi) — T_ref_metal = 1223 K (Schmidt 1985)</span>
+<span class="c1">#   Cr2O3_sample4              — T_ref_oxide =  673 K (Nemanic 2023 / Stover 1986)</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
+
+<span class="n">DEFAULT_PARAMS_LEVEL5</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c1"># Metal transport  (METALS[ACTIVE_METAL])</span>
+    <span class="s1">&#39;D_ref&#39;</span><span class="p">:</span>       <span class="n">_SA_M</span><span class="p">[</span><span class="s1">&#39;D_ref&#39;</span><span class="p">],</span>      <span class="c1"># m²/s           D_metal at T_ref_metal</span>
+    <span class="s1">&#39;E_D&#39;</span><span class="p">:</span>         <span class="n">_SA_M</span><span class="p">[</span><span class="s1">&#39;E_D&#39;</span><span class="p">],</span>        <span class="c1"># J/mol          activation energy for diffusion</span>
+    <span class="s1">&#39;K_s_ref&#39;</span><span class="p">:</span>     <span class="n">_SA_M</span><span class="p">[</span><span class="s1">&#39;K_s_ref&#39;</span><span class="p">],</span>    <span class="c1"># mol/m³/Pa^0.5  K_s at T_ref_metal</span>
+    <span class="s1">&#39;H_s&#39;</span><span class="p">:</span>         <span class="n">_SA_M</span><span class="p">[</span><span class="s1">&#39;H_s&#39;</span><span class="p">],</span>        <span class="c1"># J/mol          heat of solution</span>
+    <span class="s1">&#39;T_ref_metal&#39;</span><span class="p">:</span> <span class="n">_SA_M</span><span class="p">[</span><span class="s1">&#39;T_ref&#39;</span><span class="p">],</span>      <span class="c1"># K              measurement reference</span>
+
+    <span class="c1"># Oxide transport  (OXIDES[ACTIVE_OXIDE])</span>
+    <span class="s1">&#39;D_ox_ref&#39;</span><span class="p">:</span>    <span class="n">_SA_O</span><span class="p">[</span><span class="s1">&#39;D_ox_ref&#39;</span><span class="p">],</span>   <span class="c1"># m²/s</span>
+    <span class="s1">&#39;E_D_ox&#39;</span><span class="p">:</span>      <span class="n">_SA_O</span><span class="p">[</span><span class="s1">&#39;E_D_ox&#39;</span><span class="p">],</span>     <span class="c1"># J/mol</span>
+    <span class="s1">&#39;K_ox_ref&#39;</span><span class="p">:</span>    <span class="n">_SA_O</span><span class="p">[</span><span class="s1">&#39;K_ox_ref&#39;</span><span class="p">],</span>   <span class="c1"># mol/m³/Pa^0.5</span>
+    <span class="s1">&#39;H_sol_ox&#39;</span><span class="p">:</span>    <span class="n">_SA_O</span><span class="p">[</span><span class="s1">&#39;H_sol_ox&#39;</span><span class="p">],</span>   <span class="c1"># J/mol</span>
+    <span class="s1">&#39;T_ref_oxide&#39;</span><span class="p">:</span> <span class="n">_SA_O</span><span class="p">[</span><span class="s1">&#39;T_ref&#39;</span><span class="p">],</span>      <span class="c1"># K</span>
+
+    <span class="c1"># Geometry — metal thickness comes from CONDITIONS, NOT METALS[&#39;metal_thickness&#39;],</span>
+    <span class="c1"># which is a LIST of sweep values and would silently poison every model call.</span>
+    <span class="s1">&#39;metal_thickness&#39;</span><span class="p">:</span> <span class="n">CONDITIONS</span><span class="p">[</span><span class="s1">&#39;L_metal&#39;</span><span class="p">],</span>   <span class="c1"># m</span>
+    <span class="s1">&#39;oxide_thickness&#39;</span><span class="p">:</span> <span class="n">_SA_O</span><span class="p">[</span><span class="s1">&#39;thickness&#39;</span><span class="p">],</span>      <span class="c1"># m</span>
+
+    <span class="c1"># Operating conditions  (CONDITIONS)</span>
+    <span class="s1">&#39;P_upstream&#39;</span><span class="p">:</span>   <span class="n">CONDITIONS</span><span class="p">[</span><span class="s1">&#39;P_upstream&#39;</span><span class="p">],</span>   <span class="c1"># Pa</span>
+    <span class="s1">&#39;P_downstream&#39;</span><span class="p">:</span> <span class="n">CONDITIONS</span><span class="p">[</span><span class="s1">&#39;P_downstream&#39;</span><span class="p">],</span> <span class="c1"># Pa</span>
+    <span class="s1">&#39;temperature&#39;</span><span class="p">:</span>  <span class="n">CONDITIONS</span><span class="p">[</span><span class="s1">&#39;T_operating&#39;</span><span class="p">],</span>  <span class="c1"># K</span>
+
+    <span class="c1"># Level 3: oxide defects  (OXIDE_DEFECTS)</span>
+    <span class="s1">&#39;f_pinhole&#39;</span><span class="p">:</span>              <span class="n">_SA_DC</span><span class="p">[</span><span class="s1">&#39;pinholes&#39;</span><span class="p">],</span>          <span class="c1"># area fraction</span>
+    <span class="s1">&#39;f_crack&#39;</span><span class="p">:</span>                <span class="n">_SA_DC</span><span class="p">[</span><span class="s1">&#39;cracks&#39;</span><span class="p">],</span>            <span class="c1"># area fraction</span>
+    <span class="s1">&#39;f_gb_defect&#39;</span><span class="p">:</span>            <span class="n">_SA_DC</span><span class="p">[</span><span class="s1">&#39;grain_boundaries&#39;</span><span class="p">],</span>  <span class="c1"># area fraction</span>
+    <span class="s1">&#39;crack_thickness_factor&#39;</span><span class="p">:</span> <span class="n">OXIDE_DEFECTS</span><span class="p">[</span><span class="s1">&#39;thickness_factor&#39;</span><span class="p">],</span>    <span class="c1"># L_crack = f × L_oxide</span>
+    <span class="s1">&#39;gb_diffusivity_factor&#39;</span><span class="p">:</span>  <span class="n">OXIDE_DEFECTS</span><span class="p">[</span><span class="s1">&#39;diffusivity_factor&#39;</span><span class="p">],</span>  <span class="c1"># D_gb = f × D_oxide</span>
+    <span class="c1"># &#39;use_sieverts_pinhole&#39; is NOT here: neither model wrapper reads it from the</span>
+    <span class="c1"># parameter dict. Surface_proposal.ipynb takes it from SIM[&#39;oxide_defects&#39;],</span>
+    <span class="c1"># i.e. straight from OXIDE_DEFECTS, so that is where it lives.</span>
+
+    <span class="c1"># Level 4: grain structure  (MICROSTRUCTURE; Zhu 2021 baseline)</span>
+    <span class="s1">&#39;grain_size&#39;</span><span class="p">:</span>      <span class="n">MICROSTRUCTURE</span><span class="p">[</span><span class="s1">&#39;grain_size&#39;</span><span class="p">],</span>       <span class="c1"># m</span>
+    <span class="s1">&#39;grain_shape&#39;</span><span class="p">:</span>     <span class="n">MICROSTRUCTURE</span><span class="p">[</span><span class="s1">&#39;grain_shape&#39;</span><span class="p">],</span>
+    <span class="s1">&#39;gb_type&#39;</span><span class="p">:</span>         <span class="n">MICROSTRUCTURE</span><span class="p">[</span><span class="s1">&#39;gb_type&#39;</span><span class="p">],</span>
+    <span class="s1">&#39;gb_thickness&#39;</span><span class="p">:</span>    <span class="n">MICROSTRUCTURE</span><span class="p">[</span><span class="s1">&#39;gb_thickness&#39;</span><span class="p">],</span>     <span class="c1"># m</span>
+    <span class="s1">&#39;lattice_density&#39;</span><span class="p">:</span> <span class="n">MICROSTRUCTURE</span><span class="p">[</span><span class="s1">&#39;lattice_density&#39;</span><span class="p">],</span>  <span class="c1"># m⁻³</span>
+
+    <span class="c1"># Level 4: traps  (MICROSTRUCTURE[&#39;trap_list&#39;])</span>
+    <span class="c1"># Lu 2022 binding energies + Young 1997 carbide density</span>
+    <span class="s1">&#39;trap_dislocation_E_b&#39;</span><span class="p">:</span> <span class="n">_sa_trap</span><span class="p">(</span><span class="s1">&#39;dislocations&#39;</span><span class="p">)[</span><span class="s1">&#39;binding_energy&#39;</span><span class="p">],</span>      <span class="c1"># J/mol</span>
+    <span class="s1">&#39;trap_dislocation_N_T&#39;</span><span class="p">:</span> <span class="n">_sa_trap</span><span class="p">(</span><span class="s1">&#39;dislocations&#39;</span><span class="p">)[</span><span class="s1">&#39;density&#39;</span><span class="p">],</span>             <span class="c1"># m⁻³</span>
+    <span class="s1">&#39;trap_gb_E_b&#39;</span><span class="p">:</span>          <span class="n">_sa_trap</span><span class="p">(</span><span class="s1">&#39;grain_boundaries&#39;</span><span class="p">)[</span><span class="s1">&#39;binding_energy&#39;</span><span class="p">],</span>  <span class="c1"># J/mol</span>
+    <span class="s1">&#39;trap_gb_N_T&#39;</span><span class="p">:</span>          <span class="n">_sa_trap</span><span class="p">(</span><span class="s1">&#39;grain_boundaries&#39;</span><span class="p">)[</span><span class="s1">&#39;density&#39;</span><span class="p">],</span>         <span class="c1"># m⁻³</span>
+    <span class="s1">&#39;trap_vacancy_E_b&#39;</span><span class="p">:</span>     <span class="n">_sa_trap</span><span class="p">(</span><span class="s1">&#39;vacancies&#39;</span><span class="p">)[</span><span class="s1">&#39;binding_energy&#39;</span><span class="p">],</span>         <span class="c1"># J/mol</span>
+    <span class="s1">&#39;trap_vacancy_N_T&#39;</span><span class="p">:</span>     <span class="n">_sa_trap</span><span class="p">(</span><span class="s1">&#39;vacancies&#39;</span><span class="p">)[</span><span class="s1">&#39;density&#39;</span><span class="p">],</span>                <span class="c1"># m⁻³</span>
+    <span class="s1">&#39;trap_carbide_E_b&#39;</span><span class="p">:</span>     <span class="n">_sa_trap</span><span class="p">(</span><span class="s1">&#39;carbides&#39;</span><span class="p">)[</span><span class="s1">&#39;binding_energy&#39;</span><span class="p">],</span>          <span class="c1"># J/mol</span>
+    <span class="s1">&#39;trap_carbide_N_T&#39;</span><span class="p">:</span>     <span class="n">_sa_trap</span><span class="p">(</span><span class="s1">&#39;carbides&#39;</span><span class="p">)[</span><span class="s1">&#39;density&#39;</span><span class="p">],</span>                 <span class="c1"># m⁻³</span>
+
+    <span class="c1"># Model options — how to run the model, not what it is; no config source</span>
+    <span class="s1">&#39;include_gb_enhancement&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="s1">&#39;include_trapping&#39;</span><span class="p">:</span>       <span class="kc">True</span><span class="p">,</span>
+    <span class="s1">&#39;D_eff_method&#39;</span><span class="p">:</span>           <span class="s1">&#39;average&#39;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="c1"># LEVEL 5L6 defaults — adds oxide + metal surface dissociation/recombination.</span>
+<span class="c1"># Inherits every Level 5 parameter via **DEFAULT_PARAMS_LEVEL5, which is what</span>
+<span class="c1"># keeps the two levels sharing one set of values for everything they have in common.</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
+
+<span class="n">DEFAULT_PARAMS_LEVEL5L6</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="o">**</span><span class="n">DEFAULT_PARAMS_LEVEL5</span><span class="p">,</span>
+    <span class="c1"># Oxide surface kinetics — OXIDES[ACTIVE_OXIDE][&#39;surface_kinetics&#39;] (Grant 1988)</span>
+    <span class="s1">&#39;k_diss_ref&#39;</span><span class="p">:</span>    <span class="n">_SA_OS</span><span class="p">[</span><span class="s1">&#39;k_diss_ref&#39;</span><span class="p">],</span>   <span class="c1"># mol/m²/s/Pa</span>
+    <span class="s1">&#39;E_diss&#39;</span><span class="p">:</span>        <span class="n">_SA_OS</span><span class="p">[</span><span class="s1">&#39;E_diss&#39;</span><span class="p">],</span>       <span class="c1"># J/mol</span>
+    <span class="s1">&#39;K_eq_ref&#39;</span><span class="p">:</span>      <span class="n">_SA_OS</span><span class="p">[</span><span class="s1">&#39;K_eq_ref&#39;</span><span class="p">],</span>     <span class="c1"># Pa⁻¹</span>
+    <span class="s1">&#39;H_eq&#39;</span><span class="p">:</span>          <span class="n">_SA_OS</span><span class="p">[</span><span class="s1">&#39;H_eq&#39;</span><span class="p">],</span>         <span class="c1"># J/mol</span>
+    <span class="s1">&#39;T_ref_surface&#39;</span><span class="p">:</span> <span class="n">_SA_OS</span><span class="p">[</span><span class="s1">&#39;T_ref&#39;</span><span class="p">],</span>        <span class="c1"># K</span>
+
+    <span class="c1"># Metal surface kinetics — METALS[ACTIVE_METAL][&#39;surface_kinetics&#39;] (Grant 1988)</span>
+    <span class="s1">&#39;k_diss_metal_ref&#39;</span><span class="p">:</span>    <span class="n">_SA_MS</span><span class="p">[</span><span class="s1">&#39;k_diss_metal_ref&#39;</span><span class="p">],</span>  <span class="c1"># mol/m²/s/Pa</span>
+    <span class="s1">&#39;E_diss_metal&#39;</span><span class="p">:</span>        <span class="n">_SA_MS</span><span class="p">[</span><span class="s1">&#39;E_diss_metal&#39;</span><span class="p">],</span>      <span class="c1"># J/mol</span>
+    <span class="s1">&#39;K_eq_metal_ref&#39;</span><span class="p">:</span>      <span class="n">_SA_MS</span><span class="p">[</span><span class="s1">&#39;K_eq_metal_ref&#39;</span><span class="p">],</span>    <span class="c1"># Pa⁻¹</span>
+    <span class="s1">&#39;H_eq_metal&#39;</span><span class="p">:</span>          <span class="n">_SA_MS</span><span class="p">[</span><span class="s1">&#39;H_eq_metal&#39;</span><span class="p">],</span>        <span class="c1"># J/mol</span>
+    <span class="s1">&#39;T_ref_surface_metal&#39;</span><span class="p">:</span> <span class="n">_SA_MS</span><span class="p">[</span><span class="s1">&#39;T_ref&#39;</span><span class="p">],</span>             <span class="c1"># K</span>
+<span class="p">}</span>
+
+
+
+
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="c1"># SUGGESTED PARAMETER RANGES — Level 5 (28 parameters)   ** TUNE ME **</span>
+<span class="c1">#</span>
+<span class="c1"># Reference-point values span roughly ±2 decades around the reference; activation</span>
+<span class="c1"># energies span physically meaningful bounds. The four T_ref_* are commented out:</span>
+<span class="c1"># they are measurement metadata, redundant with the *_ref prefactors, and varying</span>
+<span class="c1"># them injects an artificial 10^3-10^4 prefactor sweep.</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="n">SUGGESTED_RANGES_LEVEL5</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c1"># Metal transport (Incoloy 802, Schmidt 1985)</span>
+    <span class="s1">&#39;D_ref&#39;</span><span class="p">:</span>        <span class="p">[</span><span class="mf">4.285e-11</span><span class="p">,</span> <span class="mf">4.285e-7</span><span class="p">],</span>
+    <span class="c1"># Widened from the Incoloy range [60000, 80000]: Hastelloy N&#39;s own E_D is</span>
+    <span class="c1"># 55900 J/mol, so its measured value sat below the sweep floor and the SA</span>
+    <span class="c1"># would only ever have sampled it from above.</span>
+    <span class="s1">&#39;E_D&#39;</span><span class="p">:</span>          <span class="p">[</span><span class="mi">50000</span><span class="p">,</span> <span class="mi">80000</span><span class="p">],</span>
+    <span class="s1">&#39;K_s_ref&#39;</span><span class="p">:</span>      <span class="p">[</span><span class="mf">1e-4</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span>
+    <span class="s1">&#39;H_s&#39;</span><span class="p">:</span>          <span class="p">[</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">50000</span><span class="p">],</span>
+  
+
+    <span class="c1"># Oxide transport (Cr2O3_sample4)</span>
+    <span class="s1">&#39;D_ox_ref&#39;</span><span class="p">:</span>     <span class="p">[</span><span class="mf">7.800e-21</span><span class="p">,</span> <span class="mf">7.800e-17</span><span class="p">],</span>
+    <span class="s1">&#39;E_D_ox&#39;</span><span class="p">:</span>       <span class="p">[</span><span class="mi">69000</span><span class="p">,</span> <span class="mi">71000</span><span class="p">],</span>
+    <span class="s1">&#39;K_ox_ref&#39;</span><span class="p">:</span>     <span class="p">[</span><span class="mf">0.08</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">],</span>
+    <span class="s1">&#39;H_sol_ox&#39;</span><span class="p">:</span>     <span class="p">[</span><span class="mi">20000</span><span class="p">,</span> <span class="mi">170000</span><span class="p">],</span>
+   
+
+    <span class="c1"># Geometry</span>
+    <span class="s1">&#39;metal_thickness&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">5e-4</span><span class="p">,</span> <span class="mf">5e-3</span><span class="p">],</span>
+    <span class="s1">&#39;oxide_thickness&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1e-10</span><span class="p">,</span> <span class="mf">1e-5</span><span class="p">],</span>
+    <span class="s1">&#39;P_upstream&#39;</span><span class="p">:</span>      <span class="p">[</span><span class="mf">1e-7</span><span class="p">,</span> <span class="mf">1e7</span><span class="p">],</span>
+
+    <span class="c1"># Oxide defects</span>
+    <span class="s1">&#39;f_pinhole&#39;</span><span class="p">:</span>              <span class="p">[</span><span class="mf">1e-5</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span>
+    <span class="s1">&#39;f_crack&#39;</span><span class="p">:</span>                <span class="p">[</span><span class="mf">1e-5</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span>
+    <span class="s1">&#39;f_gb_defect&#39;</span><span class="p">:</span>            <span class="p">[</span><span class="mf">1e-5</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span>
+    <span class="s1">&#39;crack_thickness_factor&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span>
+    <span class="s1">&#39;gb_diffusivity_factor&#39;</span><span class="p">:</span>  <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">100.0</span><span class="p">],</span>
+
+    <span class="c1"># Grain structure</span>
+    <span class="s1">&#39;grain_size&#39;</span><span class="p">:</span>      <span class="p">[</span><span class="mf">1e-5</span><span class="p">,</span> <span class="mf">5e-4</span><span class="p">],</span>
+    <span class="s1">&#39;gb_thickness&#39;</span><span class="p">:</span>    <span class="p">[</span><span class="mf">3e-10</span><span class="p">,</span> <span class="mf">1e-9</span><span class="p">],</span>
+    <span class="s1">&#39;lattice_density&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">8e28</span><span class="p">,</span> <span class="mf">1.2e29</span><span class="p">],</span>
+
+    <span class="c1"># Traps (Lu 2022 + Young 1997; narrowed to physically motivated bounds)</span>
+    <span class="s1">&#39;trap_dislocation_E_b&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">15000</span><span class="p">,</span> <span class="mi">25000</span><span class="p">],</span>
+    <span class="s1">&#39;trap_dislocation_N_T&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">8.16e10</span><span class="p">,</span> <span class="mf">8.16e14</span><span class="p">],</span>
+    <span class="s1">&#39;trap_gb_E_b&#39;</span><span class="p">:</span>          <span class="p">[</span><span class="mi">25000</span><span class="p">,</span> <span class="mi">30000</span><span class="p">],</span>
+    <span class="s1">&#39;trap_gb_N_T&#39;</span><span class="p">:</span>          <span class="p">[</span><span class="mf">6e12</span><span class="p">,</span> <span class="mf">6e16</span><span class="p">],</span>
+    <span class="s1">&#39;trap_vacancy_E_b&#39;</span><span class="p">:</span>     <span class="p">[</span><span class="mi">35000</span><span class="p">,</span> <span class="mi">50000</span><span class="p">],</span>
+    <span class="s1">&#39;trap_vacancy_N_T&#39;</span><span class="p">:</span>     <span class="p">[</span><span class="mf">1e24</span><span class="p">,</span> <span class="mf">1e28</span><span class="p">],</span>
+    <span class="s1">&#39;trap_carbide_E_b&#39;</span><span class="p">:</span>     <span class="p">[</span><span class="mi">20000</span><span class="p">,</span> <span class="mi">40000</span><span class="p">],</span>
+    <span class="s1">&#39;trap_carbide_N_T&#39;</span><span class="p">:</span>     <span class="p">[</span><span class="mf">2e23</span><span class="p">,</span> <span class="mf">2e27</span><span class="p">],</span>
+
+    <span class="c1"># Operating conditions</span>
+    <span class="s1">&#39;temperature&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">573</span><span class="p">,</span> <span class="mi">1273</span><span class="p">],</span>
+<span class="p">}</span>
+
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="c1"># SUGGESTED PARAMETER RANGES — Level 5L6 (36 parameters)   ** TUNE ME **</span>
+<span class="c1"># Inherits all 28 Level 5 ranges and adds the surface-kinetics parameters.</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="n">SUGGESTED_RANGES_LEVEL5L6</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="o">**</span><span class="n">SUGGESTED_RANGES_LEVEL5</span><span class="p">,</span>
+    <span class="c1"># Oxide surface kinetics (Cr2O3)</span>
+    <span class="s1">&#39;k_diss_ref&#39;</span><span class="p">:</span>          <span class="p">[</span><span class="mf">9.487e-10</span><span class="p">,</span> <span class="mf">9.487e-6</span><span class="p">],</span>
+    <span class="s1">&#39;E_diss&#39;</span><span class="p">:</span>              <span class="p">[</span><span class="mi">40000</span><span class="p">,</span> <span class="mi">70000</span><span class="p">],</span>
+    <span class="c1"># K_eq ranges are centred on the config values (Grant 1988) at ±2 decades, the</span>
+    <span class="c1"># same convention as every other *_ref parameter. They previously spanned</span>
+    <span class="c1"># [1e-14, 1e-6] and [1e-10, 1e-3], written around placeholder defaults of 1e-10</span>
+    <span class="c1"># and 1e-8: the config value 1e-4 fell 100x ABOVE its own sweep range, and</span>
+    <span class="c1"># K_eq_metal_ref&#39;s 1e-3 sat exactly ON its upper bound, so that parameter was</span>
+    <span class="c1"># only ever sampled below its nominal value.</span>
+    <span class="s1">&#39;K_eq_ref&#39;</span><span class="p">:</span>            <span class="p">[</span><span class="mf">1e-6</span><span class="p">,</span> <span class="mf">1e-2</span><span class="p">],</span>
+    <span class="s1">&#39;H_eq&#39;</span><span class="p">:</span>                <span class="p">[</span><span class="mi">5000</span><span class="p">,</span> <span class="mi">50000</span><span class="p">],</span>
+    <span class="c1"># Metal surface kinetics (Grant 1988)</span>
+    <span class="s1">&#39;k_diss_metal_ref&#39;</span><span class="p">:</span>    <span class="p">[</span><span class="mf">1.346e-8</span><span class="p">,</span> <span class="mf">1.346e-4</span><span class="p">],</span>
+    <span class="s1">&#39;E_diss_metal&#39;</span><span class="p">:</span>        <span class="p">[</span><span class="mi">70000</span><span class="p">,</span> <span class="mi">100000</span><span class="p">],</span>
+    <span class="s1">&#39;K_eq_metal_ref&#39;</span><span class="p">:</span>      <span class="p">[</span><span class="mf">1e-5</span><span class="p">,</span> <span class="mf">1e-1</span><span class="p">],</span>
+    <span class="s1">&#39;H_eq_metal&#39;</span><span class="p">:</span>          <span class="p">[</span><span class="mi">5000</span><span class="p">,</span> <span class="mi">40000</span><span class="p">],</span>
+<span class="p">}</span>
+
+
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="c1"># REGIME-TARGETED SAMPLING PRESETS   ** TUNE ME **</span>
+<span class="c1">#</span>
+<span class="c1"># Targeting is not a convenience: over the default ranges L5L6 yields essentially</span>
+<span class="c1"># no surface-limited rows, and L5 is ~98% metal-limited with max frac_defect 0.415</span>
+<span class="c1"># — a single regime, nothing to stratify. The presets are what create the study.</span>
+<span class="c1">#</span>
+<span class="c1"># Each preset = the base ranges with ONLY the regime-controlling parameters</span>
+<span class="c1"># overridden, left as broad as possible so the per-regime sensitivity reflects</span>
+<span class="c1"># genuine physics rather than the targeting itself.</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_sa_ranges_with</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">overrides</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;``base`` ranges with ``overrides`` applied — the single preset constructor.</span>
+
+<span class="sd">    Takes the base explicitly so L5 and L5L6 share one implementation instead of</span>
+<span class="sd">    two identical helpers differing only in which ranges dict they close over.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">R</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">base</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+    <span class="n">R</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">k</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">overrides</span><span class="o">.</span><span class="n">items</span><span class="p">()})</span>
+    <span class="k">return</span> <span class="n">R</span>
+
+
+<span class="c1"># Preset building blocks — SHARED BETWEEN L5 AND L5L6. Each names one physical</span>
+<span class="c1"># intent, defined exactly once. Both levels compose their presets from these, so</span>
+<span class="c1"># the shared parts cannot drift: the slow-oxide block alone was previously written</span>
+<span class="c1"># out three times (L5L6 oxide, L5 oxide, L5 defect), and the suppressed-defect and</span>
+<span class="c1"># fast-metal blocks twice each. Editing one copy and missing the others would</span>
+<span class="c1"># silently make the two levels&#39; oxide clusters non-comparable while every test</span>
+<span class="c1"># still passed. Surface blocks are L5L6-only — there is no surface step in L5.</span>
+
+<span class="c1"># thick, slow oxide -&gt; the oxide is the bottleneck</span>
+<span class="n">_SA_SLOW_OXIDE</span>    <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;oxide_thickness&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1e-7</span><span class="p">,</span> <span class="mf">1e-5</span><span class="p">],</span>
+                     <span class="s1">&#39;D_ox_ref&#39;</span><span class="p">:</span>        <span class="p">[</span><span class="mf">7.8e-21</span><span class="p">,</span> <span class="mf">7.8e-20</span><span class="p">]}</span>
+
+<span class="c1"># thin, fast metal -&gt; the metal is NOT limiting</span>
+<span class="n">_SA_FAST_METAL</span>    <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;metal_thickness&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">5e-5</span><span class="p">,</span> <span class="mf">5e-4</span><span class="p">],</span>
+                     <span class="s1">&#39;D_ref&#39;</span><span class="p">:</span>           <span class="p">[</span><span class="mf">4.3e-8</span><span class="p">,</span> <span class="mf">4.3e-7</span><span class="p">]}</span>
+
+<span class="c1"># suppress the defect bypass so flux must cross the intact oxide</span>
+<span class="n">_SA_DEFECTS_OFF</span>   <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;f_pinhole&#39;</span><span class="p">:</span>   <span class="p">[</span><span class="mf">1e-7</span><span class="p">,</span> <span class="mf">1e-5</span><span class="p">],</span>
+                     <span class="s1">&#39;f_crack&#39;</span><span class="p">:</span>     <span class="p">[</span><span class="mf">1e-7</span><span class="p">,</span> <span class="mf">1e-5</span><span class="p">],</span>
+                     <span class="s1">&#39;f_gb_defect&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1e-7</span><span class="p">,</span> <span class="mf">1e-5</span><span class="p">]}</span>
+
+<span class="c1"># large defect area -&gt; the bypass can carry the majority of the flux.</span>
+<span class="c1"># NOTE total defect area reaches ~0.9 here: a heavily degraded coating, a wider</span>
+<span class="c1"># claim than the &lt;=0.3 the default ranges imply. State it in any write-up.</span>
+<span class="n">_SA_DEFECTS_LARGE</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;f_pinhole&#39;</span><span class="p">:</span>   <span class="p">[</span><span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.30</span><span class="p">],</span>
+                     <span class="s1">&#39;f_crack&#39;</span><span class="p">:</span>     <span class="p">[</span><span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.30</span><span class="p">],</span>
+                     <span class="s1">&#39;f_gb_defect&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.30</span><span class="p">]}</span>
+
+<span class="c1"># L5L6 only — fast surface (high pressure + fast dissociation)</span>
+<span class="n">_SA_FAST_SURFACE</span>  <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;P_upstream&#39;</span><span class="p">:</span>  <span class="p">[</span><span class="mf">1e4</span><span class="p">,</span> <span class="mf">1e7</span><span class="p">],</span>
+                     <span class="s1">&#39;k_diss_ref&#39;</span><span class="p">:</span>  <span class="p">[</span><span class="mf">9.5e-8</span><span class="p">,</span> <span class="mf">9.5e-6</span><span class="p">]}</span>
+
+<span class="c1"># L5L6 only — slow surface (low pressure + slow dissociation on oxide and metal)</span>
+<span class="n">_SA_SLOW_SURFACE</span>  <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;P_upstream&#39;</span><span class="p">:</span>       <span class="p">[</span><span class="mf">1e-7</span><span class="p">,</span> <span class="mf">1e1</span><span class="p">],</span>
+                     <span class="s1">&#39;k_diss_ref&#39;</span><span class="p">:</span>       <span class="p">[</span><span class="mf">9.5e-12</span><span class="p">,</span> <span class="mf">9.5e-9</span><span class="p">],</span>
+                     <span class="s1">&#39;k_diss_metal_ref&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.3e-10</span><span class="p">,</span> <span class="mf">1.3e-7</span><span class="p">]}</span>
+
+<span class="n">REGIME_PRESETS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;metal&#39;</span><span class="p">:</span>   <span class="n">_sa_ranges_with</span><span class="p">(</span><span class="n">SUGGESTED_RANGES_LEVEL5L6</span><span class="p">,</span> <span class="p">{}),</span>
+    <span class="s1">&#39;surface&#39;</span><span class="p">:</span> <span class="n">_sa_ranges_with</span><span class="p">(</span><span class="n">SUGGESTED_RANGES_LEVEL5L6</span><span class="p">,</span> <span class="n">_SA_SLOW_SURFACE</span><span class="p">),</span>
+    <span class="s1">&#39;oxide&#39;</span><span class="p">:</span>   <span class="n">_sa_ranges_with</span><span class="p">(</span><span class="n">SUGGESTED_RANGES_LEVEL5L6</span><span class="p">,</span>
+                               <span class="p">{</span><span class="o">**</span><span class="n">_SA_DEFECTS_OFF</span><span class="p">,</span> <span class="o">**</span><span class="n">_SA_SLOW_OXIDE</span><span class="p">,</span>
+                                <span class="o">**</span><span class="n">_SA_FAST_METAL</span><span class="p">,</span> <span class="o">**</span><span class="n">_SA_FAST_SURFACE</span><span class="p">}),</span>
+<span class="p">}</span>
+
+<span class="c1"># Level 5 presets (no surface kinetics). The L5 regimes are oxide / metal / defect,</span>
+<span class="c1"># the third being the PARALLEL bypass rather than a series resistance.</span>
+<span class="c1"># Yields measured on 300-draw LHS probes (seed 42):</span>
+<span class="c1">#   metal 97.0%,  oxide 77.7%,  defect 87.3% (max frac_defect 0.999)</span>
+<span class="n">REGIME_PRESETS_L5</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;metal&#39;</span><span class="p">:</span>  <span class="n">_sa_ranges_with</span><span class="p">(</span><span class="n">SUGGESTED_RANGES_LEVEL5</span><span class="p">,</span> <span class="p">{}),</span>
+    <span class="c1"># same oxide-limiting intent as the L5L6 oxide preset, minus the surface block</span>
+    <span class="s1">&#39;oxide&#39;</span><span class="p">:</span>  <span class="n">_sa_ranges_with</span><span class="p">(</span><span class="n">SUGGESTED_RANGES_LEVEL5</span><span class="p">,</span>
+                              <span class="p">{</span><span class="o">**</span><span class="n">_SA_DEFECTS_OFF</span><span class="p">,</span> <span class="o">**</span><span class="n">_SA_SLOW_OXIDE</span><span class="p">,</span> <span class="o">**</span><span class="n">_SA_FAST_METAL</span><span class="p">}),</span>
+    <span class="c1"># large defect area AND a slow intact oxide, so the bypass actually wins</span>
+    <span class="s1">&#39;defect&#39;</span><span class="p">:</span> <span class="n">_sa_ranges_with</span><span class="p">(</span><span class="n">SUGGESTED_RANGES_LEVEL5</span><span class="p">,</span>
+                              <span class="p">{</span><span class="o">**</span><span class="n">_SA_DEFECTS_LARGE</span><span class="p">,</span> <span class="o">**</span><span class="n">_SA_SLOW_OXIDE</span><span class="p">}),</span>
+<span class="p">}</span>
+
+
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="c1"># SWEEP POINTS</span>
+<span class="c1">#</span>
+<span class="c1"># Draw counts and per-preset yields used to live here as measured constants. They</span>
+<span class="c1"># are gone: `calculations.sensitivity.size_draws_for_target()` now probes each</span>
+<span class="c1"># preset and sizes the run from the yield it actually observes. A cached yield</span>
+<span class="c1"># cannot notice that a range or a preset block was edited, or that the study</span>
+<span class="c1"># switched material, and silently unbalanced clusters make a cross-regime</span>
+<span class="c1"># comparison partly a comparison of estimator noise. TARGET_CLUSTER_SIZE lives in</span>
+<span class="c1"># sensitivity.py beside the code that consumes it.</span>
+<span class="c1">#</span>
+<span class="c1"># What remains here is study design, which no probe can infer.</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
+
+<span class="c1"># Temperatures for the isothermal L5 sweep. With temperature varying it monopolises</span>
+<span class="c1"># the variance of log10(flux) and leaves every other parameter at or below the noise</span>
+<span class="c1"># floor; sampling harder does not help, because the floor is flat in n (0.085 at</span>
+<span class="c1"># n=400, 0.092 at n=1500). The driver ranking genuinely shifts across this span.</span>
+<span class="n">DEFAULT_SWEEP_TEMPERATURES</span> <span class="o">=</span> <span class="p">(</span><span class="mf">773.0</span><span class="p">,</span> <span class="mf">1073.0</span><span class="p">,</span> <span class="mf">1273.0</span><span class="p">)</span>
+
+
+<span class="c1"># =============================================================================</span>
+<span class="c1"># PLOTTING STYLE</span>
+<span class="c1"># =============================================================================</span>
+<span class="n">PLOT_STYLE</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;figsize&#39;</span><span class="p">:</span>              <span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">12</span><span class="p">),</span>
+    <span class="s1">&#39;fontsize_title&#39;</span><span class="p">:</span>       <span class="mi">10</span><span class="p">,</span>
+    <span class="s1">&#39;fontsize_suptitle&#39;</span><span class="p">:</span>    <span class="mi">18</span><span class="p">,</span>
+    <span class="s1">&#39;fontsize_axis&#39;</span><span class="p">:</span>        <span class="mi">14</span><span class="p">,</span>
+    <span class="s1">&#39;fontsize_tick&#39;</span><span class="p">:</span>        <span class="mi">12</span><span class="p">,</span>
+    <span class="s1">&#39;fontsize_legend&#39;</span><span class="p">:</span>      <span class="mi">12</span><span class="p">,</span>
+    <span class="s1">&#39;fontsize_annotation&#39;</span><span class="p">:</span>  <span class="mi">11</span><span class="p">,</span>
+    <span class="s1">&#39;linewidth&#39;</span><span class="p">:</span>            <span class="mf">2.5</span><span class="p">,</span>
+    <span class="s1">&#39;markersize&#39;</span><span class="p">:</span>           <span class="mi">8</span><span class="p">,</span>
+    <span class="s1">&#39;grid_alpha&#39;</span><span class="p">:</span>           <span class="mf">0.3</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">COLORS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;L1&#39;</span><span class="p">:</span>       <span class="s1">&#39;black&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;L2a&#39;</span><span class="p">:</span>      <span class="s1">&#39;blue&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;L2b&#39;</span><span class="p">:</span>      <span class="s1">&#39;purple&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;L3&#39;</span><span class="p">:</span>       <span class="s1">&#39;cyan&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;L4_gb&#39;</span><span class="p">:</span>    <span class="s1">&#39;green&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;L4_trap&#39;</span><span class="p">:</span>  <span class="s1">&#39;orange&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;L4_both&#39;</span><span class="p">:</span>  <span class="s1">&#39;crimson&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;L5&#39;</span><span class="p">:</span>       <span class="s1">&#39;red&#39;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="c1"># =============================================================================</span>
+<span class="c1"># CURVE STYLE SYSTEM</span>
+<span class="c1"># Each level/mode gets a unique combination of color + linestyle + marker</span>
+<span class="c1"># Distinguishable by color alone, linestyle alone, or marker alone</span>
+<span class="c1"># =============================================================================</span>
+<span class="n">CURVE_STYLES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c1"># Model levels</span>
+    <span class="s1">&#39;L1&#39;</span><span class="p">:</span>       <span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;black&#39;</span><span class="p">,</span>   <span class="s1">&#39;ls&#39;</span><span class="p">:</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span>    <span class="s1">&#39;marker&#39;</span><span class="p">:</span> <span class="s1">&#39;o&#39;</span><span class="p">,</span>  <span class="s1">&#39;lw&#39;</span><span class="p">:</span> <span class="mf">2.5</span><span class="p">,</span> <span class="s1">&#39;ms&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">},</span>
+    <span class="s1">&#39;L1_L6&#39;</span><span class="p">:</span>    <span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;black&#39;</span><span class="p">,</span>   <span class="s1">&#39;ls&#39;</span><span class="p">:</span> <span class="s1">&#39;--&#39;</span><span class="p">,</span>   <span class="s1">&#39;marker&#39;</span><span class="p">:</span> <span class="s1">&#39;s&#39;</span><span class="p">,</span>  <span class="s1">&#39;lw&#39;</span><span class="p">:</span> <span class="mf">2.5</span><span class="p">,</span> <span class="s1">&#39;ms&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">},</span>
+    <span class="s1">&#39;L2a&#39;</span><span class="p">:</span>      <span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;#1f77b4&#39;</span><span class="p">,</span> <span class="s1">&#39;ls&#39;</span><span class="p">:</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span>    <span class="s1">&#39;marker&#39;</span><span class="p">:</span> <span class="s1">&#39;o&#39;</span><span class="p">,</span>  <span class="s1">&#39;lw&#39;</span><span class="p">:</span> <span class="mf">2.5</span><span class="p">,</span> <span class="s1">&#39;ms&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">},</span>  <span class="c1"># blue</span>
+    <span class="s1">&#39;L2a_L6&#39;</span><span class="p">:</span>   <span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;#1f77b4&#39;</span><span class="p">,</span> <span class="s1">&#39;ls&#39;</span><span class="p">:</span> <span class="s1">&#39;--&#39;</span><span class="p">,</span>   <span class="s1">&#39;marker&#39;</span><span class="p">:</span> <span class="s1">&#39;s&#39;</span><span class="p">,</span>  <span class="s1">&#39;lw&#39;</span><span class="p">:</span> <span class="mf">2.5</span><span class="p">,</span> <span class="s1">&#39;ms&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">},</span>
+    <span class="s1">&#39;L2b&#39;</span><span class="p">:</span>      <span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;purple&#39;</span><span class="p">,</span>  <span class="s1">&#39;ls&#39;</span><span class="p">:</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span>    <span class="s1">&#39;marker&#39;</span><span class="p">:</span> <span class="s1">&#39;o&#39;</span><span class="p">,</span>  <span class="s1">&#39;lw&#39;</span><span class="p">:</span> <span class="mf">2.5</span><span class="p">,</span> <span class="s1">&#39;ms&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">},</span>
+    <span class="s1">&#39;L2_L6&#39;</span><span class="p">:</span>    <span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;purple&#39;</span><span class="p">,</span>  <span class="s1">&#39;ls&#39;</span><span class="p">:</span> <span class="s1">&#39;--&#39;</span><span class="p">,</span>   <span class="s1">&#39;marker&#39;</span><span class="p">:</span> <span class="s1">&#39;s&#39;</span><span class="p">,</span>  <span class="s1">&#39;lw&#39;</span><span class="p">:</span> <span class="mf">2.5</span><span class="p">,</span> <span class="s1">&#39;ms&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">},</span>
+    <span class="s1">&#39;L3&#39;</span><span class="p">:</span>       <span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;cyan&#39;</span><span class="p">,</span>    <span class="s1">&#39;ls&#39;</span><span class="p">:</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span>    <span class="s1">&#39;marker&#39;</span><span class="p">:</span> <span class="s1">&#39;o&#39;</span><span class="p">,</span>  <span class="s1">&#39;lw&#39;</span><span class="p">:</span> <span class="mf">2.5</span><span class="p">,</span> <span class="s1">&#39;ms&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">},</span>
+    <span class="s1">&#39;L3_L6&#39;</span><span class="p">:</span>    <span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;teal&#39;</span><span class="p">,</span>    <span class="s1">&#39;ls&#39;</span><span class="p">:</span> <span class="s1">&#39;--&#39;</span><span class="p">,</span>   <span class="s1">&#39;marker&#39;</span><span class="p">:</span> <span class="s1">&#39;s&#39;</span><span class="p">,</span>  <span class="s1">&#39;lw&#39;</span><span class="p">:</span> <span class="mf">2.5</span><span class="p">,</span> <span class="s1">&#39;ms&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">},</span>
+    <span class="s1">&#39;L4_gb&#39;</span><span class="p">:</span>    <span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;green&#39;</span><span class="p">,</span>   <span class="s1">&#39;ls&#39;</span><span class="p">:</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span>    <span class="s1">&#39;marker&#39;</span><span class="p">:</span> <span class="s1">&#39;^&#39;</span><span class="p">,</span>  <span class="s1">&#39;lw&#39;</span><span class="p">:</span> <span class="mf">2.5</span><span class="p">,</span> <span class="s1">&#39;ms&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">},</span>
+    <span class="s1">&#39;L4_trap&#39;</span><span class="p">:</span>  <span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;orange&#39;</span><span class="p">,</span>  <span class="s1">&#39;ls&#39;</span><span class="p">:</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span>    <span class="s1">&#39;marker&#39;</span><span class="p">:</span> <span class="s1">&#39;v&#39;</span><span class="p">,</span>  <span class="s1">&#39;lw&#39;</span><span class="p">:</span> <span class="mf">2.5</span><span class="p">,</span> <span class="s1">&#39;ms&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">},</span>
+    <span class="s1">&#39;L4_both&#39;</span><span class="p">:</span>  <span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;crimson&#39;</span><span class="p">,</span> <span class="s1">&#39;ls&#39;</span><span class="p">:</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span>    <span class="s1">&#39;marker&#39;</span><span class="p">:</span> <span class="s1">&#39;D&#39;</span><span class="p">,</span>  <span class="s1">&#39;lw&#39;</span><span class="p">:</span> <span class="mf">2.5</span><span class="p">,</span> <span class="s1">&#39;ms&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">},</span>
+    <span class="s1">&#39;L5&#39;</span><span class="p">:</span>       <span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;red&#39;</span><span class="p">,</span>     <span class="s1">&#39;ls&#39;</span><span class="p">:</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span>    <span class="s1">&#39;marker&#39;</span><span class="p">:</span> <span class="s1">&#39;o&#39;</span><span class="p">,</span>  <span class="s1">&#39;lw&#39;</span><span class="p">:</span> <span class="mf">2.5</span><span class="p">,</span> <span class="s1">&#39;ms&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">},</span>
+    <span class="s1">&#39;L3_L4_L6&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;red&#39;</span><span class="p">,</span>     <span class="s1">&#39;ls&#39;</span><span class="p">:</span> <span class="s1">&#39;--&#39;</span><span class="p">,</span>   <span class="s1">&#39;marker&#39;</span><span class="p">:</span> <span class="s1">&#39;s&#39;</span><span class="p">,</span>  <span class="s1">&#39;lw&#39;</span><span class="p">:</span> <span class="mf">2.5</span><span class="p">,</span> <span class="s1">&#39;ms&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">},</span>
+
+    <span class="c1"># Defect fractions (used in L3 sweep plots)</span>
+    <span class="s1">&#39;f_0&#39;</span><span class="p">:</span>      <span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;black&#39;</span><span class="p">,</span>   <span class="s1">&#39;ls&#39;</span><span class="p">:</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span>    <span class="s1">&#39;marker&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;lw&#39;</span><span class="p">:</span> <span class="mf">2.5</span><span class="p">,</span> <span class="s1">&#39;ms&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span>
+    <span class="s1">&#39;f_001&#39;</span><span class="p">:</span>    <span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;#2196F3&#39;</span><span class="p">,</span> <span class="s1">&#39;ls&#39;</span><span class="p">:</span> <span class="s1">&#39;--&#39;</span><span class="p">,</span>   <span class="s1">&#39;marker&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;lw&#39;</span><span class="p">:</span> <span class="mf">2.0</span><span class="p">,</span> <span class="s1">&#39;ms&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span>  <span class="c1"># 0.1%</span>
+    <span class="s1">&#39;f_01&#39;</span><span class="p">:</span>     <span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;#FF9800&#39;</span><span class="p">,</span> <span class="s1">&#39;ls&#39;</span><span class="p">:</span> <span class="s1">&#39;-.&#39;</span><span class="p">,</span>   <span class="s1">&#39;marker&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;lw&#39;</span><span class="p">:</span> <span class="mf">2.0</span><span class="p">,</span> <span class="s1">&#39;ms&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span>  <span class="c1"># 1%</span>
+    <span class="s1">&#39;f_10&#39;</span><span class="p">:</span>     <span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;#F44336&#39;</span><span class="p">,</span> <span class="s1">&#39;ls&#39;</span><span class="p">:</span> <span class="s1">&#39;:&#39;</span><span class="p">,</span>    <span class="s1">&#39;marker&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;lw&#39;</span><span class="p">:</span> <span class="mf">2.0</span><span class="p">,</span> <span class="s1">&#39;ms&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span>  <span class="c1"># 10%</span>
+
+    <span class="c1"># Defect types</span>
+    <span class="s1">&#39;intact&#39;</span><span class="p">:</span>   <span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;black&#39;</span><span class="p">,</span>   <span class="s1">&#39;ls&#39;</span><span class="p">:</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span>    <span class="s1">&#39;marker&#39;</span><span class="p">:</span> <span class="s1">&#39;o&#39;</span><span class="p">,</span>  <span class="s1">&#39;lw&#39;</span><span class="p">:</span> <span class="mf">2.5</span><span class="p">,</span> <span class="s1">&#39;ms&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">},</span>
+    <span class="s1">&#39;pinhole&#39;</span><span class="p">:</span>  <span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;#F44336&#39;</span><span class="p">,</span> <span class="s1">&#39;ls&#39;</span><span class="p">:</span> <span class="s1">&#39;--&#39;</span><span class="p">,</span>   <span class="s1">&#39;marker&#39;</span><span class="p">:</span> <span class="s1">&#39;^&#39;</span><span class="p">,</span>  <span class="s1">&#39;lw&#39;</span><span class="p">:</span> <span class="mf">2.0</span><span class="p">,</span> <span class="s1">&#39;ms&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">},</span>  <span class="c1"># red</span>
+    <span class="s1">&#39;crack&#39;</span><span class="p">:</span>    <span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;#FF9800&#39;</span><span class="p">,</span> <span class="s1">&#39;ls&#39;</span><span class="p">:</span> <span class="s1">&#39;-.&#39;</span><span class="p">,</span>   <span class="s1">&#39;marker&#39;</span><span class="p">:</span> <span class="s1">&#39;s&#39;</span><span class="p">,</span>  <span class="s1">&#39;lw&#39;</span><span class="p">:</span> <span class="mf">2.0</span><span class="p">,</span> <span class="s1">&#39;ms&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">},</span>  <span class="c1"># orange</span>
+    <span class="s1">&#39;gb&#39;</span><span class="p">:</span>       <span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;#4CAF50&#39;</span><span class="p">,</span> <span class="s1">&#39;ls&#39;</span><span class="p">:</span> <span class="s1">&#39;:&#39;</span><span class="p">,</span>    <span class="s1">&#39;marker&#39;</span><span class="p">:</span> <span class="s1">&#39;D&#39;</span><span class="p">,</span>  <span class="s1">&#39;lw&#39;</span><span class="p">:</span> <span class="mf">2.0</span><span class="p">,</span> <span class="s1">&#39;ms&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">},</span>  <span class="c1"># green</span>
+
+    <span class="c1"># Rate-limiting regions (shading)</span>
+    <span class="s1">&#39;surface_region&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;#F44336&#39;</span><span class="p">,</span> <span class="s1">&#39;alpha&#39;</span><span class="p">:</span> <span class="mf">0.9</span><span class="p">},</span>  <span class="c1"># red</span>
+    <span class="s1">&#39;oxide_region&#39;</span><span class="p">:</span>   <span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;#FF9800&#39;</span><span class="p">,</span> <span class="s1">&#39;alpha&#39;</span><span class="p">:</span> <span class="mf">0.9</span><span class="p">},</span>  <span class="c1"># orange</span>
+    <span class="s1">&#39;metal_region&#39;</span><span class="p">:</span>   <span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;#2196F3&#39;</span><span class="p">,</span> <span class="s1">&#39;alpha&#39;</span><span class="p">:</span> <span class="mf">0.9</span><span class="p">},</span>  <span class="c1"># blue</span>
+    <span class="s1">&#39;mixed_region&#39;</span><span class="p">:</span>   <span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;#4CAF50&#39;</span><span class="p">,</span> <span class="s1">&#39;alpha&#39;</span><span class="p">:</span> <span class="mf">0.9</span><span class="p">},</span>  <span class="c1"># green</span>
+
+    <span class="c1"># Reference lines (slopes, theory)</span>
+    <span class="s1">&#39;slope_1&#39;</span><span class="p">:</span>  <span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;#F44336&#39;</span><span class="p">,</span> <span class="s1">&#39;ls&#39;</span><span class="p">:</span> <span class="s1">&#39;--&#39;</span><span class="p">,</span>   <span class="s1">&#39;lw&#39;</span><span class="p">:</span> <span class="mf">1.5</span><span class="p">,</span> <span class="s1">&#39;alpha&#39;</span><span class="p">:</span> <span class="mf">0.6</span><span class="p">},</span>
+    <span class="s1">&#39;slope_05&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;#4CAF50&#39;</span><span class="p">,</span> <span class="s1">&#39;ls&#39;</span><span class="p">:</span> <span class="s1">&#39;--&#39;</span><span class="p">,</span>   <span class="s1">&#39;lw&#39;</span><span class="p">:</span> <span class="mf">1.5</span><span class="p">,</span> <span class="s1">&#39;alpha&#39;</span><span class="p">:</span> <span class="mf">0.6</span><span class="p">},</span>
+    <span class="s1">&#39;parity&#39;</span><span class="p">:</span>   <span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;red&#39;</span><span class="p">,</span>     <span class="s1">&#39;ls&#39;</span><span class="p">:</span> <span class="s1">&#39;--&#39;</span><span class="p">,</span>   <span class="s1">&#39;lw&#39;</span><span class="p">:</span> <span class="mf">2.0</span><span class="p">,</span> <span class="s1">&#39;alpha&#39;</span><span class="p">:</span> <span class="mf">0.8</span><span class="p">},</span>
+    <span class="s1">&#39;threshold&#39;</span><span class="p">:{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;gray&#39;</span><span class="p">,</span>    <span class="s1">&#39;ls&#39;</span><span class="p">:</span> <span class="s1">&#39;--&#39;</span><span class="p">,</span>   <span class="s1">&#39;lw&#39;</span><span class="p">:</span> <span class="mf">1.5</span><span class="p">,</span> <span class="s1">&#39;alpha&#39;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">},</span>
+<span class="p">}</span>
+
+
+<span class="c1"># =============================================================================</span>
+<span class="c1"># PLOT HELPER — apply a curve style in one call</span>
+<span class="c1"># =============================================================================</span>
+<div class="viewcode-block" id="apply_style">
+<a class="viewcode-back" href="../../../../api/config.html#calculations.config.studies.Guo_etal_2025_316L.apply_style">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">apply_style</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">style_key</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot a curve using a named style from CURVE_STYLES.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ax        : matplotlib Axes</span>
+<span class="sd">    x, y      : array-like</span>
+<span class="sd">    style_key : str — key in CURVE_STYLES</span>
+<span class="sd">    label     : str — legend label (optional)</span>
+<span class="sd">    log       : bool — if True use loglog, else plot</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    matplotlib Line2D</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">CURVE_STYLES</span><span class="p">[</span><span class="n">style_key</span><span class="p">]</span>
+    <span class="n">kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">color</span><span class="o">=</span><span class="n">s</span><span class="p">[</span><span class="s1">&#39;color&#39;</span><span class="p">],</span>
+        <span class="n">linestyle</span><span class="o">=</span><span class="n">s</span><span class="p">[</span><span class="s1">&#39;ls&#39;</span><span class="p">],</span>
+        <span class="n">linewidth</span><span class="o">=</span><span class="n">s</span><span class="p">[</span><span class="s1">&#39;lw&#39;</span><span class="p">],</span>
+        <span class="n">alpha</span><span class="o">=</span><span class="n">s</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;alpha&#39;</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;marker&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">s</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;ms&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;marker&#39;</span><span class="p">]</span>     <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="s1">&#39;marker&#39;</span><span class="p">]</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;markersize&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="s1">&#39;ms&#39;</span><span class="p">]</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;markevery&#39;</span><span class="p">]</span>  <span class="o">=</span> <span class="mi">5</span>   <span class="c1"># don&#39;t crowd markers</span>
+    <span class="k">if</span> <span class="n">label</span><span class="p">:</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">label</span>
+
+    <span class="k">if</span> <span class="n">log</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ax</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span></div>
+
+
+<span class="c1"># =============================================================================</span>
+<span class="c1"># HELPER FUNCTIONS</span>
+<span class="c1"># =============================================================================</span>
+
+<div class="viewcode-block" id="get_surface_kinetics_from_config">
+<a class="viewcode-back" href="../../../../api/config.html#calculations.config.studies.Guo_etal_2025_316L.get_surface_kinetics_from_config">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_surface_kinetics_from_config</span><span class="p">(</span><span class="n">material_key</span><span class="p">,</span> <span class="n">temperature_K</span><span class="p">,</span> <span class="n">material_dict</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute temperature-dependent surface kinetics from a METALS or OXIDES entry.</span>
+
+<span class="sd">    Uses the &#39;surface_kinetics&#39; sub-dict within the material entry.</span>
+<span class="sd">    Arrhenius form:</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        k_{diss}(T) &amp;= k_{diss,ref}\exp\!\left[\frac{-E_{diss}}{R}</span>
+<span class="sd">            \left(\frac{1}{T} - \frac{1}{T_{ref}}\right)\right] \\</span>
+<span class="sd">        K_{eq}(T) &amp;= K_{eq,ref}\exp\!\left[\frac{-H_{eq}}{R}</span>
+<span class="sd">            \left(\frac{1}{T} - \frac{1}{T_{ref}}\right)\right] \\</span>
+<span class="sd">        k_{recomb} &amp;= \frac{k_{diss}}{K_{eq}}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    material_key  : str   — key in METALS or OXIDES</span>
+<span class="sd">    temperature_K : float — temperature [K]</span>
+<span class="sd">    material_dict : dict  — either METALS or OXIDES</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict : k_diss, k_recomb, K_eq</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">entry</span> <span class="o">=</span> <span class="n">material_dict</span><span class="p">[</span><span class="n">material_key</span><span class="p">]</span>
+    <span class="n">sk</span>    <span class="o">=</span> <span class="n">entry</span><span class="p">[</span><span class="s1">&#39;surface_kinetics&#39;</span><span class="p">]</span>
+    <span class="n">T_ref</span> <span class="o">=</span> <span class="n">sk</span><span class="p">[</span><span class="s1">&#39;T_ref&#39;</span><span class="p">]</span>
+
+    <span class="c1"># Oxide surface kinetics keys</span>
+    <span class="k">if</span> <span class="s1">&#39;k_diss_ref&#39;</span> <span class="ow">in</span> <span class="n">sk</span><span class="p">:</span>
+        <span class="n">k_diss_ref</span> <span class="o">=</span> <span class="n">sk</span><span class="p">[</span><span class="s1">&#39;k_diss_ref&#39;</span><span class="p">]</span>
+        <span class="n">E_diss</span>     <span class="o">=</span> <span class="n">sk</span><span class="p">[</span><span class="s1">&#39;E_diss&#39;</span><span class="p">]</span>
+        <span class="n">K_eq_ref</span>   <span class="o">=</span> <span class="n">sk</span><span class="p">[</span><span class="s1">&#39;K_eq_ref&#39;</span><span class="p">]</span>
+        <span class="n">H_eq</span>       <span class="o">=</span> <span class="n">sk</span><span class="p">[</span><span class="s1">&#39;H_eq&#39;</span><span class="p">]</span>
+    <span class="c1"># Metal surface kinetics keys</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">k_diss_ref</span> <span class="o">=</span> <span class="n">sk</span><span class="p">[</span><span class="s1">&#39;k_diss_metal_ref&#39;</span><span class="p">]</span>
+        <span class="n">E_diss</span>     <span class="o">=</span> <span class="n">sk</span><span class="p">[</span><span class="s1">&#39;E_diss_metal&#39;</span><span class="p">]</span>
+        <span class="n">K_eq_ref</span>   <span class="o">=</span> <span class="n">sk</span><span class="p">[</span><span class="s1">&#39;K_eq_metal_ref&#39;</span><span class="p">]</span>
+        <span class="n">H_eq</span>       <span class="o">=</span> <span class="n">sk</span><span class="p">[</span><span class="s1">&#39;H_eq_metal&#39;</span><span class="p">]</span>
+
+    <span class="n">inv_T_diff</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">temperature_K</span> <span class="o">-</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">T_ref</span>
+    <span class="n">k_diss</span>  <span class="o">=</span> <span class="n">k_diss_ref</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">((</span><span class="o">-</span><span class="n">E_diss</span> <span class="o">/</span> <span class="n">R</span><span class="p">)</span> <span class="o">*</span> <span class="n">inv_T_diff</span><span class="p">)</span>
+    <span class="n">K_eq</span>    <span class="o">=</span> <span class="n">K_eq_ref</span>   <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">((</span><span class="o">-</span><span class="n">H_eq</span>   <span class="o">/</span> <span class="n">R</span><span class="p">)</span> <span class="o">*</span> <span class="n">inv_T_diff</span><span class="p">)</span>
+    <span class="n">k_recomb</span> <span class="o">=</span> <span class="n">k_diss</span> <span class="o">/</span> <span class="n">K_eq</span>
+
+    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;k_diss&#39;</span><span class="p">:</span> <span class="n">k_diss</span><span class="p">,</span> <span class="s1">&#39;k_recomb&#39;</span><span class="p">:</span> <span class="n">k_recomb</span><span class="p">,</span> <span class="s1">&#39;K_eq&#39;</span><span class="p">:</span> <span class="n">K_eq</span><span class="p">}</span></div>
+
+
+
+<div class="viewcode-block" id="build_simulation_config">
+<a class="viewcode-back" href="../../../../api/config.html#calculations.config.studies.Guo_etal_2025_316L.build_simulation_config">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">build_simulation_config</span><span class="p">(</span>
+    <span class="n">metal</span><span class="o">=</span><span class="n">ACTIVE_METAL</span><span class="p">,</span>   <span class="c1"># first entry of METALS — see ACTIVE_METAL above</span>
+    <span class="n">oxide</span><span class="o">=</span><span class="n">ACTIVE_OXIDE</span><span class="p">,</span>   <span class="c1"># first entry of OXIDES</span>
+    <span class="n">T_operating</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">P_upstream</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">L_metal</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">L_oxide</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">microstructure_overrides</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">defect_overrides</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Assemble a solver-ready configuration dict for one metal/oxide pair.</span>
+
+<span class="sd">    Pulls the chosen entries out of METALS and OXIDES and merges them with the</span>
+<span class="sd">    operating conditions in CONDITIONS, so a caller hands the model a single dict</span>
+<span class="sd">    instead of threading a dozen parameters through by hand.</span>
+
+<span class="sd">    The oxide defect fractions in OXIDE_DEFECTS are also translated here into the</span>
+<span class="sd">    per-path ``defect_config`` format the Level 3 solvers expect. A pinhole, crack</span>
+<span class="sd">    or grain-boundary path is included only when its area fraction is non-zero, so</span>
+<span class="sd">    setting a fraction to zero removes that transport path entirely rather than</span>
+<span class="sd">    leaving a zero-weighted one in the parallel sum.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    metal, oxide : str</span>
+<span class="sd">        Keys into METALS and OXIDES. Default to ACTIVE_METAL / ACTIVE_OXIDE, which</span>
+<span class="sd">        are the first entry of each dict.</span>
+<span class="sd">    T_operating, P_upstream, L_metal, L_oxide : float, optional</span>
+<span class="sd">        Override the corresponding CONDITIONS value. L_oxide falls back to the</span>
+<span class="sd">        oxide entry&#39;s own &#39;thickness&#39; before CONDITIONS. Note these use ``or``, so</span>
+<span class="sd">        a falsy 0 also takes the default — pass a small positive number instead.</span>
+<span class="sd">    microstructure_overrides, defect_overrides : dict, optional</span>
+<span class="sd">        Shallow-merged onto MICROSTRUCTURE and OXIDE_DEFECTS respectively. The</span>
+<span class="sd">        defect overrides are applied BEFORE ``defect_config`` is derived, so they</span>
+<span class="sd">        do change which paths exist.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict</span>
+<span class="sd">        Material properties, operating conditions and sweep ranges, plus both the</span>
+<span class="sd">        raw &#39;oxide_defects&#39; block and the derived &#39;defect_config&#39;.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">od</span> <span class="o">=</span> <span class="n">OXIDE_DEFECTS</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">defect_overrides</span><span class="p">:</span>
+        <span class="n">od</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">defect_overrides</span><span class="p">)</span>
+
+    <span class="c1"># Build solver-ready defect config from OXIDE_DEFECTS structure</span>
+    <span class="n">defect_config</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">f_pin</span> <span class="o">=</span> <span class="n">od</span><span class="p">[</span><span class="s1">&#39;components&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;pinholes&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+    <span class="n">f_cra</span> <span class="o">=</span> <span class="n">od</span><span class="p">[</span><span class="s1">&#39;components&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;cracks&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+    <span class="n">f_gb</span>  <span class="o">=</span> <span class="n">od</span><span class="p">[</span><span class="s1">&#39;components&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;grain_boundaries&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">f_pin</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">defect_config</span><span class="p">[</span><span class="s1">&#39;pinhole&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;area_fraction&#39;</span><span class="p">:</span> <span class="n">f_pin</span><span class="p">}</span>
+    <span class="k">if</span> <span class="n">f_cra</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">defect_config</span><span class="p">[</span><span class="s1">&#39;crack&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;area_fraction&#39;</span><span class="p">:</span>    <span class="n">f_cra</span><span class="p">,</span>
+            <span class="s1">&#39;thickness_factor&#39;</span><span class="p">:</span> <span class="n">od</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;thickness_factor&#39;</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">),</span>
+        <span class="p">}</span>
+    <span class="k">if</span> <span class="n">f_gb</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">defect_config</span><span class="p">[</span><span class="s1">&#39;grain_boundary&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;area_fraction&#39;</span><span class="p">:</span>      <span class="n">f_gb</span><span class="p">,</span>
+            <span class="s1">&#39;diffusivity_factor&#39;</span><span class="p">:</span> <span class="n">od</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;diffusivity_factor&#39;</span><span class="p">,</span> <span class="mf">100.0</span><span class="p">),</span>
+        <span class="p">}</span>
+
+    <span class="n">config</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;metal_name&#39;</span><span class="p">:</span>  <span class="n">metal</span><span class="p">,</span>
+        <span class="s1">&#39;oxide_name&#39;</span><span class="p">:</span>  <span class="n">oxide</span><span class="p">,</span>
+        <span class="s1">&#39;metal_props&#39;</span><span class="p">:</span> <span class="n">METALS</span><span class="p">[</span><span class="n">metal</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span>
+        <span class="s1">&#39;oxide_props&#39;</span><span class="p">:</span> <span class="n">OXIDES</span><span class="p">[</span><span class="n">oxide</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span>
+
+        <span class="s1">&#39;T_operating&#39;</span><span class="p">:</span>  <span class="n">T_operating</span> <span class="ow">or</span> <span class="n">CONDITIONS</span><span class="p">[</span><span class="s1">&#39;T_operating&#39;</span><span class="p">],</span>
+        <span class="s1">&#39;P_upstream&#39;</span><span class="p">:</span>   <span class="n">P_upstream</span>  <span class="ow">or</span> <span class="n">CONDITIONS</span><span class="p">[</span><span class="s1">&#39;P_upstream&#39;</span><span class="p">],</span>
+        <span class="s1">&#39;P_downstream&#39;</span><span class="p">:</span> <span class="n">CONDITIONS</span><span class="p">[</span><span class="s1">&#39;P_downstream&#39;</span><span class="p">],</span>
+
+        <span class="s1">&#39;L_metal&#39;</span><span class="p">:</span> <span class="n">L_metal</span> <span class="ow">or</span> <span class="n">CONDITIONS</span><span class="p">[</span><span class="s1">&#39;L_metal&#39;</span><span class="p">],</span>
+        <span class="s1">&#39;L_oxide&#39;</span><span class="p">:</span> <span class="n">L_oxide</span> <span class="ow">or</span> <span class="n">OXIDES</span><span class="p">[</span><span class="n">oxide</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;thickness&#39;</span><span class="p">,</span> <span class="n">CONDITIONS</span><span class="p">[</span><span class="s1">&#39;L_oxide&#39;</span><span class="p">]),</span>
+
+        <span class="s1">&#39;microstructure&#39;</span><span class="p">:</span> <span class="n">MICROSTRUCTURE</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span>
+        <span class="s1">&#39;oxide_defects&#39;</span><span class="p">:</span>  <span class="n">od</span><span class="p">,</span>              <span class="c1"># raw OXIDE_DEFECTS (with any overrides)</span>
+        <span class="s1">&#39;defect_config&#39;</span><span class="p">:</span>  <span class="n">defect_config</span><span class="p">,</span>   <span class="c1"># ← solver-ready format, built automatically</span>
+
+        <span class="s1">&#39;T_range&#39;</span><span class="p">:</span>       <span class="n">CONDITIONS</span><span class="p">[</span><span class="s1">&#39;T_range&#39;</span><span class="p">],</span>
+        <span class="s1">&#39;P_range&#39;</span><span class="p">:</span>       <span class="n">CONDITIONS</span><span class="p">[</span><span class="s1">&#39;P_range&#39;</span><span class="p">],</span>
+        <span class="s1">&#39;L_metal_range&#39;</span><span class="p">:</span> <span class="n">CONDITIONS</span><span class="p">[</span><span class="s1">&#39;L_metal_range&#39;</span><span class="p">],</span>
+        <span class="s1">&#39;L_oxide_range&#39;</span><span class="p">:</span> <span class="n">CONDITIONS</span><span class="p">[</span><span class="s1">&#39;L_oxide_range&#39;</span><span class="p">],</span>
+        <span class="s1">&#39;n_T_points&#39;</span><span class="p">:</span>    <span class="n">CONDITIONS</span><span class="p">[</span><span class="s1">&#39;n_T_points&#39;</span><span class="p">],</span>
+        <span class="s1">&#39;n_P_points&#39;</span><span class="p">:</span>    <span class="n">CONDITIONS</span><span class="p">[</span><span class="s1">&#39;n_P_points&#39;</span><span class="p">],</span>
+        <span class="s1">&#39;n_L_points&#39;</span><span class="p">:</span>    <span class="n">CONDITIONS</span><span class="p">[</span><span class="s1">&#39;n_L_points&#39;</span><span class="p">],</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="n">microstructure_overrides</span><span class="p">:</span>
+        <span class="n">config</span><span class="p">[</span><span class="s1">&#39;microstructure&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">microstructure_overrides</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">config</span></div>
+
+
+
+<span class="c1"># =============================================================================</span>
+<span class="c1"># VALIDATION / TEST PARAMETERS</span>
+<span class="c1"># =============================================================================</span>
+<span class="n">VALIDATION</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;L1&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;P_ref&#39;</span><span class="p">:</span>         <span class="mf">1e5</span><span class="p">,</span>
+        <span class="s1">&#39;n_test&#39;</span><span class="p">:</span>        <span class="mi">50</span><span class="p">,</span>
+        <span class="s1">&#39;test_pressures&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">50</span><span class="p">),</span>
+        <span class="s1">&#39;test_temps_C&#39;</span><span class="p">:</span>  <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">700</span><span class="p">,</span> <span class="mi">775</span><span class="p">,</span> <span class="mi">850</span><span class="p">,</span> <span class="mi">925</span><span class="p">]),</span>
+        <span class="s1">&#39;test_temps_K&#39;</span><span class="p">:</span>  <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">700</span><span class="p">,</span> <span class="mi">775</span><span class="p">,</span> <span class="mi">850</span><span class="p">,</span> <span class="mi">925</span><span class="p">])</span> <span class="o">+</span> <span class="mf">273.15</span><span class="p">,</span>
+    <span class="p">},</span>
+
+    <span class="s1">&#39;L2a&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;P_ref&#39;</span><span class="p">:</span>         <span class="mf">1e5</span><span class="p">,</span>
+        <span class="s1">&#39;n_test&#39;</span><span class="p">:</span>        <span class="mi">50</span><span class="p">,</span>
+        <span class="s1">&#39;test_pressures&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">50</span><span class="p">),</span>
+        <span class="s1">&#39;test_temps_C&#39;</span><span class="p">:</span>  <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">700</span><span class="p">,</span> <span class="mi">800</span><span class="p">,</span> <span class="mi">900</span><span class="p">,</span> <span class="mi">1000</span><span class="p">]),</span>
+        <span class="s1">&#39;test_temps_K&#39;</span><span class="p">:</span>  <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">700</span><span class="p">,</span> <span class="mi">800</span><span class="p">,</span> <span class="mi">900</span><span class="p">,</span> <span class="mi">1000</span><span class="p">])</span> <span class="o">+</span> <span class="mf">273.15</span><span class="p">,</span>
+    <span class="p">},</span>
+
+    <span class="s1">&#39;L2b&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;P_fixed&#39;</span><span class="p">:</span>              <span class="mf">1e5</span><span class="p">,</span>
+        <span class="s1">&#39;P_fixed_metal_sweep&#39;</span><span class="p">:</span>  <span class="mf">1e5</span><span class="p">,</span>
+        <span class="s1">&#39;oxide_thickness_thin&#39;</span><span class="p">:</span> <span class="mf">1e-8</span><span class="p">,</span>
+        <span class="s1">&#39;L_metal_sweep&#39;</span><span class="p">:</span>        <span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">30</span><span class="p">),</span>
+        <span class="s1">&#39;P_fixed_oxide_sweep&#39;</span><span class="p">:</span>  <span class="mf">1e5</span><span class="p">,</span>
+        <span class="s1">&#39;delta_ox_sweep&#39;</span><span class="p">:</span>       <span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span> <span class="o">-</span><span class="mi">12</span><span class="p">,</span> <span class="mi">40</span><span class="p">),</span>
+    <span class="p">},</span>
+
+    <span class="s1">&#39;L3&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;P_fixed&#39;</span><span class="p">:</span>                <span class="mf">1e5</span><span class="p">,</span>
+        <span class="s1">&#39;P_down&#39;</span><span class="p">:</span>                 <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;defect_fractions_compare&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.001</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span>
+        <span class="s1">&#39;f_defect_min&#39;</span><span class="p">:</span>           <span class="mf">1e-5</span><span class="p">,</span>
+        <span class="s1">&#39;f_defect_max&#39;</span><span class="p">:</span>           <span class="mf">0.5</span><span class="p">,</span>
+        <span class="s1">&#39;n_defect_points&#39;</span><span class="p">:</span>        <span class="mi">40</span><span class="p">,</span>
+        <span class="s1">&#39;f_defect_limit_check&#39;</span><span class="p">:</span>   <span class="mf">1e-100</span><span class="p">,</span>
+        <span class="c1"># New for L3+L6</span>
+        <span class="s1">&#39;defect_types&#39;</span><span class="p">:</span>             <span class="p">[</span><span class="s1">&#39;pinhole&#39;</span><span class="p">,</span> <span class="s1">&#39;crack&#39;</span><span class="p">,</span> <span class="s1">&#39;grain_boundary&#39;</span><span class="p">],</span>
+        <span class="s1">&#39;gamma_sweep&#39;</span><span class="p">:</span>              <span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">20</span><span class="p">),</span>   <span class="c1"># crack thickness factors</span>
+        <span class="s1">&#39;delta_sweep&#39;</span><span class="p">:</span>              <span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">20</span><span class="p">),</span>    <span class="c1"># GB diffusivity factors</span>
+        <span class="s1">&#39;n_enhancement_P_points&#39;</span><span class="p">:</span>   <span class="mi">30</span><span class="p">,</span>        <span class="c1"># pressure points for enhancement map</span>
+        <span class="s1">&#39;enhancement_P_range&#39;</span><span class="p">:</span>      <span class="p">(</span><span class="mf">1e0</span><span class="p">,</span> <span class="mf">1e10</span><span class="p">),</span>  <span class="c1"># Pa — for enhancement heatmap</span>
+    <span class="p">},</span>
+
+    <span class="s1">&#39;L4&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;P_fixed&#39;</span><span class="p">:</span>            <span class="mf">1e5</span><span class="p">,</span>
+        <span class="s1">&#39;P_down&#39;</span><span class="p">:</span>             <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;T_mode_comparison&#39;</span><span class="p">:</span>  <span class="mi">873</span><span class="p">,</span>
+        <span class="s1">&#39;T_min&#39;</span><span class="p">:</span>              <span class="mi">473</span><span class="p">,</span>
+        <span class="s1">&#39;T_max&#39;</span><span class="p">:</span>              <span class="mi">1173</span><span class="p">,</span>
+        <span class="s1">&#39;n_T_points&#39;</span><span class="p">:</span>         <span class="mi">40</span><span class="p">,</span>
+        <span class="s1">&#39;T_grain_size&#39;</span><span class="p">:</span>       <span class="mi">873</span><span class="p">,</span>
+        <span class="s1">&#39;grain_size&#39;</span><span class="p">:</span>         <span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="o">-</span><span class="mi">8</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="mi">30</span><span class="p">),</span>
+        <span class="s1">&#39;f_gb_max&#39;</span><span class="p">:</span>           <span class="mf">0.5</span><span class="p">,</span>
+    <span class="p">},</span>
+
+    <span class="s1">&#39;L5&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;P_down&#39;</span><span class="p">:</span>         <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;T_comparison&#39;</span><span class="p">:</span>   <span class="mi">873</span><span class="p">,</span>
+        <span class="s1">&#39;T_min&#39;</span><span class="p">:</span>          <span class="mi">573</span><span class="p">,</span>
+        <span class="s1">&#39;T_max&#39;</span><span class="p">:</span>          <span class="mi">1173</span><span class="p">,</span>
+        <span class="s1">&#39;n_T_points&#39;</span><span class="p">:</span>     <span class="mi">20</span><span class="p">,</span>
+        <span class="s1">&#39;P_fixed&#39;</span><span class="p">:</span>        <span class="mf">1e5</span><span class="p">,</span>
+        <span class="s1">&#39;T_sensitivity&#39;</span><span class="p">:</span>  <span class="mi">673</span><span class="p">,</span>
+        <span class="s1">&#39;P_sensitivity&#39;</span><span class="p">:</span>  <span class="mf">1e5</span><span class="p">,</span>
+        <span class="s1">&#39;f_defect_sweep&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.001</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">]),</span>
+        <span class="s1">&#39;T_limit&#39;</span><span class="p">:</span>        <span class="mi">873</span><span class="p">,</span>
+    <span class="p">},</span>
+
+    <span class="s1">&#39;L6&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="c1"># ========================================================================</span>
+        <span class="c1"># SURFACE KINETICS (L6) — Limit Checks and Model Recovery</span>
+        <span class="c1"># ========================================================================</span>
+        <span class="c1"># Fast-kinetics limit: verify recovery of limiting cases when k_diss → ∞</span>
+        <span class="c1">#   - L1+L6 → Sieverts (pure bulk diffusion, no surface limit)</span>
+        <span class="c1">#   - L2a+L6 → L2a (pure oxide diffusion, no surface limit)</span>
+        <span class="c1">#   - L2+L6 → series resistance (oxide + metal, no surface limit)</span>
+        <span class="c1">#   - L3+L6 → L3 (defective oxide, no surface limit)</span>
+        <span class="c1">#   - L4+L6 → L4 (defective metal, no surface limit)</span>
+        <span class="c1">#   - L3+L4+L6 → L5 (full defective system, no surface limit)</span>
+        <span class="c1"># Parity plots show J_L*+L6(k_diss=1e-3) vs J_L* or J_analytical</span>
+        <span class="c1"># ========================================================================</span>
+        <span class="s1">&#39;k_diss_sweep_exp_range&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mi">15</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">),</span>    <span class="c1"># exponent range for log sweep</span>
+        <span class="s1">&#39;k_diss_sweep_n_points&#39;</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span>              <span class="c1"># number of points in sweep</span>
+        <span class="c1"># Fast kinetics limit value (used in parity plots)</span>
+        <span class="s1">&#39;k_diss_fast_limit&#39;</span><span class="p">:</span> <span class="mf">1e-3</span><span class="p">,</span>               <span class="c1"># mol/m²/s/Pa — &quot;fast&quot; regime</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+</pre></div>
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2026, Azeez Akinyemi
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script src="../../../../_static/documentation_options.js?v=fc837d61"></script>
+    <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/scripts/furo.js?v=46bd48cc"></script>
+    </body>
+</html>
