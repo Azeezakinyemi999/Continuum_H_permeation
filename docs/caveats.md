@@ -321,3 +321,52 @@ configuration as shipped. A default outside its sweep range means the sensitivit
 analysis never evaluates the nominal case, so either the default or the range is
 wrong. Resolve before trusting a sensitivity result on those parameters.
 ```
+
+## The study configuration file
+
+Source: {doc}`config-file`
+
+### Never hardcode a number into `DEFAULT_PARAMS_*`
+
+```{warning}
+**Never hardcode a number into `DEFAULT_PARAMS_*`.** Those dicts exist to be
+derived; a literal there is a second copy of a value that already lives in
+`METALS`/`OXIDES`/`CONDITIONS`, and the two will diverge. They already did once:
+when the defaults were hand-copied, the defect area fractions, the operating
+temperature and both surface equilibrium constants disagreed with the material
+blocks above them by up to six orders of magnitude, silently. Change the source
+dict instead.
+```
+
+### `METALS[...]['metal_thickness']` is a list, and is not the wall thickness
+
+```{warning}
+**`METALS[...]['metal_thickness']` is a list, and is not the wall thickness.**
+It records the specimen thicknesses of the source experiment, e.g. `[5e-3]`. The
+wall thickness the model uses comes from `CONDITIONS['L_metal']`, and
+`DEFAULT_PARAMS_LEVEL5` reads it from there for exactly this reason. Wiring the
+`METALS` entry into a model call passes a *list* where a float is expected and
+poisons every result; `check_against_config` exists partly to catch that class
+of mistake.
+```
+
+### Two oxide thicknesses coexist in the file
+
+```{warning}
+**Two oxide thicknesses coexist in the file.** `OXIDES[...]['thickness']` and
+`CONDITIONS['L_oxide']` are independent entries and in the shipped studies they
+differ by more than an order of magnitude. The flat parameter dicts take the
+oxide thickness from the **oxide** entry; `CONDITIONS['L_oxide']` is used by
+thickness sweeps. Know which one your call path reads before quoting a barrier
+thickness.
+```
+
+### The first entry wins, so add new materials at the bottom
+
+```{warning}
+**The first entry wins, so add new materials at the bottom.** Dicts preserve
+insertion order, so `ACTIVE_METAL` is the first literal in the `METALS` block.
+Inserting a second alloy *above* the current one silently re-points every
+derived default, every sweep range and every model call at the new entry while
+the rest of the file looks unchanged.
+```

@@ -15,7 +15,8 @@ invalidate it.
 - **New to the model** — read {doc}`getting-started`, then the theory chapters
   in order. They build up one physical effect at a time.
 - **Looking up a parameter or a returned quantity** — {doc}`PARAMETERS`
-  and {doc}`OUTPUTS`.
+  and {doc}`OUTPUTS`; {doc}`config-file` explains the structure of the file
+  they come from.
 - **Running an analysis** — {doc}`how-to/sensitivity-analysis` for the
   regime-stratified sensitivity workflow, {doc}`how-to/switch-study` to change
   material system.
@@ -60,6 +61,7 @@ theory/equations
 :maxdepth: 2
 :caption: Reference
 
+config-file
 PARAMETERS
 OUTPUTS
 api/index
