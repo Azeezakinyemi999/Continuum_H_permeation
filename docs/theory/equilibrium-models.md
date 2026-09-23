@@ -87,41 +87,6 @@ The species assumption is a deliberate consequence of what the level models. It
 is not an inconsistency in itself: a model with no dissociation step has no
 atomic hydrogen to transport, and a model with one has no intact molecules left.
 
-```{warning}
-**One numerical consequence is unresolved.** Both forms currently read the same
-configured constant, `K_ox_ref`, but a Henry constant and a Sieverts constant
-cannot share units:
-
-| Form | Required units of $K_{ox}$ |
-|---|---|
-| Henry, $C = K_{ox}P$ | mol m⁻³ Pa⁻¹ |
-| Sieverts, $C = K_{ox}\sqrt{P}$ | mol m⁻³ Pa⁻⁰·⁵ |
-
-The configuration declares `K_ox_ref = 0.35417` as **mol m⁻³ Pa⁻⁰·⁵**, and
-`H_sol_ox` is derived as $Q_p - E_D$, which is the Sieverts decomposition
-$\Phi = D K_s$. Both point at the Sieverts calibration. The Henry path therefore
-uses a Sieverts-calibrated number, which rescales its flux by a factor of
-$\sqrt{P}$ — at 1 bar, a factor of 316.
-
-At the default operating point:
-
-| Oxide flux at 873 K, 1 bar → 0 | value [mol/m²/s] |
-|---|---|
-| Henry form, as the code computes it | 8.336797e-03 |
-| Sieverts form, same constant | 2.636327e-05 |
-
-For the active study this does not change any conclusion — the 48 nm oxide is
-non-limiting either way, so `regime` is `metal` and `PRF ≈ 1.0002`. It *would*
-matter for a thicker or less permeable oxide, and it means a Level 3 defect
-result is not directly comparable against a Level 5L6 one.
-
-**The fix is to split the symbol** into two separately calibrated constants —
-one Henry, one Sieverts — rather than to change either flux law. That requires a
-calibration decision (what is the molecular solubility of H₂ in Cr₂O₃?) which is
-not recoverable from the current configuration, so it is recorded here rather
-than guessed at.
-```
-
 ## Where each law is enforced in the code
 
 | Function | Layer | Law |

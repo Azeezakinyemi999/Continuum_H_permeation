@@ -33,7 +33,7 @@
 |---|---|
 | Pianosi & Wagener (2018) | PAWN index, and the dummy-parameter significance test |
 | Borgonovo (2007) | The δ moment-independent importance measure |
-| Puy, Lo Piano & Saltelli (2020) | Documented failure modes of PAWN — see the warnings in {doc}`how-to/sensitivity-analysis` |
+| Puy, Lo Piano & Saltelli (2020) | Documented failure modes of PAWN — see {doc}`caveats` |
 
 ## Where the numbers actually live
 
@@ -44,12 +44,3 @@ configuration modules, each entry carrying a `reference` field naming its source
 
 The full bibliography in BibTeX form, 32 entries, is
 [`latex/references.bib`](https://github.com/Azeezakinyemi999/MHI_permeation/blob/main/latex/references.bib).
-
-```{warning}
-Parameter values quoted in the theory chapters are the **active study's** real
-configured values, regenerated from the running code. They are not illustrative
-placeholders. But they are also specific to `Guo_etal_2025_316L` at its default
-operating point — switching study changes them, and
-`docs/_tools/worked_values.py` is what regenerates them. See
-{doc}`how-to/switch-study`.
-```

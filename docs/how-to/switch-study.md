@@ -41,15 +41,6 @@ It verifies that every swept parameter has a default, that defaults are finite
 and scalar, that each default lies inside its own sweep range, and that the L5
 and L5L6 parameter sets agree where they overlap.
 
-```{warning}
-On the active study this currently reports **four pre-existing problems** —
-`D_ref`, `k_diss_metal_ref` and `E_diss_metal` defaults lying outside their own
-sweep ranges. They are not caused by switching; they are present in the
-configuration as shipped. A default outside its sweep range means the sensitivity
-analysis never evaluates the nominal case, so either the default or the range is
-wrong. Resolve before trusting a sensitivity result on those parameters.
-```
-
 ## Do not hardcode material keys
 
 The `METALS` keys are deliberately different in each study:

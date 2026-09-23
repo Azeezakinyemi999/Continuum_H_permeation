@@ -1,5 +1,11 @@
 # Level 2 — the oxide layer
 
+```{note}
+**Model 1.** Dissociation sits at the oxide/metal interface, so the oxide carries
+intact H₂ under Henry's law. The Level 6 family makes a different choice — see
+{doc}`two-models` before comparing results across the two.
+```
+
 Level 2 comes in two parts. **Level 2a** is the oxide alone, which is mostly a
 vehicle for understanding how oxide transport differs from metal transport.
 **Level 2b** is the useful one: oxide and metal in series, coupled through an
@@ -126,21 +132,6 @@ P_max = P_upstream * (1 - 1e-10)
 
 and calls `scipy.optimize.brentq`, which combines bisection's guaranteed
 convergence with faster interpolation when the function is well behaved.
-
-```{warning}
-**Always check the `converged` flag.** `solve_interface_pressure` has three
-fallback paths that return a plausible-looking result without solving anything:
-
-- a degenerate early return setting $P_{\text{int}} = P_{\text{down}} + \epsilon$
-- invalid bounds ($P_{\min} \geq P_{\max}$), which falls back to the geometric
-  mean $\sqrt{P_{\text{up}}P_{\text{down}}}$
-- $f$ having the same sign at both ends, which sets $P_{\text{int}} = P_{\min}$
-
-Each returns `'converged': False`, and the returned `flux` is computed from that
-unsolved interface pressure. Nothing raises. A caller that ignores the flag can
-silently use a fabricated answer, so treat `converged` as part of the result, not
-as diagnostics.
-```
 
 ### Verified behaviour at the default point
 

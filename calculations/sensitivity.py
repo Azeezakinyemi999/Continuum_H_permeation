@@ -15,6 +15,10 @@ from SALib.analyze import delta as delta_analyzer
 # open when you want to change what the study explores. Only the names this module
 # actually uses are imported; everything else there is imported directly from
 # model_config by whoever needs it, rather than re-exported here as a shim.
+from calculations.permeability import (
+    apparent_permeability, permeance, transport_permeability,
+    surface_efficiency, MODEL_2,
+)
 from calculations.config.model_config import (
     DEFAULT_PARAMS_LEVEL5, DEFAULT_PARAMS_LEVEL5L6,
     SUGGESTED_RANGES_LEVEL5, SUGGESTED_RANGES_LEVEL5L6,
@@ -39,14 +43,22 @@ SCAN_OUTPUT_FIELDS = [
     'flux', 'permeability', 'theta',
     'frac_surface', 'frac_oxide', 'frac_metal',
     'PRF', 'D_eff', 'P_interface', 'flux_intact', 'flux_defect',
+    'permeance', 'Phi_transport', 'eta_surf',
 ]
 # String diagnostics stored alongside.
 SCAN_LABEL_FIELDS = ['regime', 'system_rate_limiting', 'dominant_path']
 
-# 'flux' is primary (the only metric that responds to surface kinetics);
-# 'permeability' is bulk-only by construction; 'theta' is the surface coverage.
-# The regime-defining frac_* are excluded — degenerate within their own cluster.
-REGIME_SA_METRICS = ['flux', 'permeability', 'theta']
+# 'flux' is primary. 'permeability' is now the apparent permeability backed out of
+# that same flux, so it tracks it rather than contradicting it — the old note here
+# said it was "bulk-only by construction", which stopped being true when the
+# harmonic mean of material constants was replaced.
+#
+# 'eta_surf' is the metric to reach for on surface questions: Φ_app = Φ_transport ·
+# η_surf exactly, and Φ_transport is pressure-independent, so η_surf carries the
+# entire surface effect in one dimensionless number. 'theta' is the raw coverage
+# behind it. The regime-defining frac_* stay excluded — degenerate within their
+# own cluster.
+REGIME_SA_METRICS = ['flux', 'permeability', 'eta_surf', 'theta']
 
 # Metrics analysed on a log10 scale so the density estimators behind PAWN/delta
 # aren't dominated by a few huge values (raw flux spans ~10 decades).
@@ -59,15 +71,20 @@ SCAN_OUTPUT_FIELDS_L5 = [
     'frac_oxide', 'frac_metal', 'frac_defect',
     'D_eff', 'D_modification', 'P_interface',
     'flux_intact', 'flux_defect', 'flux_bare_metal',
+    'permeance',
 ]
 SCAN_LABEL_FIELDS_L5 = ['regime', 'regime_hierarchy', 'dominant_path']
 
 # 'flux' is primary. 'PRF' (bare-metal flux / coated flux) is the coating-
-# effectiveness metric and replaces L5L6's 'theta'. NOTE 'permeability' here is a
-# harmonic mean of the oxide and metal permeabilities only — it ignores the defect
-# paths entirely, so it is bulk-only by construction and will look insensitive to
-# the very parameters that define the 'defect' regime. Read 'flux' and 'PRF' for
-# that cluster.
+# effectiveness metric and replaces L5L6's 'theta'.
+#
+# 'permeability' is the apparent permeability J·L_tot/Δ√P, derived from the solved
+# flux, so it now responds to f_pinhole, f_crack and f_gb_defect. The previous note
+# here warned that it ignored the defect paths and would look insensitive to the
+# parameters defining the 'defect' regime; that was true of the old harmonic mean
+# and is no longer true. It is still a tier-4 quantity — Model 1's Henry oxide and
+# Sieverts metal have no common permeability — so read it only together with its
+# operating point.
 REGIME_SA_METRICS_L5 = ['flux', 'permeability', 'PRF']
 LOG_METRICS_L5       = ('flux', 'permeability', 'PRF')   # PRF spans decades too
 
@@ -205,7 +222,8 @@ def level5_model_wrapper(params_dict, return_full_record=False):
     -------
     dict
         - 'flux': Total permeation flux [mol/m²/s]
-        - 'permeability': Effective permeability [mol/m/s/Pa^0.5]
+        - 'permeability': Apparent permeability J·L_tot/Δ√P [mol/m/s/Pa^0.5]
+          (tier 4 — only meaningful with its (T, P_up, P_down))
         - 'PRF': Permeation Reduction Factor [-]
         - 'D_eff', 'D_modification', 'P_interface'
         - 'flux_intact', 'flux_defect', 'flux_bare_metal'
@@ -356,15 +374,20 @@ def level5_model_wrapper(params_dict, return_full_record=False):
         PRF        = flux_bare / flux_total if flux_total > 0 else float('inf')
         D_eff      = result_l5.get('D_eff_metal', D_metal)
 
-        # Effective permeability via harmonic mean (series resistances)
-        # 1/Φ_eff = 1/Φ_oxide + 1/Φ_metal (no length dependence)
-        Phi_oxide = D_ox * K_ox
-        Phi_metal = D_eff * K_s_metal
-
-        if Phi_oxide > 0 and Phi_metal > 0:
-            permeability = 1.0 / (1.0/Phi_oxide + 1.0/Phi_metal)
-        else:
-            permeability = np.nan
+        # Apparent permeability (tier 4), backed out of the flux this level solved:
+        #   Φ_app = J·L_tot / Δ√P
+        # so it carries the defect paths and the metal microstructure, and cannot
+        # disagree with flux or PRF the way the old harmonic mean did.
+        #
+        # There is deliberately no stack permeability here. This is Model 1: the
+        # oxide dissolves molecular H₂ (Henry, mol/m/s/Pa) while the metal carries
+        # atomic H (Sieverts, mol/m/s/Pa^0.5), so Φ_oxide and Φ_metal are not
+        # commensurable and no weighting combines them. Report them per layer if
+        # you need them. Φ_app is the only wall-level value that exists, and it is
+        # meaningful only alongside (T, P_upstream, P_downstream).
+        L_total      = oxide_props['thickness'] + metal_props['thickness']
+        permeability = apparent_permeability(flux_total, P_upstream, P_downstream, L_total)
+        permeance_v  = permeance(flux_total, P_upstream, P_downstream)
 
         # --- Regime fractions -------------------------------------------------
         # Parallel axis: what share of the flux bypasses the intact oxide.
@@ -396,6 +419,7 @@ def level5_model_wrapper(params_dict, return_full_record=False):
             'D_eff':        D_eff,
             'D_modification': D_eff / D_metal if D_metal > 0 else 1.0,
             'permeability': permeability,
+            'permeance':    permeance_v,
             'P_interface':  result_l5.get('P_interface_intact', 0),
             'flux_intact':  f_int,
             'flux_defect':  f_def,
@@ -422,7 +446,7 @@ def level5_model_wrapper(params_dict, return_full_record=False):
         import traceback; traceback.print_exc()
         record = {
             'flux': 1e-20, 'PRF': 1.0, 'D_eff': 1e-12, 'D_modification': 1.0,
-            'permeability': 1e-20, 'P_interface': 0,
+            'permeability': 1e-20, 'permeance': 1e-20, 'P_interface': 0,
             'flux_intact': 1e-20, 'flux_defect': 0, 'flux_bare_metal': 1e-20,
             'frac_oxide': np.nan, 'frac_metal': np.nan, 'frac_defect': np.nan,
             'regime': 'undefined',
@@ -710,15 +734,44 @@ def level5L6_model_wrapper(params_dict, return_full_record=False):
             fw.get('fraction_metal',   np.nan),
         )
 
-        # Effective permeability via harmonic mean (series resistances)
-        # 1/Φ_eff = 1/Φ_oxide + 1/Φ_metal (no length dependence)
-        Phi_oxide_6 = D_ox * K_ox
-        Phi_metal_6 = r.get('D_eff_avg', D_metal) * K_s_met
+        # Model 2 splits cleanly, and the split is exact:
+        #     Φ_app = Φ_transport · η_surf
+        # Both layers obey Sieverts here (dissociation happens on the outer
+        # surface, so atomic H crosses the oxide), which makes Φ_oxide and Φ_metal
+        # commensurable and gives the transport stack a genuine, pressure-
+        # independent permeability — thickness-weighted, which is what the old
+        # harmonic mean was missing.
+        #
+        # The surface adds no resistance to that stack. It depresses the driving
+        # force, replacing √P_up with the virtual pressure g(θ) — the effect the
+        # Level 6 chapter reports as P_up/P_virtual. η_surf is that ratio as a
+        # factor on permeability, and it is the metric to read for surface
+        # sensitivity; `permeability` alone cannot see a rate constant.
+        L_total_6      = L_ox + L_m
+        D_eff_6        = r.get('D_eff_avg', D_metal)
+        permeability_6 = apparent_permeability(r['J_total'], P_up, P_down, L_total_6)
+        permeance_6    = permeance(r['J_total'], P_up, P_down)
 
-        if Phi_oxide_6 > 0 and Phi_metal_6 > 0 and not np.isnan(Phi_oxide_6) and not np.isnan(Phi_metal_6):
-            permeability_6 = 1.0 / (1.0/Phi_oxide_6 + 1.0/Phi_metal_6)
+        # Intact-path stack value. With defects present the wall has several
+        # branches, each with its own θ and interface pressure, so this is the
+        # intact branch's transport permeability rather than the whole wall's.
+        #
+        # So Φ_app = Φ_transport · η_surf is exact only on a single-path wall
+        # (L2b+L6). Here the product misses the defect branches — the residual is
+        # their contribution, and at the default config that is ~0.6%. Do not
+        # multiply these two columns and expect `permeability` back.
+        Phi_ox_6, Phi_m_6 = D_ox * K_ox, D_eff_6 * K_s_met
+        if Phi_ox_6 > 0 and Phi_m_6 > 0 and np.isfinite(Phi_ox_6) and np.isfinite(Phi_m_6):
+            Phi_transport_6 = transport_permeability(
+                Phi_ox_6, L_ox, Phi_m_6, L_m, MODEL_2)['permeability']
         else:
-            permeability_6 = np.nan
+            Phi_transport_6 = np.nan
+
+        # η_surf from the intact path. A pinhole exposes bare metal to the gas and
+        # runs on the metal's own surface kinetics, so on a wall with pinholes a
+        # single wall-level η would blend two different surface chemistries.
+        eta_surf_6 = (surface_efficiency(intact_theta, K_eq, P_up, P_down)
+                      if np.isfinite(intact_theta) else np.nan)
 
         record = {
             'flux':           r['J_total'],
@@ -726,6 +779,9 @@ def level5L6_model_wrapper(params_dict, return_full_record=False):
             'D_eff':          r.get('D_eff_avg', np.nan),
             'D_modification': r.get('overall_modification_factor', np.nan),
             'permeability':   permeability_6,
+            'permeance':      permeance_6,
+            'Phi_transport':  Phi_transport_6,
+            'eta_surf':       eta_surf_6,
             'P_interface':    r.get('intact_path', {}).get('P_int', np.nan),
             'flux_intact':    r['flux_breakdown'].get('intact', {}).get('contribution', np.nan),
             'flux_defect':    (r['J_total']
@@ -755,7 +811,8 @@ def level5L6_model_wrapper(params_dict, return_full_record=False):
         import traceback; traceback.print_exc()
         record = {
             'flux': 1e-20, 'PRF': np.nan, 'D_eff': 1e-12, 'D_modification': np.nan,
-            'permeability': 1e-20, 'P_interface': np.nan,
+            'permeability': 1e-20, 'permeance': 1e-20,
+            'Phi_transport': np.nan, 'eta_surf': np.nan, 'P_interface': np.nan,
             'flux_intact': 1e-20, 'flux_defect': 0.0,
             'frac_surface': np.nan, 'frac_oxide': np.nan, 'frac_metal': np.nan,
             'theta': np.nan, 'D_metal': 1e-12, 'K_s_metal': 1e-6,

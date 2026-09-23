@@ -82,54 +82,12 @@ is to say **not at all**.
 Four behaviours will mislead you if you meet them without warning. None is a bug;
 all are consequences of how the model is defined.
 
-```{warning}
-**The active study is metal-limited, so the oxide barely matters.** With a 48 nm
-Cr₂O₃ layer on 316L at 873 K, the oxide contributes `frac_oxide = 3.8e-4` of the
-resistance and `PRF ≈ 1.0002`. If you are trying to see oxide or defect physics,
-this operating point will show you almost nothing — switch to a study or
-thickness where the oxide is actually a barrier. See {doc}`how-to/switch-study`.
-```
-
-```{warning}
-**The oxide is extrapolated at the default operating point, and the sensitivity
-analysis extrapolates much further — silently.** The Cr₂O₃ data carry
-`temperature_range = [473, 773]` K. The active study runs at 873 K, and the
-sensitivity sweeps run to **1273 K**, 500 K past the validated ceiling.
-
-Whether you are told depends on which entry point you use:
-
-- `get_oxide_properties_at_T` checks the range and prints
-  `Warning: Temperature 873K outside validated range [473, 773]K`. It uses
-  `print()`, not `warnings.warn`, so `simplefilter("ignore")` does **not**
-  silence it.
-- `level5_model_wrapper` and `level5L6_model_wrapper` — the canonical entry
-  points, and the ones the sensitivity analysis calls — compute $D_{ox}$ and
-  $K_{ox}$ from raw parameters via `arrhenius` and never consult the range.
-  They are **silent**.
-
-So the workflow that extrapolates hardest is the one that warns least. Treat
-oxide properties above 773 K as an Arrhenius extrapolation you have chosen, not
-as validated data. 873 K also sits just below the grain-boundary enhancement
-data range of [873.1, 1273.2] K.
-```
-
-```{warning}
-**`permeability` does not agree with `flux`, by construction.** It is a harmonic
-mean of the two *bulk* permeabilities,
-
-$$\frac{1}{\Phi_{\text{eff}}} = \frac{1}{D_{ox} K_{ox}} + \frac{1}{D_{eff} K_{s,m}}$$
-
-with no dependence on flux, defect paths, or surface kinetics. It is therefore
-identical for Level 5 and Level 5L6 even where their fluxes differ by 15%, and
-because $\Phi_{ox} \ll \Phi_{metal}$ it reads oxide-limited while `regime` reads
-metal. Use `flux` and `PRF` to reason about the wall; treat `permeability` as a
-bulk material property only.
-```
-
-```{warning}
-**`PRF` is `nan` from the Level 5L6 wrapper** at default parameters, though it is
-finite from Level 5. Use the Level 5 value when you need a coating-effectiveness
-number.
+```{note}
+An earlier version of this page described `permeability` as a harmonic mean of
+the two bulk permeabilities, disagreeing with `flux` by construction and to be
+treated as a bulk material property only. That was an accurate description of the
+old metric, which was a material-constant formula applied to a composite wall. It
+no longer describes what is computed.
 ```
 
 ## Which material system is active
