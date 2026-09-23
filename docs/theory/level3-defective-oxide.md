@@ -1,5 +1,11 @@
 # Level 3 — the defective oxide
 
+```{note}
+**Model 1.** Dissociation sits at the oxide/metal interface, so the oxide carries
+intact H₂ under Henry's law. The Level 6 family makes a different choice — see
+{doc}`two-models` before comparing results across the two.
+```
+
 Real oxide layers are not continuous. They contain pinholes where the coating
 never formed or spalled off, cracks from thermal cycling and growth stress, and
 grain boundaries that conduct faster than the lattice. Level 3 adds those paths.

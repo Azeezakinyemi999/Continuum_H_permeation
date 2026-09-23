@@ -130,6 +130,51 @@ def report() -> str:
         v = r6.get(k)
         w(f"  {k:<26} {v:.6e}" if isinstance(v, float) else f"  {k:<26} {v}")
 
+    w()
+    w("[permeability tiers] calculations.permeability")
+    from calculations import permeability as pmod
+    Phi_ox_1 = pmod.intrinsic_oxide_permeability(op["D_ox"], op["K_ox"], pmod.MODEL_1)
+    Phi_m_1  = pmod.intrinsic_metal_permeability(mp["D_metal"], mp["K_s_metal"])
+    w(f"  tier 1 Phi_oxide           {Phi_ox_1['permeability']:.6e}  {Phi_ox_1['units']}")
+    w(f"  tier 1 Phi_metal           {Phi_m_1['permeability']:.6e}  {Phi_m_1['units']}")
+    w("  Model 1 has no tier 3: the two units above are not commensurable.")
+
+    # tier 2 -- free-standing defective oxide, cracks and oxide GB only
+    for fc, fg in ((1e-3, 0.0), (0.0, 1e-3), (1e-2, 1e-2)):
+        ox_eff = pmod.oxide_only_permeability(
+            Phi_ox_1["permeability"], f_crack=fc, gamma=0.1, f_gb=fg, beta=10.0)
+        w(f"  tier 2 Phi_ox_eff/Phi_ox   {ox_eff['enhancement_ratio']:.6f}"
+          f"   (f_crack={fc:g}, f_gb={fg:g})")
+
+    # Model 1 bilayer: closed form against the brentq solve
+    cf = pmod.model1_bilayer_closed_form(
+        Phi_ox_1["permeability"], LOX, Phi_m_1["permeability"], LM, PU, PD)
+    l2b = calculate_oxide_metal_system(PU, PD, op, mp)
+    w(f"  Model 1 bilayer closed form {cf['flux']:.6e}  mol/m2/s")
+    w(f"  Model 1 bilayer brentq      {l2b['flux']:.6e}  mol/m2/s")
+    w(f"  relative difference         {abs(cf['flux']/l2b['flux'] - 1):.3e}")
+
+    # Model 2 decomposition on the pristine bilayer
+    sk_ox = OXIDES[SIM["oxide_name"]]["surface_kinetics"]
+    from calculations.surface_kinetics import solve_steady_state_flux_direct
+    r2 = solve_steady_state_flux_direct(
+        PU, PD, LM, sk_ox["k_diss_ref"], sk_ox["K_eq_ref"],
+        op["D_ox"], op["K_ox"], LOX, mp["D_metal"], mp["K_s_metal"])
+    t3 = pmod.transport_permeability(
+        op["D_ox"] * op["K_ox"], LOX,
+        mp["D_metal"] * mp["K_s_metal"], LM, pmod.MODEL_2)
+    eta = pmod.surface_efficiency(r2["theta"], sk_ox["K_eq_ref"], PU, PD)
+    app = pmod.apparent_permeability(r2["J_ss"], PU, PD, LOX + LM)
+    w(f"  tier 3 Phi_transport       {t3['permeability']:.6e}  {t3['units']}")
+    w(f"  Model 2 eta_surf           {eta:.6f}")
+    w(f"  tier 4 Phi_app             {app:.6e}")
+    w(f"  Phi_transport * eta_surf   {t3['permeability'] * eta:.6e}  (must equal Phi_app)")
+    Phi_ox_v = op["D_ox"] * op["K_ox"]
+    Phi_m_v  = mp["D_metal"] * mp["K_s_metal"]
+    old_val  = 1.0 / (1.0 / Phi_ox_v + 1.0 / Phi_m_v)
+    w(f"  old unweighted harmonic    {old_val:.6e}")
+    w(f"  understated by             {t3['permeability'] / old_val:.0f}x")
+
     for label, fn, params in (("L5", level5_model_wrapper, DEFAULT_PARAMS_LEVEL5),
                               ("L5+L6", level5L6_model_wrapper, DEFAULT_PARAMS_LEVEL5L6)):
         w()

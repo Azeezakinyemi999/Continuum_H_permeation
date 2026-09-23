@@ -42,8 +42,8 @@ from calculations.config import studies as _studies_pkg
 # =============================================================================
 # ACTIVE_STUDY = 'incoloy802_cr2o3'
 # ACTIVE_STUDY = 'fuerst_etal_2024_model_config'
-ACTIVE_STUDY = 'Guo_etal_2025_316L'
-
+# ACTIVE_STUDY = 'Guo_etal_2025_316L'
+ACTIVE_STUDY = 'new_study'
 
 # =============================================================================
 
