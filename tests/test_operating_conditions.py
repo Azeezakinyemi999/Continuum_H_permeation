@@ -152,3 +152,45 @@ def test_operating_point_is_written_as_a_reference_not_a_literal(folder):
         assert refs_conditions, (
             f"VALIDATION[{key!r}] is written as a literal. It must read CONDITIONS, or "
             f"it stops tracking the operating point the moment CONDITIONS changes.")
+
+
+# --------------------------------------------------------------------------
+# Fix 2 — the container gate runs at the study's operating point
+# --------------------------------------------------------------------------
+
+GATE = ROOT / "container" / "model_smoke_test.py"
+
+
+def gate_assignments():
+    """Module-level names the gate assigns, as AST nodes."""
+    tree = ast.parse(GATE.read_text())
+    out = {}
+    for node in tree.body:
+        if isinstance(node, ast.Assign):
+            for target in node.targets:
+                if isinstance(target, ast.Name):
+                    out[target.id] = node.value
+    return out
+
+
+def test_gate_takes_its_operating_point_from_conditions():
+    """It used to hardcode P_DOWN = 1.0e2 while CONDITIONS said 0.
+
+    A gate that pins values measured at its own operating point certifies a scenario
+    nobody is studying — and the disagreement was invisible, because the pinned numbers
+    were measured with the same wrong pressure they were then compared against.
+    """
+    assigns = gate_assignments()
+    for name in ("P_UP", "P_DOWN", "L_METAL"):
+        assert name in assigns, f"{name} is no longer assigned at module level"
+        refs = any(isinstance(n, ast.Name) and n.id == "CONDITIONS"
+                   for n in ast.walk(assigns[name]))
+        assert refs, f"{name} is a literal; it must read CONDITIONS"
+
+
+def test_gate_temperature_stays_an_explicit_test_choice():
+    """T is deliberately NOT the study's T_operating: 700 K sits inside the oxide's
+    validated [473, 773] K window, so the gate is not asserting on an extrapolation."""
+    value = gate_assignments()["T"]
+    assert isinstance(value, ast.Constant) and value.value == 700.0
+    assert "TEST choice" in GATE.read_text()
