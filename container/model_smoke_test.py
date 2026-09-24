@@ -115,8 +115,46 @@ REFERENCE = {
 
 failures: list[str] = []
 
+# --------------------------------------------------------------------------
+# --emit: print a ready-to-paste REFERENCE block instead of asserting.
+#
+# A study with no measured values cannot pass this gate, and two of them have to be
+# re-measured whenever the operating point changes. Rather than a second copy of the
+# model calls that could drift from the ones below, `REF` becomes a recorder: every
+# lookup hands back a sentinel and remembers its key, and close()/equal() store the
+# value they were given against that key.
+#
+# Calls that compare against a LITERAL rather than a REF lookup — the arrhenius value,
+# the SALib sums — are study-independent, so they keep asserting even while emitting.
+# --------------------------------------------------------------------------
+EMIT = "--emit" in sys.argv
+_measured: dict = {}
+_pending_key: list = []
+
+
+class _EmitSentinel:
+    """Returned by every REF lookup while emitting; never compared."""
+
+
+_SENTINEL = _EmitSentinel()
+
+
+class _EmitRef(dict):
+    def __getitem__(self, key):
+        _pending_key.append(key)
+        return _SENTINEL
+
+
+def _record(got):
+    """Store `got` under the key whose lookup produced the sentinel."""
+    _measured[_pending_key[-1]] = got
+    print(f"EMIT  {_pending_key[-1]:<26} {got!r}")
+    return True
+
 
 def close(label, got, want, rtol=RTOL):
+    if want is _SENTINEL:
+        return _record(got)
     ok = isinstance(got, (int, float)) and math.isclose(got, want, rel_tol=rtol)
     if ok:
         print(f"OK    {label:<34} {got!r}")
@@ -130,6 +168,8 @@ def close(label, got, want, rtol=RTOL):
 
 
 def equal(label, got, want):
+    if want is _SENTINEL:
+        return _record(got)
     ok = got == want
     print(f"{'OK  ' if ok else 'FAIL'}  {label:<34} {got!r}"
           f"{'' if ok else f'  want {want!r}'}")
@@ -169,14 +209,20 @@ warnings.simplefilter("ignore")
 # matched for the wrong reason is not a passing gate.
 print(f"\nactive study: {ACTIVE_STUDY_NAME}")
 print(f"      source: {ACTIVE_STUDY_SOURCE}  ({ACTIVE_STUDY_PATH})")
-if ACTIVE_STUDY_NAME not in REFERENCE:
+if EMIT:
+    # Measuring, not checking — a study with no entry yet is exactly the case this
+    # mode exists for, so the missing-reference exit below does not apply.
+    REF = _EmitRef()
+    print("EMIT  measuring reference values; nothing is being asserted")
+elif ACTIVE_STUDY_NAME not in REFERENCE:
     print(f"FAIL  no reference values for study {ACTIVE_STUDY_NAME!r}.")
     print(f"      known: {sorted(REFERENCE)}")
     print( "      Measure a set for it and add it to REFERENCE — passing without")
     print( "      one would mean the gate checks nothing about this study.")
     sys.exit(1)
-REF = REFERENCE[ACTIVE_STUDY_NAME]
-print(f"OK    reference set found     {len(REF)} pinned values")
+else:
+    REF = REFERENCE[ACTIVE_STUDY_NAME]
+    print(f"OK    reference set found     {len(REF)} pinned values")
 
 SIM = build_simulation_config()
 equal("metal resolves in METALS", SIM["metal_name"], REF["metal_name"])
@@ -301,6 +347,23 @@ else:
     print(f"OK    {'parcoords figures build':<34} {n1} / {n2} chars")
 
 print("=" * 78)
+
+if EMIT:
+    if failures:
+        # The study-independent literals still ran; if one of those broke, the numbers
+        # just measured are not trustworthy enough to paste.
+        print(f"EMIT ABORTED — {len(failures)} study-independent check(s) failed:")
+        for f in failures:
+            print(f"  - {f}")
+        sys.exit(1)
+    print(f"Paste into REFERENCE in {os.path.basename(__file__)}:\n")
+    print(f"    {ACTIVE_STUDY_NAME!r}: {{")
+    width = max(len(repr(k)) for k in _measured)
+    for k, v in _measured.items():
+        print(f"        {repr(k) + ':':<{width + 1}} {v!r},")
+    print("    },")
+    sys.exit(0)
+
 if failures:
     print(f"SCIENTIFIC SMOKE TEST FAILED — {len(failures)} check(s):")
     for f in failures:
