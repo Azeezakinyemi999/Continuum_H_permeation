@@ -50,9 +50,14 @@ Entry points are the notebooks in `Application/`:
 outputs committed. Each of the four also holds the `study_config.py` its notebooks
 run on.
 
-The sensitivity notebooks write CSVs into `sa_results*/`, which is gitignored —
-the parallel-coordinates notebooks read those files and cannot regenerate them,
-so run the SA notebooks first.
+Every notebook writes its figures into one folder beside it, named after it —
+`Proposal.ipynb` → `Proposal-results/`, and so on — created by
+`calculations.figures.results_dir()` relative to the working directory. Both the
+figures and the folders are gitignored; re-running the notebook regenerates them.
+
+The sensitivity notebooks additionally write scan CSVs into `sa_results*/`, which is
+also gitignored — the parallel-coordinates notebooks read those files and cannot
+regenerate them, so run the SA notebooks first.
 
 ---
 
@@ -73,6 +78,7 @@ calculations/           Physics modules
     __init__.py           Where studies live, and the add-a-study recipe
 
 Application/            Notebooks + study_config.py (working copy, and what ships)
+  <Notebook>-results/     Figures from that notebook, one folder each
 Guo_etal_2025/          One folder per study: its notebooks AND its input file
 Fuerst_et_al_2024/
 incoloy802_cr2o3/

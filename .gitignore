@@ -28,6 +28,12 @@ structure_generation/
 sa_results*/
 *.html
 
+# Per-notebook figure folders: <Notebook>-results/, written by
+# calculations.figures.results_dir(). Regenerable by re-running the notebook. The
+# *.png and *.html rules already cover the contents; this ignores the folders by name
+# so a new one does not show up as untracked.
+*-results/
+
 
 #Plots
 *.png
