@@ -1,3 +1,8 @@
 {
-    "claudeCodeChat.permissions.yoloMode": true
+    "claudeCodeChat.permissions.yoloMode": true,
+    // The kernel must start in the notebook's OWN folder: that is how
+    // calculations.config.model_config finds the folder's study_config.py, and how
+    // the notebooks resolve RESULTS_DIR = "sa_results". VS Code's default is the
+    // workspace root, which would silently give every notebook DEFAULT_STUDY.
+    "jupyter.notebookFileRoot": "${fileDirname}"
 }

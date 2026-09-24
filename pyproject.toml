@@ -49,6 +49,12 @@ docs = [
     "furo>=2024.1",
 ]
 
+# Test toolchain. Also not in container/requirements.in — the tests check how the
+# repository selects a study, which is a development concern, not a shipped one.
+test = [
+    "pytest>=7",
+]
+
 [tool.setuptools]
 # EXPLICIT. Auto-discovery is wrong here twice over: the repo root has many
 # sibling top-level directories, and calculations/config/ only became a real
@@ -58,6 +64,11 @@ docs = [
 packages = [
     "calculations",
     "calculations.config",
-    "calculations.config.studies",
 ]
 include-package-data = false           # nothing non-.py belongs in the distribution
+
+
+[tool.pytest.ini_options]
+# `from conftest import ...` needs tests/ importable; rootdir-relative is not enough.
+testpaths = ["tests"]
+addopts = "-q"

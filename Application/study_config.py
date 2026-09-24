@@ -1,11 +1,23 @@
 """
 ================================================================================
-UNIFIED CONFIGURATION FOR HIERARCHICAL HYDROGEN PERMEATION MODEL
+316L STAINLESS / Cr2O3 — Guo et al. 2025 (delivery copy)
 ================================================================================
-All material properties, operating conditions, and model parameters in one place.
+THE INPUT FILE for the notebooks in this folder. Every material property,
+operating condition and sensitivity-study parameter they run on is here.
+
+calculations.config.model_config picks this file up when a notebook runs with this
+folder as its working directory — nothing else selects it, and editing it changes
+this study alone. To read it from elsewhere:
+
+    MHI_STUDY=Application/study_config.py python your_script.py
 """
 
 import numpy as np
+
+# Identity of this study: labels figures and CSVs as ACTIVE_STUDY_NAME, and selects
+# the reference set in container/model_smoke_test.py. Independent of the folder name,
+# so renaming the folder does not silently relabel the results.
+STUDY_NAME = 'Guo_etal_2025_316L'
 
 # =============================================================================
 # PHYSICAL CONSTANTS
@@ -18,49 +30,33 @@ F = 96485      # C/mol  — Faraday constant (for eV conversions)
 # METAL PROPERTIES (Level 1, 4)
 # =============================================================================
 METALS = {
-        'Hastelloy_N_fuerst_2024': {
-        'T_ref':   973,           # K
-        'D_ref':   2.893e-09,     # m²/s at T_ref
-        'E_D':     55900,         # J/mol
-        'D_0':     2.9e-06,      # m²/s
-        'K_s_ref': 0.0567,      # mol/m³/Pa^0.5 at T_ref
-        'K_s0':    0.200,      # mol/m³/Pa^0.5
-        'H_s':     10200,         # J/mol
-        'Phi_ref': 1.5917e-10,     # mol/m/s/Pa^0.5 at T_ref
-        'Q_p':     66200,         # J/mol
-        'Phi_0':   5.7e-07,      # mol/m/s/Pa^0.5
-        # These data were gotten from 
-        # @article{fuerstHydrogenDeuteriumPermeation2024,
-        # title = {Hydrogen and Deuterium Permeation in {{Hastelloy N}}},
-        #   author = {Fuerst, Thomas F. and Shimada, Masashi and Gietl, Hanns and Humrickhouse, Paul W.},
-        #   date = {2024-02},
-        #   journaltitle = {Journal of Nuclear Materials},
-        #   shortjournal = {J. Nucl. Mater.},
-        #   volume = {589},
-        #   pages = {154851},
-        #   issn = {00223115},
-        #   doi = {10.1016/j.jnucmat.2023.154851},
-        #   url = {https://linkinghub.elsevier.com/retrieve/pii/S0022311523006189},
-        #   urldate = {2026-07-19},
-        #   abstract = {Hastelloy N was chosen as the fluoride salt-contacting structural material for the Molten Salt Reactor Experiment due to its excellent compatibility with the fuel salt FLiBe. FLiBe is currently investigated for several advanced fusion and fission reactor concepts where tritium generation in the FLiBe is anticipated. Knowledge of hydrogen transport properties through Hastelloy N is important to understand how tritium would permeate through this material and result in an unintentional release. In this study, the hydrogen and deuterium permeability, diffusivity, and solubility were measured from 500 to 700 ◦C at a primary-side pressure of 10 kPa in a wellcharacterized sample of Hastelloy N. The prepared polycrystalline Hastelloy N had C and O impurities present on the surface. These impurities were investigated using Auger Emission Spectroscopy and Ar depth profiling. The adventitious C was removed upon the first Ar sputter cycle whereas O persisted deeper into the sample. For permeation experiments, applied deuterium pressures ranged from 13 Pa to 100 kPa and deuterium transport remained in the diffusion-limited regime (J ∝ P0.5) throughout the pressure range examined. Two methods are employed to measure the effective hydrogen and deuterium diffusivity: rise and decline. The decline method produced improved statistical model fits for calculating the effective diffusion coefficient compared to the rise method. The resultant transport properties compared well to published values for other nickel alloys.},
-        #   langid = {english},
-        #   file = {/Users/akinyemi.az/Zotero/storage/9NYFPMTG/Fuerst et al. - 2024 - Hydrogen and deuterium permeation in Hastelloy N.pdf;/Users/akinyemi.az/Zotero/storage/PMQW9EFQ/1-s2.0-S0022311523006189-mmc1.xlsx}
-        
+        '316L_Guo_2025': {
+        'T_ref':   673,           # K
+        'D_ref':   2.8e-11,     # m²/s at T_ref
+        'E_D':     52102,         # J/mol
+        'D_0':     3.1e-07,      # m²/s
+        'K_s_ref': 0.039,      # mol/m³/Pa^0.5 at T_ref
+        'K_s0':    0.219,      # mol/m³/Pa^0.5
+        'H_s':     9648,         # J/mol
+        'Phi_ref': 1.0e-12,     # mol/m/s/Pa^0.5 at T_ref
+        'Q_p':     61750,         # J/mol
+        'Phi_0':   6.79e-08,      # mol/m/s/Pa^0.5
+        # Guo et al. 2025
         # ---------------------------------------------------------------
         # SURFACE KINETICS — metal surface (for pinhole paths, L1+L6)
         # ---------------------------------------------------------------
         'surface_kinetics': {
-            'T_ref':            965,        # K
-            'k_diss_metal_ref': 1.346e-06,      # mol/m²/s/Pa at T_ref
-            'E_diss_metal':     81560,      # J/mol
-            'K_eq_metal_ref':   1e-03,       # Pa⁻¹ at T_ref PLACEHOLDER
-            'H_eq_metal':       15000,      # J/mol PLACEHOLDER
-            'reference':        'clean metal surface condition(metal_316_steel_Grant1988): Grant 1988: Grant DM, Cummings DL, Blackburn DA	J. Nuclear Materials 152	1988	DOI: 10.1016/0022-3115(88)90128-7	316 steel H₂ transport. ONLY source with full surface kinetics k1 (3 conditions).	Metals + Surface Kinetics',
+            'T_ref':            673,        # K
+            'k_diss_metal_ref': 2.6287e-11,      # mol/m²/s/Pa at T_ref
+            'E_diss_metal':     54996,      # J/mol
+            'K_eq_metal_ref':   1.52e-03,       # Pa⁻¹ at T_ref 
+            'H_eq_metal':       19297,      # J/mol 
+            'reference':        'Guo et al. 2025',
         },
 
         'pressure':       [],
-        'reference':      'Schmidt 1985	Schmidt H, Batfalsky P	J. Nuclear Materials 131	1985		H₂ and T₂ permeation in 30+ heat-resistant alloys. Full D+Ks+Phi for many Ni-Cr alloys.	Metals: X40 NiCrAlTi (Incoloy 802) — use as primary reference for Incoloy 800.',
-        'temp_range':     [1023, 1223],
+        'reference':      'Guo et al. 2025',
+        'temp_range':     [468, 823],
         'pressure_range': [1.33e2, 1e5],
         'metal_thickness': [5e-3],
         'gas':            'H₂',

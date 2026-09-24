@@ -14,6 +14,7 @@ from __future__ import annotations
 import argparse
 import contextlib
 import io
+import os
 import pathlib
 import subprocess
 import sys
@@ -22,6 +23,13 @@ import warnings
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 STORED = pathlib.Path(__file__).with_suffix(".txt")
+
+# The docs quote ONE study's numbers, and this script runs from the repository root
+# where no folder config applies — so it must name the study it documents. setdefault,
+# not assignment, so `MHI_STUDY=... python worked_values.py` can regenerate the report
+# against another study without editing this file.
+DOCS_STUDY = "Guo_etal_2025/study_config.py"
+os.environ.setdefault("MHI_STUDY", DOCS_STUDY)
 
 
 def fmt(v, w=28):

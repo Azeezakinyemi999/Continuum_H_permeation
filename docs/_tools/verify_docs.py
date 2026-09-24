@@ -52,12 +52,20 @@ IGNORE = {
 def real_names() -> tuple[set[str], set[str]]:
     """(functions, modules) that actually exist under calculations/."""
     funcs, mods = set(), set()
-    for p in sorted((ROOT / "calculations").rglob("*.py")):
+    # The study files are NOT under calculations/ — each study is a folder at the repo
+    # root holding its own study_config.py. They define build_simulation_config,
+    # apply_style and get_surface_kinetics_from_config, all of which the docs name, so
+    # scanning only the package would report them as nonexistent.
+    sources = sorted((ROOT / "calculations").rglob("*.py")) + sorted(
+        p for p in ROOT.glob("*/study_config.py"))
+
+    for p in sources:
         rel = p.relative_to(ROOT)
-        dotted = str(rel.with_suffix("")).replace("/", ".")
-        # an __init__.py IS its package, not a `pkg.__init__` submodule
-        mods.add(dotted[: -len(".__init__")] if dotted.endswith(".__init__")
-                 else dotted)
+        if rel.parts[0] == "calculations":
+            dotted = str(rel.with_suffix("")).replace("/", ".")
+            # an __init__.py IS its package, not a `pkg.__init__` submodule
+            mods.add(dotted[: -len(".__init__")] if dotted.endswith(".__init__")
+                     else dotted)
         for n in ast.walk(ast.parse(p.read_text())):
             if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef)):
                 funcs.add(n.name)
@@ -67,8 +75,13 @@ def real_names() -> tuple[set[str], set[str]]:
 def config_names() -> set[str]:
     """Parameter names available from the active study."""
     sys.path.insert(0, str(ROOT))
+    import os
     import warnings
     warnings.simplefilter("ignore")
+    # Runs from the repository root, where no folder study_config.py applies; name one
+    # rather than fail. Which study hardly matters here — only parameter NAMES are
+    # checked, and those are identical across studies.
+    os.environ.setdefault("MHI_STUDY", "Guo_etal_2025/study_config.py")
     from calculations.config import model_config as mc
     names = set()
     for attr in ("DEFAULT_PARAMS_LEVEL5", "DEFAULT_PARAMS_LEVEL5L6",

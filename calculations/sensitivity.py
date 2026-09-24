@@ -787,9 +787,46 @@ def _make_problem(param_ranges):
     }
 
 
+STUDY_STAMP_FILE = 'study.txt'
+
+
+def _stamp_study(directory):
+    """Record which study produced the files in ``directory``, and shout if it changed.
+
+    The scan CSVs carry no study identifier, so a results folder copied from another
+    study — or a kernel that started in the wrong directory and fell back to
+    another folder's study — is indistinguishable from a fresh run of this one. It writes the
+    active study beside the results and warns when a directory that already held one
+    study's output starts receiving another's.
+    """
+    from calculations.config.model_config import (
+        ACTIVE_STUDY_NAME, ACTIVE_STUDY_PATH, ACTIVE_STUDY_SOURCE,
+    )
+
+    stamp = os.path.join(directory or '.', STUDY_STAMP_FILE)
+
+    previous = None
+    if os.path.isfile(stamp):
+        with open(stamp) as fh:
+            first = fh.readline().strip()
+        if first.startswith('study:'):
+            previous = first.split(':', 1)[1].strip()
+
+    if previous is not None and previous != ACTIVE_STUDY_NAME:
+        print(f"  WARNING  {stamp} recorded study {previous!r}, now writing "
+              f"{ACTIVE_STUDY_NAME!r}. This directory now holds results from two "
+              f"studies; the older CSVs are not labelled and cannot be told apart.")
+
+    with open(stamp, 'w') as fh:
+        fh.write(f"study:  {ACTIVE_STUDY_NAME}\n"
+                 f"path:   {ACTIVE_STUDY_PATH}\n"
+                 f"source: {ACTIVE_STUDY_SOURCE}\n")
+
+
 def _save_scan(df, path):
     """Persist the scan DataFrame; parquet if requested+available, else CSV."""
     path = str(path)
+    _stamp_study(os.path.dirname(path))
     if path.endswith('.parquet'):
         try:
             df.to_parquet(path)

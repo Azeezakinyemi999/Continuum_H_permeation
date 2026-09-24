@@ -1,11 +1,23 @@
 """
 ================================================================================
-UNIFIED CONFIGURATION FOR HIERARCHICAL HYDROGEN PERMEATION MODEL
+INCOLOY 802 (X40 NiCrAlTi 31/19) / Cr2O3 — Schmidt 1985
 ================================================================================
-All material properties, operating conditions, and model parameters in one place.
+THE INPUT FILE for the notebooks in this folder. Every material property,
+operating condition and sensitivity-study parameter they run on is here.
+
+calculations.config.model_config picks this file up when a notebook runs with this
+folder as its working directory — nothing else selects it, and editing it changes
+this study alone. To read it from elsewhere:
+
+    MHI_STUDY=incoloy802_cr2o3/study_config.py python your_script.py
 """
 
 import numpy as np
+
+# Identity of this study: labels figures and CSVs as ACTIVE_STUDY_NAME, and selects
+# the reference set in container/model_smoke_test.py. Independent of the folder name,
+# so renaming the folder does not silently relabel the results.
+STUDY_NAME = 'incoloy802_cr2o3'
 
 # =============================================================================
 # PHYSICAL CONSTANTS
@@ -13,38 +25,37 @@ import numpy as np
 R = 8.314      # J/mol/K — Universal gas constant
 F = 96485      # C/mol  — Faraday constant (for eV conversions)
 
-
 # =============================================================================
 # METAL PROPERTIES (Level 1, 4)
 # =============================================================================
 METALS = {
-        '316L_Guo_2025': {
-        'T_ref':   673,           # K
-        'D_ref':   2.8e-11,     # m²/s at T_ref
-        'E_D':     52102,         # J/mol
-        'D_0':     3.1e-07,      # m²/s
-        'K_s_ref': 0.039,      # mol/m³/Pa^0.5 at T_ref
-        'K_s0':    0.219,      # mol/m³/Pa^0.5
-        'H_s':     9648,         # J/mol
-        'Phi_ref': 1.0e-12,     # mol/m/s/Pa^0.5 at T_ref
-        'Q_p':     61750,         # J/mol
-        'Phi_0':   6.79e-08,      # mol/m/s/Pa^0.5
-        # Guo et al. 2025
+        'metal_X40_NiCrAlTi_31_19_Incoloy802_Schmidt1985': {
+        'T_ref':   1223,           # K
+        'D_ref':   4.285e-09,     # m²/s at T_ref
+        'E_D':     72200,         # J/mol
+        'D_0':     5.196e-06,      # m²/s
+        'K_s_ref': 0.05093,      # mol/m³/Pa^0.5 at T_ref
+        'K_s0':    0.1034,      # mol/m³/Pa^0.5
+        'H_s':     7200,         # J/mol
+        'Phi_ref': 2.182e-10,     # mol/m/s/Pa^0.5 at T_ref
+        'Q_p':     79400,         # J/mol
+        'Phi_0':   5.373e-07,      # mol/m/s/Pa^0.5
+
         # ---------------------------------------------------------------
         # SURFACE KINETICS — metal surface (for pinhole paths, L1+L6)
         # ---------------------------------------------------------------
         'surface_kinetics': {
-            'T_ref':            673,        # K
-            'k_diss_metal_ref': 2.6287e-11,      # mol/m²/s/Pa at T_ref
-            'E_diss_metal':     54996,      # J/mol
-            'K_eq_metal_ref':   1.52e-03,       # Pa⁻¹ at T_ref 
-            'H_eq_metal':       19297,      # J/mol 
-            'reference':        'Guo et al. 2025',
+            'T_ref':            965,        # K
+            'k_diss_metal_ref': 1.346e-06,      # mol/m²/s/Pa at T_ref
+            'E_diss_metal':     81560,      # J/mol
+            'K_eq_metal_ref':   1e-03,       # Pa⁻¹ at T_ref PLACEHOLDER
+            'H_eq_metal':       15000,      # J/mol PLACEHOLDER
+            'reference':        'clean metal surface condition(metal_316_steel_Grant1988): Grant 1988: Grant DM, Cummings DL, Blackburn DA	J. Nuclear Materials 152	1988	DOI: 10.1016/0022-3115(88)90128-7	316 steel H₂ transport. ONLY source with full surface kinetics k1 (3 conditions).	Metals + Surface Kinetics',
         },
 
         'pressure':       [],
-        'reference':      'Guo et al. 2025',
-        'temp_range':     [468, 823],
+        'reference':      'Schmidt 1985	Schmidt H, Batfalsky P	J. Nuclear Materials 131	1985		H₂ and T₂ permeation in 30+ heat-resistant alloys. Full D+Ks+Phi for many Ni-Cr alloys.	Metals: X40 NiCrAlTi (Incoloy 802) — use as primary reference for Incoloy 800.',
+        'temp_range':     [1023, 1223],
         'pressure_range': [1.33e2, 1e5],
         'metal_thickness': [5e-3],
         'gas':            'H₂',
@@ -364,10 +375,7 @@ DEFAULT_PARAMS_LEVEL5L6 = {
 SUGGESTED_RANGES_LEVEL5 = {
     # Metal transport (Incoloy 802, Schmidt 1985)
     'D_ref':        [4.285e-11, 4.285e-7],
-    # Widened from the Incoloy range [60000, 80000]: Hastelloy N's own E_D is
-    # 55900 J/mol, so its measured value sat below the sweep floor and the SA
-    # would only ever have sampled it from above.
-    'E_D':          [50000, 80000],
+    'E_D':          [60000, 80000],
     'K_s_ref':      [1e-4, 0.1],
     'H_s':          [1000, 50000],
   
