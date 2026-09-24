@@ -37,10 +37,12 @@
 
 ## Where the numbers actually live
 
-Material values are not stored in this documentation. They live in the study
-configuration modules, each entry carrying a `reference` field naming its source:
+Material values are not stored in this documentation. They live in each study's
+own `study_config.py`, every entry carrying a `reference` field naming its source:
 
-- [`calculations/config/studies/`](https://github.com/Azeezakinyemi999/Continuum_H_permeation/tree/main/calculations/config/studies/)
+- [`Guo_etal_2025/study_config.py`](https://github.com/Azeezakinyemi999/Continuum_H_permeation/blob/main/Guo_etal_2025/study_config.py)
+- [`Fuerst_et_al_2024/study_config.py`](https://github.com/Azeezakinyemi999/Continuum_H_permeation/blob/main/Fuerst_et_al_2024/study_config.py)
+- [`incoloy802_cr2o3/study_config.py`](https://github.com/Azeezakinyemi999/Continuum_H_permeation/blob/main/incoloy802_cr2o3/study_config.py)
 
 The full bibliography in BibTeX form, 32 entries, is
 [`latex/references.bib`](https://github.com/Azeezakinyemi999/Continuum_H_permeation/blob/main/latex/references.bib).

@@ -31,6 +31,14 @@ os.environ.setdefault(
     "MPLCONFIGDIR", os.path.join(os.path.dirname(__file__), ".mplcache")
 )
 
+# Autodoc imports calculations.*, which imports model_config, which resolves a study
+# from the working directory. The build runs in docs/ — not a study folder — and there
+# is deliberately no default study, so without this every autodoc import raises and the
+# build fails. The docs quote this study's numbers throughout; see
+# docs/_tools/worked_values.py, which names the same one. setdefault, so
+# `PERMEATION_STUDY=... make html` still wins.
+os.environ.setdefault("PERMEATION_STUDY", "Guo_etal_2025/study_config.py")
+
 # --- project metadata ---------------------------------------------------------
 
 project = "Hierarchical Hydrogen Permeation Model"

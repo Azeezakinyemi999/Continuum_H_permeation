@@ -1,11 +1,23 @@
 """
 ================================================================================
-UNIFIED CONFIGURATION FOR HIERARCHICAL HYDROGEN PERMEATION MODEL
+HASTELLOY N / Cr2O3 — Fuerst et al. 2024
 ================================================================================
-All material properties, operating conditions, and model parameters in one place.
+THE INPUT FILE for the notebooks in this folder. Every material property,
+operating condition and sensitivity-study parameter they run on is here.
+
+calculations.config.model_config picks this file up when a notebook runs with this
+folder as its working directory — nothing else selects it, and editing it changes
+this study alone. To read it from elsewhere:
+
+    PERMEATION_STUDY=Fuerst_et_al_2024/study_config.py python your_script.py
 """
 
 import numpy as np
+
+# Identity of this study: labels figures and CSVs as ACTIVE_STUDY_NAME, and selects
+# the reference set in container/model_smoke_test.py. Independent of the folder name,
+# so renaming the folder does not silently relabel the results.
+STUDY_NAME = 'fuerst_etal_2024_model_config'
 
 # =============================================================================
 # PHYSICAL CONSTANTS

@@ -4,10 +4,14 @@
 Environment reproducibility (gate 1) does not imply scientific reproducibility.
 This asserts pinned reference values through the real solvers.
 
-**Study-aware.** The model computes whichever study `ACTIVE_STUDY` names, so a
-single set of pinned numbers could only ever test one of them. REFERENCE below
-holds a measured set per study and the test selects on ACTIVE_STUDY; a study with
-no entry fails with a message saying to measure one rather than silently passing.
+**Study-aware.** The model computes whichever study `model_config` resolved — from
+`$PERMEATION_STUDY`, else a `study_config.py` in the working directory or a parent, else
+GATE_STUDY below — so a single set of pinned numbers could only ever test one of them.
+REFERENCE below holds a measured set per study and the test selects on
+ACTIVE_STUDY_NAME; a study with no entry fails with a message saying to measure one
+rather than silently passing. The gate prints ACTIVE_STUDY_SOURCE as well, because a
+reference set that matched for the wrong reason is not a passing gate. There is no
+default study, so the gate names the one the release ships: `Application/study_config.py`.
 
 Model INPUTS are derived from the active study too — its own metal/oxide
 properties at T, its own surface kinetics — so the test exercises the study it
@@ -43,6 +47,14 @@ import warnings
 for _cand in (os.getcwd(), "/workspace"):
     if _cand not in sys.path and os.path.isdir(os.path.join(_cand, "calculations")):
         sys.path.insert(0, _cand)
+
+# The gate runs at the workspace root, which is not a study folder, and there is no
+# default study — so it names the one the release ships. Application/ is the delivery
+# folder (PACKAGING_1.0.0.md: the image carries calculations/ plus Application/), and
+# its study_config.py is the input file the shipped notebooks run on. setdefault, so
+# `PERMEATION_STUDY=... python model_smoke_test.py` can gate another study deliberately.
+GATE_STUDY = "Application/study_config.py"
+os.environ.setdefault("PERMEATION_STUDY", GATE_STUDY)
 
 RTOL = 1e-9
 
@@ -133,7 +145,8 @@ print("=" * 78)
 try:
     from calculations.classify_regime import classify_regime_level14
     from calculations.config.model_config import (
-        ACTIVE_STUDY, METALS, MICROSTRUCTURE, OXIDES, build_simulation_config,
+        ACTIVE_STUDY_NAME, ACTIVE_STUDY_PATH, ACTIVE_STUDY_SOURCE,
+        METALS, MICROSTRUCTURE, OXIDES, build_simulation_config,
     )
     from calculations.defective_metal import combined_microstructure_model
     from calculations.interface_solver import calculate_oxide_metal_system
@@ -151,14 +164,18 @@ except ImportError as exc:
 
 warnings.simplefilter("ignore")
 
-print(f"\nactive study: {ACTIVE_STUDY}")
-if ACTIVE_STUDY not in REFERENCE:
-    print(f"FAIL  no reference values for study {ACTIVE_STUDY!r}.")
+# The study is resolved by location (env var, then a folder study_config.py, then
+# GATE_STUDY), so the gate records WHICH study it got and HOW — a reference set that
+# matched for the wrong reason is not a passing gate.
+print(f"\nactive study: {ACTIVE_STUDY_NAME}")
+print(f"      source: {ACTIVE_STUDY_SOURCE}  ({ACTIVE_STUDY_PATH})")
+if ACTIVE_STUDY_NAME not in REFERENCE:
+    print(f"FAIL  no reference values for study {ACTIVE_STUDY_NAME!r}.")
     print(f"      known: {sorted(REFERENCE)}")
     print( "      Measure a set for it and add it to REFERENCE — passing without")
     print( "      one would mean the gate checks nothing about this study.")
     sys.exit(1)
-REF = REFERENCE[ACTIVE_STUDY]
+REF = REFERENCE[ACTIVE_STUDY_NAME]
 print(f"OK    reference set found     {len(REF)} pinned values")
 
 SIM = build_simulation_config()

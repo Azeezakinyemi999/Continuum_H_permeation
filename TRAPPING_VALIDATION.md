@@ -301,10 +301,10 @@ $$
 
 | Quantity | Role | Source |
 |---|---|---|
-| $D_{\text{lattice}}$, $K_S$, $\Phi_{\text{oxide}}$ | **input** (intrinsic) | [`config/studies/`](https://github.com/Azeezakinyemi999/Continuum_H_permeation/tree/main/calculations/config/studies/) — `METALS`, `OXIDES` |
+| $D_{\text{lattice}}$, $K_S$, $\Phi_{\text{oxide}}$ | **input** (intrinsic) | each study's [`study_config.py`](https://github.com/Azeezakinyemi999/Continuum_H_permeation/blob/main/Guo_etal_2025/study_config.py) — `METALS`, `OXIDES` |
 | $N_T$, $E_b$ | **input** (microstructural) | TDS — or fitted, which forfeits the test |
 | $D_{\text{eff}}$, `reduction_factor` | **output** (effective) | [`calculations/defective_metal.py`](https://github.com/Azeezakinyemi999/Continuum_H_permeation/blob/main/calculations/defective_metal.py) |
 | $\Phi_{\text{eff}}$, PRF, regime | **output** (system) | [`calculations/classify_regime.py`](https://github.com/Azeezakinyemi999/Continuum_H_permeation/blob/main/calculations/classify_regime.py) |
-| parameter ranges | SA only | [`config/studies/`](https://github.com/Azeezakinyemi999/Continuum_H_permeation/tree/main/calculations/config/studies/) — `SUGGESTED_RANGES_*` |
+| parameter ranges | SA only | each study's [`study_config.py`](https://github.com/Azeezakinyemi999/Continuum_H_permeation/blob/main/Guo_etal_2025/study_config.py) — `SUGGESTED_RANGES_*` |
 
 The distinction in the first column is the important one: **intrinsic properties go in, effective properties come out.** The model does not derive $D_{\text{lattice}}$ or $K_S$ — it consumes them and predicts what a real, trapped, coated, defective wall will appear to have.
