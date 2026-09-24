@@ -171,10 +171,10 @@ study was resolved at import.
 
 ## When to switch
 
-The 316L study is metal-limited at its default operating point: the 48 nm
-Cr₂O₃ layer contributes `frac_oxide = 3.8e-4` of the resistance and `PRF ≈
-1.0002`. If you are investigating oxide or defect physics, that operating point
-will show you almost nothing.
+The 316L study is metal-limited at its default operating point *under Level 5*: the
+1 µm Cr₂O₃ layer contributes `frac_oxide = 7.8e-3` of the resistance and `PRF ≈
+1.004`. If you are investigating oxide or defect physics with Level 5, that operating
+point will show you little. Level 5L6 is oxide-limited on the same wall.
 
 To make the oxide matter, either increase `L_oxide`, lower the temperature toward
 the validated [473, 773] K window where the oxide is less permeable, or work in a

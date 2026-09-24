@@ -33,9 +33,9 @@ Counts: **46 total** = 36 sampled in the L5L6 SA + 10 never sampled.
 | Parameter | Value | Units | Meaning |
 |---|---|---|---|
 | `metal_thickness` | 1e-3 | m | wall thickness — from `CONDITIONS['L_metal']` |
-| `oxide_thickness` | 4.8e-8 | m | oxide layer — from `OXIDES[...]['thickness']` |
+| `oxide_thickness` | 1e-6 | m | oxide layer — from `CONDITIONS['L_oxide']` |
 
-> ⚠️ `CONDITIONS['L_oxide']` is **1e-6 m**, not 4.8e-8 m. The flat parameter dict takes oxide thickness from the *oxide* dict, so `L_oxide` in `CONDITIONS` is only used by thickness sweeps. Two different oxide thicknesses coexist in the config — know which one your call path reads.
+> Both thicknesses now come from `CONDITIONS`, which is the single description of the wall being simulated. The oxide entry keeps a `sample_thickness` (4.8e-8 m) recording the specimen its transport data were measured on; nothing reads it. Until recently that value silently won, and every model call ran a geometry 20× thinner than this table claimed.
 
 ## D. Operating conditions — 3
 

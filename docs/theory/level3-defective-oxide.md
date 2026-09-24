@@ -60,21 +60,20 @@ at the configured 2% and varying only the intact oxide thickness:
 
 | $L_{ox}$ | $j_{\text{defect}}/j_{\text{intact}}$ | defect share of flux | $\eta$ | PRF | PRF if perfect |
 |---|---|---|---|---|---|
-| 48 nm (as configured) | 1.000 | 2.000% | 1.000005 | 1.0003 | 1.0003 |
-| 48 µm (×10³) | 1.276 | 2.538% | 1.0055 | 1.2856 | 1.2927 |
-| 4.8 mm (×10⁵) | 30.79 | 38.59% | 1.5959 | 32.54 | 51.93 |
+| 1 µm (as configured) | 1.005 | 2.010% | 1.000103 | 1.0053 | 1.0054 |
+| 48 µm (×48) | 1.276 | 2.538% | 1.0055 | 1.2856 | 1.2927 |
+| 4.8 mm (×4800) | 30.79 | 38.59% | 1.5959 | 32.54 | 51.93 |
 
 Read the third column against the fact that the defects occupy **2% of the area
-in every row**. At the configured thickness they carry exactly 2% of the flux —
-no leverage whatsoever. At 4.8 mm they carry 38.6%, nineteen times their area
-share.
+in every row**. At the configured thickness they carry 2.01% of the flux — no
+leverage whatsoever. At 4.8 mm they carry 38.6%, nineteen times their area share.
 
 ```{important}
 **Defect leverage is a property of the barrier, not of the defects.** The reason
 2% of the area can carry 39% of the flux is that the intact path is bad at its
 job; the defect path wins by comparison. When the intact oxide is already more
-permeable than the metal underneath it — as the active study's 48 nm layer is, by
-a factor of 1926 — there is nothing for a defect to short-circuit, and
+permeable than the metal underneath it — as the active study's 1 µm layer is, by
+a factor of 92 — there is nothing for a defect to short-circuit, and
 $j_{\text{defect}} \approx j_{\text{intact}}$.
 
 So for the active study, Level 3 changes essentially nothing:
@@ -109,14 +108,14 @@ attributes the shortfall to the defects specifically.
 ## Values at the configured operating point
 
 ```text
-flux_total                  4.326496e-06  mol/m²/s
-flux_intact_contribution    4.239945e-06     (area-weighted)
-flux_defect_contribution    8.655084e-08     (area-weighted)
-flux_intact_per_area        4.326475e-06
-flux_defect_per_area        4.327542e-06
-defect_enhancement_factor   1.000005
+flux_total                  4.304704e-06  mol/m²/s
+flux_intact_contribution    4.218176e-06     (area-weighted)
+flux_defect_contribution    8.652857e-08     (area-weighted)
+flux_intact_per_area        4.304261e-06
+flux_defect_per_area        4.326428e-06
+defect_enhancement_factor   1.000103
 dominant_path               intact_oxide
-PRF                         1.000255
+PRF                         1.005318
 regime                      metal_limited/lattice_limited
 ```
 

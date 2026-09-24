@@ -67,7 +67,9 @@ def report() -> str:
     PU  = CONDITIONS["P_upstream"]
     PD  = CONDITIONS["P_downstream"]
     LM  = CONDITIONS["L_metal"]
-    LOX = OXIDES[SIM["oxide_name"]]["thickness"]
+    # The wall being simulated, from CONDITIONS via build_simulation_config — not
+    # the oxide's own sample_thickness, which records the measured specimen.
+    LOX = SIM["L_oxide"]
 
     w(f"study            {ACTIVE_STUDY}")
     w(f"metal / oxide    {SIM['metal_name']} / {SIM['oxide_name']}")

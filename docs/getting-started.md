@@ -65,17 +65,19 @@ For the active study this prints:
 
 ```text
 Guo_etal_2025_316L
-flux         3.196893...e-06
+flux         3.184987...e-06
 regime       metal
-PRF          1.000188...
-frac_oxide   0.000375...
-frac_metal   0.979620...
-frac_defect  0.020003...
+PRF          1.003926...
+frac_oxide   0.007798...
+frac_metal   0.972126...
+frac_defect  0.020074...
 ```
 
-Read that as: 3.2 µmol/m²/s of hydrogen crosses the wall; the metal carries 98%
-of the resistance; and the coating reduces the flux by a factor of 1.0002, which
-is to say **not at all**.
+Read that as: 3.2 µmol/m²/s of hydrogen crosses the wall; the metal carries 97%
+of the resistance; and the coating reduces the flux by a factor of 1.004, which
+is to say **almost not at all** — at Level 5. Level 5L6, which dissociates at the
+gas/oxide surface and sends atomic H through the oxide, is oxide-limited at the same
+operating point. See {doc}`theory/equilibrium-models`.
 
 ## Read these caveats before trusting a number
 
@@ -83,11 +85,13 @@ Four behaviours will mislead you if you meet them without warning. None is a bug
 all are consequences of how the model is defined.
 
 ```{warning}
-**The active study is metal-limited, so the oxide barely matters.** With a 48 nm
-Cr₂O₃ layer on 316L at 873 K, the oxide contributes `frac_oxide = 3.8e-4` of the
-resistance and `PRF ≈ 1.0002`. If you are trying to see oxide or defect physics,
-this operating point will show you almost nothing — switch to a study or
-thickness where the oxide is actually a barrier. See {doc}`how-to/switch-study`.
+**Level 5 is metal-limited, so the oxide barely matters — but Level 5L6 is not.**
+With the 1 µm Cr₂O₃ layer on 316L at 873 K, Level 5 gives `frac_oxide = 7.8e-3` and
+`PRF ≈ 1.004`: the coating is almost invisible. Under the Level 6 family the same wall
+is **oxide-limited**, because dissociation at the gas/oxide surface sends atomic H
+through the oxide under Sieverts rather than intact H₂ under Henry, and thickness then
+bites. Do not carry a conclusion from one model to the other; see
+{doc}`theory/equilibrium-models`.
 ```
 
 ```{warning}

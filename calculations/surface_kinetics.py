@@ -34,7 +34,7 @@ from calculations.config.model_config import get_surface_kinetics_from_config
 # Material data comes straight from model_config, the authoritative source —
 # previously routed through the data/ aliasing shims, whose double imports let the
 # Fuerst config silently shadow model_config. See oxide_permeation.py.
-from calculations.config.model_config import METALS, OXIDES
+from calculations.config.model_config import CONDITIONS, METALS, OXIDES
 from calculations.defective_metal import combined_microstructure_model
 
 R = 8.314  # J/(mol·K)
@@ -65,7 +65,10 @@ def get_all_properties(oxide_name, metal_name, temperature_K,
     T_ref_ox = oxide_data['T_ref']
     D_ox = oxide_data['D_ox_ref'] * np.exp((-oxide_data['E_D_ox'] / R) * (1/temperature_K - 1/T_ref_ox))
     K_ox = oxide_data['K_ox_ref'] * np.exp((-oxide_data['H_sol_ox'] / R) * (1/temperature_K - 1/T_ref_ox))
-    L_ox = oxide_data['thickness']
+    # Geometry is the scenario, not the material: it comes from CONDITIONS even when
+    # `oxides` resolves another study's material data, because the wall being
+    # simulated is the one CONDITIONS describes.
+    L_ox = CONDITIONS['L_oxide']
 
     metal_data = metals[metal_name]
     T_ref_m = metal_data['T_ref']

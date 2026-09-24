@@ -68,9 +68,9 @@ REFERENCE = {
         'metal_name':           'metal_X40_NiCrAlTi_31_19_Incoloy802_Schmidt1985',
         'oxide_name':           'Cr2O3_sample4',
         'L1_flux':              2.018954462906126e-07,
-        'L2b_flux':             1.949619765221479e-07,
-        'L2b_P_interface':      93249.55991793802,
-        'L2b_resistance_ratio': 0.0361955600005112,
+        'L2b_flux':             1.0273491319496981e-07,
+        'L2b_P_interface':      25893.041617047107,
+        'L2b_resistance_ratio': 1.4310207251619016,
         'L1L6_J_ss':            2.018771285453861e-07,
         'L1L6_P_int':           99981.8550496419,
         'L1L6_theta':           0.9090834102188711,
@@ -83,9 +83,9 @@ REFERENCE = {
         'metal_name':           'Hastelloy_N_fuerst_2024',
         'oxide_name':           'Cr2O3_sample4',
         'L1_flux':              2.142687379990429e-06,
-        'L2b_flux':             1.4905339194838543e-06,
-        'L2b_P_interface':      48391.16789209546,
-        'L2b_resistance_ratio': 0.5332463996630952,
+        'L2b_flux':             1.3805508813961478e-07,
+        'L2b_P_interface':      415.13295581140045,
+        'L2b_resistance_ratio': 119.94334062149372,
         'L1L6_J_ss':            2.140628362688026e-06,
         'L1L6_P_int':           99807.90216861428,
         'L1L6_theta':           0.9090114222245518,
@@ -98,9 +98,9 @@ REFERENCE = {
         'metal_name':           '316L_Guo_2025',
         'oxide_name':           'Cr2O3_sample4',
         'L1_flux':              5.285556393157393e-07,
-        'L2b_flux':             4.823985811242465e-07,
-        'L2b_P_interface':      83297.24197691948,
-        'L2b_resistance_ratio': 0.10025997035837407,
+        'L2b_flux':             1.3021645604459347e-07,
+        'L2b_P_interface':      6069.4637415161305,
+        'L2b_resistance_ratio': 7.737960078415457,
         'L1L6_J_ss':            1.3785704004492814e-07,
         'L1L6_P_int':           6802.624161529068,
         'L1L6_theta':           0.7627850150386251,
@@ -229,8 +229,9 @@ else:
 P_UP    = CONDITIONS["P_upstream"]
 P_DOWN  = CONDITIONS["P_downstream"]
 L_METAL = CONDITIONS["L_metal"]
+L_OXIDE = CONDITIONS["L_oxide"]
 print(f"      operating point         T={T} K  P_up={P_UP:g}  P_down={P_DOWN:g}  "
-      f"L_metal={L_METAL:g}")
+      f"L_metal={L_METAL:g}  L_oxide={L_OXIDE:g}")
 
 SIM = build_simulation_config()
 equal("metal resolves in METALS", SIM["metal_name"], REF["metal_name"])
@@ -244,8 +245,7 @@ close("arrhenius", arrhenius(1.0e-11, 50_000.0, 800.0, 700.0),
 # ------------------------------------------------------- L1: perfect metal
 print("\nLevel 1 (perfect metal):")
 # NB: the T-evaluated getters return D_metal / K_s_metal, not D / K_s.
-# Still the oxide dict's: CONDITIONS does not yet own the oxide geometry.
-L_OXIDE = OXIDES[SIM["oxide_name"]]["thickness"]
+L_OXIDE = CONDITIONS["L_oxide"]
 mp = dict(get_metal_properties_at_T(SIM["metal_name"], T), thickness=L_METAL)
 op = dict(get_oxide_properties_at_T(SIM["oxide_name"], T), thickness=L_OXIDE)
 r1 = calculate_simple_metal_flux(mp["D_metal"], mp["K_s_metal"],

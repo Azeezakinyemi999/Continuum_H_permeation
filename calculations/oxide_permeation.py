@@ -5,7 +5,7 @@ import numpy as np
 # from model_config and then from fuerst_etal_2024_model_config — so the second
 # silently shadowed the first and MATERIALS held only the Fuerst alloy. That made
 # model_config's own active metal unreachable by name.
-from calculations.config.model_config import METALS, OXIDES
+from calculations.config.model_config import CONDITIONS, METALS, OXIDES
 from calculations.utils import arrhenius
 
 def molecular_diffusion_flux(D_ox, K_ox, thickness, P_up, P_down):
@@ -200,7 +200,11 @@ def get_oxide_properties_at_T(oxide_name, temperature_K, oxides=None):
     return {
         'D_ox': D_ox,
         'K_ox': K_ox,
-        'thickness': oxide_data['thickness']
+        # Carried through for the solvers, which take geometry in this dict — but it is
+        # the OPERATING geometry from CONDITIONS, not a property of the oxide at T. The
+        # oxide's own 'sample_thickness' records the sample the data came from and is
+        # deliberately not read here.
+        'thickness': CONDITIONS['L_oxide'],
     }
 
 

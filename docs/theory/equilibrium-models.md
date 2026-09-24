@@ -110,8 +110,10 @@ At the default operating point:
 | Henry form, as the code computes it | 8.336797e-03 |
 | Sieverts form, same constant | 2.636327e-05 |
 
-For the active study this does not change any conclusion — the 48 nm oxide is
-non-limiting either way, so `regime` is `metal` and `PRF ≈ 1.0002`. It *would*
+For the active study this does not change the Level 5 conclusion — the 1 µm oxide is
+non-limiting under Henry, so `regime` is `metal` and `PRF ≈ 1.004`. Under the Level 6
+family the same wall is oxide-limited, which is the clearest demonstration that the two
+models are not refinements of each other. It *would*
 matter for a thicker or less permeable oxide, and it means a Level 3 defect
 result is not directly comparable against a Level 5L6 one.
 

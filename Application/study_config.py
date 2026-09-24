@@ -88,9 +88,12 @@ OXIDES = {
         'Q_p_ox_J_per_mol': 234000,
 
 
-        # ---- Default geometry ----
-        'thickness':       4.8e-08,
-        'thickness_range': [1e-9, 1e-5],
+        # ---- Provenance, NOT geometry ----
+        # The scale thickness of the sample these data were measured on. The model does
+        # not read it: the wall being simulated is described by CONDITIONS['L_oxide'],
+        # exactly as the metal is. This used to be the value every model call actually
+        # used, 20x thinner than the CONDITIONS entry that claimed to set it.
+        'sample_thickness': 4.8e-08,
 
         # ---------------------------------------------------------------
         # SURFACE KINETICS — oxide surface (gas–oxide interface, L6)
@@ -199,7 +202,8 @@ CONDITIONS = {
     'L_metal':        1e-3,             # m
     'L_oxide':        1e-6,             # m
     'L_metal_range':  (0.1e-3, 5e-3),  # m
-    'L_oxide_range':  (1e-7, 1e-5),    # m
+    # absorbed OXIDES[...]['thickness_range'], which stated the same quantity
+    'L_oxide_range':  (1e-9, 1e-5),    # m   1 nm - 10 um
     'n_L_points':     20,
 }
 
@@ -298,7 +302,7 @@ DEFAULT_PARAMS_LEVEL5 = {
     # Geometry — metal thickness comes from CONDITIONS, NOT METALS['metal_thickness'],
     # which is a LIST of sweep values and would silently poison every model call.
     'metal_thickness': CONDITIONS['L_metal'],   # m
-    'oxide_thickness': _SA_O['thickness'],      # m
+    'oxide_thickness': CONDITIONS['L_oxide'],   # m
 
     # Operating conditions  (CONDITIONS)
     'P_upstream':   CONDITIONS['P_upstream'],   # Pa
@@ -792,7 +796,7 @@ def build_simulation_config(
         'P_downstream': CONDITIONS['P_downstream'],
 
         'L_metal': L_metal or CONDITIONS['L_metal'],
-        'L_oxide': L_oxide or OXIDES[oxide].get('thickness', CONDITIONS['L_oxide']),
+        'L_oxide': L_oxide or CONDITIONS['L_oxide'],
 
         'microstructure': MICROSTRUCTURE.copy(),
         'oxide_defects':  od,              # raw OXIDE_DEFECTS (with any overrides)
