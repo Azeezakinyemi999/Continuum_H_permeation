@@ -15,7 +15,7 @@ enforced nowhere: nothing in `calculations/` reads `CONDITIONS`, so the operatin
 restated in four places with four different answers, and the material dict silently
 overrides the geometry.
 
-- [ ] **Fix 0 — a way to regenerate the gate's reference values.** `--emit` mode on
+- [x] **Fix 0 — a way to regenerate the gate's reference values.** `--emit` mode on
       `container/model_smoke_test.py` that prints a ready-to-paste `REFERENCE[<study>]`
       block. Needed because two fixes below invalidate 13 pinned values per study and
       there is no generator — `container/revalidate_reference.py` is a cross-interpreter
