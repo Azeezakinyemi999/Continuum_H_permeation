@@ -24,7 +24,7 @@ overrides the geometry.
       `P_ref`/`P_fixed*`, `P_down = 0` three times. Unify the *operating point*
       unconditionally; keep the deliberately wider *sweep grids* (`L2b.delta_ox_sweep`
       spans 1e-4→1e-12 m to show the thin-film limit) with a comment saying why.
-- [ ] **Fix 2 — the gate takes its operating point from `CONDITIONS`.** ⚠ re-baseline.
+- [x] **Fix 2 — the gate takes its operating point from `CONDITIONS`.** ⚠ re-baseline.
       `container/model_smoke_test.py` hardcodes `P_DOWN = 1.0e2` where `CONDITIONS` says
       **0**, plus `L_METAL`. `P_down = 0` is safe for the solver but shifts `J_ss` by
       3.3 %, so the references must be re-measured in the same commit.

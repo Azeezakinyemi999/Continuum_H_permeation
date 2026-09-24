@@ -58,58 +58,56 @@ os.environ.setdefault("PERMEATION_STUDY", GATE_STUDY)
 
 RTOL = 1e-9
 
-# Fixed operating point. T=700 K is deliberate: it sits inside the Cr2O3
-# validated range [473, 773] K, so no extrapolation warning perturbs the run.
-T, P_UP, P_DOWN = 700.0, 1.0e5, 1.0e2
-L_METAL = 1.0e-3
-# L_OXIDE is NOT fixed here: it comes from the active study's oxide, so the test
-# follows the study rather than asserting one study's scale onto another.
+# T=700 K is a TEST choice, not the study's operating point: it sits inside the Cr2O3
+# validated range [473, 773] K, so no extrapolation warning perturbs the run. The rest
+# of the operating point is read from CONDITIONS, after the import below.
+T = 700.0
 
 REFERENCE = {
     'incoloy802_cr2o3': {
-        'metal_name':             'metal_X40_NiCrAlTi_31_19_Incoloy802_Schmidt1985',
-        'oxide_name':             'Cr2O3_sample4',
-        'L1_flux':                1.955109516956673e-07,
-        'L2b_flux':               1.888003770552079e-07,
-        'L2b_P_interface':        93462.901558976,
-        'L2b_resistance_ratio':   0.036154225782795736,
-        'L1L6_J_ss':              1.9549321314132636e-07,
-        'L1L6_P_int':             99982.42875170171,
-        'L1L6_theta':             0.9090836473455054,
-        'L1L6_rate_limiting':     'metal',
-        'micro_D_eff':            8.720200643474982e-12,
-        'micro_overall_factor':   0.4098345562673666,
-        'micro_theta_total':      0.09282336531113745,
+        'metal_name':           'metal_X40_NiCrAlTi_31_19_Incoloy802_Schmidt1985',
+        'oxide_name':           'Cr2O3_sample4',
+        'L1_flux':              2.018954462906126e-07,
+        'L2b_flux':             1.949619765221479e-07,
+        'L2b_P_interface':      93249.55991793802,
+        'L2b_resistance_ratio': 0.0361955600005112,
+        'L1L6_J_ss':            2.018771285453861e-07,
+        'L1L6_P_int':           99981.8550496419,
+        'L1L6_theta':           0.9090834102188711,
+        'L1L6_rate_limiting':   'metal',
+        'micro_D_eff':          8.720200643474982e-12,
+        'micro_overall_factor': 0.4098345562673666,
+        'micro_theta_total':    0.09282336531113745,
     },
     'fuerst_etal_2024_model_config': {
-        'metal_name':             'Hastelloy_N_fuerst_2024',
-        'oxide_name':             'Cr2O3_sample4',
-        'L1_flux':                2.074929655645745e-06,
-        'L2b_flux':               1.4462213335730932e-06,
-        'L2b_P_interface':        49925.464278538966,
-        'L2b_resistance_ratio':   0.5249886661138037,
-        'L1L6_J_ss':              2.0729356704106247e-06,
-        'L1L6_P_int':             99813.96656812982,
-        'L1L6_theta':             0.9090139348659355,
-        'L1L6_rate_limiting':     'metal',
-        'micro_D_eff':            8.008430918590877e-11,
-        'micro_overall_factor':   0.4098345562673666,
-        'micro_theta_total':      0.09282336531113745,
+        'metal_name':           'Hastelloy_N_fuerst_2024',
+        'oxide_name':           'Cr2O3_sample4',
+        'L1_flux':              2.142687379990429e-06,
+        'L2b_flux':             1.4905339194838543e-06,
+        'L2b_P_interface':      48391.16789209546,
+        'L2b_resistance_ratio': 0.5332463996630952,
+        'L1L6_J_ss':            2.140628362688026e-06,
+        'L1L6_P_int':           99807.90216861428,
+        'L1L6_theta':           0.9090114222245518,
+        'L1L6_rate_limiting':   'metal',
+        'micro_D_eff':          8.008430918590877e-11,
+        'micro_overall_factor': 0.4098345562673666,
+        'micro_theta_total':    0.09282336531113745,
     },
     'Guo_etal_2025_316L': {
-        'metal_name':             '316L_Guo_2025',
-        'oxide_name':             'Cr2O3_sample4',
-        'L1_flux':                5.118412424120975e-07,
-        'L2b_flux':               4.672050860445382e-07,
-        'L2b_P_interface':        83823.30752058215,
-        'L2b_resistance_ratio':   0.09994486510402441,
-        'L1L6_J_ss':              1.276041708643705e-07,
-        'L1L6_P_int':             7455.263517774021,
-        'L1L6_theta':             0.7709733288080891,
-        'L1L6_rate_limiting':     'metal',
-        'micro_D_eff':            1.6434267493955927e-11,
-        'micro_overall_factor':   0.40983455626736665,
-        'micro_theta_total':      0.09282336531113745,
+        'metal_name':           '316L_Guo_2025',
+        'oxide_name':           'Cr2O3_sample4',
+        'L1_flux':              5.285556393157393e-07,
+        'L2b_flux':             4.823985811242465e-07,
+        'L2b_P_interface':      83297.24197691948,
+        'L2b_resistance_ratio': 0.10025997035837407,
+        'L1L6_J_ss':            1.3785704004492814e-07,
+        'L1L6_P_int':           6802.624161529068,
+        'L1L6_theta':           0.7627850150386251,
+        'L1L6_rate_limiting':   'metal',
+        'micro_D_eff':          1.6434267493955927e-11,
+        'micro_overall_factor': 0.40983455626736665,
+        'micro_theta_total':    0.09282336531113745,
     },
 }
 
@@ -186,7 +184,7 @@ try:
     from calculations.classify_regime import classify_regime_level14
     from calculations.config.model_config import (
         ACTIVE_STUDY_NAME, ACTIVE_STUDY_PATH, ACTIVE_STUDY_SOURCE,
-        METALS, MICROSTRUCTURE, OXIDES, build_simulation_config,
+        CONDITIONS, METALS, MICROSTRUCTURE, OXIDES, build_simulation_config,
     )
     from calculations.defective_metal import combined_microstructure_model
     from calculations.interface_solver import calculate_oxide_metal_system
@@ -224,6 +222,16 @@ else:
     REF = REFERENCE[ACTIVE_STUDY_NAME]
     print(f"OK    reference set found     {len(REF)} pinned values")
 
+# ---------------------------------------------------------------- operating point
+# From CONDITIONS, so the gate checks the model at the scenario the study defines
+# rather than at a fourth operating point of its own. P_DOWN was 1.0e2 here while
+# CONDITIONS said 0 — a 3.3% shift in J_ss that the pinned values silently encoded.
+P_UP    = CONDITIONS["P_upstream"]
+P_DOWN  = CONDITIONS["P_downstream"]
+L_METAL = CONDITIONS["L_metal"]
+print(f"      operating point         T={T} K  P_up={P_UP:g}  P_down={P_DOWN:g}  "
+      f"L_metal={L_METAL:g}")
+
 SIM = build_simulation_config()
 equal("metal resolves in METALS", SIM["metal_name"], REF["metal_name"])
 equal("oxide resolves in OXIDES", SIM["oxide_name"], REF["oxide_name"])
@@ -236,6 +244,7 @@ close("arrhenius", arrhenius(1.0e-11, 50_000.0, 800.0, 700.0),
 # ------------------------------------------------------- L1: perfect metal
 print("\nLevel 1 (perfect metal):")
 # NB: the T-evaluated getters return D_metal / K_s_metal, not D / K_s.
+# Still the oxide dict's: CONDITIONS does not yet own the oxide geometry.
 L_OXIDE = OXIDES[SIM["oxide_name"]]["thickness"]
 mp = dict(get_metal_properties_at_T(SIM["metal_name"], T), thickness=L_METAL)
 op = dict(get_oxide_properties_at_T(SIM["oxide_name"], T), thickness=L_OXIDE)
