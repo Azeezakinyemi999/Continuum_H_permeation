@@ -20,7 +20,7 @@ overrides the geometry.
       block. Needed because two fixes below invalidate 13 pinned values per study and
       there is no generator — `container/revalidate_reference.py` is a cross-interpreter
       diff script, not this.
-- [ ] **Fix 1 — unify `VALIDATION` with `CONDITIONS`.** `1e5` appears eight times across
+- [x] **Fix 1 — unify `VALIDATION` with `CONDITIONS`.** `1e5` appears eight times across
       `P_ref`/`P_fixed*`, `P_down = 0` three times. Unify the *operating point*
       unconditionally; keep the deliberately wider *sweep grids* (`L2b.delta_ox_sweep`
       spans 1e-4→1e-12 m to show the thin-film limit) with a comment saying why.
@@ -34,11 +34,22 @@ overrides the geometry.
       config states. Switching to 1e-6 moves L5 by 0.4 % but **drops L5L6 flux 3× and
       flips its regime from metal-limited to oxide-limited**, so the gate references, the
       generated doc numbers and the "the oxide barely matters" prose all change with it.
-- [ ] **Fix 4 — report sweep-range divergence.** `SUGGESTED_RANGES_*` restate the same
-      quantities with different bounds (temperature `[573, 1273]` vs `T_range (623,
-      1200)`, and three more), and `DEFAULT_SWEEP_TEMPERATURES` includes 1273 K. Report
-      it in `check_against_config()`; do not enforce — a sweep may legitimately explore
-      wider than the nominal window.
+- [ ] **Fix 3b — re-section the study file.** Five labelled sections in dependency
+      order: identity, what is being studied (CONDITIONS, OXIDE_DEFECTS, MODEL_OPTIONS,
+      ranges, presets, VALIDATION grids), what the materials are, derived, presentation.
+      Gathers the five model switches — `include_gb_trapping`, `use_sieverts_pinhole`,
+      `include_gb_enhancement`, `include_trapping`, `D_eff_method` — which are scattered
+      across three dicts and are not data. A pure move: verified by diffing the module
+      namespace before and after, which must be identical.
+- [ ] **Fix 4 — `CONDITIONS` owns the swept operating ranges.** The range of conditions
+      being studied *is* an operating condition, but it is stated twice and the two
+      disagree — and each set has a nonsense bound: `P_range` reaches 1e12 Pa (10 million
+      bar) and the SA's `oxide_thickness` floor is 1e-10 m (0.1 Å, sub-atomic).
+      `CONDITIONS` takes defensible bounds — T `(573, 1273)`, P `(1e-7, 1e7)`, L_metal
+      `(1e-4, 5e-3)`, L_oxide `(1e-9, 1e-5)` — and the four operating entries in
+      `SUGGESTED_RANGES_*` reference them. Material-parameter ranges stay put. The
+      divergence check narrows to its real job: reporting *preset* overrides that leave
+      the window, which are deliberate and should be visible.
 - [ ] **Fix 5 — name the provenance keys as provenance.** `METALS[...]['metal_thickness']`
       is a *list* of the source experiment's specimen thicknesses sitting where a reader
       looks for wall thickness.

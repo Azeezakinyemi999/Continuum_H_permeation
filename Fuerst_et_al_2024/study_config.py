@@ -833,88 +833,82 @@ def build_simulation_config(
 # VALIDATION / TEST PARAMETERS
 # =============================================================================
 VALIDATION = {
-    'L1': {
-        'P_ref':         1e5,
-        'n_test':        50,
-        'test_pressures': np.logspace(-2, 2, 50),
-        'test_temps_C':  np.array([700, 775, 850, 925]),
-        'test_temps_K':  np.array([700, 775, 850, 925]) + 273.15,
-    },
+    # -------------------------------------------------------------------------
+    # OPERATING POINT — shared by every level, read from CONDITIONS.
+    #
+    # These used to be restated per level under three different names for the same
+    # quantity: P_ref (L1, L2a), P_fixed (L2b, L3, L4, L5) and P_sensitivity (L5)
+    # were all 1e5, nine literals for one pressure. T_mode_comparison, T_grain_size,
+    # T_comparison and T_limit were all 873. A check that runs at a different pressure
+    # than the model it is validating is checking something else.
+    # -------------------------------------------------------------------------
+    'P_up':   CONDITIONS['P_upstream'],
+    'P_down': CONDITIONS['P_downstream'],
+    'T':      CONDITIONS['T_operating'],
+    'T_min':  CONDITIONS['T_range'][0],
+    'T_max':  CONDITIONS['T_range'][1],
 
-    'L2a': {
-        'P_ref':         1e5,
-        'n_test':        50,
-        'test_pressures': np.logspace(-2, 5, 50),
-        'test_temps_C':  np.array([700, 800, 900, 1000]),
-        'test_temps_K':  np.array([700, 800, 900, 1000]) + 273.15,
-    },
+    # -------------------------------------------------------------------------
+    # SWEEP GRIDS — what each level varies, prefixed by the level that owns it.
+    #
+    # Several are deliberately far wider than the nominal operating window, because
+    # that span is the point of the plot; each says so. Point counts stay literal
+    # too: resolution is a plotting choice, not an operating condition.
+    # -------------------------------------------------------------------------
 
-    'L2b': {
-        'P_fixed':              1e5,
-        'P_fixed_metal_sweep':  1e5,
-        'oxide_thickness_thin': 1e-8,
-        'L_metal_sweep':        np.logspace(-5, -1, 30),
-        'P_fixed_oxide_sweep':  1e5,
-        'delta_ox_sweep':       np.logspace(-4, -12, 40),
-    },
+    # ---- L1: perfect metal ----
+    'L1_n_test':         50,
+    # 0.01-100 Pa, far below the operating point on purpose: this is where the
+    # sqrt(P) Sieverts law is checked against its analytic limit.
+    'L1_test_pressures': np.logspace(-2, 2, 50),
+    'L1_test_temps_C':   np.array([700, 775, 850, 925]),
+    'L1_test_temps_K':   np.array([700, 775, 850, 925]) + 273.15,
 
-    'L3': {
-        'P_fixed':                1e5,
-        'P_down':                 0,
-        'defect_fractions_compare': [0.0, 0.001, 0.01, 0.1],
-        'f_defect_min':           1e-5,
-        'f_defect_max':           0.5,
-        'n_defect_points':        40,
-        'f_defect_limit_check':   1e-100,
-        # New for L3+L6
-        'defect_types':             ['pinhole', 'crack', 'grain_boundary'],
-        'gamma_sweep':              np.logspace(-2, 0, 20),   # crack thickness factors
-        'delta_sweep':              np.logspace(0, 4, 20),    # GB diffusivity factors
-        'n_enhancement_P_points':   30,        # pressure points for enhancement map
-        'enhancement_P_range':      (1e0, 1e10),  # Pa — for enhancement heatmap
-    },
+    # ---- L2a: perfect oxide ----
+    'L2a_n_test':         50,
+    # seven decades, to give the oxide's pressure exponent a long lever.
+    'L2a_test_pressures': np.logspace(-2, 5, 50),
+    'L2a_test_temps_C':   np.array([700, 800, 900, 1000]),
+    'L2a_test_temps_K':   np.array([700, 800, 900, 1000]) + 273.15,
 
-    'L4': {
-        'P_fixed':            1e5,
-        'P_down':             0,
-        'T_mode_comparison':  873,
-        'T_min':              473,
-        'T_max':              1173,
-        'n_T_points':         40,
-        'T_grain_size':       873,
-        'grain_size':         np.logspace(-8, -3, 30),
-        'f_gb_max':           0.5,
-    },
+    # ---- L2b: oxide + metal in series ----
+    'L2b_oxide_thickness_thin': 1e-8,
+    # 10 um - 10 cm: four decades to show the 1/L scaling, deliberately wider than
+    # CONDITIONS['L_metal_range'].
+    'L2b_L_metal_sweep':        np.logspace(-5, -1, 30),
+    # down to 1e-12 m: the thin-film limit, where the oxide stops mattering at all.
+    # Narrowing this to CONDITIONS['L_oxide_range'] would delete the effect.
+    'L2b_delta_ox_sweep':       np.logspace(-4, -12, 40),
 
-    'L5': {
-        'P_down':         0,
-        'T_comparison':   873,
-        'T_min':          573,
-        'T_max':          1173,
-        'n_T_points':     20,
-        'P_fixed':        1e5,
-        'T_sensitivity':  673,
-        'P_sensitivity':  1e5,
-        'f_defect_sweep': np.array([0.001, 0.01, 0.05, 0.1]),
-        'T_limit':        873,
-    },
+    # ---- L3: defective oxide ----
+    'L3_defect_fractions_compare': [0.0, 0.001, 0.01, 0.1],
+    'L3_f_defect_min':             1e-5,
+    'L3_f_defect_max':             0.5,
+    'L3_n_defect_points':          40,
+    'L3_f_defect_limit_check':     1e-100,
+    'L3_defect_types':             ['pinhole', 'crack', 'grain_boundary'],
+    'L3_gamma_sweep':              np.logspace(-2, 0, 20),   # crack thickness factors
+    'L3_delta_sweep':              np.logspace(0, 4, 20),    # GB diffusivity factors
+    'L3_n_enhancement_P_points':   30,
+    'L3_enhancement_P_range':      (1e0, 1e10),  # Pa — for the enhancement heatmap
 
-    'L6': {
-        # ========================================================================
-        # SURFACE KINETICS (L6) — Limit Checks and Model Recovery
-        # ========================================================================
-        # Fast-kinetics limit: verify recovery of limiting cases when k_diss → ∞
-        #   - L1+L6 → Sieverts (pure bulk diffusion, no surface limit)
-        #   - L2a+L6 → L2a (pure oxide diffusion, no surface limit)
-        #   - L2+L6 → series resistance (oxide + metal, no surface limit)
-        #   - L3+L6 → L3 (defective oxide, no surface limit)
-        #   - L4+L6 → L4 (defective metal, no surface limit)
-        #   - L3+L4+L6 → L5 (full defective system, no surface limit)
-        # Parity plots show J_L*+L6(k_diss=1e-3) vs J_L* or J_analytical
-        # ========================================================================
-        'k_diss_sweep_exp_range': (-15, -3),    # exponent range for log sweep
-        'k_diss_sweep_n_points': 7,              # number of points in sweep
-        # Fast kinetics limit value (used in parity plots)
-        'k_diss_fast_limit': 1e-3,               # mol/m²/s/Pa — "fast" regime
-    },
+    # ---- L4: defective metal ----
+    'L4_n_T_points': 40,                          # finer than L5: a smoother curve
+    'L4_grain_size': np.logspace(-8, -3, 30),
+    'L4_f_gb_max':   0.5,
+
+    # ---- L5: full system ----
+    'L5_n_T_points':    20,
+    'L5_f_defect_sweep': np.array([0.001, 0.01, 0.05, 0.1]),
+    # 673 K, not T: inside the oxide's validated [473, 773] K window, so the
+    # sensitivity check is not reading an extrapolation.
+    'L5_T_sensitivity': 673,
+
+    # ---- L6: surface kinetics ----
+    # Fast-kinetics limit: each Level 6 model must collapse onto its non-surface
+    # counterpart as k_diss → ∞ (L1+L6 → Sieverts, L2a+L6 → L2a, L3+L4+L6 → L5, ...).
+    # Parity plots show J_L*+L6(k_diss=k_diss_fast_limit) against J_L*.
+    'L6_k_diss_sweep_exp_range': (-15, -3),
+    'L6_k_diss_sweep_n_points':  7,
+    'L6_k_diss_fast_limit':      1e-3,      # mol/m²/s/Pa — the "fast" regime
 }
