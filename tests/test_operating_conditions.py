@@ -194,3 +194,87 @@ def test_gate_temperature_stays_an_explicit_test_choice():
     value = gate_assignments()["T"]
     assert isinstance(value, ast.Constant) and value.value == 700.0
     assert "TEST choice" in GATE.read_text()
+
+
+# --------------------------------------------------------------------------
+# Fix 3 — CONDITIONS owns the geometry
+# --------------------------------------------------------------------------
+
+PARAMS_REPORT = """
+import json
+from calculations.config.model_config import (
+    CONDITIONS, OXIDES, DEFAULT_PARAMS_LEVEL5, DEFAULT_PARAMS_LEVEL5L6,
+    build_simulation_config)
+SIM = build_simulation_config()
+print(json.dumps({
+    'conditions':  {k: (list(v) if isinstance(v, tuple) else v)
+                    for k, v in CONDITIONS.items()},
+    'l5':    {k: DEFAULT_PARAMS_LEVEL5[k] for k in
+              ('metal_thickness', 'oxide_thickness', 'temperature',
+               'P_upstream', 'P_downstream')},
+    'l5l6':  {k: DEFAULT_PARAMS_LEVEL5L6[k] for k in
+              ('metal_thickness', 'oxide_thickness', 'temperature',
+               'P_upstream', 'P_downstream')},
+    'sim':   {'L_oxide': SIM['L_oxide'], 'L_metal': SIM['L_metal']},
+    'oxide_keys': sorted(next(iter(OXIDES.values()))),
+}))
+"""
+
+GEOMETRY = {
+    'metal_thickness': 'L_metal',
+    'oxide_thickness': 'L_oxide',
+    'temperature':     'T_operating',
+    'P_upstream':      'P_upstream',
+    'P_downstream':    'P_downstream',
+}
+
+
+def params_of(folder):
+    proc = run_py(PARAMS_REPORT, cwd=ROOT / folder)
+    assert proc.returncode == 0, proc.stderr
+    return json.loads(proc.stdout)
+
+
+@pytest.mark.parametrize("folder", STUDY_IDS)
+def test_geometry_and_operating_point_come_from_conditions(folder):
+    """Both layers follow the same rule. They did not: metal thickness read CONDITIONS
+    while oxide thickness read the material dict, so the wall was described in two
+    places and the material won."""
+    cfg = params_of(folder)
+    for level in ("l5", "l5l6"):
+        for param, cond_key in GEOMETRY.items():
+            assert cfg[level][param] == cfg["conditions"][cond_key], (
+                f"DEFAULT_PARAMS_{level.upper()}[{param!r}] != CONDITIONS[{cond_key!r}]")
+    assert cfg["sim"]["L_oxide"] == cfg["conditions"]["L_oxide"]
+    assert cfg["sim"]["L_metal"] == cfg["conditions"]["L_metal"]
+
+
+@pytest.mark.parametrize("folder", STUDY_IDS)
+def test_oxide_carries_no_live_thickness_key(folder):
+    """`thickness` is renamed to `sample_thickness` so nothing can fall back to it.
+
+    The old key was read by four places — the flat params, build_simulation_config,
+    oxide_permeation and surface_kinetics — each of which looked like it was asking the
+    material how thick the wall is.
+    """
+    keys = params_of(folder)["oxide_keys"]
+    assert "thickness" not in keys, "OXIDES still has a live 'thickness' key"
+    assert "sample_thickness" in keys, "the sample's measured thickness was lost"
+
+
+@pytest.mark.parametrize("folder", STUDY_IDS)
+def test_oxide_thickness_is_written_as_a_conditions_reference(folder):
+    """Value equality would pass a literal 1e-6; the derivation has to be in the source."""
+    tree = ast.parse((ROOT / folder / "study_config.py").read_text())
+    for node in tree.body:
+        if (isinstance(node, ast.Assign)
+                and any(isinstance(t, ast.Name) and t.id == "DEFAULT_PARAMS_LEVEL5"
+                        for t in node.targets)):
+            entries = {k.value: v for k, v in zip(node.value.keys, node.value.values)
+                       if isinstance(k, ast.Constant)}
+            value = entries["oxide_thickness"]
+            assert any(isinstance(n, ast.Name) and n.id == "CONDITIONS"
+                       for n in ast.walk(value)), \
+                "oxide_thickness is a literal; it must read CONDITIONS"
+            return
+    raise AssertionError("DEFAULT_PARAMS_LEVEL5 not found")

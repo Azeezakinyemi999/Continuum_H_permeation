@@ -28,7 +28,7 @@ overrides the geometry.
       `container/model_smoke_test.py` hardcodes `P_DOWN = 1.0e2` where `CONDITIONS` says
       **0**, plus `L_METAL`. `P_down = 0` is safe for the solver but shifts `J_ss` by
       3.3 %, so the references must be re-measured in the same commit.
-- [ ] **Fix 3 — `CONDITIONS` owns the oxide geometry.** ⚠ re-baseline, the main one.
+- [x] **Fix 3 — `CONDITIONS` owns the oxide geometry.** ⚠ re-baseline, the main one.
       `CONDITIONS['L_oxide'] = 1e-6` is dead code; `OXIDES[...]['thickness'] = 4.8e-8`
       wins in both readers, so every model call runs a geometry 20× thinner than the
       config states. Switching to 1e-6 moves L5 by 0.4 % but **drops L5L6 flux 3× and
@@ -71,6 +71,12 @@ overrides the geometry.
 - [ ] **`Proposal.ipynb` has an invalid escape sequence** (`\P`, almost certainly a
       `$\Phi$` label in a non-raw string). A `DeprecationWarning` today, a
       `SyntaxWarning` in a later Python.
+- [ ] **The preset yields quoted in `study_config.py` are stale.** The comment above
+      `REGIME_PRESETS_L5` claims `metal 97.0%, oxide 77.7%, defect 87.3%`; measured today
+      they are 34%, 78%, 100% (150 draws, seed 42). Unchanged by the geometry fix —
+      verified by probing before and after — so the comment simply predates other work.
+      `size_draws_for_target()` measures yields at run time, so nothing depends on the
+      comment being right, but it reads as authoritative.
 - [ ] **Oxide properties are extrapolated ~500 K past their validated ceiling, silently.**
       The Cr₂O₃ data carry `temperature_range = [473, 773]` K; the SA sweeps to 1273 K.
       `get_oxide_properties_at_T` warns, but the level-5 wrappers — the ones the SA

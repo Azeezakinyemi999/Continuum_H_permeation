@@ -46,20 +46,21 @@ series.
 
 ### Verified values
 
-For Cr₂O₃ at 873 K, 48 nm thick, 1 bar → vacuum:
+For Cr₂O₃ at 873 K, 1 µm thick, 1 bar → vacuum:
 
 ```text
 D_ox        1.394877e-17  m²/s
 K_ox        2.868829e+02  (see the units warning in equilibrium-models)
-R_oxide     1.199501e+07  Pa·s·m²/mol
-flux        8.336797e-03  mol/m²/s
+R_oxide     2.498961e+08  Pa·s·m²/mol
+flux        4.001663e-04  mol/m²/s
 ```
 
 Compare that flux against Level 1's `4.327598e-06` for the same conditions: the
-oxide, taken alone, is roughly **1900× more permeable than the metal**. A 48 nm
-Cr₂O₃ layer at this temperature is not a barrier. This is the fact that makes the
-active study metal-limited at every subsequent level, and it is worth absorbing
-early because it explains why coating parameters barely move the answer.
+oxide, taken alone, is roughly **92× more permeable than the metal**. A 1 µm Cr₂O₃
+layer at this temperature is still not a barrier under Model 1, and that is what makes
+the study metal-limited through Level 5. It is worth absorbing early, because it
+explains why coating parameters barely move a Level 5 answer — and why they move a
+Level 5L6 answer a great deal, the oxide there carrying atomic H under Sieverts.
 
 ## Level 2b — oxide and metal in series
 
