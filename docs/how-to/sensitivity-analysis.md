@@ -242,6 +242,12 @@ The analysis runs in `sensitivity_regime_L5L6.ipynb` and its L5 counterpart; the
 parallel-coordinates views live in `regime_parallel_coords.ipynb` and
 `regime_parallel_coords_L5.ipynb`.
 
+Each writes its figures into its own folder beside it — `sensitivity_regime_L5L6.ipynb`
+→ `sensitivity_regime_L5L6-results/`, and the parallel-coordinates notebooks likewise —
+via `calculations.figures.results_dir()`, resolved against the working directory. The
+scan CSVs are separate and stay in `sa_results*/`, because they are read by a *different*
+notebook than the one that writes them.
+
 ```{warning}
 **Run the SA notebooks before the parallel-coordinates ones.** The SA notebooks
 write scan CSVs into `sa_results*/`, which is gitignored; the
