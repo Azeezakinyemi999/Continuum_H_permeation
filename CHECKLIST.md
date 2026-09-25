@@ -34,7 +34,7 @@ overrides the geometry.
       config states. Switching to 1e-6 moves L5 by 0.4 % but **drops L5L6 flux 3× and
       flips its regime from metal-limited to oxide-limited**, so the gate references, the
       generated doc numbers and the "the oxide barely matters" prose all change with it.
-- [ ] **Fix 3b — re-section the study file.** Five labelled sections in dependency
+- [x] **Fix 3b — re-section the study file.** Five labelled sections in dependency
       order: identity, what is being studied (CONDITIONS, OXIDE_DEFECTS, MODEL_OPTIONS,
       ranges, presets, VALIDATION grids), what the materials are, derived, presentation.
       Gathers the five model switches — `include_gb_trapping`, `use_sieverts_pinhole`,
