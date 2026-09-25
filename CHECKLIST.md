@@ -50,7 +50,7 @@ overrides the geometry.
       `SUGGESTED_RANGES_*` reference them. Material-parameter ranges stay put. The
       divergence check narrows to its real job: reporting *preset* overrides that leave
       the window, which are deliberate and should be visible.
-- [ ] **Fix 5 — name the provenance keys as provenance.** `METALS[...]['metal_thickness']`
+- [x] **Fix 5 — name the provenance keys as provenance.** `METALS[...]['metal_thickness']`
       is a *list* of the source experiment's specimen thicknesses sitting where a reader
       looks for wall thickness.
 - [ ] **Fix 6 — one shared `CONDITIONS`.** *(deferred, needs its own decision)* It is
@@ -71,6 +71,11 @@ overrides the geometry.
 - [ ] **`Proposal.ipynb` has an invalid escape sequence** (`\P`, almost certainly a
       `$\Phi$` label in a non-raw string). A `DeprecationWarning` today, a
       `SyntaxWarning` in a later Python.
+- [ ] **The measurement-validity windows are named inconsistently.** The metal carries
+      `temp_range` / `pressure_range`, the oxide `temperature_range`. Both mean the same
+      thing — where the source data are valid — and only the oxide's is read, by
+      `get_oxide_properties_at_T`, to warn on extrapolation. The metal's is read by
+      nothing, so a metal extrapolation is silent.
 - [ ] **The preset yields quoted in `study_config.py` are stale.** The comment above
       `REGIME_PRESETS_L5` claims `metal 97.0%, oxide 77.7%, defect 87.3%`; measured today
       they are 34%, 78%, 100% (150 draws, seed 42). Unchanged by the geometry fix —
