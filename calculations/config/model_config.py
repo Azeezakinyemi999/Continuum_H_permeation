@@ -111,7 +111,7 @@ REQUIRED_EXPORTS = frozenset({
     'REGIME_PRESETS', 'REGIME_PRESETS_L5',
     # material / condition dicts the model and the notebooks read
     'METALS', 'OXIDES', 'MICROSTRUCTURE', 'OXIDE_DEFECTS', 'CONDITIONS',
-    'VALIDATION', 'build_simulation_config',
+    'build_simulation_config',
     # presentation
     'PLOT_STYLE', 'COLORS', 'CURVE_STYLES',
 })

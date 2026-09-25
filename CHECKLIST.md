@@ -53,6 +53,11 @@ overrides the geometry.
 - [x] **Fix 5 — name the provenance keys as provenance.** `METALS[...]['metal_thickness']`
       is a *list* of the source experiment's specimen thicknesses sitting where a reader
       looks for wall thickness.
+- [x] **Fix 7 — dissolve `VALIDATION`.** It was a fourth statement of the operating
+      point wearing level prefixes. Gone: the entries that were conditions moved into
+      `CONDITIONS`, the sweep grids are built in the notebooks from a `CONDITIONS` range,
+      eight point-count names collapsed to `n_points`, and eight dead or discarded keys
+      were deleted. `REQUIRED_EXPORTS` no longer asks a study for it.
 - [x] **Fix 6 — one shared `CONDITIONS`. REJECTED, 2026-09-25.** Each study is an
       independent experiment; Guo 2025 has nothing to do with Fuerst or Incoloy 802.
       The four identical blocks are therefore not duplication to be removed — they are
@@ -81,6 +86,19 @@ overrides the geometry.
       least forgiving direction. Now that each study is explicitly independent, each
       needs an operating point chosen for its own material — or an explicit note that
       the extrapolation is intended.
+- [ ] **The L6 activation-energy extraction degraded when the geometry was
+      re-baselined.** Before Fix 3, `Surface_proposal` extracted E_diss as 58.4 / 59.4 /
+      59.4 kJ/mol against a configured 57.950 — three ticks. After Fixes 3–4 it extracts
+      ~68.8, and four of five panels show a warning; Fix 7 recovered a little (67.6, one
+      tick back). The fit is taken over the temperatures where the surface is rate-
+      limiting, and both the thicker oxide and the widened `T_range` change which
+      temperatures those are. Nothing is wrong with the model — the *check* is now
+      reading a window it was not tuned for. Worth deciding whether the extraction
+      should select its own window.
+- [ ] **The L5 sensitivity panel now runs at 873 K, outside the oxide's validated
+      window.** It used to use 673 K, chosen to sit inside [473, 773] K. Deliberate, per
+      the decision to reference `T_operating` directly; recorded so the count of places
+      that extrapolate stays honest.
 - [ ] **The measurement-validity windows are named inconsistently.** The metal carries
       `temp_range` / `pressure_range`, the oxide `temperature_range`. Both mean the same
       thing — where the source data are valid — and only the oxide's is read, by
