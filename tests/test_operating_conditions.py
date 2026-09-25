@@ -354,3 +354,98 @@ def test_model_switches_reference_model_options(folder):
                        for n in ast.walk(value)), (
                 f"{dict_name}[{key!r}] restates the switch instead of referencing "
                 f"MODEL_OPTIONS")
+
+
+# --------------------------------------------------------------------------
+# Fix 4 — CONDITIONS owns the swept operating ranges
+# --------------------------------------------------------------------------
+
+SWEPT_FROM_CONDITIONS = {
+    "temperature":     "T_range",
+    "P_upstream":      "P_range",
+    "metal_thickness": "L_metal_range",
+    "oxide_thickness": "L_oxide_range",
+}
+
+
+def suggested_range_nodes(folder, dict_name="SUGGESTED_RANGES_LEVEL5"):
+    tree = ast.parse((ROOT / folder / "study_config.py").read_text())
+    for node in tree.body:
+        if (isinstance(node, ast.Assign)
+                and any(isinstance(t, ast.Name) and t.id == dict_name
+                        for t in node.targets)):
+            return {k.value: v for k, v in zip(node.value.keys, node.value.values)
+                    if isinstance(k, ast.Constant)}
+    raise AssertionError(f"{folder}: {dict_name} not found")
+
+
+@pytest.mark.parametrize("folder", STUDY_IDS)
+def test_swept_operating_ranges_read_conditions(folder):
+    """The range of conditions under study is itself an operating condition.
+
+    It used to be stated twice, and the two disagreed — including a 1e12 Pa ceiling
+    here and a sub-atomic 1e-10 m floor there.
+    """
+    entries = suggested_range_nodes(folder)
+    for param in SWEPT_FROM_CONDITIONS:
+        assert any(isinstance(n, ast.Name) and n.id == "CONDITIONS"
+                   for n in ast.walk(entries[param])), (
+            f"SUGGESTED_RANGES_LEVEL5[{param!r}] is a literal; it must read CONDITIONS")
+
+
+@pytest.mark.parametrize("folder", STUDY_IDS)
+def test_swept_ranges_equal_their_conditions_window(folder):
+    cfg = params_of(folder)
+    proc = run_py(
+        "import json\n"
+        "from calculations.config.model_config import "
+        "SUGGESTED_RANGES_LEVEL5 as S, SUGGESTED_RANGES_LEVEL5L6 as S6\n"
+        "print(json.dumps({'l5': {k: list(S[k]) for k in "
+        f"{list(SWEPT_FROM_CONDITIONS)!r}" "},"
+        " 'l5l6': {k: list(S6[k]) for k in "
+        f"{list(SWEPT_FROM_CONDITIONS)!r}" "}}))",
+        cwd=ROOT / folder)
+    assert proc.returncode == 0, proc.stderr
+    got = json.loads(proc.stdout)
+    for param, cond_key in SWEPT_FROM_CONDITIONS.items():
+        window = list(cfg["conditions"][cond_key])
+        assert got["l5"][param] == window, param
+        assert got["l5l6"][param] == window, param
+
+
+@pytest.mark.parametrize("folder", STUDY_IDS)
+def test_material_parameter_ranges_stay_literal(folder):
+    """Only the operating ranges move. D_ref and friends describe materials, and a
+    material has no counterpart in CONDITIONS to be read from."""
+    entries = suggested_range_nodes(folder)
+    for param in ("D_ref", "E_D", "K_s_ref", "trap_gb_N_T"):
+        assert not any(isinstance(n, ast.Name) and n.id == "CONDITIONS"
+                       for n in ast.walk(entries[param])), (
+            f"{param} is a material range and must not derive from CONDITIONS")
+
+
+def test_preset_divergence_reports_the_deliberate_overrides():
+    """The 'oxide' presets sweep metal_thickness below the floor on purpose — thin metal
+    is how they stop the metal limiting. Reported, never failed."""
+    proc = run_py(
+        "import json\n"
+        "from calculations.sensitivity import preset_range_divergence\n"
+        "print(json.dumps(preset_range_divergence()))",
+        cwd=ROOT / "Guo_etal_2025")
+    assert proc.returncode == 0, proc.stderr
+    notes = json.loads(proc.stdout)
+    assert len(notes) == 2, notes
+    assert all("metal_thickness" in n and "oxide" in n for n in notes), notes
+
+
+def test_preset_divergence_catches_a_new_departure():
+    """A preset that quietly widened past the studied conditions must show up."""
+    proc = run_py(
+        "import json\n"
+        "from calculations.sensitivity import preset_range_divergence\n"
+        "fake = {'made_up': {'temperature': [1, 5000]}}\n"
+        "print(json.dumps(preset_range_divergence(presets=fake)))",
+        cwd=ROOT / "Guo_etal_2025")
+    assert proc.returncode == 0, proc.stderr
+    notes = json.loads(proc.stdout)
+    assert len(notes) == 1 and "temperature" in notes[0], notes

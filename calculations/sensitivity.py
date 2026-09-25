@@ -16,6 +16,7 @@ from SALib.analyze import delta as delta_analyzer
 # actually uses are imported; everything else there is imported directly from
 # model_config by whoever needs it, rather than re-exported here as a shim.
 from calculations.config.model_config import (
+    CONDITIONS,
     DEFAULT_PARAMS_LEVEL5, DEFAULT_PARAMS_LEVEL5L6,
     SUGGESTED_RANGES_LEVEL5, SUGGESTED_RANGES_LEVEL5L6,
     REGIME_PRESETS, REGIME_PRESETS_L5,
@@ -94,6 +95,58 @@ def _preset_overrides(preset, base):
     """Which entries of ``preset`` actually differ from its base ranges."""
     return {k: list(v) for k, v in preset.items()
             if k in base and list(v) != list(base[k])}
+
+
+#: The swept parameters that ARE operating conditions, and the CONDITIONS window each
+#: one must be read against. Material-parameter ranges have no counterpart here — they
+#: describe materials, not the scenario, and are not expected to sit in any window.
+OPERATING_RANGE_OF = {
+    'temperature':     'T_range',
+    'P_upstream':      'P_range',
+    'metal_thickness': 'L_metal_range',
+    'oxide_thickness': 'L_oxide_range',
+}
+
+
+def preset_range_divergence(presets=None, conditions=None):
+    """Preset overrides that sample outside the range of conditions being studied.
+
+    Reported, never failed. A regime preset leaves the window deliberately — the
+    'metal' preset of the L5L6 set sweeps metal_thickness down to 5e-5 m precisely so
+    the metal stops limiting, which is how it targets its regime at all. What is not
+    acceptable is for that to be invisible: CONDITIONS states the conditions under
+    study, and a scan that ranges outside them is making a wider claim than the study
+    does.
+
+    Parameters
+    ----------
+    presets : dict of {name: {param: [lo, hi]}}, optional
+        Defaults to both shipped preset sets, labelled by level.
+    conditions : dict, optional
+        Defaults to the active study's CONDITIONS.
+
+    Returns
+    -------
+    list of str
+        One line per override that leaves its window; empty when none do.
+    """
+    cond = CONDITIONS if conditions is None else conditions
+    if presets is None:
+        presets = {f"L5L6/{k}": v for k, v in REGIME_PRESETS.items()}
+        presets.update({f"L5/{k}": v for k, v in REGIME_PRESETS_L5.items()})
+
+    notes = []
+    for label, ranges in presets.items():
+        for param, cond_key in OPERATING_RANGE_OF.items():
+            if param not in ranges or cond_key not in cond:
+                continue
+            lo, hi = ranges[param]
+            c_lo, c_hi = cond[cond_key]
+            if lo < c_lo or hi > c_hi:
+                notes.append(
+                    f"{label}: {param} [{lo:g}, {hi:g}] extends beyond "
+                    f"CONDITIONS['{cond_key}'] ({c_lo:g}, {c_hi:g})")
+    return notes
 
 
 def check_against_config(raise_on_fail=True, verbose=True):
@@ -176,6 +229,15 @@ def check_against_config(raise_on_fail=True, verbose=True):
                 print(f"  - {p}")
         else:
             print("check_against_config: clean")
+
+        # Not problems: a preset leaves the window on purpose. Printed so the wider
+        # claim a targeted scan makes is visible rather than implicit.
+        notes = preset_range_divergence()
+        if notes:
+            print(f"check_against_config: {len(notes)} preset(s) sample outside "
+                  f"CONDITIONS — deliberate for regime targeting, listed so it is seen")
+            for n in notes:
+                print(f"  · {n}")
     if problems and raise_on_fail:
         raise ValueError("model_config.py sensitivity-parameter inconsistency:\n  "
                          + "\n  ".join(problems))

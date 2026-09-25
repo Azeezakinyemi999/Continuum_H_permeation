@@ -41,7 +41,7 @@ overrides the geometry.
       `include_gb_enhancement`, `include_trapping`, `D_eff_method` — which are scattered
       across three dicts and are not data. A pure move: verified by diffing the module
       namespace before and after, which must be identical.
-- [ ] **Fix 4 — `CONDITIONS` owns the swept operating ranges.** The range of conditions
+- [x] **Fix 4 — `CONDITIONS` owns the swept operating ranges.** The range of conditions
       being studied *is* an operating condition, but it is stated twice and the two
       disagree — and each set has a nonsense bound: `P_range` reaches 1e12 Pa (10 million
       bar) and the SA's `oxide_thickness` floor is 1e-10 m (0.1 Å, sub-atomic).

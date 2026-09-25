@@ -48,20 +48,27 @@ F = 96485      # C/mol  — Faraday constant (for eV conversions)
 # OPERATING CONDITIONS
 # =============================================================================
 CONDITIONS = {
+    # ---- the operating point ----
     'T_operating':    873,              # K
-    'T_range':        (623, 1200),      # K
-    'n_T_points':     20,
-
     'P_upstream':     1e5,              # Pa
     'P_downstream':   0,                # Pa
-    'P_range':        (1e-4, 1e12),      # Pa
-    'n_P_points':     40,
-
     'L_metal':        1e-3,             # m
     'L_oxide':        1e-6,             # m
-    'L_metal_range':  (0.1e-3, 5e-3),  # m
+
+    # ---- the range of conditions being studied ----
+    # These ARE operating conditions, so they are stated here and nowhere else: the
+    # sensitivity analysis reads them rather than restating them. It used to keep its
+    # own set, and each contained a bound that is nonsense read as a scenario — this
+    # dict reached 1e12 Pa (10 million bar) and the SA floor was 1e-10 m, sub-atomic.
+    'T_range':        (573, 1273),      # K
+    'P_range':        (1e-7, 1e7),      # Pa   1e-7 = UHV, 1e7 = 100 bar
+    'L_metal_range':  (1e-4, 5e-3),     # m    0.1 - 5 mm
     # absorbed OXIDES[...]['thickness_range'], which stated the same quantity
-    'L_oxide_range':  (1e-9, 1e-5),    # m   1 nm - 10 um
+    'L_oxide_range':  (1e-9, 1e-5),     # m    1 nm - 10 um
+
+    # ---- sweep resolution: a plotting choice, not a condition ----
+    'n_T_points':     20,
+    'n_P_points':     40,
     'n_L_points':     20,
 }
 
@@ -133,10 +140,12 @@ SUGGESTED_RANGES_LEVEL5 = {
     'H_sol_ox':     [20000, 170000],
    
 
-    # Geometry
-    'metal_thickness': [5e-4, 5e-3],
-    'oxide_thickness': [1e-10, 1e-5],
-    'P_upstream':      [1e-7, 1e7],
+    # Geometry and operating point — from CONDITIONS, which owns the range of
+    # conditions being studied. Material-parameter ranges below stay here:
+    # they describe materials, not conditions.
+    'metal_thickness': list(CONDITIONS['L_metal_range']),
+    'oxide_thickness': list(CONDITIONS['L_oxide_range']),
+    'P_upstream':      list(CONDITIONS['P_range']),
 
     # Oxide defects
     'f_pinhole':              [1e-5, 0.1],
@@ -161,7 +170,7 @@ SUGGESTED_RANGES_LEVEL5 = {
     'trap_carbide_N_T':     [2e23, 2e27],
 
     # Operating conditions
-    'temperature': [573, 1273],
+    'temperature': list(CONDITIONS['T_range']),
 }
 
 # -----------------------------------------------------------------------------
