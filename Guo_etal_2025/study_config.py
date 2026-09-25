@@ -423,7 +423,11 @@ METALS = {
         'reference':      'Guo et al. 2025',
         'temp_range':     [468, 823],
         'pressure_range': [1.33e2, 1e5],
-        'metal_thickness': [5e-3],
+        # Provenance, NOT geometry: the specimen thicknesses of the source
+        # experiment. A list, so feeding it to a model call poisons every result —
+        # which is why check_against_config guards for a non-scalar. The wall being
+        # simulated is CONDITIONS['L_metal'], as the oxide's is CONDITIONS['L_oxide'].
+        'sample_thickness': [5e-3],
         'gas':            'H₂',
         'Notes':          'Phi_ref = D_ref * Ks_ref.',
     }
@@ -609,8 +613,9 @@ DEFAULT_PARAMS_LEVEL5 = {
     'H_sol_ox':    _SA_O['H_sol_ox'],   # J/mol
     'T_ref_oxide': _SA_O['T_ref'],      # K
 
-    # Geometry — metal thickness comes from CONDITIONS, NOT METALS['metal_thickness'],
-    # which is a LIST of sweep values and would silently poison every model call.
+    # Geometry — both layers from CONDITIONS, which describes the wall being simulated.
+    # The materials carry only a sample_thickness apiece, recording the specimens their
+    # data were measured on.
     'metal_thickness': CONDITIONS['L_metal'],   # m
     'oxide_thickness': CONDITIONS['L_oxide'],   # m
 

@@ -449,3 +449,43 @@ def test_preset_divergence_catches_a_new_departure():
     assert proc.returncode == 0, proc.stderr
     notes = json.loads(proc.stdout)
     assert len(notes) == 1 and "temperature" in notes[0], notes
+
+
+# --------------------------------------------------------------------------
+# Fix 5 — provenance is named as provenance
+# --------------------------------------------------------------------------
+
+MATERIAL_REPORT = """
+import json
+from calculations.config.model_config import METALS, OXIDES
+print(json.dumps({
+    'metal_keys': sorted(next(iter(METALS.values()))),
+    'oxide_keys': sorted(next(iter(OXIDES.values()))),
+}))
+"""
+
+#: Keys that read as the geometry of the wall being simulated. That is CONDITIONS' job;
+#: a material dict holding one invites exactly the confusion this programme removed.
+GEOMETRY_LOOKALIKES = {"thickness", "metal_thickness", "oxide_thickness",
+                       "L_metal", "L_oxide"}
+
+
+@pytest.mark.parametrize("folder", STUDY_IDS)
+def test_materials_hold_no_geometry_lookalike_keys(folder):
+    proc = run_py(MATERIAL_REPORT, cwd=ROOT / folder)
+    assert proc.returncode == 0, proc.stderr
+    keys = json.loads(proc.stdout)
+    for which in ("metal_keys", "oxide_keys"):
+        offenders = GEOMETRY_LOOKALIKES & set(keys[which])
+        assert not offenders, (
+            f"{which} includes {sorted(offenders)} — geometry belongs to CONDITIONS; "
+            f"a measured specimen is 'sample_thickness'")
+
+
+@pytest.mark.parametrize("folder", STUDY_IDS)
+def test_both_materials_record_their_sample_thickness(folder):
+    """The provenance must survive the rename: it is what ties the transport data to the
+    specimen they were measured on."""
+    keys = json.loads(run_py(MATERIAL_REPORT, cwd=ROOT / folder).stdout)
+    assert "sample_thickness" in keys["metal_keys"]
+    assert "sample_thickness" in keys["oxide_keys"]

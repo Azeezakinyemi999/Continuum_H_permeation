@@ -158,8 +158,8 @@ def check_against_config(raise_on_fail=True, verbose=True):
     guarantee:
 
     1. every derived value is a finite scalar — catches a config entry that has
-       become a list or a sweep range (METALS['metal_thickness'] is already a list,
-       which is why geometry reads from CONDITIONS)
+       become a list or a sweep range (the materials' sample_thickness entries are
+       lists, which is one reason geometry reads from CONDITIONS)
     2. every swept parameter has a default
     3. every default lies strictly INSIDE its own sweep range. A default outside
        the range means the two disagree about what is plausible; a default sitting
