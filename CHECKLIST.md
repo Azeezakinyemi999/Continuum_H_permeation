@@ -86,15 +86,16 @@ overrides the geometry.
       least forgiving direction. Now that each study is explicitly independent, each
       needs an operating point chosen for its own material — or an explicit note that
       the extrapolation is intended.
-- [ ] **The L6 activation-energy extraction degraded when the geometry was
-      re-baselined.** Before Fix 3, `Surface_proposal` extracted E_diss as 58.4 / 59.4 /
-      59.4 kJ/mol against a configured 57.950 — three ticks. After Fixes 3–4 it extracts
-      ~68.8, and four of five panels show a warning; Fix 7 recovered a little (67.6, one
-      tick back). The fit is taken over the temperatures where the surface is rate-
-      limiting, and both the thicker oxide and the widened `T_range` change which
-      temperatures those are. Nothing is wrong with the model — the *check* is now
-      reading a window it was not tuned for. Worth deciding whether the extraction
-      should select its own window.
+- [x] **The L6 activation-energy extraction was contaminated by borderline points.**
+      Diagnosed and fixed: the Arrhenius fit accepted any point classified "pure
+      surface" at a 90% threshold, but the remaining 10% belongs to a path whose
+      activation energy is ~234 kJ/mol against the surface's ~58, biasing the fit upward
+      by ~10 kJ/mol. Raising the threshold to 0.99 returns 59.2 against a configured
+      57.95, and repairs the oxide fit too (217 -> 231 against 234). Ticks per
+      Surface_proposal run: 8 -> 12. The threshold was always too loose; widening
+      `T_range` merely produced enough borderline points to expose it. One panel still
+      warns in each study (85.1 for 316L, and two for Incoloy 802, which runs 150 K
+      below its metal's validated window) — a genuinely mixed regime, not a fit artefact.
 - [ ] **The L5 sensitivity panel now runs at 873 K, outside the oxide's validated
       window.** It used to use 673 K, chosen to sit inside [473, 773] K. Deliberate, per
       the decision to reference `T_operating` directly; recorded so the count of places
