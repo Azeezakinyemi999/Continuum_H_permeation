@@ -278,3 +278,79 @@ def test_oxide_thickness_is_written_as_a_conditions_reference(folder):
                 "oxide_thickness is a literal; it must read CONDITIONS"
             return
     raise AssertionError("DEFAULT_PARAMS_LEVEL5 not found")
+
+
+# --------------------------------------------------------------------------
+# Fix 3b — the study file is sectioned, in dependency order
+# --------------------------------------------------------------------------
+
+SECTION_TITLES = [
+    "1. IDENTITY AND CONSTANTS",
+    "2. WHAT IS BEING STUDIED",
+    "3. WHAT THE MATERIALS ARE",
+    "4. DERIVED",
+    "5. PRESENTATION",
+]
+
+
+def top_level_line(folder, name):
+    """Line number where a top-level statement binds `name`."""
+    tree = ast.parse((ROOT / folder / "study_config.py").read_text())
+    for node in tree.body:
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name == name:
+            return node.lineno
+        if isinstance(node, ast.Assign) and any(
+                isinstance(t, ast.Name) and t.id == name for t in node.targets):
+            return node.lineno
+    raise AssertionError(f"{folder}: {name} is not defined at top level")
+
+
+@pytest.mark.parametrize("folder", STUDY_IDS)
+def test_study_file_has_its_five_sections_in_order(folder):
+    text = (ROOT / folder / "study_config.py").read_text()
+    positions = []
+    for title in SECTION_TITLES:
+        assert text.count(f"# {title}") == 1, f"section banner missing: {title}"
+        positions.append(text.index(f"# {title}"))
+    assert positions == sorted(positions), "sections are out of order"
+
+
+@pytest.mark.parametrize("folder", STUDY_IDS)
+def test_derived_block_comes_after_what_it_reads(folder):
+    """The ordering is load-bearing, not cosmetic: Python executes top to bottom, so a
+    derived dict placed above its sources is a NameError at import."""
+    derived = top_level_line(folder, "DEFAULT_PARAMS_LEVEL5")
+    for source in ("CONDITIONS", "MODEL_OPTIONS", "OXIDE_DEFECTS", "METALS",
+                   "OXIDES", "MICROSTRUCTURE"):
+        assert top_level_line(folder, source) < derived, (
+            f"{source} is defined after DEFAULT_PARAMS_LEVEL5, which reads it")
+
+
+@pytest.mark.parametrize("folder", STUDY_IDS)
+def test_model_switches_reference_model_options(folder):
+    """The five switches had three homes. Now they have one, and the dicts that deliver
+    them to the solvers carry a reference rather than a second copy."""
+    tree = ast.parse((ROOT / folder / "study_config.py").read_text())
+    wanted = {
+        "MICROSTRUCTURE":        ["include_gb_trapping"],
+        "OXIDE_DEFECTS":         ["use_sieverts_pinhole"],
+        "DEFAULT_PARAMS_LEVEL5": ["include_gb_enhancement", "include_trapping",
+                                  "D_eff_method"],
+    }
+    seen = {}
+    for node in tree.body:
+        if not isinstance(node, ast.Assign):
+            continue
+        for target in node.targets:
+            if isinstance(target, ast.Name) and target.id in wanted:
+                seen[target.id] = {k.value: v for k, v in
+                                   zip(node.value.keys, node.value.values)
+                                   if isinstance(k, ast.Constant)}
+    for dict_name, keys in wanted.items():
+        assert dict_name in seen, f"{dict_name} not found"
+        for key in keys:
+            value = seen[dict_name][key]
+            assert any(isinstance(n, ast.Name) and n.id == "MODEL_OPTIONS"
+                       for n in ast.walk(value)), (
+                f"{dict_name}[{key!r}] restates the switch instead of referencing "
+                f"MODEL_OPTIONS")
