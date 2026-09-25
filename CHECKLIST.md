@@ -53,9 +53,11 @@ overrides the geometry.
 - [x] **Fix 5 — name the provenance keys as provenance.** `METALS[...]['metal_thickness']`
       is a *list* of the source experiment's specimen thicknesses sitting where a reader
       looks for wall thickness.
-- [ ] **Fix 6 — one shared `CONDITIONS`.** *(deferred, needs its own decision)* It is
-      byte-identical in all four studies. Hoisting it would weaken "a study folder is
-      self-contained", which was the point of an earlier change.
+- [x] **Fix 6 — one shared `CONDITIONS`. REJECTED, 2026-09-25.** Each study is an
+      independent experiment; Guo 2025 has nothing to do with Fuerst or Incoloy 802.
+      The four identical blocks are therefore not duplication to be removed — they are
+      four scenarios that happen to agree today, and nothing should force them to keep
+      agreeing. No shared definition, and deliberately no test asserting they match.
 
 ## Known defects, not yet scheduled
 
@@ -71,6 +73,14 @@ overrides the geometry.
 - [ ] **`Proposal.ipynb` has an invalid escape sequence** (`\P`, almost certainly a
       `$\Phi$` label in a non-raw string). A `DeprecationWarning` today, a
       `SyntaxWarning` in a later Python.
+- [ ] **Every study runs at 873 K because it was copied, not chosen — and for two of
+      them that is outside their own metal's validated window, downward.** Guo (316L)
+      operates 50 K above its metal's [468, 823] K ceiling; Fuerst (Hastelloy N) and
+      Incoloy 802 operate **150 K below** their metals' [1023, 1223] K floor, and their
+      `T_range` starts 450 K below it. Extrapolating an Arrhenius fit downward is the
+      least forgiving direction. Now that each study is explicitly independent, each
+      needs an operating point chosen for its own material — or an explicit note that
+      the extrapolation is intended.
 - [ ] **The measurement-validity windows are named inconsistently.** The metal carries
       `temp_range` / `pressure_range`, the oxide `temperature_range`. Both mean the same
       thing — where the source data are valid — and only the oxide's is read, by
