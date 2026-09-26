@@ -241,7 +241,7 @@ def test_the_deleted_studies_package_stays_deleted():
 # --------------------------------------------------------------------------
 
 CONTAINER_README = ROOT / "container" / "README.md"
-SUPERSEDED_HEADING = "### Since 1.1.0"
+SUPERSEDED_HEADING = "### Changes since 1.1.0"
 
 
 def test_container_readme_mentions_the_switch_only_as_history():

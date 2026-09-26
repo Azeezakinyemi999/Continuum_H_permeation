@@ -446,3 +446,59 @@ Nothing about the scientific environment changed between 1.0.0 and 1.0.1: the
   container runtime and version, whether Linux containers are permitted, whether
   bind mounts and localhost port binds are allowed, whether images are scanned
   before import, and whether containers must run as a specific UID.
+
+## 1.2.0 release record — 2026-09-26
+
+There is no 1.1.0 record in this file; it was released without one. This entry is
+written to the shape of the 1.0.1 record above.
+
+| | |
+|---|---|
+| image id | `sha256:9b613b26d005ef48da48d8bd96a57bb5e2ac1e64c805fc47036ca341ed8d01b0` |
+| arch / user | `amd64/linux`, `User=1000:0` |
+| archive | 228M tar, sha256 `8733641cd2c03c96…` |
+| package manifest | 68 files, all verify with `shasum -a 256 -c SHA256SUMS.txt` |
+| round-trip | image removed (`Deleted: sha256:9b613b26…`), reloaded from the tar, **identical id** |
+| gates from the package | both PASSED offline, on the reloaded image |
+| second study | `PERMEATION_STUDY=incoloy802_cr2o3/study_config.py` gated deliberately — PASSED |
+
+### The environment did not change; the model did
+
+`requirements.lock.txt`, the `Dockerfile` and both scripts are unchanged from
+1.1.0 — the `Dockerfile` hash `d0c34b13…` is the same entry in both SHA256SUMS
+files, the pip layer was a cache hit during the build, and `pip freeze` inside the
+image returns the same 106 packages byte for byte.
+
+The image still had to be rebuilt, because `model_smoke_test.py` is `COPY`d into
+it and changed in five commits: the gate became study-aware, gained `--emit` for
+regenerating its own reference values, and had its operating point and 13 pinned
+values re-measured after `CONDITIONS` took over the oxide geometry.
+
+### What ships that did not before
+
+Four studies rather than three, each a self-contained folder holding its own
+`study_config.py` — there is no `ACTIVE_STUDY` switch and no
+`calculations/config/studies/` any more. `calculations/` gains `permeability.py`
+and `figures.py`.
+
+**1.1.0 results do not reproduce under 1.2.0**, and that is intended rather than a
+regression. `CONDITIONS` is now the authority for the wall, so the oxide is its
+1 µm `L_oxide` and not the 48 nm coupon thickness recorded on the material, which
+drops Level 5L6 flux threefold and flips that level from metal- to oxide-limited;
+and `permeability` is an apparent permeability derived from each level's own
+solved flux rather than a harmonic mean of bulk constants, a factor of 775 at the
+default point.
+
+### Two things found while packaging
+
+- **`image/*.sha256` must hold a package-root-relative path.** Generated from
+  inside `image/` it records a bare filename, and the README's own first
+  instruction — `shasum -a 256 -c image/hydrogen-model-1.2.0.sha256`, run from the
+  package root — then fails to find the file. Caught before shipping; 1.1.0 has the
+  correct form and was the reference.
+- **`sa_results/` ships empty again.** The "What ships" section above says the scan
+  CSVs must travel because `regime_parallel_coords*` cannot regenerate them, and
+  1.1.0 already shipped only `.gitkeep`. The only scans on disk were
+  `Application/sa_results_L5`, computed before the geometry re-baseline, so
+  shipping them would have shipped wrong numbers. Empty is the lesser evil, and the
+  README's "Run order matters" says to run the scans first.
