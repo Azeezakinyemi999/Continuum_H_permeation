@@ -1,5 +1,11 @@
 # Level 5 — the full system
 
+```{note}
+**Model 1.** Dissociation sits at the oxide/metal interface, so the oxide carries
+intact H₂ under Henry's law. The Level 6 family makes a different choice — see
+{doc}`two-models` before comparing results across the two.
+```
+
 Level 5 is a defective oxide over a defective metal: Level 3's parallel paths,
 with Level 4's microstructural metal underneath every one of them. It introduces
 no new physics. What it introduces is **coupling**, and the interesting question
@@ -149,14 +155,21 @@ D_metal               2.363871e-10  m²/s
 D_eff                 1.746573e-10  m²/s
 modification_factor   0.738861227
 defect_enhancement    1.000004
-permeability          4.000079e-15
+permeability          1.010995e-11
+permeance             1.010946e-08
 regime                metal
 ```
 
-Two of these carry warnings established elsewhere. `permeability` is a bulk-only
-harmonic mean and disagrees with `flux` and `regime` by construction — see
-{doc}`../getting-started`. And `PRF` is finite here but becomes `nan` at Level
-5L6, so prefer the Level 5 value when you need a coating number.
+`permeability` is the *apparent* permeability $J L_{\text{tot}}/\Delta\sqrt{P}$,
+backed out of the flux above, so it agrees with `flux` and `regime` instead of
+contradicting them. Note where it lands: $1.010995\times10^{-11}$ against a bare
+metal $\Phi_m = 1.368507\times10^{-11}$, a ratio of 0.739 — exactly
+`modification_factor`. The 48 nm oxide is non-limiting, so the whole wall reduces
+to $D_{\text{eff}}K_s$, and the number reads metal-controlled just as `regime`
+does. It is still not a material constant; see {doc}`permeability`.
+
+`PRF` is finite here but becomes `nan` at Level 5L6, so prefer the Level 5 value
+when you need a coating number.
 
 ## What Level 5 still cannot tell you
 

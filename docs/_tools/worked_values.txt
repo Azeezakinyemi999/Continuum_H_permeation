@@ -50,6 +50,23 @@ L_metal/L_oxide  0.001 / 1e-06 m
   beta                       1.368507e-08
   rate_limiting              metal
 
+[permeability tiers] calculations.permeability
+  tier 1 Phi_oxide           4.001663e-15  mol/m/s/Pa
+  tier 1 Phi_metal           1.368507e-11  mol/m/s/Pa^0.5
+  Model 1 has no tier 3: the two units above are not commensurable.
+  tier 2 Phi_ox_eff/Phi_ox   1.009000   (f_crack=0.001, f_gb=0)
+  tier 2 Phi_ox_eff/Phi_ox   1.009000   (f_crack=0, f_gb=0.001)
+  tier 2 Phi_ox_eff/Phi_ox   1.180000   (f_crack=0.01, f_gb=0.01)
+  Model 1 bilayer closed form 4.304261e-06  mol/m2/s
+  Model 1 bilayer brentq      4.304261e-06  mol/m2/s
+  relative difference         5.285e-14
+  tier 3 Phi_transport       3.099374e-12  mol/m/s/Pa^0.5
+  Model 2 eta_surf           0.999108
+  tier 4 Phi_app             3.096608e-12
+  Phi_transport * eta_surf   3.096608e-12  (must equal Phi_app)
+  old unweighted harmonic    4.000493e-15
+  understated by             775x
+
 [L5 canonical wrapper] sensitivity.level5_model_wrapper on its DEFAULT_PARAMS
   D_eff                      1.746573e-10
   D_metal                    2.363871e-10
@@ -68,7 +85,8 @@ L_metal/L_oxide  0.001 / 1e-06 m
   frac_metal                 9.721267e-01
   frac_oxide                 7.798791e-03
   modification_factor        7.388612e-01
-  permeability               4.000079e-15
+  permeability               1.008189e-11
+  permeance                  1.007181e-08
   regime                     metal
   temperature                8.730000e+02
 
@@ -83,6 +101,8 @@ L_metal/L_oxide  0.001 / 1e-06 m
   K_s_metal                  5.789261e-02
   PRF                        nan
   P_interface                7.826525e+03
+  Phi_transport              2.869883e-12
+  eta_surf                   9.866525e-01
   flux                       9.090674e-07
   flux_defect                3.242923e-08
   flux_intact                8.766381e-07
@@ -91,7 +111,8 @@ L_metal/L_oxide  0.001 / 1e-06 m
   frac_surface               1.915509e-04
   k_diss                     2.370190e-09
   k_diss_metal               2.498430e-10
-  permeability               4.000079e-15
+  permeability               2.877598e-12
+  permeance                  2.874723e-09
   regime                     oxide
   temperature                8.730000e+02
   theta                      6.227364e-01

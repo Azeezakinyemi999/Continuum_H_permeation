@@ -15,7 +15,8 @@ invalidate it.
 - **New to the model** — read {doc}`getting-started`, then the theory chapters
   in order. They build up one physical effect at a time.
 - **Looking up a parameter or a returned quantity** — {doc}`PARAMETERS`
-  and {doc}`OUTPUTS`.
+  and {doc}`OUTPUTS`; {doc}`config-file` explains the structure of the file
+  they come from.
 - **Running an analysis** — {doc}`how-to/sensitivity-analysis` for the
   regime-stratified sensitivity workflow, {doc}`how-to/switch-study` to change
   material system.
@@ -31,22 +32,6 @@ getting-started
 
 ```{toctree}
 :maxdepth: 2
-:caption: Theory
-
-theory/foundations
-theory/equilibrium-models
-STEADY_STATE
-theory/level1-metal
-theory/level2-oxide
-theory/level3-defective-oxide
-theory/level4-microstructure
-theory/level5-full-system
-theory/level6-surface-kinetics
-theory/equations
-```
-
-```{toctree}
-:maxdepth: 2
 :caption: How-to
 
 how-to/switch-study
@@ -56,8 +41,27 @@ CONTAINER
 
 ```{toctree}
 :maxdepth: 2
+:caption: Theory
+
+theory/two-models
+theory/foundations
+theory/equilibrium-models
+STEADY_STATE
+theory/level1-metal
+theory/level2-oxide
+theory/level3-defective-oxide
+theory/level4-microstructure
+theory/level5-full-system
+theory/level6-surface-kinetics
+theory/permeability
+theory/equations
+```
+
+```{toctree}
+:maxdepth: 2
 :caption: Reference
 
+config-file
 PARAMETERS
 OUTPUTS
 api/index
@@ -70,6 +74,13 @@ api/index
 TRAPPING_VALIDATION
 PACKAGING_1.0.0
 references
+```
+
+```{toctree}
+:maxdepth: 2
+:caption: Warnings and caveats
+
+caveats
 ```
 
 ```{note}

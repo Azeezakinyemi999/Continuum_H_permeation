@@ -81,62 +81,25 @@ operating point. See {doc}`theory/equilibrium-models`.
 
 ## Read these caveats before trusting a number
 
-Four behaviours will mislead you if you meet them without warning. None is a bug;
-all are consequences of how the model is defined.
+Three behaviours will mislead you if you meet them without warning. None is a bug;
+all are consequences of how the model is defined, and each is written up in
+{doc}`caveats`:
 
-```{warning}
-**Level 5 is metal-limited, so the oxide barely matters — but Level 5L6 is not.**
-With the 1 µm Cr₂O₃ layer on 316L at 873 K, Level 5 gives `frac_oxide = 7.8e-3` and
-`PRF ≈ 1.004`: the coating is almost invisible. Under the Level 6 family the same wall
-is **oxide-limited**, because dissociation at the gas/oxide surface sends atomic H
-through the oxide under Sieverts rather than intact H₂ under Henry, and thickness then
-bites. Do not carry a conclusion from one model to the other; see
-{doc}`theory/equilibrium-models`.
-```
+- **Level 5 is metal-limited, so the oxide barely matters — but Level 5L6 is
+  not.** The same wall is oxide-limited under the Level 6 family, because
+  dissociation sends atomic H through the oxide under Sieverts rather than intact
+  H₂ under Henry. Do not carry a conclusion from one model to the other.
+- **Both materials are extrapolated at the default operating point**, and the
+  sensitivity analysis extrapolates much further — with the canonical wrappers
+  silent about it.
+- **`PRF` is `nan` from the Level 5L6 wrapper**, though it is finite from Level 5.
 
-```{warning}
-**Both materials are extrapolated at the default operating point, and the
-sensitivity analysis extrapolates much further — silently.** The Cr₂O₃ data
-carry `temperature_range = [473, 773]` K and the 316L data `[468, 823]` K. The
-active study runs at 873 K — past both ceilings — and the sensitivity sweeps run
-to **1273 K**, 500 K past the oxide's.
-
-Whether you are told depends on which entry point you use:
-
-- `get_oxide_properties_at_T` and `get_metal_properties_at_T` check the range
-  and print
-  `Warning: Temperature 873K outside validated range [473, 773]K`. They use
-  `print()`, not `warnings.warn`, so `simplefilter("ignore")` does **not**
-  silence it. The metal's window was called `temp_range` and was read by
-  nothing, so until recently only the oxide warned.
-- `level5_model_wrapper` and `level5L6_model_wrapper` — the canonical entry
-  points, and the ones the sensitivity analysis calls — compute $D_{ox}$ and
-  $K_{ox}$ from raw parameters via `arrhenius` and never consult the range.
-  They are **silent**.
-
-So the workflow that extrapolates hardest is the one that warns least. Treat
-oxide properties above 773 K as an Arrhenius extrapolation you have chosen, not
-as validated data. 873 K also sits just below the grain-boundary enhancement
-data range of [873.1, 1273.2] K.
-```
-
-```{warning}
-**`permeability` does not agree with `flux`, by construction.** It is a harmonic
-mean of the two *bulk* permeabilities,
-
-$$\frac{1}{\Phi_{\text{eff}}} = \frac{1}{D_{ox} K_{ox}} + \frac{1}{D_{eff} K_{s,m}}$$
-
-with no dependence on flux, defect paths, or surface kinetics. It is therefore
-identical for Level 5 and Level 5L6 even where their fluxes differ by 15%, and
-because $\Phi_{ox} \ll \Phi_{metal}$ it reads oxide-limited while `regime` reads
-metal. Use `flux` and `PRF` to reason about the wall; treat `permeability` as a
-bulk material property only.
-```
-
-```{warning}
-**`PRF` is `nan` from the Level 5L6 wrapper** at default parameters, though it is
-finite from Level 5. Use the Level 5 value when you need a coating-effectiveness
-number.
+```{note}
+An earlier version of this page carried a fourth warning: that `permeability` was
+a harmonic mean of the two bulk permeabilities, disagreeing with `flux` by
+construction, to be treated as a bulk material property only. That was an accurate
+description of the old metric — a material-constant formula applied to a composite
+wall. It no longer describes what is computed; see {doc}`theory/permeability`.
 ```
 
 ## Which material system is active

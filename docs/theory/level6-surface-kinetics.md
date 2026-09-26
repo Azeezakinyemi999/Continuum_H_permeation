@@ -1,5 +1,12 @@
 # Level 6 — surface kinetics
 
+```{note}
+**Model 2.** Dissociation moves to the gas/oxide surface, so what crosses the
+oxide is now *atomic* H under Sieverts' law. This is a different oxide model from
+Levels 1–5, not merely an added resistance, and it is why L5 and L5L6 results are
+not directly comparable — see {doc}`two-models`.
+```
+
 Every level so far has assumed that hydrogen arriving at the wall splits and
 dissolves instantly, so the gas-facing surface imposes no resistance. Level 6
 removes that assumption: dissociative adsorption proceeds at a finite rate, the
@@ -89,24 +96,6 @@ $$\frac{P_{\text{up}}}{P_{\text{virtual}}} = 83.9861
 \sqrt{83.9861} = 9.1644$$
 
 which is exactly the measured flux ratio, because flux scales as $\sqrt{P}$.
-
-```{warning}
-**`rate_limiting` and `fraction_surface` do not measure what the surface cost
-you.** They are computed at the *solved* operating point, so they answer "given
-this coverage, where does the remaining driving force drop?" — not "how much flux
-was lost relative to an infinitely fast surface?"
-
-The surface acts by **depressing the effective upstream pressure**, and that loss
-happens before the series decomposition begins. A surface holding 2.78% of the
-resistance can still be responsible for a ninefold flux reduction.
-
-This is why `calculations.sensitivity` documents `flux` as the primary metric —
-its comment notes it is *the only metric that responds to surface kinetics*.
-`permeability` is bulk-only and blind to the surface entirely; `frac_surface`
-sees only the residual series share. If you want to know whether surface kinetics
-matter, compare fluxes with and without them, or inspect $\theta$ against
-$\theta_{eq}$.
-```
 
 ## Reading coverage
 
