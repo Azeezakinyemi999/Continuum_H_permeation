@@ -195,6 +195,17 @@ overrides the geometry.
 
 ## Repository hygiene
 
+- [ ] **The Guo SA notebooks' stored outputs predate the geometry re-baseline.** Merging
+      `fix/eta-surf-not-default` brought re-executed copies of `sensitivity_regime_L5`,
+      `sensitivity_regime_L5L6` and both `regime_parallel_coords*`, but that branch forked
+      at `0c264dd`, before `acfe540` made `CONDITIONS` own the oxide geometry — so they
+      were computed on the 48 nm layer, where L5L6 flux is 3x higher and the regime reads
+      metal rather than oxide. Its outputs were therefore dropped and only its
+      `sensitivity.py` change taken; the notebook *source* is identical either way.
+      The committed outputs are now stale in both copies and a correct set needs a real
+      re-execution, which is hours per notebook — the L5L6 773 K oxide preset alone draws
+      >100k samples.
+
 - [x] **`docs/two-models` is unmerged**, 8 commits ahead of `main`, and edits two of the
       same documentation pages as the current branch — `docs/api/config.md` and
       `docs/how-to/switch-study.md`. Whichever merges second needs reconciling.
