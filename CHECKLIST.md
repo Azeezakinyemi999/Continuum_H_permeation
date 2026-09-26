@@ -149,9 +149,35 @@ overrides the geometry.
 
 ## Repository hygiene
 
-- [ ] **`docs/two-models` is unmerged**, 8 commits ahead of `main`, and edits two of the
+- [x] **`docs/two-models` is unmerged**, 8 commits ahead of `main`, and edits two of the
       same documentation pages as the current branch — `docs/api/config.md` and
       `docs/how-to/switch-study.md`. Whichever merges second needs reconciling.
+      **Merged.** It was more than docs: it brought `calculations/permeability.py`,
+      `tests/test_permeability.py` (35 tests, 290 -> 325) and the four-tier permeability
+      metric. Six conflicts, all from the branch predating this one:
+
+      | file | resolution |
+      |---|---|
+      | `calculations/config/model_config.py` | ours — the branch only flipped the deleted `ACTIVE_STUDY` literal |
+      | `docs/getting-started.md` | hand-merged; `--theirs` would have reverted the page to the switch era |
+      | `docs/how-to/sensitivity-analysis.md` | kept our figure-folder paragraph, took their warning relocation |
+      | `docs/how-to/switch-study.md`, `docs/theory/equilibrium-models.md` | theirs — warnings relocated to `caveats.md` |
+      | `docs/_tools/worked_values.txt` | regenerated rather than hand-merged |
+
+      What the merge actually fixes: `permeability` was a harmonic mean of two bulk
+      constants, so L5 and L5L6 both reported `4.000079e-15` despite fluxes differing
+      3.5x. They now read 1.008e-11 and 2.878e-12, each backed out of its own flux. The
+      old number understated by **775x**.
+
+      The two new pages arrived stale, written against the pre-restructuring config, and
+      were corrected against the running code rather than merged as-is: `caveats.md` had
+      a 48 nm wall, `frac_oxide = 3.8e-4` and `PRF ~ 1.0002` (now 1 um, 7.8e-3, 1.004),
+      and `config-file.md` documented `calculations/config/studies/`, a `VALIDATION`
+      block, `metal_thickness` and a fifteen-name export contract — all retired.
+
+      Note `verify_docs.py` passed on that stale page: it checks that referenced config
+      *names* resolve, so it never noticed `VALIDATION` being documented after deletion.
+      A prose claim about a name that no longer exists is outside what it can see.
 - [ ] **`container/README.md:157`** still describes the deleted `ACTIVE_STUDY` switch and
       `calculations/config/studies/`. It is accurate about the shipped 1.1.0 image and
       wrong about the repository, so it needs a "since 1.1.0" note rather than a rewrite.
