@@ -93,13 +93,20 @@ def test_missing_study_file_lists_what_does_exist():
 
 
 def test_incomplete_study_names_every_missing_export(tmp_path):
+    """The names checked here are ones the DERIVED block in model_config.py reads.
+
+    That is the case worth pinning. A study missing CONDITIONS or MODEL_OPTIONS does not
+    merely disappoint a later import — it breaks model_config's own derivation, and
+    without this check the reader gets a bare NameError raised from inside the loader
+    instead of a sentence naming the study and the gap.
+    """
     broken = tmp_path / "study_config.py"
     broken.write_text("STUDY_NAME = 'broken'\nMETALS = {}\nOXIDES = {}\n")
     proc = run_py("import calculations.config.model_config",
                   env={"MHI_STUDY": str(broken)})
     assert proc.returncode != 0
     assert "missing" in proc.stderr and "required export" in proc.stderr
-    for name in ("CONDITIONS", "DEFAULT_PARAMS_LEVEL5L6", "build_simulation_config"):
+    for name in ("CONDITIONS", "MODEL_OPTIONS", "MICROSTRUCTURE", "REGIME_PRESETS"):
         assert name in proc.stderr
 
 

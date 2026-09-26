@@ -53,9 +53,10 @@ def real_names() -> tuple[set[str], set[str]]:
     """(functions, modules) that actually exist under calculations/."""
     funcs, mods = set(), set()
     # The study files are NOT under calculations/ — each study is a folder at the repo
-    # root holding its own study_config.py. They define build_simulation_config,
-    # apply_style and get_surface_kinetics_from_config, all of which the docs name, so
-    # scanning only the package would report them as nonexistent.
+    # root holding its own study_config.py — so they are scanned explicitly. They used to
+    # be where build_simulation_config, apply_style and get_surface_kinetics_from_config
+    # were defined; those moved into calculations/config/model_config.py, which the first
+    # glob already covers. The studies are still scanned for the names they do define.
     sources = sorted((ROOT / "calculations").rglob("*.py")) + sorted(
         p for p in ROOT.glob("*/study_config.py"))
 

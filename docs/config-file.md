@@ -36,10 +36,10 @@ to do with `Fuerst_et_al_2024/`, and adding a study means copying a folder, not
 registering it anywhere.
 
 The study files are **structurally identical**. They define the same names in the
-same five sections and differ only in their values, which is what lets one folder
+same three sections and differ only in their values, which is what lets one folder
 replace an entire material system.
 
-## The five sections
+## The three sections
 
 The file is ordered by dependency, and the section banners say so. Python executes
 top to bottom, so nothing may reference a block below it.
@@ -49,14 +49,28 @@ top to bottom, so nothing may reference a block below it.
 | 1. Identity and constants | `STUDY_NAME`, `R`, `F` |
 | 2. What is being studied | `CONDITIONS`, `MODEL_OPTIONS`, `OXIDE_DEFECTS`, the `SUGGESTED_RANGES_*`, the presets, `DEFAULT_SWEEP_TEMPERATURES` |
 | 3. What the materials are | `METALS`, `OXIDES`, `MICROSTRUCTURE` |
-| 4. Derived | the `DEFAULT_PARAMS_*`, `build_simulation_config`, `get_surface_kinetics_from_config` |
-| 5. Presentation | `PLOT_STYLE`, `COLORS`, `CURVE_STYLES`, `apply_style` |
 
 The split between 2 and 3 is the one to internalise. Section 3 says what a
 substance *does* at a temperature; section 2 says what wall is being built from it
 and at what operating point. A material entry therefore carries no thickness and
 no operating point — see `sample_thickness` below for the one place that reads
 like an exception and is not.
+
+```{note}
+There used to be two more sections — **4. Derived** (the `DEFAULT_PARAMS_*`,
+`build_simulation_config`, `get_surface_kinetics_from_config`) and
+**5. Presentation** (`PLOT_STYLE`, `COLORS`, `CURVE_STYLES`, `apply_style`). They
+were byte-identical in all four studies, 408 lines duplicated four ways, and they
+have moved into
+[`calculations/config/model_config.py`](https://github.com/Azeezakinyemi999/MHI_permeation/blob/main/calculations/config/model_config.py).
+
+You still import those names from exactly the same place — `model_config`
+re-exports everything — so nothing you write changes. What changed is that they are
+no longer yours to copy: a new study inherits them, and "a literal in the derived
+block is a bug" is now true by construction instead of by four separate checks on
+four separate copies. The copies had already drifted; the Level 5 header comment
+named Incoloy 802 in the 316L study.
+```
 
 ## Three kinds of entry
 
@@ -79,10 +93,12 @@ before.
   - `CONDITIONS`, `MODEL_OPTIONS`
   - The operating point and the switches. Not a property of any material — this
     is what you edit to ask a different question of the same materials.
-* - **Derived**
+* - **Derived** — *no longer in this file*
   - `DEFAULT_PARAMS_LEVEL5`, `DEFAULT_PARAMS_LEVEL5L6`
   - Computed *from the blocks above* by reference, never retyped. Flat
-    name → value dicts, which is the form the model wrappers want.
+    name → value dicts, which is the form the model wrappers want. Now held once
+    in `model_config`, and listed here because they are still what the two blocks
+    above feed.
 * - **Study design**
   - `SUGGESTED_RANGES_*`, `REGIME_PRESETS*`, `DEFAULT_SWEEP_TEMPERATURES`
   - Deliberately literal. A range that suppresses `f_pinhole` to force an
@@ -133,21 +149,12 @@ dict instead.
 * - `CONDITIONS`
   - the operating point and the sweep ranges around it
   - `calculations.sensitivity`, notebooks
-* - `DEFAULT_PARAMS_LEVEL5`, `DEFAULT_PARAMS_LEVEL5L6`
-  - the same data flattened into one name → value dict per model
-  - `calculations.sensitivity`
 * - `SUGGESTED_RANGES_LEVEL5`, `SUGGESTED_RANGES_LEVEL5L6`
   - the interval each parameter is sampled over
   - `calculations.sensitivity`
 * - `REGIME_PRESETS`, `REGIME_PRESETS_L5`
   - ranges overridden to target one rate-limiting regime
   - `calculations.sensitivity`
-* - `PLOT_STYLE`, `COLORS`, `CURVE_STYLES`
-  - figure styling, one entry per model level
-  - notebooks, via `apply_style`
-* - helper functions
-  - `get_surface_kinetics_from_config`, `build_simulation_config`, `apply_style`
-  - notebooks and `calculations.surface_kinetics`
 ```
 
 ### `METALS`
@@ -309,6 +316,8 @@ pressures = np.logspace(*np.log10(C['P_range']), C['n_points'])
 
 ### The active-material shorthand
 
+*Defined in `calculations/config/model_config.py`, not in the study file — shared by every study. Imported from `model_config` exactly as before.*
+
 ```python
 ACTIVE_METAL = _first_key(METALS, 'METALS')
 ACTIVE_OXIDE = _first_key(OXIDES, 'OXIDES')
@@ -327,6 +336,8 @@ the rest of the file looks unchanged.
 ```
 
 ### `DEFAULT_PARAMS_LEVEL5` and `DEFAULT_PARAMS_LEVEL5L6`
+
+*Defined in `calculations/config/model_config.py`, not in the study file — shared by every study. Imported from `model_config` exactly as before.*
 
 The flattening step. The nested, physically-organised blocks above become one
 flat `name → scalar` dict, because that is what the model wrappers and the
@@ -376,12 +387,16 @@ and pushes every other parameter to the noise floor.
 
 ### `PLOT_STYLE`, `COLORS`, `CURVE_STYLES`
 
+*Defined in `calculations/config/model_config.py`, not in the study file — shared by every study. Imported from `model_config` exactly as before.*
+
 Presentation only, but part of the export contract, so a study file must define
 all three. `CURVE_STYLES` gives every level and mode a combination of colour,
 linestyle and marker that is distinguishable by any one of the three alone;
 `apply_style` applies one by name.
 
 ### Helper functions
+
+*Defined in `calculations/config/model_config.py`, not in the study file — shared by every study. Imported from `model_config` exactly as before.*
 
 - `get_surface_kinetics_from_config` — evaluates either surface block at a
   temperature and returns `k_diss`, `k_recomb`, `K_eq`.
@@ -399,25 +414,35 @@ the default instead. Pass a small positive number rather than zero.
 
 ## The export contract
 
-A study file is valid only if it defines all twenty names in `REQUIRED_EXPORTS`:
+A study file is valid only if it defines all thirteen names in `REQUIRED_EXPORTS`:
 
 ```text
-DEFAULT_PARAMS_LEVEL5     DEFAULT_PARAMS_LEVEL5L6
+CONDITIONS   METALS   MICROSTRUCTURE   MODEL_OPTIONS   OXIDES   OXIDE_DEFECTS   R
 SUGGESTED_RANGES_LEVEL5   SUGGESTED_RANGES_LEVEL5L6
 REGIME_PRESETS            REGIME_PRESETS_L5
-METALS   OXIDES   MICROSTRUCTURE   OXIDE_DEFECTS   CONDITIONS
-build_simulation_config   get_surface_kinetics_from_config
-R   F   DEFAULT_SWEEP_TEMPERATURES
-PLOT_STYLE   COLORS   CURVE_STYLES   apply_style
+F   DEFAULT_SWEEP_TEMPERATURES
 ```
 
-The list is derived from what `calculations/` and the notebooks actually import,
-not from what one study happens to define — it is recomputed by an AST scan rather
-than maintained by hand, which is how it grew from fifteen names to twenty. Six are
-pulled at module level by `calculations.sensitivity`, so a study missing one would
-otherwise fail at `import calculations.sensitivity`, before any error message could
-help. The loader checks the set at import and raises a `ValueError` naming both the
-study and the gap.
+A name is on that list for one of two reasons, and the difference matters:
+
+- **The first seven are read by the derived block in `model_config` itself.** A study
+  missing one of these does not merely disappoint a later import — it breaks the
+  derivation, so without the check you would get a bare `NameError` raised from
+  inside the loader.
+- **The rest are imported by something.** Four are pulled at module level by
+  `calculations.sensitivity`, so a study missing one would otherwise fail at
+  `import calculations.sensitivity`, before any error message could help.
+
+The list is derived from what the codebase actually imports and what the derived
+block actually reads, not from what one study happens to define — it is recomputed
+by an AST scan rather than maintained by hand. It grew from fifteen names to twenty
+when the scan first ran, then fell to thirteen when the derived and presentation
+sections moved into `model_config`: eight names stopped being a study's
+responsibility, and `MODEL_OPTIONS` became one, since the derivation reads it
+although nothing imports it.
+
+The loader checks the set at import and raises a `ValueError` naming both the study
+and the gap.
 
 There is no `VALIDATION` block. Earlier revisions carried one — per-level test
 grids for the level notebooks — but it was a second copy of the operating point,

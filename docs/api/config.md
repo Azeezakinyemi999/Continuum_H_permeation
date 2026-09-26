@@ -26,10 +26,17 @@ operating conditions, sweep ranges and presets live there, not in the package.
 The study file is executed by path and its public names copied across by hand,
 because a star import's module path is resolved at compile time and cannot be a
 variable. `_load_active_study` reproduces star-import semantics exactly, then
-validates the result against a 15-name `REQUIRED_EXPORTS` frozenset — raising
+validates the result against a 13-name `REQUIRED_EXPORTS` frozenset — raising
 `ValueError` naming both the study and the gap, rather than letting a missing export
 surface as an `ImportError` from deep inside `calculations.sensitivity`. `load_study`
 applies the same check, so reading a second study cannot enforce a weaker contract.
+
+Everything derived from that study — the flat `DEFAULT_PARAMS_*` dicts,
+`build_simulation_config`, `get_surface_kinetics_from_config` and the plot styling —
+is defined in this module, below the namespace splice. It used to be duplicated
+verbatim in all four study files. The ordering is load-bearing: that block reads
+`CONDITIONS`, `METALS` and the rest as module globals, which exist only because of
+the `globals().update()` above it.
 
 The choice is announced on stderr at import and recorded in `ACTIVE_STUDY_NAME`,
 `ACTIVE_STUDY_PATH` and `ACTIVE_STUDY_SOURCE`. A notebook that must have its own

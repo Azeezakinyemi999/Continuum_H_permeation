@@ -10,6 +10,7 @@ Each test corresponds to one fix in CHECKLIST.md and is added by it.
 import ast
 import json
 import re
+import textwrap
 
 import pytest
 
@@ -227,22 +228,32 @@ def test_oxide_carries_no_live_thickness_key(folder):
     assert "sample_thickness" in keys, "the sample's measured thickness was lost"
 
 
-@pytest.mark.parametrize("folder", STUDY_IDS)
-def test_oxide_thickness_is_written_as_a_conditions_reference(folder):
-    """Value equality would pass a literal 1e-6; the derivation has to be in the source."""
-    tree = ast.parse((ROOT / folder / "study_config.py").read_text())
+MODEL_CONFIG = ROOT / "calculations" / "config" / "model_config.py"
+
+
+def derived_dict(name):
+    """A top-level dict literal in model_config.py, as {key: value AST node}.
+
+    These checks used to run against each study_config.py, parametrised over the four
+    folders. The derived block now lives once in model_config.py, so they run once — and
+    the property holds for every study by construction rather than by four copies each
+    being policed separately.
+    """
+    tree = ast.parse(MODEL_CONFIG.read_text())
     for node in tree.body:
         if (isinstance(node, ast.Assign)
-                and any(isinstance(t, ast.Name) and t.id == "DEFAULT_PARAMS_LEVEL5"
-                        for t in node.targets)):
-            entries = {k.value: v for k, v in zip(node.value.keys, node.value.values)
-                       if isinstance(k, ast.Constant)}
-            value = entries["oxide_thickness"]
-            assert any(isinstance(n, ast.Name) and n.id == "CONDITIONS"
-                       for n in ast.walk(value)), \
-                "oxide_thickness is a literal; it must read CONDITIONS"
-            return
-    raise AssertionError("DEFAULT_PARAMS_LEVEL5 not found")
+                and any(isinstance(t, ast.Name) and t.id == name for t in node.targets)):
+            return {k.value: v for k, v in zip(node.value.keys, node.value.values)
+                    if isinstance(k, ast.Constant)}
+    raise AssertionError(f"{name} is not defined at top level in model_config.py")
+
+
+def test_oxide_thickness_is_written_as_a_conditions_reference():
+    """Value equality would pass a literal 1e-6; the derivation has to be in the source."""
+    value = derived_dict("DEFAULT_PARAMS_LEVEL5")["oxide_thickness"]
+    assert any(isinstance(n, ast.Name) and n.id == "CONDITIONS"
+               for n in ast.walk(value)), \
+        "oxide_thickness is a literal; it must read CONDITIONS"
 
 
 # --------------------------------------------------------------------------
@@ -253,8 +264,17 @@ SECTION_TITLES = [
     "1. IDENTITY AND CONSTANTS",
     "2. WHAT IS BEING STUDIED",
     "3. WHAT THE MATERIALS ARE",
-    "4. DERIVED",
-    "5. PRESENTATION",
+]
+
+# Sections 4 (DERIVED) and 5 (PRESENTATION) were byte-identical in all four studies, so
+# they moved into model_config.py. A study file that grows one back has started keeping a
+# private copy of the derivation, which is how the four copies drifted the first time.
+MOVED_SECTIONS = ["4. DERIVED", "5. PRESENTATION"]
+
+MOVED_NAMES = [
+    "DEFAULT_PARAMS_LEVEL5", "DEFAULT_PARAMS_LEVEL5L6",
+    "get_surface_kinetics_from_config", "build_simulation_config",
+    "PLOT_STYLE", "COLORS", "CURVE_STYLES", "apply_style",
 ]
 
 
@@ -271,7 +291,7 @@ def top_level_line(folder, name):
 
 
 @pytest.mark.parametrize("folder", STUDY_IDS)
-def test_study_file_has_its_five_sections_in_order(folder):
+def test_study_file_has_its_three_sections_in_order(folder):
     text = (ROOT / folder / "study_config.py").read_text()
     positions = []
     for title in SECTION_TITLES:
@@ -281,26 +301,83 @@ def test_study_file_has_its_five_sections_in_order(folder):
 
 
 @pytest.mark.parametrize("folder", STUDY_IDS)
-def test_derived_block_comes_after_what_it_reads(folder):
-    """The ordering is load-bearing, not cosmetic: Python executes top to bottom, so a
-    derived dict placed above its sources is a NameError at import."""
-    derived = top_level_line(folder, "DEFAULT_PARAMS_LEVEL5")
-    for source in ("CONDITIONS", "MODEL_OPTIONS", "OXIDE_DEFECTS", "METALS",
-                   "OXIDES", "MICROSTRUCTURE"):
-        assert top_level_line(folder, source) < derived, (
-            f"{source} is defined after DEFAULT_PARAMS_LEVEL5, which reads it")
+def test_the_derived_and_presentation_sections_stay_out_of_the_study_file(folder):
+    """A study is its own data. The shared derivation is not part of it."""
+    text = (ROOT / folder / "study_config.py").read_text()
+    for title in MOVED_SECTIONS:
+        assert f"# {title}" not in text, (
+            f"{folder} has grown a '{title}' section back; it belongs in model_config.py")
 
 
 @pytest.mark.parametrize("folder", STUDY_IDS)
-def test_model_switches_reference_model_options(folder):
+def test_no_study_redefines_a_moved_name(folder):
+    """The duplication must not creep back one study at a time.
+
+    A study defining its own DEFAULT_PARAMS_LEVEL5 would shadow the shared one through
+    globals().update() and silently take effect for that study alone — the failure this
+    move exists to make impossible.
+    """
+    tree = ast.parse((ROOT / folder / "study_config.py").read_text())
+    defined = set()
+    for node in tree.body:
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            defined.add(node.name)
+        elif isinstance(node, ast.Assign):
+            defined |= {t.id for t in node.targets if isinstance(t, ast.Name)}
+    clashes = sorted(defined & set(MOVED_NAMES))
+    assert not clashes, f"{folder} redefines names that moved to model_config: {clashes}"
+
+
+def test_derived_block_comes_after_the_study_namespace_is_spliced_in():
+    """The ordering is load-bearing, not cosmetic.
+
+    The derived block reads CONDITIONS, METALS and the rest as module globals, and they
+    exist only because of the globals().update(_study_ns) above it. Moved above that
+    line, every one of them is a NameError at import — and because model_config is
+    imported by everything, nothing in the repository would run.
+    """
+    text = MODEL_CONFIG.read_text()
+    splice = text.index("globals().update(_study_ns)")
+    tree = ast.parse(text)
+    lines = text.splitlines(keepends=True)
+    offsets = [0]
+    for line in lines:
+        offsets.append(offsets[-1] + len(line))
+
+    for name in ("ACTIVE_METAL", "DEFAULT_PARAMS_LEVEL5", "DEFAULT_PARAMS_LEVEL5L6"):
+        for node in tree.body:
+            if isinstance(node, ast.Assign) and any(
+                    isinstance(t, ast.Name) and t.id == name for t in node.targets):
+                assert offsets[node.lineno - 1] > splice, (
+                    f"{name} is derived above globals().update(_study_ns), "
+                    f"so the names it reads do not exist yet")
+                break
+        else:
+            raise AssertionError(f"{name} is not defined at top level in model_config.py")
+
+
+def test_model_switches_reference_model_options():
     """The five switches had three homes. Now they have one, and the dicts that deliver
-    them to the solvers carry a reference rather than a second copy."""
+    them to the solvers carry a reference rather than a second copy.
+
+    MICROSTRUCTURE and OXIDE_DEFECTS are study data and keep their references in each
+    study file; DEFAULT_PARAMS_LEVEL5 is derived and is checked once, in model_config.
+    """
+    for key in ("include_gb_enhancement", "include_trapping", "D_eff_method"):
+        value = derived_dict("DEFAULT_PARAMS_LEVEL5")[key]
+        assert any(isinstance(n, ast.Name) and n.id == "MODEL_OPTIONS"
+                   for n in ast.walk(value)), (
+            f"DEFAULT_PARAMS_LEVEL5[{key!r}] restates the switch instead of "
+            f"referencing MODEL_OPTIONS")
+
+
+@pytest.mark.parametrize("folder", STUDY_IDS)
+def test_study_dicts_reference_model_options(folder):
+    """The two switch-carrying dicts that are still study data."""
     tree = ast.parse((ROOT / folder / "study_config.py").read_text())
     wanted = {
-        "MICROSTRUCTURE":        ["include_gb_trapping"],
-        "OXIDE_DEFECTS":         ["use_sieverts_pinhole"],
-        "DEFAULT_PARAMS_LEVEL5": ["include_gb_enhancement", "include_trapping",
-                                  "D_eff_method"],
+        "MICROSTRUCTURE": ["include_gb_trapping"],
+        "OXIDE_DEFECTS":  ["use_sieverts_pinhole"],
     }
     seen = {}
     for node in tree.body:
@@ -520,13 +597,67 @@ def test_required_exports_covers_everything_actually_imported():
         + ", ".join(f"{n} (imported by {sorted(imported[n])[0]})" for n in missing))
 
 
+def derived_block_reads():
+    """Names the derived block in model_config.py takes from the study namespace.
+
+    Everything it uses that it does not define itself, minus builtins and its own
+    imports. These are required of a study just as firmly as an imported name is — more
+    so, since a study missing one breaks model_config's own import — but no import
+    statement mentions them, so the check below has to know about them separately.
+    """
+    import builtins
+
+    text = MODEL_CONFIG.read_text()
+    # Bounded at both ends. Running to EOF would sweep in the provenance section below,
+    # whose ACTIVE_STUDY_SOURCE and STUDY_FILENAME are model_config's own names and have
+    # no business being demanded of a study.
+    start = text.index("# 4. DERIVED")
+    end = text.index("# Provenance.")
+    assert start < end, "the derived block no longer precedes the provenance section"
+    tree = ast.parse(textwrap.dedent(text[start:end]))
+
+    bound = set()
+    for node in ast.walk(tree):
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            bound.add(node.name)
+        elif isinstance(node, ast.Name) and isinstance(node.ctx, ast.Store):
+            bound.add(node.id)
+        elif isinstance(node, ast.arg):
+            bound.add(node.arg)
+    used = {n.id for n in ast.walk(tree)
+            if isinstance(n, ast.Name) and isinstance(n.ctx, ast.Load)}
+    return {n for n in used - bound - set(dir(builtins)) if not n.startswith("_")} - {"np"}
+
+
 def test_required_exports_names_nothing_unused():
-    """The other direction: a name nobody imports is a demand on studies for nothing."""
+    """The other direction: a name nothing needs is a demand on studies for nothing.
+
+    'Needs' has two senses since the derived block moved here. Most names are required
+    because something imports them; CONDITIONS, METALS, MODEL_OPTIONS and the rest are
+    required because model_config's own derivation reads them out of the study. Only
+    checking imports would call MODEL_OPTIONS unused and delete it from the contract.
+    """
     from calculations.config.model_config import REQUIRED_EXPORTS
 
-    imported = set(model_config_imports())
-    unused = sorted(set(REQUIRED_EXPORTS) - imported)
-    assert not unused, f"REQUIRED_EXPORTS demands unimported names: {unused}"
+    justified = set(model_config_imports()) | derived_block_reads()
+    unused = sorted(set(REQUIRED_EXPORTS) - justified)
+    assert not unused, f"REQUIRED_EXPORTS demands names nothing needs: {unused}"
+
+
+def test_the_derived_block_can_only_read_names_the_contract_guarantees():
+    """The inverse, and the one that actually bites.
+
+    A new line in the derived block reading, say, SUGGESTED_RANGES_LEVEL5 without adding
+    it to REQUIRED_EXPORTS would work on every study that happens to define it and fail
+    with a bare NameError on one that does not — raised from inside the loader, which is
+    the failure REQUIRED_EXPORTS exists to replace with a sentence.
+    """
+    from calculations.config.model_config import REQUIRED_EXPORTS
+
+    ungurantee = sorted(derived_block_reads() - set(REQUIRED_EXPORTS))
+    assert not ungurantee, (
+        "the derived block reads study names the contract does not require: "
+        f"{ungurantee}")
 
 
 @pytest.mark.parametrize("folder", STUDY_IDS)
