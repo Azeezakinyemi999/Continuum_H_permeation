@@ -141,9 +141,32 @@ overrides the geometry.
 
 ## Test coverage
 
-- [ ] **Physics test suite.** The model wrappers are pinned only by the 13 values in the
+- [x] **Physics test suite.** The model wrappers are pinned only by the 13 values in the
       container gate. `level5_model_wrapper` / `level5L6_model_wrapper` are what the whole
       sensitivity analysis calls and nothing else covers them.
+      **Done:** `tests/test_wrapper_physics.py`, 20 tests stating invariants rather than
+      values — flux positive and finite; monotonic in pressure, both thicknesses and
+      temperature; `frac_*` partitioning to 1; `regime` equal to the argmax of those
+      fractions; `PRF >= 1`; sealing the defects never raising the flux; and Sieverts'
+      half-power in pressure. Most apply to both wrappers, so they hold for any study.
+
+      Deliberately absent: any assertion that L5L6 collapses onto L5 as the surface
+      becomes fast. They are different models, not refinements — Henry vs Sieverts in
+      the oxide — so they do not converge, and asserting it would pin a bug in place.
+
+      Two findings from building it, both from mutation-checking rather than from the
+      tests passing. The Sieverts test originally *skipped* itself unless the nominal
+      point was metal-limited, and every mutation that broke the square root also moved
+      the regime — so the guard skipped the test instead of failing it. It now forces a
+      bare-metal wall (`oxide_thickness=1e-9`, defects sealed) and asserts the log-log
+      slope is 0.5, which does catch a dropped root in `permeation_calc.py`. And only
+      one of the three `np.sqrt` sites is on the L5 path at all; the two in
+      `interface_solver.py` can be broken without any wrapper test noticing.
+- [ ] **`level5L6_model_wrapper` returns `nan` at zero driving force.** With
+      `P_upstream == P_downstream` Level 5 correctly gives 0.0 and Level 5L6 gives `nan`
+      — the surface solve cannot bracket a root when there is nothing to drive it. Found
+      while writing the physics suite, where it is recorded as a strict `xfail`, so
+      fixing it will announce itself by turning that test into an unexpected pass.
 - [ ] **No test executes a notebook end to end.** The figure and study-resolution suites
       check notebook *source*; a run is verified only by hand.
 
