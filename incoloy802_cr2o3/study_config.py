@@ -20,9 +20,6 @@ this study alone. To read it from elsewhere:
 # Who this study is, and the two physical constants the rest of the file uses.
 # ==============================================================================
 
-# Identity of this study: labels figures and CSVs as ACTIVE_STUDY_NAME, and selects
-# the reference set in container/model_smoke_test.py. Independent of the folder name,
-# so renaming the folder does not silently relabel the results.
 STUDY_NAME = 'incoloy802_cr2o3'
 
 # =============================================================================
@@ -35,17 +32,9 @@ F = 96485      # C/mol  — Faraday constant (for eV conversions)
 
 # ==============================================================================
 # 2. WHAT IS BEING STUDIED
-#
-# The scenario: the operating point, the state of the wall, how the model is run, and the
-# ranges the sensitivity analysis explores around it. These are the entries you edit to
-# ask a different question of the same materials.
-#
-# CONDITIONS is the authority for the operating point. Nothing below may restate it.
+#   OPERATING CONDITIONS
 # ==============================================================================
 
-# =============================================================================
-# OPERATING CONDITIONS
-# =============================================================================
 CONDITIONS = {
     # ---- the operating point ----
     'T_operating':    873,              # K
@@ -55,14 +44,9 @@ CONDITIONS = {
     'L_oxide':        1e-6,             # m
 
     # ---- the range of conditions being studied ----
-    # These ARE operating conditions, so they are stated here and nowhere else: the
-    # sensitivity analysis reads them rather than restating them. It used to keep its
-    # own set, and each contained a bound that is nonsense read as a scenario — this
-    # dict reached 1e12 Pa (10 million bar) and the SA floor was 1e-10 m, sub-atomic.
     'T_range':        (573, 1273),      # K
     'P_range':        (1e-7, 1e7),      # Pa   1e-7 = UHV, 1e7 = 100 bar
     'L_metal_range':  (1e-4, 5e-3),     # m    0.1 - 5 mm
-    # absorbed OXIDES[...]['thickness_range'], which stated the same quantity
     'L_oxide_range':  (1e-9, 1e-5),     # m    1 nm - 10 um
 
     # ---- what a defect study varies ----
@@ -73,23 +57,11 @@ CONDITIONS = {
     'f_gb_max':                 0.5,                       # cap on GB volume fraction 3*d_gb/d
 
     # ---- sweep resolution: a plotting choice, not a condition ----
-    # One count for every axis. It was eight names — n_T_points, n_P_points, n_L_points,
-    # L1_n_test, L2a_n_test, L3_n_defect_points, L4_n_T_points, L5_n_T_points — for the
-    # same idea, and two of them controlled nothing at all.
     'n_points':       40,
 }
 
 # -----------------------------------------------------------------------------
 # HOW THE MODEL IS RUN — not data, and not a property of anything.
-#
-# These were scattered: include_gb_trapping inside MICROSTRUCTURE, use_sieverts_pinhole
-# inside OXIDE_DEFECTS (with a "# <- ADD THIS" comment still attached), and the last
-# three inside DEFAULT_PARAMS_LEVEL5. A reader looking for "what does this study switch
-# on" had to know all three places.
-#
-# The dicts below still carry the flags the solvers read out of them — the consumers take
-# a microstructure dict or a defect dict and look inside — but they carry a REFERENCE to
-# this one, so there is a single authored value.
 # -----------------------------------------------------------------------------
 MODEL_OPTIONS = {
     # Level 4: trap grain boundaries as well as enhancing diffusion along them.
@@ -123,11 +95,6 @@ OXIDE_DEFECTS = {
 
 # -----------------------------------------------------------------------------
 # SUGGESTED PARAMETER RANGES — Level 5 (28 parameters)   ** TUNE ME **
-#
-# Reference-point values span roughly ±2 decades around the reference; activation
-# energies span physically meaningful bounds. The four T_ref_* are commented out:
-# they are measurement metadata, redundant with the *_ref prefactors, and varying
-# them injects an artificial 10^3-10^4 prefactor sweep.
 # -----------------------------------------------------------------------------
 SUGGESTED_RANGES_LEVEL5 = {
     # Metal transport (Incoloy 802, Schmidt 1985)
@@ -144,9 +111,7 @@ SUGGESTED_RANGES_LEVEL5 = {
     'H_sol_ox':     [20000, 170000],
    
 
-    # Geometry and operating point — from CONDITIONS, which owns the range of
-    # conditions being studied. Material-parameter ranges below stay here:
-    # they describe materials, not conditions.
+    # Geometry and operating point — from CONDITIONS
     'metal_thickness': list(CONDITIONS['L_metal_range']),
     'oxide_thickness': list(CONDITIONS['L_oxide_range']),
     'P_upstream':      list(CONDITIONS['P_range']),
@@ -186,12 +151,6 @@ SUGGESTED_RANGES_LEVEL5L6 = {
     # Oxide surface kinetics (Cr2O3)
     'k_diss_ref':          [9.487e-10, 9.487e-6],
     'E_diss':              [40000, 70000],
-    # K_eq ranges are centred on the config values (Grant 1988) at ±2 decades, the
-    # same convention as every other *_ref parameter. They previously spanned
-    # [1e-14, 1e-6] and [1e-10, 1e-3], written around placeholder defaults of 1e-10
-    # and 1e-8: the config value 1e-4 fell 100x ABOVE its own sweep range, and
-    # K_eq_metal_ref's 1e-3 sat exactly ON its upper bound, so that parameter was
-    # only ever sampled below its nominal value.
     'K_eq_ref':            [1e-6, 1e-2],
     'H_eq':                [5000, 50000],
     # Metal surface kinetics (Grant 1988)
@@ -200,15 +159,7 @@ SUGGESTED_RANGES_LEVEL5L6 = {
     'K_eq_metal_ref':      [1e-5, 1e-1],
     'H_eq_metal':          [5000, 40000],
 }
-
-# Attached here rather than written inside CONDITIONS because it reads SUGGESTED_RANGES,
-# which is defined above but after CONDITIONS itself. Same pattern as MICROSTRUCTURE['N_L'].
-#
-# The floor is the sensitivity range's floor times 1e-5. Measured, not chosen: at the SA
-# floor itself the system is still metal-limited (J/J_sieverts = 0.44), so the sweep would
-# never show the surface-limited end; at 1e-5 of it the surface is limiting (2.2e-4). A
-# larger factor does not work — at 1e-20 the brentq solve cannot bracket a root. The
-# ceiling needs no extension: J/J_sieverts = 0.9996 there, already the fast limit.
+# The floor is the sensitivity range's floor times 1e-5.
 CONDITIONS['k_diss_sweep_range'] = (SUGGESTED_RANGES_LEVEL5L6['k_diss_ref'][0] * 1e-5,
                                     SUGGESTED_RANGES_LEVEL5L6['k_diss_ref'][1])
 
@@ -235,14 +186,6 @@ def _sa_ranges_with(base, overrides):
     R.update({k: list(v) for k, v in overrides.items()})
     return R
 
-# Preset building blocks — SHARED BETWEEN L5 AND L5L6. Each names one physical
-# intent, defined exactly once. Both levels compose their presets from these, so
-# the shared parts cannot drift: the slow-oxide block alone was previously written
-# out three times (L5L6 oxide, L5 oxide, L5 defect), and the suppressed-defect and
-# fast-metal blocks twice each. Editing one copy and missing the others would
-# silently make the two levels' oxide clusters non-comparable while every test
-# still passed. Surface blocks are L5L6-only — there is no surface step in L5.
-
 # thick, slow oxide -> the oxide is the bottleneck
 _SA_SLOW_OXIDE    = {'oxide_thickness': [1e-7, 1e-5],
                      'D_ox_ref':        [7.8e-21, 7.8e-20]}
@@ -257,8 +200,6 @@ _SA_DEFECTS_OFF   = {'f_pinhole':   [1e-7, 1e-5],
                      'f_gb_defect': [1e-7, 1e-5]}
 
 # large defect area -> the bypass can carry the majority of the flux.
-# NOTE total defect area reaches ~0.9 here: a heavily degraded coating, a wider
-# claim than the <=0.3 the default ranges imply. State it in any write-up.
 _SA_DEFECTS_LARGE = {'f_pinhole':   [0.05, 0.30],
                      'f_crack':     [0.05, 0.30],
                      'f_gb_defect': [0.05, 0.30]}
@@ -280,10 +221,7 @@ REGIME_PRESETS = {
                                 **_SA_FAST_METAL, **_SA_FAST_SURFACE}),
 }
 
-# Level 5 presets (no surface kinetics). The L5 regimes are oxide / metal / defect,
-# the third being the PARALLEL bypass rather than a series resistance.
-# Yields measured on 300-draw LHS probes (seed 42):
-#   metal 97.0%,  oxide 77.7%,  defect 87.3% (max frac_defect 0.999)
+# Level 5 presets (no surface kinetics). The L5 regimes are oxide / metal / defect
 REGIME_PRESETS_L5 = {
     'metal':  _sa_ranges_with(SUGGESTED_RANGES_LEVEL5, {}),
     # same oxide-limiting intent as the L5L6 oxide preset, minus the surface block
@@ -296,22 +234,9 @@ REGIME_PRESETS_L5 = {
 
 # -----------------------------------------------------------------------------
 # SWEEP POINTS
-#
-# Draw counts and per-preset yields used to live here as measured constants. They
-# are gone: `calculations.sensitivity.size_draws_for_target()` now probes each
-# preset and sizes the run from the yield it actually observes. A cached yield
-# cannot notice that a range or a preset block was edited, or that the study
-# switched material, and silently unbalanced clusters make a cross-regime
-# comparison partly a comparison of estimator noise. TARGET_CLUSTER_SIZE lives in
-# sensitivity.py beside the code that consumes it.
-#
 # What remains here is study design, which no probe can infer.
 # -----------------------------------------------------------------------------
-
-# Temperatures for the isothermal L5 sweep. With temperature varying it monopolises
-# the variance of log10(flux) and leaves every other parameter at or below the noise
-# floor; sampling harder does not help, because the floor is flat in n (0.085 at
-# n=400, 0.092 at n=1500). The driver ranking genuinely shifts across this span.
+# Temperatures for the isothermal L5 sweep. 
 DEFAULT_SWEEP_TEMPERATURES = (773.0, 1073.0, 1273.0)
 
 
@@ -355,15 +280,8 @@ METALS = {
 
         'pressure':       [],
         'reference':      'Schmidt 1985	Schmidt H, Batfalsky P	J. Nuclear Materials 131	1985		H₂ and T₂ permeation in 30+ heat-resistant alloys. Full D+Ks+Phi for many Ni-Cr alloys.	Metals: X40 NiCrAlTi (Incoloy 802) — use as primary reference for Incoloy 800.',
-        # Where the source data are valid. Same key name as the oxide's, and read
-        # by get_metal_properties_at_T to warn on extrapolation — it used to be
-        # 'temp_range', which nothing read, so a metal extrapolation was silent.
         'temperature_range': [1023, 1223],
         'pressure_range': [1.33e2, 1e5],
-        # Provenance, NOT geometry: the specimen thicknesses of the source
-        # experiment. A list, so feeding it to a model call poisons every result —
-        # which is why check_against_config guards for a non-scalar. The wall being
-        # simulated is CONDITIONS['L_metal'], as the oxide's is CONDITIONS['L_oxide'].
         'sample_thickness': [5e-3],
         'gas':            'H₂',
         'Notes':          'Phi_ref = D_ref * Ks_ref.',
@@ -394,10 +312,6 @@ OXIDES = {
 
 
         # ---- Provenance, NOT geometry ----
-        # The scale thickness of the sample these data were measured on. The model does
-        # not read it: the wall being simulated is described by CONDITIONS['L_oxide'],
-        # exactly as the metal is. This used to be the value every model call actually
-        # used, 20x thinner than the CONDITIONS entry that claimed to set it.
         'sample_thickness': 4.8e-08,
 
         # ---------------------------------------------------------------
@@ -423,8 +337,7 @@ OXIDES = {
         'reference': (
             "Nemanic et al. 2023 (Phi, D), Stover 1986 (Q_p) and Chen 2011 (E_D): Undamaged chromia limit from Stover 1986 Fig.7 (sample Cr2)"
         ),
-        # Validity range of the Nemanic/Stover data; read by
-        # oxide_permeation.get_oxide_properties_at_T to warn on extrapolation.
+        # Validity range of the Nemanic/Stover data
         'temperature_range':  [473, 773],
     },
     
@@ -467,7 +380,5 @@ MICROSTRUCTURE = {
     'lattice_density':     8.774e28,     # m⁻³ — Fe BCC; update for your alloy
 }
 
-# 'N_L' is the same quantity under the symbol the derivations use, and
-# Application/Proposal.ipynb reads it 14 times. Aliased rather than written out
-# twice: two literals of the same number drift the moment one is edited.
+
 MICROSTRUCTURE['N_L'] = MICROSTRUCTURE['lattice_density']
