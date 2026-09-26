@@ -356,7 +356,10 @@ METALS = {
 
         'pressure':       [],
         'reference':      'Schmidt 1985	Schmidt H, Batfalsky P	J. Nuclear Materials 131	1985		H₂ and T₂ permeation in 30+ heat-resistant alloys. Full D+Ks+Phi for many Ni-Cr alloys.	Metals: X40 NiCrAlTi (Incoloy 802) — use as primary reference for Incoloy 800.',
-        'temp_range':     [1023, 1223],
+        # Where the source data are valid. Same key name as the oxide's, and read
+        # by get_metal_properties_at_T to warn on extrapolation — it used to be
+        # 'temp_range', which nothing read, so a metal extrapolation was silent.
+        'temperature_range': [1023, 1223],
         'pressure_range': [1.33e2, 1e5],
         # Provenance, NOT geometry: the specimen thicknesses of the source
         # experiment. A list, so feeding it to a model call poisons every result —

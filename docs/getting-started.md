@@ -95,17 +95,20 @@ bites. Do not carry a conclusion from one model to the other; see
 ```
 
 ```{warning}
-**The oxide is extrapolated at the default operating point, and the sensitivity
-analysis extrapolates much further — silently.** The Cr₂O₃ data carry
-`temperature_range = [473, 773]` K. The active study runs at 873 K, and the
-sensitivity sweeps run to **1273 K**, 500 K past the validated ceiling.
+**Both materials are extrapolated at the default operating point, and the
+sensitivity analysis extrapolates much further — silently.** The Cr₂O₃ data
+carry `temperature_range = [473, 773]` K and the 316L data `[468, 823]` K. The
+active study runs at 873 K — past both ceilings — and the sensitivity sweeps run
+to **1273 K**, 500 K past the oxide's.
 
 Whether you are told depends on which entry point you use:
 
-- `get_oxide_properties_at_T` checks the range and prints
-  `Warning: Temperature 873K outside validated range [473, 773]K`. It uses
+- `get_oxide_properties_at_T` and `get_metal_properties_at_T` check the range
+  and print
+  `Warning: Temperature 873K outside validated range [473, 773]K`. They use
   `print()`, not `warnings.warn`, so `simplefilter("ignore")` does **not**
-  silence it.
+  silence it. The metal's window was called `temp_range` and was read by
+  nothing, so until recently only the oxide warned.
 - `level5_model_wrapper` and `level5L6_model_wrapper` — the canonical entry
   points, and the ones the sensitivity analysis calls — compute $D_{ox}$ and
   $K_{ox}$ from raw parameters via `arrhenius` and never consult the range.

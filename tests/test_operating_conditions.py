@@ -535,3 +535,52 @@ def test_every_study_satisfies_the_widened_contract(folder):
 
     missing = sorted(set(REQUIRED_EXPORTS) - study_namespace(folder))
     assert not missing, f"{folder} does not provide {missing}"
+
+
+# --------------------------------------------------------------------------
+# Measurement-validity windows: named alike, and both actually checked
+# --------------------------------------------------------------------------
+
+@pytest.mark.parametrize("folder", STUDY_IDS)
+def test_both_materials_name_their_validity_window_the_same_way(folder):
+    """The metal carried 'temp_range', the oxide 'temperature_range'.
+
+    Two names for one idea, and only the oxide's was ever read — so extrapolating the
+    oxide printed a warning while extrapolating the metal said nothing.
+    """
+    proc = run_py(MATERIAL_REPORT, cwd=ROOT / folder)
+    assert proc.returncode == 0, proc.stderr
+    keys = json.loads(proc.stdout)
+    for which in ("metal_keys", "oxide_keys"):
+        assert "temperature_range" in keys[which], f"{which} has no validity window"
+        assert "temp_range" not in keys[which], f"{which} still uses the old name"
+
+
+def test_metal_extrapolation_is_no_longer_silent(capsys):
+    """Guo's metal data stop at 823 K and the study runs at 873 K."""
+    from calculations.config.model_config import build_simulation_config
+    from calculations.oxide_permeation import get_metal_properties_at_T
+
+    name = build_simulation_config()["metal_name"]
+    get_metal_properties_at_T(name, 873.0)
+    assert "outside validated range" in capsys.readouterr().out
+
+
+def test_no_warning_inside_the_metal_window(capsys):
+    """A warning on every call would be noise, and noise gets filtered."""
+    from calculations.config.model_config import build_simulation_config
+    from calculations.oxide_permeation import get_metal_properties_at_T
+
+    name = build_simulation_config()["metal_name"]
+    get_metal_properties_at_T(name, 700.0)          # inside [468, 823]
+    assert "outside validated range" not in capsys.readouterr().out
+
+
+def test_oxide_extrapolation_still_warns(capsys):
+    """Regression: the oxide check moved into a shared helper."""
+    from calculations.config.model_config import build_simulation_config
+    from calculations.oxide_permeation import get_oxide_properties_at_T
+
+    name = build_simulation_config()["oxide_name"]
+    get_oxide_properties_at_T(name, 873.0)          # outside [473, 773]
+    assert "outside validated range" in capsys.readouterr().out
