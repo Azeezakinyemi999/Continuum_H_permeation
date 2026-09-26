@@ -70,11 +70,19 @@ overrides the geometry.
       `k_diss_metal_ref`, `E_diss_metal`, in the 316L study only. The sensitivity analysis
       therefore never evaluates the nominal case for those parameters. Either the default
       or the range is wrong; `check_against_config()` has reported this for some time.
-- [ ] **`REQUIRED_EXPORTS` is incomplete.** It omits `get_surface_kinetics_from_config`,
-      which `calculations/surface_kinetics.py` imports at module level, plus
-      `DEFAULT_SWEEP_TEMPERATURES`, `apply_style`, `R` and `F`. A study missing any of
-      them passes the contract check and then fails with a raw `ImportError` — the exact
-      failure the check exists to prevent.
+- [x] **`REQUIRED_EXPORTS` was incomplete — five names, not one.** It omitted
+      `get_surface_kinetics_from_config` (imported at module level by
+      `surface_kinetics.py`), plus `R`, `F`, `apply_style` and
+      `DEFAULT_SWEEP_TEMPERATURES`, all imported only by notebooks. A study missing any
+      of them passed the contract and failed later anyway. The set is now derived rather
+      than maintained: a test re-scans every import of `model_config` — across
+      `calculations/`, `container/`, `docs/_tools/` and all 24 notebooks — and fails if
+      the contract is short, or if it demands a name nobody imports.
+- [x] **The notebook tests covered 8 of 24 files.** `test_operating_conditions.py`
+      globbed `*/[A-Z]*.ipynb`, which matches only `Proposal` and `Surface_proposal`;
+      `sensitivity_regime_*` and `regime_parallel_coords*` start lowercase and were never
+      scanned. That is how the contract gap survived. Widened to `[A-Za-z]*`; the four
+      previously-unscanned notebooks turned out clean.
 - [ ] **`Proposal.ipynb` has an invalid escape sequence** (`\P`, almost certainly a
       `$\Phi$` label in a non-raw string). A `DeprecationWarning` today, a
       `SyntaxWarning` in a later Python.

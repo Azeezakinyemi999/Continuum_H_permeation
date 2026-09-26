@@ -92,7 +92,9 @@ def test_validation_is_no_longer_part_of_the_study_contract():
     assert "VALIDATION" not in REQUIRED_EXPORTS
 
 
-NOTEBOOKS_ALL = sorted(ROOT.glob("*/[A-Z]*.ipynb"))
+# [A-Za-z], not [A-Z]: the sensitivity_regime_* and regime_parallel_coords*
+# notebooks start lowercase, so a capital-only glob silently covered 8 of 24.
+NOTEBOOKS_ALL = sorted(ROOT.glob("*/[A-Za-z]*.ipynb"))
 
 
 @pytest.mark.parametrize("nb_path", NOTEBOOKS_ALL, ids=lambda p: f"{p.parent.name}/{p.name}")
@@ -452,3 +454,84 @@ def test_both_materials_record_their_sample_thickness(folder):
     keys = json.loads(run_py(MATERIAL_REPORT, cwd=ROOT / folder).stdout)
     assert "sample_thickness" in keys["metal_keys"]
     assert "sample_thickness" in keys["oxide_keys"]
+
+
+# --------------------------------------------------------------------------
+# The study contract, re-derived rather than trusted
+# --------------------------------------------------------------------------
+
+def model_config_imports():
+    """Every name the codebase imports from model_config, and where from.
+
+    Scans calculations/, container/, docs/_tools/ and ALL notebooks. The notebooks
+    matter: the contract drifted precisely because the names only they imported —
+    R, F, apply_style, DEFAULT_SWEEP_TEMPERATURES — were never counted.
+    """
+    found = {}
+    sources = (list((ROOT / "calculations").rglob("*.py"))
+               + list((ROOT / "container").glob("*.py"))
+               + list((ROOT / "docs" / "_tools").glob("*.py")))
+    blocks = [(str(p.relative_to(ROOT)), p.read_text()) for p in sources]
+
+    for nb in sorted(ROOT.glob("*/[A-Za-z]*.ipynb")):
+        for cell in json.loads(nb.read_text())["cells"]:
+            if cell["cell_type"] == "code":
+                blocks.append((f"{nb.parent.name}/{nb.name}", "".join(cell["source"])))
+
+    for where, src in blocks:
+        try:
+            tree = ast.parse(src)
+        except SyntaxError:
+            continue
+        for node in ast.walk(tree):
+            if (isinstance(node, ast.ImportFrom) and node.module
+                    and "model_config" in node.module):
+                for alias in node.names:
+                    found.setdefault(alias.name, set()).add(where)
+    return found
+
+
+def study_namespace(folder):
+    proc = run_py("import json, importlib.util\n"
+                  f"spec = importlib.util.spec_from_file_location('s', r'{ROOT / folder}/study_config.py')\n"
+                  "m = importlib.util.module_from_spec(spec)\n"
+                  "spec.loader.exec_module(m)\n"
+                  "print(json.dumps(sorted(n for n in dir(m) if not n.startswith('_'))))",
+                  cwd=ROOT / folder)
+    assert proc.returncode == 0, proc.stderr
+    return set(json.loads(proc.stdout))
+
+
+def test_required_exports_covers_everything_actually_imported():
+    """The contract must name every study-provided thing the codebase imports.
+
+    A name missing here passes the study check and then fails later as a raw
+    ImportError or KeyError — the exact failure the check exists to prevent. Five
+    names were missing when this test was written.
+    """
+    from calculations.config.model_config import REQUIRED_EXPORTS
+
+    imported = model_config_imports()
+    provided = study_namespace("Guo_etal_2025")
+    needed = {n for n in imported if n in provided}
+    missing = sorted(needed - set(REQUIRED_EXPORTS))
+    assert not missing, (
+        "REQUIRED_EXPORTS is short of: "
+        + ", ".join(f"{n} (imported by {sorted(imported[n])[0]})" for n in missing))
+
+
+def test_required_exports_names_nothing_unused():
+    """The other direction: a name nobody imports is a demand on studies for nothing."""
+    from calculations.config.model_config import REQUIRED_EXPORTS
+
+    imported = set(model_config_imports())
+    unused = sorted(set(REQUIRED_EXPORTS) - imported)
+    assert not unused, f"REQUIRED_EXPORTS demands unimported names: {unused}"
+
+
+@pytest.mark.parametrize("folder", STUDY_IDS)
+def test_every_study_satisfies_the_widened_contract(folder):
+    from calculations.config.model_config import REQUIRED_EXPORTS
+
+    missing = sorted(set(REQUIRED_EXPORTS) - study_namespace(folder))
+    assert not missing, f"{folder} does not provide {missing}"
