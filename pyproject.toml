@@ -72,3 +72,6 @@ include-package-data = false           # nothing non-.py belongs in the distribu
 # `from conftest import ...` needs tests/ importable; rootdir-relative is not enough.
 testpaths = ["tests"]
 addopts = "-q"
+markers = [
+    "slow: executes a notebook end to end (~75 s). Deselect with -m 'not slow'.",
+]
