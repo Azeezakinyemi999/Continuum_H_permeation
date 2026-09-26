@@ -351,7 +351,10 @@ METALS = {
 
         'pressure':       [],
         'reference':      'Guo et al. 2025',
-        'temp_range':     [468, 823],
+        # Where the source data are valid. Same key name as the oxide's, and read
+        # by get_metal_properties_at_T to warn on extrapolation — it used to be
+        # 'temp_range', which nothing read, so a metal extrapolation was silent.
+        'temperature_range': [468, 823],
         'pressure_range': [1.33e2, 1e5],
         # Provenance, NOT geometry: the specimen thicknesses of the source
         # experiment. A list, so feeding it to a model call poisons every result —

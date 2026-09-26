@@ -108,11 +108,26 @@ overrides the geometry.
       window.** It used to use 673 K, chosen to sit inside [473, 773] K. Deliberate, per
       the decision to reference `T_operating` directly; recorded so the count of places
       that extrapolate stays honest.
-- [ ] **The measurement-validity windows are named inconsistently.** The metal carries
+- [x] **The measurement-validity windows are named inconsistently.** The metal carried
       `temp_range` / `pressure_range`, the oxide `temperature_range`. Both mean the same
-      thing — where the source data are valid — and only the oxide's is read, by
-      `get_oxide_properties_at_T`, to warn on extrapolation. The metal's is read by
-      nothing, so a metal extrapolation is silent.
+      thing — where the source data are valid — and only the oxide's was read, by
+      `get_oxide_properties_at_T`, to warn on extrapolation. The metal's was read by
+      nothing, so a metal extrapolation was silent.
+      **Fixed:** the metal's window is now `temperature_range` in all four studies, and
+      both readers call one shared `_warn_if_extrapolating`. The warning this exposed is
+      not cosmetic — every study now warns at its *own* operating point, and two of them
+      run 150 K **below** their metal's measured floor, the least forgiving direction for
+      an Arrhenius extrapolation:
+
+      | study | metal window | runs at |
+      |---|---|---|
+      | Guo_etal_2025 | [468, 823] K | 873 K — 50 K above |
+      | Fuerst_et_al_2024 | [1023, 1223] K | 873 K — 150 K below |
+      | incoloy802_cr2o3 | [1023, 1223] K | 873 K — 150 K below |
+
+      Changes no number: the gate passes unchanged on all four studies and
+      `worked_values --check` is clean. `pressure_range` is left alone — nothing reads it
+      for either material, so renaming it would be churn without a consumer.
 - [ ] **The preset yields quoted in `study_config.py` are stale.** The comment above
       `REGIME_PRESETS_L5` claims `metal 97.0%, oxide 77.7%, defect 87.3%`; measured today
       they are 34%, 78%, 100% (150 draws, seed 42). Unchanged by the geometry fix —

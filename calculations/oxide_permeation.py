@@ -151,6 +151,27 @@ def calculate_metal_resistance(D_metal, K_s_metal, thickness, P_interface):
 
 
 
+def _warn_if_extrapolating(material_data, temperature_K):
+    """Print a warning when T falls outside the window the data were measured over.
+
+    Both materials carry a 'temperature_range'; the metal's was called 'temp_range' and
+    was read by nothing, so a metal extrapolation was silent while an oxide one warned.
+    Two of the three studies operate 150 K BELOW their metal's measured floor, which is
+    the least forgiving direction for an Arrhenius extrapolation.
+
+    print(), not warnings.warn: the model is usually called with warnings silenced, and
+    an extrapolation is exactly what should still get through. A material with no window
+    recorded is not second-guessed.
+    """
+    window = material_data.get('temperature_range')
+    if not window:
+        return
+    T_min, T_max = window
+    if not (T_min <= temperature_K <= T_max):
+        print(f"Warning: Temperature {temperature_K}K outside validated range "
+              f"[{T_min}, {T_max}]K")
+
+
 def get_oxide_properties_at_T(oxide_name, temperature_K, oxides=None):
     """
     Calculate temperature-dependent oxide properties.
@@ -184,9 +205,7 @@ def get_oxide_properties_at_T(oxide_name, temperature_K, oxides=None):
     T_ref = oxide_data['T_ref']
 
     # Check temperature range
-    T_min, T_max = oxide_data['temperature_range']
-    if not (T_min <= temperature_K <= T_max):
-        print(f"Warning: Temperature {temperature_K}K outside validated range [{T_min}, {T_max}]K")
+    _warn_if_extrapolating(oxide_data, temperature_K)
     
     # Calculate temperature-dependent properties
     # D_ox = oxide_data['D_ox_0'] * np.exp(-oxide_data['E_D_ox'] / (R * temperature_K))
@@ -235,6 +254,7 @@ def get_metal_properties_at_T(metal_name, temperature_K, metals=None):
                          f"different registry.")
 
     metal_data = metals[metal_name]
+    _warn_if_extrapolating(metal_data, temperature_K)
     R = 8.314  # J/mol/K
     T_ref = metal_data['T_ref']
     
