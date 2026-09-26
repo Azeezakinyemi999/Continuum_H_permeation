@@ -178,6 +178,13 @@ overrides the geometry.
       Note `verify_docs.py` passed on that stale page: it checks that referenced config
       *names* resolve, so it never noticed `VALIDATION` being documented after deletion.
       A prose claim about a name that no longer exists is outside what it can see.
-- [ ] **`container/README.md:157`** still describes the deleted `ACTIVE_STUDY` switch and
+- [x] **`container/README.md:157`** still describes the deleted `ACTIVE_STUDY` switch and
       `calculations/config/studies/`. It is accurate about the shipped 1.1.0 image and
       wrong about the repository, so it needs a "since 1.1.0" note rather than a rewrite.
+      **Done that way.** The changelog entry stays true to the image it documents and is
+      marked superseded; a new "Since 1.1.0" section states what a reader comparing a
+      1.1.0 result against a current checkout needs to know — chiefly that the numbers
+      moved, because `CONDITIONS` now owns the wall (1 um oxide, not the 48 nm coupon)
+      and `permeability` is apparent rather than a bulk harmonic mean.
+      `test_container_readme_mentions_the_switch_only_as_history` keeps the name in
+      changelog territory: it may be described as history, never as instruction.

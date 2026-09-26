@@ -226,3 +226,35 @@ def test_the_deleted_studies_package_stays_deleted():
                   env={"PERMEATION_STUDY": "Guo_etal_2025/study_config.py"})
     assert proc.returncode != 0
     assert "No module named" in proc.stderr
+
+
+# --------------------------------------------------------------------------
+# The container README documents a shipped image, so it is allowed to describe
+# the switch as history — but only as history.
+# --------------------------------------------------------------------------
+
+CONTAINER_README = ROOT / "container" / "README.md"
+SUPERSEDED_HEADING = "### Since 1.1.0"
+
+
+def test_container_readme_mentions_the_switch_only_as_history():
+    """`hydrogen-model:1.1.0` really does have an ACTIVE_STUDY switch.
+
+    Its changelog must stay true to the image it describes, so the name cannot simply
+    be banned here. What must not happen is a *live* instruction telling a reader to
+    edit a switch that no longer exists — so every mention has to sit below the
+    heading that marks the repository as having moved on.
+    """
+    text = CONTAINER_README.read_text()
+    cut = text.find(SUPERSEDED_HEADING)
+    assert cut != -1, f"{CONTAINER_README.name} has no {SUPERSEDED_HEADING!r} section"
+
+    stale = [
+        line.strip()
+        for line in text[:cut].splitlines()
+        if "ACTIVE_STUDY" in line or "config/studies" in line
+    ]
+    assert not stale, (
+        "the deleted switch is described above the 'Since 1.1.0' heading, where it "
+        f"reads as current instruction: {stale}"
+    )
