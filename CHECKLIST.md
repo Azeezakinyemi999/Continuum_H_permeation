@@ -167,8 +167,31 @@ overrides the geometry.
       — the surface solve cannot bracket a root when there is nothing to drive it. Found
       while writing the physics suite, where it is recorded as a strict `xfail`, so
       fixing it will announce itself by turning that test into an unexpected pass.
-- [ ] **No test executes a notebook end to end.** The figure and study-resolution suites
+- [x] **No test executes a notebook end to end.** The figure and study-resolution suites
       check notebook *source*; a run is verified only by hand.
+      **Done:** `tests/test_notebook_execution.py` runs `Guo_etal_2025/Proposal.ipynb`
+      through `nbconvert` in its own folder, asserts no cell produced an `error` output,
+      and asserts all six figures were written *by that run* rather than left over from
+      an earlier one. ~60 s, marked `slow`, deselectable with `-m "not slow"` but on by
+      default. The executed copy goes to `tmp_path`, so running the tests never rewrites
+      the committed notebook.
+
+      One notebook, not 24, and deliberately: the `sensitivity_regime_*` notebooks run
+      full sampling scans, and the `regime_parallel_coords*` ones only read scan CSVs
+      that are gitignored and cannot be regenerated without running the scans first —
+      they would have to be skipped on a fresh clone.
+
+      Mutation-checked in both directions: a cell that raises is caught by the error
+      assertion, and a `save_figure` turned into a no-op — which leaves the notebook
+      running perfectly cleanly — is caught by the figure count.
+- [ ] **The notebooks declare kernel `"name": "python3"`, which is not necessarily the
+      interpreter that has the package.** On this machine that kernelspec points at a
+      different conda environment and the first cell dies on `import calculations`; the
+      environment with the editable install is registered as `mace_env`. Nothing in the
+      repository pins the association, so whether a notebook runs depends on what the
+      reader happens to have registered under the name `python3`. The new execution test
+      works around it by finding the kernelspec whose `argv[0]` matches `sys.executable`,
+      which is a fix for the test and not for the notebooks.
 
 ## Repository hygiene
 
