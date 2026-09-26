@@ -148,6 +148,30 @@ Please include:
 `hydrogen-model:1.1.0` — Python 3.12, linux/amd64. Cite this tag alongside any
 results, so they can be tied back to a known environment.
 
+### Since 1.1.0 — in the repository, not in this image
+
+Everything below describes `hydrogen-model:1.1.0` as shipped and stays accurate for
+it. The repository has since moved on in ways that matter if you compare a result
+from this image against one computed from a current checkout:
+
+- **There is no `ACTIVE_STUDY` switch any more, and no `calculations/config/studies/`.**
+  Each study folder holds its own `study_config.py` — the real input file — and it is
+  selected by running in that folder, or by naming one in `$MHI_STUDY`. Running from
+  the repository root, which belongs to no study, is an error rather than a silent
+  default.
+- **Numbers have moved, so 1.1.0 results will not reproduce against a current
+  checkout.** Two changes are responsible. The operating point in `CONDITIONS` is now
+  the authority for the wall being simulated, so the oxide layer is its 1 µm
+  `L_oxide` rather than the 48 nm coupon thickness recorded on the material; and
+  `permeability` is now an apparent permeability derived from the flux each level
+  solved, rather than a harmonic mean of two bulk material constants — a factor of
+  775 at the default operating point.
+- **Figures are written into a folder per notebook**, `<notebook>-results/`, rather
+  than beside the notebook.
+
+Cite the image tag with any result computed from it, which is what makes this
+distinction recoverable later.
+
 ### Changes since 1.0.1
 
 The environment is byte-for-byte the same specification — identical Dockerfile,
@@ -158,6 +182,7 @@ What changed is the model and the workspace:
   studies — Incoloy 802 / Cr2O3, Hastelloy N (Fuerst 2024), and 316L (Guo 2025).
   `ACTIVE_STUDY` in `calculations/config/model_config.py` selects one, and every
   module and notebook follows it. Nothing else needs editing.
+  *(True of this image. Superseded in the repository — see "Since 1.1.0" above.)*
 - **A study contract.** Selecting a study that is missing a required export now
   fails immediately, naming the study and the missing names, instead of raising
   deep inside an import.
