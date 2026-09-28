@@ -86,7 +86,6 @@ Press `Ctrl-C` in the terminal to stop.
 ```
 workspace/
 ├── calculations/          the model. Python package; do not rename.
-├── Application/           316L / Cr2O3
 ├── Guo_etal_2025/         316L / Cr2O3 (Guo et al. 2025)
 ├── Fuerst_et_al_2024/     Hastelloy N / Cr2O3 (Fuerst et al. 2024)
 └── incoloy802_cr2o3/      Incoloy 802 / Cr2O3
@@ -186,8 +185,11 @@ model, and two of the changes move numbers:
   fluxes differ.
 - **Figures are written into a folder per notebook**, `<notebook>-results/`, rather
   than beside the notebook.
-- **A fourth study ships.** `Application/`, `Guo_etal_2025/`, `Fuerst_et_al_2024/`
-  and `incoloy802_cr2o3/`, each self-contained.
+- **Three studies ship, one folder each.** `Guo_etal_2025/`, `Fuerst_et_al_2024/`
+  and `incoloy802_cr2o3/`, each self-contained. A fourth folder, `Application/`,
+  was withdrawn on 2026-09-28: its `study_config.py` was a delivery copy of the Guo
+  study — identical bar the docstring, same `STUDY_NAME` — so it advertised a fourth
+  study that reproduced a third one's numbers. Use `Guo_etal_2025/` for 316L / Cr2O3.
 - **The derived parameter block lives in one place.** It used to be duplicated
   verbatim in every study file; it is now in `calculations/config/model_config.py`,
   so a study file holds only its own data.

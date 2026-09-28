@@ -11,7 +11,7 @@ REFERENCE below holds a measured set per study and the test selects on
 ACTIVE_STUDY_NAME; a study with no entry fails with a message saying to measure one
 rather than silently passing. The gate prints ACTIVE_STUDY_SOURCE as well, because a
 reference set that matched for the wrong reason is not a passing gate. There is no
-default study, so the gate names the one the release ships: `Application/study_config.py`.
+default study, so the gate names the one the release ships: `Guo_etal_2025/study_config.py`.
 
 Model INPUTS are derived from the active study too — its own metal/oxide
 properties at T, its own surface kinetics — so the test exercises the study it
@@ -49,11 +49,14 @@ for _cand in (os.getcwd(), "/workspace"):
         sys.path.insert(0, _cand)
 
 # The gate runs at the workspace root, which is not a study folder, and there is no
-# default study — so it names the one the release ships. Application/ is the delivery
-# folder (PACKAGING_1.0.0.md: the image carries calculations/ plus Application/), and
-# its study_config.py is the input file the shipped notebooks run on. setdefault, so
-# `MHI_STUDY=... python model_smoke_test.py` can gate another study deliberately.
-GATE_STUDY = "Application/study_config.py"
+# default study — so it names the one the release ships. This was
+# `Application/study_config.py` until 2026-09-28; Application/ was a delivery copy of
+# Guo_etal_2025 (identical study_config bar the docstring, same STUDY_NAME) and no
+# longer ships, which left this default naming a folder that does not exist — the gate
+# died with a ValueError from the study loader before running a single check.
+# setdefault, so `MHI_STUDY=... python model_smoke_test.py` can gate another study
+# deliberately.
+GATE_STUDY = "Guo_etal_2025/study_config.py"
 os.environ.setdefault("MHI_STUDY", GATE_STUDY)
 
 RTOL = 1e-9
@@ -321,13 +324,23 @@ for i, want in enumerate([0.10706087473576083, 0.06905348258240432,
 
 # ---------------------------------- real SA artefacts (needs the workspace)
 print("\nshipped SA artefacts:")
-R = os.path.join("Application", "sa_results")
+# Follows the active study rather than naming a folder: it used to hardcode
+# `Application/`, which no longer exists. Note the pinned shapes and driver rankings
+# below were MEASURED on Application/sa_results, and Application's notebooks were not
+# identical to Guo's — so the first time Guo_etal_2025/sa_results/ holds these CSVs,
+# this block will assert Application's numbers against Guo's data. Re-measure then;
+# failing loudly is the intent, as with a missing REFERENCE entry.
+R = os.path.join(os.path.dirname(ACTIVE_STUDY_PATH), "sa_results")
 needed = ["routeB_givendata.csv", "master_clusters.csv", "compare_delta_flux.csv"]
 if not all(os.path.exists(os.path.join(R, f)) for f in needed):
     # Expected for the shipped workspace: the SA result CSVs are deliberately
     # not distributed (see PACKAGING_1.0.0.md), so this section only runs in the
     # development tree. It is not a failure.
-    print(f"SKIP  {R}/ CSVs absent — not shipped; run the sensitivity notebooks first")
+    try:
+        _R_show = os.path.relpath(R)
+    except ValueError:            # different drive on Windows
+        _R_show = R
+    print(f"SKIP  {_R_show}/ CSVs absent — not shipped; run the sensitivity notebooks first")
 else:
     import pandas as pd
     from calculations.sensitivity import (
