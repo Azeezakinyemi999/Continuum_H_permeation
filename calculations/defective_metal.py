@@ -830,6 +830,12 @@ def calculate_effective_diffusivity_trapping(D_lattice, temperature, trap_list,
             - 'trapping_contribution': (N_T/N_L) × K, contribution to D_eff reduction [-]
             - 'trapped_concentration': [mol/m³]
 
+        - 'trapped_concentration_total': Σᵢ trapped_concentration, total H held in
+          traps [mol/m³]
+        - 'lattice_concentration': the ``lattice_concentration`` argument, echoed so a
+          quoted inventory carries the concentration it was computed at [mol/m³]
+        - 'concentration_total': lattice + trapped, the wall's H inventory at that
+          lattice concentration [mol/m³]
         - 'reduction_factor': D_eff/D_lattice [-]
         - 'dominant_trap': Name of trap with highest contribution
         - 'mobile_fraction': Fraction of H that is mobile [-]
@@ -1004,13 +1010,30 @@ def calculate_effective_diffusivity_trapping(D_lattice, temperature, trap_list,
     
     # Sort trap contributions by theta (highest first)
     trap_contributions.sort(key=lambda x: x['theta'], reverse=True)
-    
+
+    # Hydrogen inventory. Each trap's trapped_concentration is already computed
+    # per type; nothing summed them, so the quantity you would actually quote --
+    # how much H the wall holds -- had to be assembled by the caller.
+    #
+    # Both are conditional on the lattice_concentration ARGUMENT, which is an input
+    # and not solved from the wall. The real C_L runs from K_s*sqrt(P_up) at the entry
+    # face to K_s*sqrt(P_down) at the exit, so these are the inventory AT ONE POINT.
+    # For a whole-wall figure, C_L is linear in z through the metal, so evaluating at
+    # the mean (C_up + C_down)/2 reproduces the wall integral to ~0.3% while theta
+    # stays in the dilute limit. That shortcut fails as theta approaches saturation --
+    # see the warning threshold above.
+    trapped_concentration_total = sum(
+        c['trapped_concentration'] for c in trap_contributions)
+
     return {
         'D_eff': D_eff,
         'D_lattice': D_lattice,
         'trapping_term': trapping_term,  # NEW: Σ(N_T,i × K_i / N_L)
         'theta_total': theta_total,
         'trap_contributions': trap_contributions,
+        'trapped_concentration_total': trapped_concentration_total,
+        'lattice_concentration': lattice_concentration,
+        'concentration_total': lattice_concentration + trapped_concentration_total,
         'reduction_factor': reduction_factor,
         'dominant_trap': dominant_trap,
         'mobile_fraction': mobile_fraction,
@@ -1445,6 +1468,11 @@ def combined_microstructure_model(D_lattice, temperature, microstructure_params,
     # Handle 'none' mode - return perfect lattice
     # ========================================================================
     if mode == 'none':
+        # Returns the SAME key set as the other three modes. It used to return its own
+        # shape -- no 'trapping', no 'calculation_sequence', no 'parameters', plus a
+        # 'trap_details' that nothing reads -- so `result['trapping']` raised KeyError
+        # on this mode alone. container/revalidate_reference.py reads that key
+        # unguarded. 'trap_details' is kept as None for any caller that looked for it.
         return {
             'D_eff': D_lattice,
             'D_lattice': D_lattice,
@@ -1452,6 +1480,23 @@ def combined_microstructure_model(D_lattice, temperature, microstructure_params,
             'gb_enhancement': None,
             'theta_total': 0.0,
             'trap_details': None,
+            'trapping': {
+                'theta_total': 0.0,
+                'reduction_factor': 1.0,
+                'dominant_trap': None,
+                'contributions': [],
+                'trapping_term': 0.0,
+                'trapped_concentration_total': 0.0,
+                'lattice_concentration': lattice_concentration,
+                'concentration_total': lattice_concentration,
+            },
+            'calculation_sequence': ['mode=none: perfect lattice, no GB, no trapping'],
+            'parameters': {
+                'temperature': temperature,
+                'grain_size': microstructure_params.get('grain_size'),
+                'gb_type': microstructure_params.get('gb_type'),
+                'trap_count': 0,
+            },
             'overall_factor': 1.0,
             'gb_enhancement_factor': 1.0,
             'trapping_reduction_factor': 1.0,
@@ -1624,14 +1669,29 @@ def combined_microstructure_model(D_lattice, temperature, microstructure_params,
             'theta_total': theta_total,
             'reduction_factor': trapping_reduction_factor_val,
             'dominant_trap': trap_result['dominant_trap'],
-            'contributions': trap_result['trap_contributions']
+            'contributions': trap_result['trap_contributions'],
+            # Forwarded rather than recomputed. This dict used to drop everything the
+            # sub-model returned except these four keys, which is why 'trapping_term'
+            # -- the Oriani denominator -- is unreachable from here while 'theta_total',
+            # the quantity that must NOT be substituted for it, is offered.
+            'trapping_term': trap_result['trapping_term'],
+            'trapped_concentration_total': trap_result['trapped_concentration_total'],
+            'lattice_concentration': trap_result['lattice_concentration'],
+            'concentration_total': trap_result['concentration_total'],
         }
     else:
+        # Same key set as the branch above, so a caller can read any of them without
+        # testing the mode first. Trapping is off here, so nothing is held in traps and
+        # the inventory is the lattice alone.
         trapping_dict = {
             'theta_total': 0.0,
             'reduction_factor': 1.0,
             'dominant_trap': None,
-            'contributions': []
+            'contributions': [],
+            'trapping_term': 0.0,
+            'trapped_concentration_total': 0.0,
+            'lattice_concentration': lattice_concentration,
+            'concentration_total': lattice_concentration,
         }
     
     # Collect warnings safely
