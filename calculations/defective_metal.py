@@ -57,14 +57,18 @@ where typically :math:`Q_{gb} \approx 0.6\,Q_{bulk}`
 
 Module Structure
 ----------------
-Core Functions (7)::
+Core Functions (6)::
 1. trap_occupancy() - Calculate trap site occupancy fraction
 2. grain_boundary_density() - Convert grain size to trap density
-3. gb_enhancement_factor() - Temperature-dependent GB enhancement
-4. vacancy_concentration() - Thermal vacancy concentration
-5. calculate_effective_diffusivity_trapping() - Apply trapping effects
-6. calculate_gb_enhanced_diffusivity() - Apply GB enhancement
-7. combined_microstructure_model() - Combine all effects
+3. gb_enhancement_factor() - GB enhancement from the active metal's E_D
+4. calculate_effective_diffusivity_trapping() - Apply trapping effects
+5. calculate_gb_enhanced_diffusivity() - Apply GB enhancement
+6. combined_microstructure_model() - Combine all effects
+
+vacancy_concentration() was removed on 2026-09-28. It carried its own hardcoded
+materials database whose N_sites for Incoloy contradicted the study config's
+lattice_density by 21%, its other two constants (vacancy formation energy, melting
+point) had no config source at all, and it had no caller anywhere in the tree.
 
 Usage
 -----
@@ -511,6 +515,12 @@ def gb_enhancement_factor(temperature, temperature_unit='K', gb_type='HAGB', dat
     lower activation energy. At low homologous temperatures (T/T_m < 0.5), GB
     diffusion can be 100-1000× faster than bulk. At high temperatures (T/T_m > 0.8),
     the enhancement reduces to 10-20×.
+
+    **This is what the function computes.** Q_bulk is the active metal's ``E_D`` from
+    the study config; the two dimensionless ratios (Q_gb/Q_bulk and the prefactor
+    ratio A) are fixed in the body. Until 2026-09-28 the derivation below was prose
+    only: the code interpolated a hardcoded austenitic-steel table instead, whatever
+    metal was loaded.
     
     Mathematical Derivation
     -----------------------
@@ -547,9 +557,11 @@ def gb_enhancement_factor(temperature, temperature_unit='K', gb_type='HAGB', dat
         Default: 'HAGB' (most common and highest enhancement)
     
     data_source : str or dict, optional
-        Source of enhancement data:
-        - 'default': Use built-in data for austenitic steel
-        - dict: Custom data as {T_celsius: enhancement_factor}
+        - 'default': compute alpha from the ACTIVE METAL's own ``E_D``, read from the
+          METALS entry of the study config. No enhancement data is stored here.
+        - dict: an explicit table, ``{T_celsius: enhancement_factor}``, interpolated
+          in log space. Note ``np.interp`` clamps outside the supplied range rather
+          than extrapolating, so the nearest endpoint is returned there.
         Default: 'default'
     
     Returns
@@ -557,11 +569,16 @@ def gb_enhancement_factor(temperature, temperature_unit='K', gb_type='HAGB', dat
     dict
         Dictionary containing:
         - 'enhancement_factor': D_gb/D_bulk ratio [-]
-        - 'uncertainty': Estimated relative uncertainty (fractional)
-        - 'interpolation_method': Method used ('interpolation', 'extrapolation_warning')
+        - 'uncertainty': Estimated relative uncertainty (fractional); 0.2 inside the
+          validated window, 0.5 outside it, x1.5 for a GB type other than HAGB
+        - 'interpolation_method': one of 'arrhenius_from_config',
+          'arrhenius_extrapolated' (default source), or 'interpolation',
+          'extrapolation_warning' (explicit table)
         - 'temperature_K': Temperature in Kelvin [K]
+        - 'temperature_C': Temperature in Celsius [C]
         - 'gb_type_factor': Scaling factor applied for GB type [-]
-        - 'data_range': Temperature range of source data [K]
+        - 'data_range_K': validity window — the metal's own ``temperature_range`` for
+          the default source, or the supplied table's span for a dict
     
     Raises
     ------
@@ -569,7 +586,13 @@ def gb_enhancement_factor(temperature, temperature_unit='K', gb_type='HAGB', dat
         If temperature ≤ 0 K
         If temperature_unit not recognized
         If gb_type not recognized
-        If temperature far outside data range (>200K extrapolation)
+        If data_source is neither 'default' nor a dict
+
+    .. note::
+
+       Being outside the validated temperature range **warns**, it does not raise.
+       The docstring previously promised a ValueError beyond 200 K of extrapolation;
+       no such check ever existed.
     
     Warnings
     --------
@@ -616,51 +639,60 @@ def gb_enhancement_factor(temperature, temperature_unit='K', gb_type='HAGB', dat
     if T_kelvin <= 0:
         raise ValueError(f"Temperature must be positive, got {T_kelvin} K")
     
-    # Define default data (from literature for austenitic steels)
     if data_source == 'default':
-        # Temperature in °C and corresponding enhancement factors
-        data_T_celsius = np.array([600, 700, 800, 900, 1000])
-        data_enhancement = np.array([500, 200, 100, 50, 20])
+        from calculations.config.model_config import ACTIVE_METAL, METALS, R
+        
+        Q_RATIO         = 0.6   # Q_gb / Q_bulk, the standard empirical value
+        PREFACTOR_RATIO = 1.0   # A = D0_gb / D0_bulk
+
+        metal  = METALS[ACTIVE_METAL]
+        Q_bulk = metal['E_D']
+
+        # D_gb/D_bulk = A exp[(Q_bulk - Q_gb)/RT], with Q_gb = Q_RATIO * Q_bulk
+        base_enhancement = PREFACTOR_RATIO * np.exp(
+            (1.0 - Q_RATIO) * Q_bulk / (R * T_kelvin))
+
+        # Validity is now the window the metal's OWN diffusion data were measured over,
+        # from the same METALS entry as E_D, instead of an unrelated table's range.
+        window = metal.get('temperature_range')
+        if window:
+            T_min, T_max = float(window[0]), float(window[1])
+            if T_min <= T_kelvin <= T_max:
+                interpolation_method = 'arrhenius_from_config'
+            else:
+                interpolation_method = 'arrhenius_extrapolated'
+                warnings.warn(
+                    f"Temperature {T_kelvin:.1f} K is outside the validated range "
+                    f"[{T_min:.1f}, {T_max:.1f}] K of {ACTIVE_METAL}'s diffusion data. "
+                    "The GB enhancement is extrapolated.")
+        else:
+            T_min = T_max = float('nan')
+            interpolation_method = 'arrhenius_from_config'
+
     elif isinstance(data_source, dict):
+        # Explicit table override: {T_celsius: enhancement}. Interpolated in log space,
+        # because log(D_gb/D_bulk) is linear in 1/T.
         data_T_celsius = np.array(list(data_source.keys()))
         data_enhancement = np.array(list(data_source.values()))
+        data_T_kelvin = data_T_celsius + 273.15
+        T_min, T_max = data_T_kelvin.min(), data_T_kelvin.max()
+
+        if T_min <= T_kelvin <= T_max:
+            interpolation_method = 'interpolation'
+        else:
+            interpolation_method = 'extrapolation_warning'
+            warnings.warn(f"Temperature {T_kelvin:.1f} K is outside the supplied data "
+                          f"range [{T_min:.1f}, {T_max:.1f}] K. np.interp clamps rather "
+                          "than extrapolates, so the nearest endpoint value is returned.")
+
+        log_enhancement = np.log(data_enhancement)
+        inverse_T = 1.0 / data_T_kelvin
+        log_factor_interpolated = np.interp(
+            1.0/T_kelvin, inverse_T[::-1], log_enhancement[::-1])
+        base_enhancement = np.exp(log_factor_interpolated)
+
     else:
         raise ValueError("data_source must be 'default' or a dictionary")
-    
-    # Convert data to Kelvin for consistency
-    data_T_kelvin = data_T_celsius + 273.15
-    
-    # Check if temperature is within data range
-    T_min, T_max = data_T_kelvin.min(), data_T_kelvin.max()
-    
-    if T_kelvin < T_min or T_kelvin > T_max:
-        # Check if extrapolation is reasonable (within 200K)
-        if T_kelvin < T_min - 200 or T_kelvin > T_max + 200:
-            # Instead of raising, clamp to nearest data limit and warn.
-            warnings.warn(
-                f"Temperature {T_kelvin:.1f} K is far outside data range "
-                f"[{T_min:.1f}, {T_max:.1f}] K. Clamping to nearest data limit for interpolation."
-            )
-            interpolation_method = 'extrapolation_clamped'
-            # Use clamped temperature for interpolation
-            use_T_kelvin = min(max(T_kelvin, T_min), T_max)
-        else:
-            warnings.warn(f"Temperature {T_kelvin:.1f} K is outside data range "
-                         f"[{T_min:.1f}, {T_max:.1f}] K. Extrapolation may be inaccurate.")
-            interpolation_method = 'extrapolation_warning'
-            use_T_kelvin = T_kelvin
-    else:
-        interpolation_method = 'interpolation'
-        use_T_kelvin = T_kelvin
-    
-    # Perform interpolation in log space (physically motivated)
-    # log(D_gb/D_bulk) should be linear in 1/T
-    log_enhancement = np.log(data_enhancement)
-    inverse_T = 1.0 / data_T_kelvin
-
-    # Use possibly-clamped temperature for interpolation
-    log_factor_interpolated = np.interp(1.0/use_T_kelvin, inverse_T[::-1], log_enhancement[::-1])
-    base_enhancement = np.exp(log_factor_interpolated)
     
     # Apply grain boundary type scaling
     gb_type_factors = {
@@ -679,11 +711,17 @@ def gb_enhancement_factor(temperature, temperature_unit='K', gb_type='HAGB', dat
     # Ensure minimum enhancement of 1 (GB can't be slower than bulk)
     enhancement_factor = max(1.0, base_enhancement * gb_scaling)
     
-    # Estimate uncertainty (higher for extrapolation, different GB types)
-    if interpolation_method == 'extrapolation_warning':
-        uncertainty = 0.5  # ±50% for extrapolation
+    # Estimate uncertainty (higher outside the validated window, and for GB types
+    # whose scaling is itself a rule of thumb).
+    #
+    # One tier for "outside", deliberately. There used to be two, and only
+    # 'extrapolation_warning' was tested here, so the FAR case fell through to the
+    # interpolation value: going further from the data lowered the reported
+    # uncertainty from 0.5 to 0.2.
+    if interpolation_method in ('extrapolation_warning', 'arrhenius_extrapolated'):
+        uncertainty = 0.5  # ±50% outside the validated range
     else:
-        uncertainty = 0.2  # ±20% for interpolation
+        uncertainty = 0.2  # ±20% inside it
     
     # Add uncertainty for non-HAGB types
     if gb_type != 'HAGB':
@@ -705,251 +743,6 @@ def gb_enhancement_factor(temperature, temperature_unit='K', gb_type='HAGB', dat
         'gb_type_factor': gb_scaling,
         'data_range_K': [T_min, T_max]
     }
-
-def vacancy_concentration(temperature, material='Incoloy800', condition='equilibrium', quench_temperature=None):
-    r"""
-    Calculate thermal vacancy concentration in metals.
-    
-    Theory
-    ------
-    Vacancies are thermodynamic defects that exist in equilibrium due to the
-    balance between formation enthalpy (energy cost) and configurational entropy
-    (disorder gain). The equilibrium concentration follows:
-    
-        .. math::
-
-        C_v = N\exp\!\left(\frac{-G_f^v}{kT}\right)
-            \approx N\exp\!\left(\frac{-E_f^v}{RT}\right)
-    
-    where G_f^v is the Gibbs free energy of formation. At high temperatures,
-    the entropy term T×S_f^v becomes significant, but for most metals below
-    0.8×T_melt, the enthalpy E_f^v dominates.
-    
-    Mathematical Derivation
-    -----------------------
-    From statistical mechanics, minimizing Gibbs free energy:
-        G = N_v×G_f^v - T×S_config
-    
-    where configurational entropy:
-        S_config = k_B × ln[N!/(N_v!(N-N_v)!)]
-    
-    Using Stirling's approximation and ∂G/∂N_v = 0:
-        .. math::
-
-        \frac{N_v}{N} = \exp\!\left(\frac{-G_f^v}{kT}\right)
-            \approx \exp\!\left(\frac{-E_f^v}{RT}\right)
-    
-    For FCC metals, E_f^v ≈ 10-15 × k_B×T_melt (empirical rule).
-    
-    Parameters
-    ----------
-    temperature : float
-        Current temperature in Kelvin [K]
-        Valid range: 300 K to 0.95×T_melt
-        Above 0.85×T_melt, model accuracy decreases
-    
-    material : str, optional
-        Material name for property lookup:
-        - 'Incoloy800': Default austenitic alloy
-        - 'Ni': Pure nickel
-        - 'Fe_austenitic': Austenitic iron
-        - 'custom': Use with custom parameters
-        Default: 'Incoloy800'
-    
-    condition : str, optional
-        Vacancy condition:
-        - 'equilibrium': Vacancies in thermal equilibrium at temperature
-        - 'quenched': Supersaturated vacancies frozen from quench_temperature
-        Default: 'equilibrium'
-    
-    quench_temperature : float, optional
-        Temperature from which material was quenched [K]
-        Only used if condition='quenched'
-        Must be > temperature and < T_melt
-    
-    Returns
-    -------
-    dict
-        Dictionary containing:
-        - 'concentration': Vacancy concentration [m⁻³]
-        - 'site_fraction': Fraction of lattice sites vacant [-]
-        - 'formation_energy': Vacancy formation energy used [J/mol]
-        - 'lattice_sites': Total lattice sites per m³ [m⁻³]
-        - 'is_equilibrium': True if equilibrium, False if quenched
-        - 'effective_temperature': Temperature determining concentration [K]
-        - 'warnings': List of any warnings issued
-    
-    Raises
-    ------
-    ValueError
-        If temperature ≤ 0 K
-        If temperature > 0.95×T_melt (model invalid near melting)
-        If material not recognized
-        If condition not 'equilibrium' or 'quenched'
-        If quench_temperature invalid for quenched condition
-    
-    Warnings
-    --------
-    UserWarning
-        If temperature > 0.85×T_melt (reduced model accuracy)
-        If vacancy concentration exceeds 1% (clustering becomes important)
-        If quench creates very high supersaturation (>100× equilibrium)
-    
-    References
-    ----------
-    1. Kraftmakher, Y. (1998). "Equilibrium vacancies and thermophysical
-       properties of metals." Physics Reports 299, 79-188.
-       DOI: 10.1016/S0370-1573(97)00082-3
-    
-    2. Fukai, Y., Okuma, N. (1994). "Formation of superabundant vacancies in
-       metal hydrides." Jpn. J. Appl. Phys. 32, L1256.
-       DOI: 10.1143/JJAP.32.L1256
-    
-    3. Siegel, R.W. (1978). "Vacancy concentrations in metals." J. Nucl. Mater.
-       69-70, 117-146. DOI: 10.1016/0022-3115(78)90240-4
-    
-    Example
-    -------
-    >>> result = vacancy_concentration(
-    ...     temperature=1000,  # K
-    ...     material='Incoloy800',
-    ...     condition='equilibrium'
-    ... )
-    >>> print(f"Vacancy concentration: {result['concentration']:.2e} m⁻³")
-    """
-    import numpy as np
-    import warnings
-    
-    # Physical constants
-    R = 8.314  # Universal gas constant [J/mol/K]
-    k_B = 1.381e-23  # Boltzmann constant [J/K]
-    N_A = 6.022e23  # Avogadro's number [mol⁻¹]
-    
-    # Material properties database
-    materials_data = {
-        'Incoloy800': {
-            'E_f_v': 140.0e3,  # J/mol - vacancy formation energy
-            'N_sites': 1.06e29,  # m⁻³ - lattice sites
-            'T_melt': 1723,  # K - melting point
-            'structure': 'FCC'
-        },
-        'Ni': {
-            'E_f_v': 150.0e3,  # J/mol
-            'N_sites': 9.14e28,  # m⁻³
-            'T_melt': 1728,  # K
-            'structure': 'FCC'
-        },
-        'Fe_austenitic': {
-            'E_f_v': 135.0e3,  # J/mol
-            'N_sites': 8.46e28,  # m⁻³
-            'T_melt': 1811,  # K
-            'structure': 'FCC'
-        }
-    }
-    
-    # Input validation
-    if temperature <= 0:
-        raise ValueError(f"Temperature must be positive, got {temperature} K")
-    
-    if material not in materials_data:
-        raise ValueError(f"Material must be one of {list(materials_data.keys())}, got '{material}'")
-    
-    if condition not in ['equilibrium', 'quenched']:
-        raise ValueError(f"Condition must be 'equilibrium' or 'quenched', got '{condition}'")
-    
-    # Get material properties
-    mat_props = materials_data[material]
-    E_f_v = mat_props['E_f_v']
-    N_sites = mat_props['N_sites']
-    T_melt = mat_props['T_melt']
-    
-    # Initialize warnings list
-    warning_list = []
-    
-    # Temperature validation
-    T_ratio = temperature / T_melt
-    
-    if T_ratio > 0.95:
-        raise ValueError(f"Temperature {temperature:.1f} K exceeds 0.95×T_melt ({0.95*T_melt:.1f} K). "
-                        "Model invalid near melting point.")
-    
-    if T_ratio > 0.85:
-        warning_msg = (f"Temperature {temperature:.1f} K exceeds 0.85×T_melt ({0.85*T_melt:.1f} K). "
-                      "Model accuracy reduced due to anharmonic effects.")
-        warnings.warn(warning_msg)
-        warning_list.append(warning_msg)
-    
-    # Determine effective temperature for vacancy calculation
-    if condition == 'equilibrium':
-        T_effective = temperature
-        is_equilibrium = True
-    elif condition == 'quenched':
-        if quench_temperature is None:
-            raise ValueError("quench_temperature must be provided for 'quenched' condition")
-        
-        if quench_temperature <= temperature:
-            raise ValueError(f"Quench temperature {quench_temperature} K must be > "
-                           f"current temperature {temperature} K")
-        
-        if quench_temperature > T_melt:
-            raise ValueError(f"Quench temperature {quench_temperature} K exceeds "
-                           f"melting point {T_melt} K")
-        
-        T_effective = quench_temperature
-        is_equilibrium = False
-        
-        # Warn if quenching from very high temperature
-        if quench_temperature > 0.85 * T_melt:
-            warning_msg = f"Quenching from {quench_temperature:.1f} K (near melting) creates extreme supersaturation"
-            warnings.warn(warning_msg)
-            warning_list.append(warning_msg)
-    
-    # Calculate vacancy concentration
-    # C_v = N_sites × exp(-E_f^v / RT)
-    if T_effective > 0:
-        C_v_equilibrium = N_sites * np.exp(-E_f_v / (R * T_effective))
-    else:
-        C_v_equilibrium = 0
-    
-    # Apply minimum concentration floor (from background defects)
-    minimum_concentration = 1e20  # m⁻³
-    C_v = max(C_v_equilibrium, minimum_concentration)
-    
-    # Calculate site fraction
-    site_fraction = C_v / N_sites
-    
-    # Warn if vacancy concentration is very high
-    if site_fraction > 0.01:
-        warning_msg = (f"Vacancy site fraction {site_fraction:.2%} exceeds 1%. "
-                      "Vacancy clustering becomes important but is not included in this model.")
-        warnings.warn(warning_msg)
-        warning_list.append(warning_msg)
-    
-    # Check for extreme supersaturation in quenched case
-    if condition == 'quenched':
-        C_v_current_eq = N_sites * np.exp(-E_f_v / (R * temperature))
-        C_v_current_eq = max(C_v_current_eq, minimum_concentration)
-        supersaturation = C_v / C_v_current_eq
-        
-        if supersaturation > 100:
-            warning_msg = (f"Quenched vacancy concentration is {supersaturation:.1f}× equilibrium. "
-                          "Such high supersaturation may be unstable.")
-            warnings.warn(warning_msg)
-            warning_list.append(warning_msg)
-    
-    return {
-        'concentration': C_v,
-        'site_fraction': site_fraction,
-        'formation_energy': E_f_v,
-        'lattice_sites': N_sites,
-        'is_equilibrium': is_equilibrium,
-        'effective_temperature': T_effective,
-        'minimum_concentration': minimum_concentration,
-        'material': material,
-        'melting_point': T_melt,
-        'warnings': warning_list
-    }
-
 
 def calculate_effective_diffusivity_trapping(D_lattice, temperature, trap_list, 
                                             lattice_concentration, lattice_density):
@@ -1037,6 +830,12 @@ def calculate_effective_diffusivity_trapping(D_lattice, temperature, trap_list,
             - 'trapping_contribution': (N_T/N_L) × K, contribution to D_eff reduction [-]
             - 'trapped_concentration': [mol/m³]
 
+        - 'trapped_concentration_total': Σᵢ trapped_concentration, total H held in
+          traps [mol/m³]
+        - 'lattice_concentration': the ``lattice_concentration`` argument, echoed so a
+          quoted inventory carries the concentration it was computed at [mol/m³]
+        - 'concentration_total': lattice + trapped, the wall's H inventory at that
+          lattice concentration [mol/m³]
         - 'reduction_factor': D_eff/D_lattice [-]
         - 'dominant_trap': Name of trap with highest contribution
         - 'mobile_fraction': Fraction of H that is mobile [-]
@@ -1211,13 +1010,30 @@ def calculate_effective_diffusivity_trapping(D_lattice, temperature, trap_list,
     
     # Sort trap contributions by theta (highest first)
     trap_contributions.sort(key=lambda x: x['theta'], reverse=True)
-    
+
+    # Hydrogen inventory. Each trap's trapped_concentration is already computed
+    # per type; nothing summed them, so the quantity you would actually quote --
+    # how much H the wall holds -- had to be assembled by the caller.
+    #
+    # Both are conditional on the lattice_concentration ARGUMENT, which is an input
+    # and not solved from the wall. The real C_L runs from K_s*sqrt(P_up) at the entry
+    # face to K_s*sqrt(P_down) at the exit, so these are the inventory AT ONE POINT.
+    # For a whole-wall figure, C_L is linear in z through the metal, so evaluating at
+    # the mean (C_up + C_down)/2 reproduces the wall integral to ~0.3% while theta
+    # stays in the dilute limit. That shortcut fails as theta approaches saturation --
+    # see the warning threshold above.
+    trapped_concentration_total = sum(
+        c['trapped_concentration'] for c in trap_contributions)
+
     return {
         'D_eff': D_eff,
         'D_lattice': D_lattice,
         'trapping_term': trapping_term,  # NEW: Σ(N_T,i × K_i / N_L)
         'theta_total': theta_total,
         'trap_contributions': trap_contributions,
+        'trapped_concentration_total': trapped_concentration_total,
+        'lattice_concentration': lattice_concentration,
+        'concentration_total': lattice_concentration + trapped_concentration_total,
         'reduction_factor': reduction_factor,
         'dominant_trap': dominant_trap,
         'mobile_fraction': mobile_fraction,
@@ -1652,6 +1468,11 @@ def combined_microstructure_model(D_lattice, temperature, microstructure_params,
     # Handle 'none' mode - return perfect lattice
     # ========================================================================
     if mode == 'none':
+        # Returns the SAME key set as the other three modes. It used to return its own
+        # shape -- no 'trapping', no 'calculation_sequence', no 'parameters', plus a
+        # 'trap_details' that nothing reads -- so `result['trapping']` raised KeyError
+        # on this mode alone. container/revalidate_reference.py reads that key
+        # unguarded. 'trap_details' is kept as None for any caller that looked for it.
         return {
             'D_eff': D_lattice,
             'D_lattice': D_lattice,
@@ -1659,6 +1480,23 @@ def combined_microstructure_model(D_lattice, temperature, microstructure_params,
             'gb_enhancement': None,
             'theta_total': 0.0,
             'trap_details': None,
+            'trapping': {
+                'theta_total': 0.0,
+                'reduction_factor': 1.0,
+                'dominant_trap': None,
+                'contributions': [],
+                'trapping_term': 0.0,
+                'trapped_concentration_total': 0.0,
+                'lattice_concentration': lattice_concentration,
+                'concentration_total': lattice_concentration,
+            },
+            'calculation_sequence': ['mode=none: perfect lattice, no GB, no trapping'],
+            'parameters': {
+                'temperature': temperature,
+                'grain_size': microstructure_params.get('grain_size'),
+                'gb_type': microstructure_params.get('gb_type'),
+                'trap_count': 0,
+            },
             'overall_factor': 1.0,
             'gb_enhancement_factor': 1.0,
             'trapping_reduction_factor': 1.0,
@@ -1831,14 +1669,29 @@ def combined_microstructure_model(D_lattice, temperature, microstructure_params,
             'theta_total': theta_total,
             'reduction_factor': trapping_reduction_factor_val,
             'dominant_trap': trap_result['dominant_trap'],
-            'contributions': trap_result['trap_contributions']
+            'contributions': trap_result['trap_contributions'],
+            # Forwarded rather than recomputed. This dict used to drop everything the
+            # sub-model returned except these four keys, which is why 'trapping_term'
+            # -- the Oriani denominator -- is unreachable from here while 'theta_total',
+            # the quantity that must NOT be substituted for it, is offered.
+            'trapping_term': trap_result['trapping_term'],
+            'trapped_concentration_total': trap_result['trapped_concentration_total'],
+            'lattice_concentration': trap_result['lattice_concentration'],
+            'concentration_total': trap_result['concentration_total'],
         }
     else:
+        # Same key set as the branch above, so a caller can read any of them without
+        # testing the mode first. Trapping is off here, so nothing is held in traps and
+        # the inventory is the lattice alone.
         trapping_dict = {
             'theta_total': 0.0,
             'reduction_factor': 1.0,
             'dominant_trap': None,
-            'contributions': []
+            'contributions': [],
+            'trapping_term': 0.0,
+            'trapped_concentration_total': 0.0,
+            'lattice_concentration': lattice_concentration,
+            'concentration_total': lattice_concentration,
         }
     
     # Collect warnings safely
