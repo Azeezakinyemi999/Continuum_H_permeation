@@ -75,8 +75,8 @@ REFERENCE = {
         'L1L6_P_int':           99981.8550496419,
         'L1L6_theta':           0.9090834102188711,
         'L1L6_rate_limiting':   'metal',
-        'micro_D_eff':          8.720200643474982e-12,
-        'micro_overall_factor': 0.4098345562673666,
+        'micro_D_eff':          8.71553351849259e-12,
+        'micro_overall_factor': 0.40961520935387163,
         'micro_theta_total':    0.09282336531113745,
     },
     'fuerst_etal_2024_model_config': {
@@ -90,8 +90,8 @@ REFERENCE = {
         'L1L6_P_int':           99807.90216861428,
         'L1L6_theta':           0.9090114222245518,
         'L1L6_rate_limiting':   'metal',
-        'micro_D_eff':          8.008430918590877e-11,
-        'micro_overall_factor': 0.4098345562673666,
+        'micro_D_eff':          8.002988640056678e-11,
+        'micro_overall_factor': 0.4095560455539921,
         'micro_theta_total':    0.09282336531113745,
     },
     'Guo_etal_2025_316L': {
@@ -105,8 +105,8 @@ REFERENCE = {
         'L1L6_P_int':           6802.624161529068,
         'L1L6_theta':           0.7627850150386251,
         'L1L6_rate_limiting':   'metal',
-        'micro_D_eff':          1.6434267493955927e-11,
-        'micro_overall_factor': 0.40983455626736665,
+        'micro_D_eff':          1.6422835428360962e-11,
+        'micro_overall_factor': 0.4095494656460746,
         'micro_theta_total':    0.09282336531113745,
     },
 }
