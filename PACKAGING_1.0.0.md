@@ -122,6 +122,14 @@ regeneration requires the expensive scans in `sensitivity_regime_L5*.ipynb`. The
 must travel with the workspace. This is why scanning `import` statements is not
 sufficient to establish an offline package: file dependencies matter too.
 
+> **Superseded 2026-09-28 — this section records what 1.0.0 shipped.** `Application/`
+> is withdrawn from 1.2.0 onwards (a delivery copy of `Guo_etal_2025/`: identical
+> `study_config.py` bar the docstring, same `STUDY_NAME`). The workspace now ships
+> three study folders — `Guo_etal_2025/`, `Fuerst_et_al_2024/`, `incoloy802_cr2o3/`.
+> The `sa_results/*.csv` argument above still holds for whichever study is shipped
+> with them, but as of 1.2.0 **no SA CSVs ship at all**: every `sa_results/` in the
+> release carries only `.gitkeep`, and the smoke test's SA block is expected to SKIP.
+
 Preserve `calculations/config/` **without** an `__init__.py`. It is a working
 implicit namespace package; adding one during packaging would be a gratuitous
 change to a validated tree.
@@ -473,6 +481,42 @@ The image still had to be rebuilt, because `model_smoke_test.py` is `COPY`d into
 it and changed in five commits: the gate became study-aware, gained `--emit` for
 regenerating its own reference values, and had its operating point and 13 pinned
 values re-measured after `CONDITIONS` took over the oxide geometry.
+
+### 1.2.0 respun in place — 2026-09-28
+
+`Application/` was withdrawn from the deliverable (a delivery copy of
+`Guo_etal_2025/`: identical `study_config.py` bar the docstring, same `STUDY_NAME`).
+That broke gate 2 outright, because `model_smoke_test.py` `setdefault`s `$MHI_STUDY`
+to `GATE_STUDY`, which named `Application/study_config.py` — with the folder gone the
+study loader raised `ValueError: study file '/workspace/Application/study_config.py'
+does not exist` before a single check ran. `scripts/verify.sh` reported
+`Gate 1/2 PASSED`, `Gate 2/2 FAILED`. `GATE_STUDY` is now
+`Guo_etal_2025/study_config.py`, and the SA-artefacts block follows the active study
+(`os.path.dirname(ACTIVE_STUDY_PATH)`) instead of naming a folder.
+
+The 1.2.0 tag and its tar were **overwritten rather than superseded by a 1.2.1**, a
+deliberate exception to the rule that a released archive is never replaced. What
+makes it defensible here is that the environment is provably unchanged: the pip layer
+was a cache hit, and the regenerated `installed-packages.txt` hashes to
+`4e3a3d955b80…`, the same value the superseded `SHA256SUMS.txt` recorded for it.
+Only the `COPY` layer moved.
+
+| | |
+|---|---|
+| image id | `sha256:a826175534f4b31546ca25f1cfc4b592c34759c38d78bb455f83f4411aa4d6c1` (was `sha256:9b613b26d005…`) |
+| arch / user | `amd64/linux`, `User=1000:0` — unchanged |
+| archive | 228M tar, sha256 `f583dc97856f4f34…` (was `8733641cd2c03c96…`) |
+| package manifest | **57** files (was 68; 11 `Application/` entries removed), all verify |
+| environment | `pip freeze` identical, 106 packages, `installed-packages.txt` hash unchanged |
+| gates from the package | both PASSED offline, `VERIFICATION PASSED` |
+| pinned values | all 13 reproduce; PAWN and delta unchanged to the last digit |
+| round-trip | **not re-run** — the tar is well-formed (20 members, 16 blobs) but `docker rmi` + `docker load` was not repeated for this respin |
+
+Manifest entries that changed, and nothing else: `README.md`,
+`docker-image-inspect.json`, the two `image/` files, `calculations/config/__init__.py`,
+and the three `study_config.py` (comment-only — AST-identical to the 1.2.0 originals).
+The `Dockerfile`, `requirements.lock.txt`, `requirements.in`, both scripts,
+`installed-packages.txt` and all 18 notebooks are byte-identical.
 
 ### What ships that did not before
 

@@ -8,7 +8,6 @@ ranges and regime presets — so editing it changes that study and nothing else:
     Guo_etal_2025/study_config.py        316L stainless / Cr2O3
     Fuerst_et_al_2024/study_config.py    Hastelloy N / Cr2O3
     incoloy802_cr2o3/study_config.py     Incoloy 802 (X40 NiCrAlTi 31/19) / Cr2O3
-    Application/study_config.py          316L stainless / Cr2O3 (the delivery copy)
 
 ``model_config`` resolves exactly one of them per process, from ``$MHI_STUDY``, then
 from a ``study_config.py`` in the working directory or a parent — and from nothing
@@ -35,8 +34,11 @@ To add a study
    ``container/model_smoke_test.py``, or the container release gate fails on the new
    study — deliberately, since passing without one would check nothing.
 7. If the study is to ship in a container release, add its folder to the assembled
-   workspace. PACKAGING_1.0.0.md ships ``calculations/`` plus ``Application/`` only, and
-   a study folder outside that set will not travel with the image.
+   workspace: a study folder outside the assembled set will not travel with the image.
+   As of 1.2.0 that set is ``calculations/`` plus ``Guo_etal_2025/``,
+   ``Fuerst_et_al_2024/`` and ``incoloy802_cr2o3/``. (PACKAGING_1.0.0.md describes the
+   1.0.0 set, ``calculations/`` plus ``Application/``; ``Application/`` was a delivery
+   copy of the Guo study and was withdrawn on 2026-09-28.)
 
 Why the file is named study_config.py
 -------------------------------------

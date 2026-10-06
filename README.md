@@ -34,7 +34,7 @@ The editable install is what lets the notebooks and scripts resolve
 Dependency bounds are in [pyproject.toml](https://github.com/Azeezakinyemi999/MHI_permeation/blob/main/pyproject.toml); exact pins for the
 reproducible container live in `container/requirements.lock.txt`.
 
-Entry points are the notebooks in `Application/`:
+Entry points are the six notebooks each study folder carries; `Guo_etal_2025/` is the 316L / Cr2O3 study used by the tests, the docs build and the container's smoke-test gate:
 
 | Notebook | What it does |
 |---|---|
