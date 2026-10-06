@@ -490,7 +490,7 @@ def solve_steady_state_flux_direct(P_up, P_down, L_m, k_diss, K_eq,
 # =============================================================================
 
 def calculate_defective_metal_flux_L6(
-    P_up, P_down, thickness, temperature,
+    P_up, P_down, metal_thickness, temperature,
     k_diss, K_eq,
     D_ox, K_ox, L_ox,
     D_lattice, K_s_m,
@@ -511,8 +511,8 @@ def calculate_defective_metal_flux_L6(
         Upstream H2 pressure [Pa].
     P_down : float
         Downstream H2 pressure [Pa].
-    thickness : float
-        Metal thickness [m].
+    metal_thickness : float
+        Metal metal_thickness [m].
     temperature : float
         Temperature [K].
     k_diss, K_eq : float
@@ -544,8 +544,8 @@ def calculate_defective_metal_flux_L6(
     """
     if P_up < 0 or P_down < 0:
         raise ValueError("Pressures must be non-negative")
-    if thickness <= 0:
-        raise ValueError(f"Thickness must be positive: {thickness} m")
+    if metal_thickness <= 0:
+        raise ValueError(f"Thickness must be positive: {metal_thickness} m")
     if D_lattice <= 0:
         raise ValueError("Diffusion coefficient must be positive")
     if k_diss <= 0 or K_eq <= 0:
@@ -557,7 +557,7 @@ def calculate_defective_metal_flux_L6(
     convergence_history = []
 
     for iteration in range(max_iterations):
-        beta = D_eff * K_s_m / thickness
+        beta = D_eff * K_s_m / metal_thickness
 
         try:
             theta_ss = brentq(
@@ -574,8 +574,8 @@ def calculate_defective_metal_flux_L6(
 
         sqrt_P_int = sqrt_P_int_from_theta(theta_ss, alpha, beta, K_eq, P_down)
 
-        x_array    = np.linspace(0, thickness, n_points)
-        sqrt_P_arr = sqrt_P_int - (sqrt_P_int - sqrt_P_down) * x_array / thickness
+        x_array    = np.linspace(0, metal_thickness, n_points)
+        sqrt_P_arr = sqrt_P_int - (sqrt_P_int - sqrt_P_down) * x_array / metal_thickness
         C_array    = K_s_m * sqrt_P_arr
 
         D_array          = np.zeros(n_points)
@@ -626,7 +626,7 @@ def calculate_defective_metal_flux_L6(
             break
         D_eff = D_eff_new
 
-    beta_eff   = D_eff * K_s_m / thickness
+    beta_eff   = D_eff * K_s_m / metal_thickness
     sqrt_P_int = sqrt_P_int_from_theta(theta_ss, alpha, beta_eff, K_eq, P_down)
     P_int      = sqrt_P_int**2
     C_up       = K_s_m * sqrt_P_int
@@ -675,7 +675,7 @@ def calculate_defective_metal_flux_L6(
         'C_up':      C_up,
         'C_down':    C_down,
         'alpha':     alpha,
-        'beta_lattice': D_lattice * K_s_m / thickness,
+        'beta_lattice': D_lattice * K_s_m / metal_thickness,
         'beta_eff':  beta_eff,
         'D_eff':     D_eff,
         'D_lattice': D_lattice,

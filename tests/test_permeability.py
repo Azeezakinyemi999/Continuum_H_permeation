@@ -220,7 +220,7 @@ def test_10_prf_is_permeance_ratio(m1, micro):
           'thickness_factor': 0.1, 'diffusivity_factor': 10.0}
     coated = pm.level5(ox, me, dp, m1['P_up'], m1['P_down'], m1['T'], micro)
     bare_flux = calculate_defective_metal_flux(
-        D_lattice=m1['D_m'], K_s=m1['K_s'], thickness=m1['L_m'],
+        D_lattice=m1['D_m'], K_s=m1['K_s'], metal_thickness=m1['L_m'],
         P_up=m1['P_up'], P_down=m1['P_down'], temperature=m1['T'],
         microstructure_params=micro,
         lattice_density=P5['lattice_density'])['flux']

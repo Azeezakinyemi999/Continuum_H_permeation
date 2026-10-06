@@ -468,7 +468,7 @@ def level4(D_lattice, K_s, L_m, P_up, P_down, temperature,
     """L4 -- bare defective metal. Tier 2: apparent value equals ``D_eff*K_s``."""
     from calculations.permeation_calc import calculate_defective_metal_flux
     r = calculate_defective_metal_flux(
-        D_lattice=D_lattice, K_s=K_s, thickness=L_m, P_up=P_up, P_down=P_down,
+        D_lattice=D_lattice, K_s=K_s, metal_thickness=L_m, P_up=P_up, P_down=P_down,
         temperature=temperature, microstructure_params=microstructure_params,
         lattice_density=lattice_density, method=method, mode=mode)
     return _row('L4', MODEL_1, 2, r['flux'], P_up, P_down, L_m, UNITS_SIEVERTS,
@@ -611,7 +611,7 @@ def level4_L6(P_up, P_down, L_m, temperature, k_diss, K_eq, D_ox, K_ox, L_ox,
     """L4+L6 -- pristine oxide + defective metal + surface. Tier 3 x eta_surf."""
     from calculations.surface_kinetics import calculate_defective_metal_flux_L6
     r = calculate_defective_metal_flux_L6(
-        P_up=P_up, P_down=P_down, thickness=L_m, temperature=temperature,
+        P_up=P_up, P_down=P_down, metal_thickness=L_m, temperature=temperature,
         k_diss=k_diss, K_eq=K_eq, D_ox=D_ox, K_ox=K_ox, L_ox=L_ox,
         D_lattice=D_lattice, K_s_m=K_s_m,
         microstructure_params=microstructure_params,

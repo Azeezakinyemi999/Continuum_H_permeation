@@ -8,7 +8,7 @@ import numpy as np
 from calculations.config.model_config import CONDITIONS, METALS, OXIDES
 from calculations.utils import arrhenius
 
-def molecular_diffusion_flux(D_ox, K_ox, thickness, P_up, P_down):
+def molecular_diffusion_flux(D_ox, K_ox, oxide_thickness, P_up, P_down):
     """
     Calculate flux through oxide layer via molecular diffusion.
     
@@ -23,8 +23,8 @@ def molecular_diffusion_flux(D_ox, K_ox, thickness, P_up, P_down):
         Molecular diffusion coefficient in oxide (m²/s)
     K_ox : float
         Henry's law constant for H2 in oxide (mol/m³/Pa)
-    thickness : float
-        Oxide layer thickness (m)
+    oxide_thickness : float
+        Oxide layer oxide_thickness (m)
     P_up : float
         Upstream pressure (Pa)
     P_down : float
@@ -38,11 +38,11 @@ def molecular_diffusion_flux(D_ox, K_ox, thickness, P_up, P_down):
     Physics Note
     ------------
     C = K_ox * P (Henry's law, NOT Sieverts' law)
-    J = -D * dC/dx = D * (C_up - C_down) / thickness
+    J = -D * dC/dx = D * (C_up - C_down) / oxide_thickness
     """
 
-    if thickness <= 0:
-        raise ValueError("Oxide thickness must be positive")
+    if oxide_thickness <= 0:
+        raise ValueError("Oxide oxide_thickness must be positive")
     if P_up < P_down:
         raise ValueError("Upstream pressure must be >= downstream pressure")
 
@@ -52,12 +52,12 @@ def molecular_diffusion_flux(D_ox, K_ox, thickness, P_up, P_down):
     C_down = K_ox * P_down  # mol/m³
     
     # Fick's first law with linear concentration gradient
-    flux = D_ox * (C_up - C_down) / thickness  # mol/m²/s
+    flux = D_ox * (C_up - C_down) / oxide_thickness  # mol/m²/s
     
     return flux
 
 
-def calculate_oxide_resistance(D_ox, K_ox, thickness):
+def calculate_oxide_resistance(D_ox, K_ox, oxide_thickness):
     r"""
     Calculate permeation resistance of oxide layer.
     
@@ -77,8 +77,8 @@ def calculate_oxide_resistance(D_ox, K_ox, thickness):
         Molecular diffusion coefficient in oxide (m²/s)
     K_ox : float
         Henry's law constant (mol/m³/Pa)
-    thickness : float
-        Oxide thickness (m)
+    oxide_thickness : float
+        Oxide oxide_thickness (m)
     
     Returns
     -------
@@ -91,14 +91,14 @@ def calculate_oxide_resistance(D_ox, K_ox, thickness):
     """
     if D_ox <= 0 or K_ox <= 0:
         raise ValueError("D_ox and K_ox must be positive")
-    if thickness <= 0:
+    if oxide_thickness <= 0:
         raise ValueError("Thickness must be positive")
-    resistance = thickness / (D_ox * K_ox)  # Pa·s·m²/mol
+    resistance = oxide_thickness / (D_ox * K_ox)  # Pa·s·m²/mol
     
     return resistance
 
 
-def calculate_metal_resistance(D_metal, K_s_metal, thickness, P_interface):
+def calculate_metal_resistance(D_metal, K_s_metal, metal_thickness, P_interface):
     r"""
     Calculate permeation resistance of metal layer.
     
@@ -112,8 +112,8 @@ def calculate_metal_resistance(D_metal, K_s_metal, thickness, P_interface):
         Atomic diffusion coefficient in metal (m²/s)
     K_s_metal : float
         Sieverts' constant (mol/m³/Pa^0.5)
-    thickness : float
-        Metal thickness (m)
+    metal_thickness : float
+        Metal metal_thickness (m)
     P_interface : float
         Pressure at oxide/metal interface (Pa)
     
@@ -125,7 +125,7 @@ def calculate_metal_resistance(D_metal, K_s_metal, thickness, P_interface):
     Physics Note
     ------------
     For metal with Sieverts' law:
-    J = (D * K_s / thickness) * (√P_up - √P_down)
+    J = (D * K_s / metal_thickness) * (√P_up - √P_down)
     
     Linearizing around P_interface:
     .. math::
@@ -138,14 +138,14 @@ def calculate_metal_resistance(D_metal, K_s_metal, thickness, P_interface):
         raise ValueError("Interface pressure must be positive")
     if D_metal <= 0 or K_s_metal <= 0:
         raise ValueError("D_metal and K_s_metal must be positive")
-    if thickness <= 0:
+    if metal_thickness <= 0:
         raise ValueError("Thickness must be positive")
 
     # Effective permeability at interface pressure
     # Factor of 2 comes from derivative of √P: i used taylor expansion for this calculation
     effective_permeability = (D_metal * K_s_metal) / (2* np.sqrt(P_interface))
     
-    resistance = thickness / effective_permeability  # Pa·s·m²/mol
+    resistance = metal_thickness / effective_permeability  # Pa·s·m²/mol
     
     return resistance
 

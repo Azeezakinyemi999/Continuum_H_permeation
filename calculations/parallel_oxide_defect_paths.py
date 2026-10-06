@@ -541,7 +541,7 @@ def calculate_defect_path_flux_defective_metal(P_upstream, P_downstream, oxide_p
         result = calculate_defective_metal_flux(
             D_lattice=metal_props['D_metal'],
             K_s=metal_props['K_s_metal'],
-            thickness=metal_props['thickness'],
+            metal_thickness=metal_props['thickness'],
             P_up=P_upstream,
             P_down=P_downstream,
             temperature=temperature,
@@ -600,7 +600,7 @@ def calculate_defect_path_flux_defective_metal(P_upstream, P_downstream, oxide_p
             result = calculate_defective_metal_flux(
                 D_lattice=metal_props['D_metal'],
                 K_s=metal_props['K_s_metal'],
-                thickness=metal_props['thickness'],
+                metal_thickness=metal_props['thickness'],
                 P_up=P_upstream,
                 P_down=P_downstream,
                 temperature=temperature,
@@ -619,7 +619,7 @@ def calculate_defect_path_flux_defective_metal(P_upstream, P_downstream, oxide_p
                 pinhole_result = calculate_defective_metal_flux(
                     D_lattice=metal_props['D_metal'],
                     K_s=metal_props['K_s_metal'],
-                    thickness=metal_props['thickness'],
+                    metal_thickness=metal_props['thickness'],
                     P_up=P_upstream,
                     P_down=P_downstream,
                     temperature=temperature,
@@ -876,7 +876,7 @@ def calculate_PRF_defective_metal(P_test, oxide_props, metal_props, temperature,
     bare_result = calculate_defective_metal_flux(
         D_lattice=metal_props['D_metal'],
         K_s=metal_props['K_s_metal'],
-        thickness=metal_props['thickness'],
+        metal_thickness=metal_props['thickness'],
         P_up=P_test,
         P_down=P_downstream,
         temperature=temperature,
