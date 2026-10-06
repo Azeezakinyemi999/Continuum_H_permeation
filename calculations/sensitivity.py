@@ -247,6 +247,32 @@ def check_against_config(raise_on_fail=True, verbose=True):
                 problems.append(f"'{reg}' preset: L5 and L5L6 disagree on {k} "
                                 f"({ov5[k]!r} vs {ov6[k]!r}) — both compose the same blocks")
 
+    # 4c. every preset must pin a parameter that EXISTS.
+    #
+    # This is the one inconsistency in this file that nothing else can catch. A model
+    # wrapper builds its parameters as DEFAULT_PARAMS.copy() then .update(params_dict),
+    # so a key that is misspelled, or left behind by a rename, is stored and then never
+    # read. No error, no warning: the flux comes back bit-identical to the unpinned
+    # case. Verified by passing a deliberately stale name through
+    # level5_model_wrapper -- the result was unchanged to the last digit.
+    #
+    # The checks above do not reach it. 3 demands a default for every swept RANGE, and
+    # 4b compares the two preset dicts against EACH OTHER, so a name that is wrong in
+    # both, or wrong in a parameter no range sweeps, passes clean.
+    #
+    # What that costs is the whole point of a preset. A preset exists to pin a
+    # parameter so a regime scan lands inside one regime; a preset that silently stops
+    # pinning turns a targeted scan into an untargeted one, and every test still
+    # passes. The L5L6 presets pin 36 distinct names and the L5 presets 28, which is
+    # the surface this protects.
+    for label, presets, params in (('L5L6', REGIME_PRESETS, DEFAULT_PARAMS_LEVEL5L6),
+                                   ('L5', REGIME_PRESETS_L5, DEFAULT_PARAMS_LEVEL5)):
+        for reg, block in presets.items():
+            for k in sorted(set(block) - set(params)):
+                problems.append(
+                    f"{label} '{reg}' preset pins {k!r}, which is not a "
+                    f"{label} parameter — it would be silently ignored, not applied")
+
     if verbose:
         if problems:
             print(f"check_against_config: {len(problems)} problem(s)")
