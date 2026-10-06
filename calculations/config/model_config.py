@@ -429,8 +429,8 @@ DEFAULT_PARAMS_LEVEL5 = {
     'trap_carbide_N_T':     _sa_trap('carbides')['density'],                 # m⁻³
 
     # Model options — how to run the model, not what it is; no config source
-    'include_gb_enhancement': MODEL_OPTIONS['include_gb_enhancement'],
-    'include_trapping':       MODEL_OPTIONS['include_trapping'],
+    'enable_gb_enhancement': MODEL_OPTIONS['enable_gb_enhancement'],
+    'enable_trapping':       MODEL_OPTIONS['enable_trapping'],
     'D_eff_method':           MODEL_OPTIONS['D_eff_method'],
 }
 
@@ -562,7 +562,13 @@ def build_simulation_config(
     defect_config = {}
     f_pin = od['components'].get('pinholes', 0.0)
     f_cra = od['components'].get('cracks', 0.0)
-    f_gb  = od['components'].get('grain_boundaries', 0.0)
+    # f_gb_defect, not f_gb. This is the OXIDE's grain-boundary DEFECT area fraction;
+    # defective_metal.py uses the bare name f_gb for the METAL's grain-boundary VOLUME
+    # fraction, 3*delta/d. Two unrelated quantities -- for the shipped studies they
+    # differ by more than two orders of magnitude -- and they were sharing an
+    # identifier across the two modules. The sensitivity layer already calls this one
+    # f_gb_defect; this brings the config code into line with it.
+    f_gb_defect = od['components'].get('grain_boundaries', 0.0)
     if f_pin > 0:
         defect_config['pinhole'] = {'area_fraction': f_pin}
     if f_cra > 0:
@@ -570,9 +576,9 @@ def build_simulation_config(
             'area_fraction':    f_cra,
             'thickness_factor': od.get('thickness_factor', 0.1),
         }
-    if f_gb > 0:
+    if f_gb_defect > 0:
         defect_config['grain_boundary'] = {
-            'area_fraction':      f_gb,
+            'area_fraction':      f_gb_defect,
             'diffusivity_factor': od.get('diffusivity_factor', 100.0),
         }
 

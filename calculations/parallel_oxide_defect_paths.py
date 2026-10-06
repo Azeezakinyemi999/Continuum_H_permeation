@@ -485,7 +485,7 @@ def calculate_PRF(P_test, oxide_props, metal_props, defect_params=None, P_downst
 def calculate_defect_path_flux_defective_metal(P_upstream, P_downstream, oxide_props, 
                                                metal_props, defect_props, temperature,
                                                microstructure_params, lattice_density,
-                                               method='average', n_points=10, mode='both'):
+                                               method='average', n_profile_points=10, mode='both'):
     """
     Calculate hydrogen flux through a defect path with defective metal (Level 3+4).
     
@@ -522,7 +522,7 @@ def calculate_defect_path_flux_defective_metal(P_upstream, P_downstream, oxide_p
         Lattice site density [m⁻³]
     method : str, optional
         D_eff averaging method
-    n_points : int, optional
+    n_profile_points : int, optional
         Points for integration
     
     Returns
@@ -541,14 +541,14 @@ def calculate_defect_path_flux_defective_metal(P_upstream, P_downstream, oxide_p
         result = calculate_defective_metal_flux(
             D_lattice=metal_props['D_metal'],
             K_s=metal_props['K_s_metal'],
-            thickness=metal_props['thickness'],
+            metal_thickness=metal_props['thickness'],
             P_up=P_upstream,
             P_down=P_downstream,
             temperature=temperature,
             microstructure_params=microstructure_params,
             lattice_density=lattice_density,
             method=method,
-            n_points=n_points,
+            n_profile_points=n_profile_points,
             mode=mode
         )
         flux_defect = result['flux']
@@ -567,7 +567,7 @@ def calculate_defect_path_flux_defective_metal(P_upstream, P_downstream, oxide_p
             temperature, microstructure_params,
             lattice_density=lattice_density,
             method=method,
-            n_points=n_points,
+            n_profile_points=n_profile_points,
             mode=mode
         )
         flux_defect = result['flux']
@@ -586,7 +586,7 @@ def calculate_defect_path_flux_defective_metal(P_upstream, P_downstream, oxide_p
             temperature, microstructure_params,
             lattice_density=lattice_density,
             method=method,
-            n_points=n_points,
+            n_profile_points=n_profile_points,
             mode=mode
         )
         flux_defect = result['flux']
@@ -600,14 +600,14 @@ def calculate_defect_path_flux_defective_metal(P_upstream, P_downstream, oxide_p
             result = calculate_defective_metal_flux(
                 D_lattice=metal_props['D_metal'],
                 K_s=metal_props['K_s_metal'],
-                thickness=metal_props['thickness'],
+                metal_thickness=metal_props['thickness'],
                 P_up=P_upstream,
                 P_down=P_downstream,
                 temperature=temperature,
                 microstructure_params=microstructure_params,
                 lattice_density=lattice_density,
                 method=method,
-                n_points=n_points,
+                n_profile_points=n_profile_points,
                 mode=mode
             )
             flux_defect = result['flux']
@@ -619,14 +619,14 @@ def calculate_defect_path_flux_defective_metal(P_upstream, P_downstream, oxide_p
                 pinhole_result = calculate_defective_metal_flux(
                     D_lattice=metal_props['D_metal'],
                     K_s=metal_props['K_s_metal'],
-                    thickness=metal_props['thickness'],
+                    metal_thickness=metal_props['thickness'],
                     P_up=P_upstream,
                     P_down=P_downstream,
                     temperature=temperature,
                     microstructure_params=microstructure_params,
                     lattice_density=lattice_density,
                     method=method,
-                    n_points=n_points,
+                    n_profile_points=n_profile_points,
                     mode=mode
                 )
                 weight = components['pinholes'] / total_component_fraction
@@ -643,7 +643,7 @@ def calculate_defect_path_flux_defective_metal(P_upstream, P_downstream, oxide_p
                     temperature, microstructure_params,
                     lattice_density=lattice_density,
                     method=method,
-                    n_points=n_points,
+                    n_profile_points=n_profile_points,
                     mode=mode
                 )
                 weight = components['cracks'] / total_component_fraction
@@ -660,7 +660,7 @@ def calculate_defect_path_flux_defective_metal(P_upstream, P_downstream, oxide_p
                     temperature, microstructure_params,
                     lattice_density=lattice_density,
                     method=method,
-                    n_points=n_points,
+                    n_profile_points=n_profile_points,
                     mode=mode
                 )
                 weight = components['grain_boundaries'] / total_component_fraction
@@ -674,7 +674,7 @@ def calculate_defect_path_flux_defective_metal(P_upstream, P_downstream, oxide_p
 def calculate_parallel_path_flux_defective_metal(P_upstream, P_downstream, oxide_props, 
                                                   metal_props, defect_params, temperature,
                                                   microstructure_params, lattice_density,
-                                                  method='average', n_points=10,
+                                                  method='average', n_profile_points=10,
                                                   max_iterations=10, tolerance=1e-6, mode='both'):
     r"""
     Calculate total flux through defective oxide + defective metal (Level 3+4).
@@ -716,7 +716,7 @@ def calculate_parallel_path_flux_defective_metal(P_upstream, P_downstream, oxide
         Lattice site density [m⁻³]
     method : str, optional
         D_eff averaging method
-    n_points : int, optional
+    n_profile_points : int, optional
         Points for integration
     max_iterations : int, optional
         Max iterations for interface solver
@@ -750,7 +750,7 @@ def calculate_parallel_path_flux_defective_metal(P_upstream, P_downstream, oxide
         temperature, microstructure_params,
         lattice_density=lattice_density,
         method=method,
-        n_points=n_points,
+        n_profile_points=n_profile_points,
         max_iterations=max_iterations,
         tolerance=tolerance,
         mode=mode
@@ -765,7 +765,7 @@ def calculate_parallel_path_flux_defective_metal(P_upstream, P_downstream, oxide
         microstructure_params,
         lattice_density=lattice_density,
         method=method,
-        n_points=n_points,
+        n_profile_points=n_profile_points,
         mode=mode
     )
     
@@ -828,7 +828,7 @@ def calculate_parallel_path_flux_defective_metal(P_upstream, P_downstream, oxide
 def calculate_PRF_defective_metal(P_test, oxide_props, metal_props, temperature,
                                    microstructure_params, defect_params=None,
                                    P_downstream=0, lattice_density=None,
-                                   method='average', n_points=10, mode='both'):
+                                   method='average', n_profile_points=10, mode='both'):
     """
     Calculate Permeation Reduction Factor with Level 4 defective metal.
     
@@ -854,7 +854,7 @@ def calculate_PRF_defective_metal(P_test, oxide_props, metal_props, temperature,
         Lattice site density [m⁻³]
     method : str
         D_eff averaging method
-    n_points : int
+    n_profile_points : int
         Points for integration
     
     Returns
@@ -876,14 +876,14 @@ def calculate_PRF_defective_metal(P_test, oxide_props, metal_props, temperature,
     bare_result = calculate_defective_metal_flux(
         D_lattice=metal_props['D_metal'],
         K_s=metal_props['K_s_metal'],
-        thickness=metal_props['thickness'],
+        metal_thickness=metal_props['thickness'],
         P_up=P_test,
         P_down=P_downstream,
         temperature=temperature,
         microstructure_params=microstructure_params,
         lattice_density=lattice_density,
         method=method,
-        n_points=n_points,
+        n_profile_points=n_profile_points,
         mode=mode
     )
     flux_bare_metal = bare_result['flux']
@@ -895,7 +895,7 @@ def calculate_PRF_defective_metal(P_test, oxide_props, metal_props, temperature,
         temperature, microstructure_params,
         lattice_density=lattice_density,
         method=method,
-        n_points=n_points,
+        n_profile_points=n_profile_points,
         mode=mode
     )
     flux_perfect_oxide = perfect_result['flux']
@@ -912,7 +912,7 @@ def calculate_PRF_defective_metal(P_test, oxide_props, metal_props, temperature,
             microstructure_params,
             lattice_density=lattice_density,
             method=method,
-            n_points=n_points,
+            n_profile_points=n_profile_points,
             mode=mode
         )
         flux_defective = defect_result['flux_total']

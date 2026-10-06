@@ -14,12 +14,19 @@ by more than two orders of magnitude. Nothing errors when those are confused.
 This page inventories both, and proposes one canonical name per quantity.
 
 ```{warning}
-**The canonical names below are a PROPOSAL. None of them exist in the code.**
+**The canonical names below are a PROPOSAL, except where marked ✅.**
 
-Every name in a "canonical" column is what a quantity *would* be called under a
-unified scheme. The names in the "replaces" columns are the ones that are real
-today and that you must use. Nothing here has been renamed, and the tables are a
-decision document, not a description of the codebase.
+Every unmarked name in a "canonical" column is what a quantity *would* be called
+under a unified scheme; the "replaces" column holds the name that is real today and
+that you must use. A ✅ marks one that has since been adopted, and for those the
+canonical name is the real one.
+
+Adopted so far: the three model switches in section G; `f_gb_defect`,
+`data_pressure_range`, `crack_thickness_ratio` and `gb_diffusivity_ratio`; and the
+`thickness` function parameters. Each was taken because the short name meant two
+different things in two places, not for tidiness. `alpha` and `beta` in
+`calculations.surface_kinetics` are left alone on purpose: they are the permeances
+the theory chapters derive under those symbols.
 ```
 
 ## How to read it
@@ -347,15 +354,15 @@ exactly these ten names and removing none.
 * - canonical
   - quantity
   - replaces
-* - `enable_gb_enhancement`
+* - `enable_gb_enhancement` ✅
   - grain-boundary **fast path** on/off
-  - `include_gb_enhancement`
-* - `enable_trapping`
+  - was `include_gb_enhancement` — **renamed**
+* - `enable_trapping` ✅
   - trapping on/off
-  - `include_trapping`
-* - `enable_gb_as_trap`
+  - was `include_trapping` — **renamed**
+* - `enable_gb_as_trap` ✅
   - auto-add grain boundaries as a **trap** population
-  - `include_gb_trapping`
+  - was `include_gb_trapping` — **renamed**
 * - `microstructure_mode`
   - the composed switch the solvers take
   - `mode`
@@ -420,19 +427,27 @@ reader a moment; a collision silently produces the wrong number.
 * - current
   - splits into
   - why it must split
-* - `thickness`
+* - `thickness` ✅ **done (parameters)**
   - `metal_thickness` · `oxide_thickness` · `layer_thickness`
   - the metal in `calculate_simple_metal_flux` and `calculate_defective_metal_flux`,
     the oxide in `molecular_diffusion_flux` and `calculate_oxide_resistance`, and
-    **genuinely generic** in `fick_flux`, which is applied to both layers
+    **genuinely generic** in `fick_flux`, which is applied to both layers.
+    All ten declarations renamed — seven metal, two oxide, and `fick_flux` to
+    `layer_thickness`. The **dict key is deliberately left as `thickness`**:
+    inside `metal_props['thickness']` the dict already says which layer it is, so
+    it was never the ambiguous half, and renaming it would have reached 112
+    notebook sites for no gain
 * - `f_gb`
   - `metal_gb_volume_fraction` · `oxide_gb_area_fraction`
   - a volume fraction inside the metal against an area fraction of oxide defects.
     For the shipped studies they differ by more than two orders of magnitude
-* - `n_points`
-  - `n_sweep_samples` · `n_profile_points`
+* - `n_points` ✅ **done (parameters)**
+  - `n_profile_points` · `n_points` *(config, kept)*
   - the sensitivity analysis's samples per axis against the wall discretisation,
-    whose default differs per level
+    whose default differs per level. The thirteen function parameters are now
+    `n_profile_points`; the config key stays `n_points`, because once the other
+    meaning is gone there is nothing left for it to collide with, and the
+    notebooks read it 200 times
 * - `beta`
   - `metal_permeance` · `oxide_gb_diffusivity_ratio`
   - a permeance carrying units in `calculations.surface_kinetics`, a dimensionless
@@ -444,10 +459,12 @@ reader a moment; a collision silently produces the wrong number.
   - four scoped reference temperatures
   - one name in four dicts. The flattened sensitivity layer already splits it
     correctly; the nested configuration relies on scope
-* - `include_gb_*`
+* - `include_gb_*` ✅ **done**
   - `enable_gb_enhancement` · `enable_gb_as_trap`
   - **near-identical names, opposite physics.** Enhancement speeds diffusion up
-    through a fast path; trapping slows it down by holding hydrogen still
+    through a fast path; trapping slows it down by holding hydrogen still.
+    Renamed; no notebook referenced any of the three, so the change was contained
+    to `calculations/`, the four study files and one test
 * - pressure ranges
   - `sweep_pressure_range` · `data_pressure_range`
   - `P_range` is the span the sensitivity analysis sweeps; `pressure_range` is the

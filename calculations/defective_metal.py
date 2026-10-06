@@ -1200,7 +1200,11 @@ def calculate_gb_enhanced_diffusivity(D_bulk, temperature, grain_size,
         raise ValueError(f"Model must be 'parallel' or 'hart', got '{model}'")
     
     # Calculate GB volume fraction
-    # f_gb = 3δ/d for randomly oriented grains
+    # f_gb = 3δ/d for randomly oriented grains.
+    #
+    # This is the METAL's grain-boundary VOLUME fraction, of order 1e-5 at a 100 um
+    # grain. It is not the oxide's grain-boundary DEFECT area fraction, which is of
+    # order 1e-3 and is called f_gb_defect in the config and the sensitivity layer.
     f_gb = 3 * gb_thickness / grain_size
     f_bulk = 1.0 - f_gb
     
@@ -1354,7 +1358,7 @@ def combined_microstructure_model(D_lattice, temperature, microstructure_params,
         Optional keys:
         - 'gb_thickness': float, GB width [m] (default 0.5e-9)
         - 'model': str, 'parallel' or 'hart' (default 'parallel')
-        - 'include_gb_trapping': bool, auto-add GB as traps (default True)
+        - 'enable_gb_as_trap': bool, auto-add GB as traps (default True)
     
     lattice_concentration : float
         Hydrogen concentration in lattice [mol/m³]
@@ -1456,7 +1460,7 @@ def combined_microstructure_model(D_lattice, temperature, microstructure_params,
     
     gb_thickness = microstructure_params.get('gb_thickness', 0.5e-9)
     model = microstructure_params.get('model', 'parallel')
-    include_gb_trapping = microstructure_params.get('include_gb_trapping', True)
+    enable_gb_as_trap = microstructure_params.get('enable_gb_as_trap', True)
     
     # Validate inputs
     if D_lattice <= 0:
@@ -1536,7 +1540,7 @@ def combined_microstructure_model(D_lattice, temperature, microstructure_params,
     # Step 2: Add GB trapping to trap list if requested
     # ========================================================================
     if mode in ['both', 'trapping_only']:    
-        if include_gb_trapping and f_gb > 0:
+        if enable_gb_as_trap and f_gb > 0:
             # Calculate GB trap density from microstructure
             gb_density_result = grain_boundary_density(
                 grain_size=grain_size,
