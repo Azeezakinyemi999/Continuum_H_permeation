@@ -715,3 +715,49 @@ def test_oxide_extrapolation_still_warns(capsys):
     name = build_simulation_config()["oxide_name"]
     get_oxide_properties_at_T(name, 873.0)          # outside [473, 773]
     assert "outside validated range" in capsys.readouterr().out
+
+
+# --------------------------------------------------------------------------
+# check_against_config: a preset must pin a parameter that exists
+#
+# The model wrappers build their parameters as DEFAULT_PARAMS.copy() then
+# .update(params_dict), so a preset key that is misspelled, or left behind by a
+# rename, is stored and never read -- no error, and a flux identical to the
+# unpinned case. These two tests are the only thing standing between that and a
+# regime scan that has quietly stopped being targeted.
+# --------------------------------------------------------------------------
+
+def test_the_shipped_config_has_no_preset_pinning_a_missing_parameter():
+    """Scoped to THIS check, not to check_against_config as a whole.
+
+    Guo_etal_2025 and Application report four problems from a different check --
+    D_ref, k_diss_metal_ref and E_diss_metal each sit outside their own sweep range,
+    so the SA never samples them at their nominal value. Those predate this guard
+    (identical on main) and are a range decision, not a naming one, so they are not
+    asserted away here.
+    """
+    from calculations.sensitivity import check_against_config
+
+    problems = check_against_config(verbose=False, raise_on_fail=False)
+    stale = [p for p in problems if "silently ignored" in p]
+    assert stale == [], f"a preset pins a parameter no wrapper will read: {stale}"
+
+
+def test_a_preset_pinning_an_unknown_parameter_is_caught(monkeypatch):
+    """The failure this guard exists for: a name no wrapper will ever read.
+
+    monkeypatch.setitem restores the preset afterwards, so the module-level dict
+    other tests share is left as it was found.
+    """
+    import calculations.sensitivity as sa
+
+    regime = next(iter(sa.REGIME_PRESETS))
+    monkeypatch.setitem(sa.REGIME_PRESETS[regime], "f_pinholeee", (1e-6, 1e-5))
+
+    problems = sa.check_against_config(verbose=False, raise_on_fail=False)
+    assert any("f_pinholeee" in p and "silently ignored" in p for p in problems), (
+        f"a preset pinning a nonexistent parameter was not reported: {problems}"
+    )
+
+    with pytest.raises(ValueError, match="silently ignored"):
+        sa.check_against_config(verbose=False)
