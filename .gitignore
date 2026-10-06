@@ -17,6 +17,7 @@ Level_3/
 analysis/
 data/
 pdf/
+Paper_Calc/
 
 atat-sqs-gui/
 structure_generation/
@@ -38,6 +39,12 @@ sa_results*/
 #Plots
 *.png
 
+# The vector copy save_figure writes beside every PNG. Ignored for the same reason the
+# PNG is: regenerable by re-running the notebook. The two tracked PDFs that predate this
+# rule, docs/_static/ and latex/, are negated below.
+*.pdf
+*.svg
+
 # Python bytecode
 __pycache__/
 *.pyc
@@ -57,6 +64,10 @@ docs/.mplcache/
 # figure added to the docs.
 !docs/_static/**/*.png
 !docs/_static/**/*.svg
+!docs/_static/**/*.pdf
+
+# latex/ holds the equation source and its built PDF, which is checked in.
+!latex/**/*.pdf
 
 # Editable-install and build artefacts from pyproject.toml
 *.egg-info/

@@ -29,7 +29,6 @@ R = 8.314      # J/mol/K — Universal gas constant
 
 F = 96485      # C/mol  — Faraday constant (for eV conversions)
 
-
 # ==============================================================================
 # 2. WHAT IS BEING STUDIED
 #   OPERATING CONDITIONS
@@ -111,7 +110,9 @@ SUGGESTED_RANGES_LEVEL5 = {
     'H_sol_ox':     [20000, 170000],
    
 
-    # Geometry and operating point — from CONDITIONS
+    # Geometry and operating point — from CONDITIONS, which owns the range of
+    # conditions being studied. Material-parameter ranges below stay here:
+    # they describe materials, not conditions.
     'metal_thickness': list(CONDITIONS['L_metal_range']),
     'oxide_thickness': list(CONDITIONS['L_oxide_range']),
     'P_upstream':      list(CONDITIONS['P_range']),
@@ -159,6 +160,7 @@ SUGGESTED_RANGES_LEVEL5L6 = {
     'K_eq_metal_ref':      [1e-5, 1e-1],
     'H_eq_metal':          [5000, 40000],
 }
+
 # The floor is the sensitivity range's floor times 1e-5.
 CONDITIONS['k_diss_sweep_range'] = (SUGGESTED_RANGES_LEVEL5L6['k_diss_ref'][0] * 1e-5,
                                     SUGGESTED_RANGES_LEVEL5L6['k_diss_ref'][1])
@@ -221,7 +223,7 @@ REGIME_PRESETS = {
                                 **_SA_FAST_METAL, **_SA_FAST_SURFACE}),
 }
 
-# Level 5 presets (no surface kinetics). The L5 regimes are oxide / metal / defect
+# Level 5 presets (no surface kinetics). The L5 regimes are oxide / metal / defect,
 REGIME_PRESETS_L5 = {
     'metal':  _sa_ranges_with(SUGGESTED_RANGES_LEVEL5, {}),
     # same oxide-limiting intent as the L5L6 oxide preset, minus the surface block
@@ -236,7 +238,8 @@ REGIME_PRESETS_L5 = {
 # SWEEP POINTS
 # What remains here is study design, which no probe can infer.
 # -----------------------------------------------------------------------------
-# Temperatures for the isothermal L5 sweep. 
+
+# Temperatures for the isothermal L5 sweep.
 DEFAULT_SWEEP_TEMPERATURES = (773.0, 1073.0, 1273.0)
 
 
@@ -337,7 +340,7 @@ OXIDES = {
         'reference': (
             "Nemanic et al. 2023 (Phi, D), Stover 1986 (Q_p) and Chen 2011 (E_D): Undamaged chromia limit from Stover 1986 Fig.7 (sample Cr2)"
         ),
-        # Validity range of the Nemanic/Stover data
+        # Validity range of the Nemanic/Stover data; read by
         'temperature_range':  [473, 773],
     },
     
