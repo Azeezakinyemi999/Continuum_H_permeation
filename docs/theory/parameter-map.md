@@ -14,12 +14,16 @@ by more than two orders of magnitude. Nothing errors when those are confused.
 This page inventories both, and proposes one canonical name per quantity.
 
 ```{warning}
-**The canonical names below are a PROPOSAL. None of them exist in the code.**
+**The canonical names below are a PROPOSAL, except where marked ✅.**
 
-Every name in a "canonical" column is what a quantity *would* be called under a
-unified scheme. The names in the "replaces" columns are the ones that are real
-today and that you must use. Nothing here has been renamed, and the tables are a
-decision document, not a description of the codebase.
+Every unmarked name in a "canonical" column is what a quantity *would* be called
+under a unified scheme; the "replaces" column holds the name that is real today and
+that you must use. A ✅ marks one that has since been adopted, and for those the
+canonical name is the real one.
+
+Adopted so far: the three model switches in section G, because
+`include_gb_enhancement` and `include_gb_trapping` sat one word apart while doing
+opposite things to the diffusivity.
 ```
 
 ## How to read it
@@ -347,15 +351,15 @@ exactly these ten names and removing none.
 * - canonical
   - quantity
   - replaces
-* - `enable_gb_enhancement`
+* - `enable_gb_enhancement` ✅
   - grain-boundary **fast path** on/off
-  - `include_gb_enhancement`
-* - `enable_trapping`
+  - was `include_gb_enhancement` — **renamed**
+* - `enable_trapping` ✅
   - trapping on/off
-  - `include_trapping`
-* - `enable_gb_as_trap`
+  - was `include_trapping` — **renamed**
+* - `enable_gb_as_trap` ✅
   - auto-add grain boundaries as a **trap** population
-  - `include_gb_trapping`
+  - was `include_gb_trapping` — **renamed**
 * - `microstructure_mode`
   - the composed switch the solvers take
   - `mode`
@@ -444,10 +448,12 @@ reader a moment; a collision silently produces the wrong number.
   - four scoped reference temperatures
   - one name in four dicts. The flattened sensitivity layer already splits it
     correctly; the nested configuration relies on scope
-* - `include_gb_*`
+* - `include_gb_*` ✅ **done**
   - `enable_gb_enhancement` · `enable_gb_as_trap`
   - **near-identical names, opposite physics.** Enhancement speeds diffusion up
-    through a fast path; trapping slows it down by holding hydrogen still
+    through a fast path; trapping slows it down by holding hydrogen still.
+    Renamed; no notebook referenced any of the three, so the change was contained
+    to `calculations/`, the four study files and one test
 * - pressure ranges
   - `sweep_pressure_range` · `data_pressure_range`
   - `P_range` is the span the sensitivity analysis sweeps; `pressure_range` is the

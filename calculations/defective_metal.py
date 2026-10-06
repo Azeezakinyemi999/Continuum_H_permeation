@@ -1354,7 +1354,7 @@ def combined_microstructure_model(D_lattice, temperature, microstructure_params,
         Optional keys:
         - 'gb_thickness': float, GB width [m] (default 0.5e-9)
         - 'model': str, 'parallel' or 'hart' (default 'parallel')
-        - 'include_gb_trapping': bool, auto-add GB as traps (default True)
+        - 'enable_gb_as_trap': bool, auto-add GB as traps (default True)
     
     lattice_concentration : float
         Hydrogen concentration in lattice [mol/m³]
@@ -1456,7 +1456,7 @@ def combined_microstructure_model(D_lattice, temperature, microstructure_params,
     
     gb_thickness = microstructure_params.get('gb_thickness', 0.5e-9)
     model = microstructure_params.get('model', 'parallel')
-    include_gb_trapping = microstructure_params.get('include_gb_trapping', True)
+    enable_gb_as_trap = microstructure_params.get('enable_gb_as_trap', True)
     
     # Validate inputs
     if D_lattice <= 0:
@@ -1536,7 +1536,7 @@ def combined_microstructure_model(D_lattice, temperature, microstructure_params,
     # Step 2: Add GB trapping to trap list if requested
     # ========================================================================
     if mode in ['both', 'trapping_only']:    
-        if include_gb_trapping and f_gb > 0:
+        if enable_gb_as_trap and f_gb > 0:
             # Calculate GB trap density from microstructure
             gb_density_result = grain_boundary_density(
                 grain_size=grain_size,

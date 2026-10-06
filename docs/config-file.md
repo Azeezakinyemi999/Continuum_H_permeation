@@ -250,7 +250,7 @@ study. They are order-of-magnitude stand-ins, not measurements.
 ### `MICROSTRUCTURE`
 
 Level 4 inputs: `grain_size`, `gb_thickness`, `grain_shape`, `gb_type`,
-`include_gb_trapping`, `lattice_density`, and `trap_list` — a *list* of
+`enable_gb_as_trap`, `lattice_density`, and `trap_list` — a *list* of
 `{name, binding_energy, density}` dicts, one per trap population, with binding
 energies written as `0.27 * F` so the eV value from the source paper stays
 readable.
@@ -281,8 +281,8 @@ but it is authored in one place only.
 ### `MODEL_OPTIONS`
 
 The five switches that say how the model is run, rather than describing anything
-physical: `include_gb_trapping`, `use_sieverts_pinhole`, `include_gb_enhancement`,
-`include_trapping` and `D_eff_method`.
+physical: `enable_gb_as_trap`, `use_sieverts_pinhole`, `enable_gb_enhancement`,
+`enable_trapping` and `D_eff_method`.
 
 They were previously scattered — one inside `MICROSTRUCTURE`, one inside
 `OXIDE_DEFECTS`, three inside `DEFAULT_PARAMS_LEVEL5` — so answering "what does
@@ -350,8 +350,8 @@ surface-kinetics entries, which is what keeps the two models sharing one value
 for everything they have in common. The split mirrors the model fork described
 in {doc}`theory/two-models`.
 
-A few entries are not physics: the flags `include_gb_enhancement`,
-`include_trapping` and `D_eff_method` say how to run the model. They are read from
+A few entries are not physics: the flags `enable_gb_enhancement`,
+`enable_trapping` and `D_eff_method` say how to run the model. They are read from
 `MODEL_OPTIONS` like everything else, so even these are references rather than
 literals.
 
