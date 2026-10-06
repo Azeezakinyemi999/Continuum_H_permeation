@@ -23,17 +23,7 @@ Usage
 # =============================================================================
 import numpy as np
 from scipy.optimize import brentq
-
-# Surface kinetics come from model_config too. data/surface_kinetics_data.py holds a
-# SECOND, independent dataset keyed differently ('Cr2O3' vs 'Cr2O3_sample4') and in a
-# different parameterisation: it gives k_recomb directly with its own E_recomb, while
-# model_config gives the equilibrium constant K_eq_ref/H_eq. The two disagree by ~11
-# orders of magnitude on K_eq (1e-07/1e-14 = 1e7 there, 1e-4 here), so they cannot
-# both be right. model_config is authoritative.
 from calculations.config.model_config import get_surface_kinetics_from_config
-# Material data comes straight from model_config, the authoritative source —
-# previously routed through the data/ aliasing shims, whose double imports let the
-# Fuerst config silently shadow model_config. See oxide_permeation.py.
 from calculations.config.model_config import CONDITIONS, METALS, OXIDES
 from calculations.defective_metal import combined_microstructure_model
 
@@ -65,9 +55,6 @@ def get_all_properties(oxide_name, metal_name, temperature_K,
     T_ref_ox = oxide_data['T_ref']
     D_ox = oxide_data['D_ox_ref'] * np.exp((-oxide_data['E_D_ox'] / R) * (1/temperature_K - 1/T_ref_ox))
     K_ox = oxide_data['K_ox_ref'] * np.exp((-oxide_data['H_sol_ox'] / R) * (1/temperature_K - 1/T_ref_ox))
-    # Geometry is the scenario, not the material: it comes from CONDITIONS even when
-    # `oxides` resolves another study's material data, because the wall being
-    # simulated is the one CONDITIONS describes.
     L_ox = CONDITIONS['L_oxide']
 
     metal_data = metals[metal_name]
