@@ -496,7 +496,7 @@ def calculate_defective_metal_flux_L6(
     D_lattice, K_s_m,
     microstructure_params,
     lattice_density=1.06e29,
-    method='average', n_points=50, mode='both',
+    method='average', n_profile_points=50, mode='both',
     max_iterations=15, tolerance=1e-6,
 ):
     """
@@ -527,7 +527,7 @@ def calculate_defective_metal_flux_L6(
         Lattice site density [sites/m³].
     method : str
         D_eff averaging: 'average', 'harmonic', 'inlet', 'outlet'
-    n_points : int
+    n_profile_points : int
         Concentration profile discretisation points.
     mode : str
         Microstructure mode: 'both', 'gb_only', 'trapping_only', 'none'
@@ -574,13 +574,13 @@ def calculate_defective_metal_flux_L6(
 
         sqrt_P_int = sqrt_P_int_from_theta(theta_ss, alpha, beta, K_eq, P_down)
 
-        x_array    = np.linspace(0, metal_thickness, n_points)
+        x_array    = np.linspace(0, metal_thickness, n_profile_points)
         sqrt_P_arr = sqrt_P_int - (sqrt_P_int - sqrt_P_down) * x_array / metal_thickness
         C_array    = K_s_m * sqrt_P_arr
 
-        D_array          = np.zeros(n_points)
-        theta_trap_array = np.zeros(n_points)
-        gb_factor_array  = np.zeros(n_points)
+        D_array          = np.zeros(n_profile_points)
+        theta_trap_array = np.zeros(n_profile_points)
+        gb_factor_array  = np.zeros(n_profile_points)
 
         for i, C_local in enumerate(C_array):
             C_local = max(C_local, 1e-20)
@@ -1169,7 +1169,7 @@ def calculate_path_flux_L346_v2(
     path_type='intact',
     lattice_density=1.06e29,
     method='average',
-    n_points=20,
+    n_profile_points=20,
     mode='both',
     max_iterations=10,
     tolerance=1e-5,
@@ -1206,7 +1206,7 @@ def calculate_path_flux_L346_v2(
         Lattice site density [sites/m³].
     method : str
         D_eff averaging method.
-    n_points : int
+    n_profile_points : int
         Profile discretisation points.
     mode : str
         Microstructure mode.
@@ -1283,13 +1283,13 @@ def calculate_path_flux_L346_v2(
             else:
                 sqrt_P_int = sqrt_P_int_from_theta(theta_ss, alpha, beta, K_eq, P_down)
 
-        x_array    = np.linspace(0, L_m, n_points)
+        x_array    = np.linspace(0, L_m, n_profile_points)
         sqrt_P_arr = sqrt_P_int - (sqrt_P_int - sqrt_P_down) * x_array / L_m
         C_array    = K_s_m * sqrt_P_arr
 
-        D_array          = np.zeros(n_points)
-        theta_trap_array = np.zeros(n_points)
-        gb_factor_array  = np.zeros(n_points)
+        D_array          = np.zeros(n_profile_points)
+        theta_trap_array = np.zeros(n_profile_points)
+        gb_factor_array  = np.zeros(n_profile_points)
 
         for i, C_local in enumerate(C_array):
             C_local = max(C_local, 1e-20)
@@ -1423,7 +1423,7 @@ def calculate_full_model_flux_L346_v2(
     defect_config,
     lattice_density=1.06e29,
     method='average',
-    n_points=20,
+    n_profile_points=20,
     mode='both',
     k_diss_metal=None,
     K_eq_metal=None,
@@ -1493,7 +1493,7 @@ def calculate_full_model_flux_L346_v2(
         D_lattice, K_s_m, microstructure_params,
         path_type='intact',
         lattice_density=lattice_density, method=method,
-        n_points=n_points, mode=mode,
+        n_profile_points=n_profile_points, mode=mode,
     )
 
     defect_results = {}
@@ -1516,7 +1516,7 @@ def calculate_full_model_flux_L346_v2(
             D_lattice, K_s_m, microstructure_params,
             path_type=defect_type,
             lattice_density=lattice_density, method=method,
-            n_points=n_points, mode=mode,
+            n_profile_points=n_profile_points, mode=mode,
             k_diss_metal=k_diss_metal if defect_type == 'pinhole' else None,
             K_eq_metal=K_eq_metal   if defect_type == 'pinhole' else None,
         )

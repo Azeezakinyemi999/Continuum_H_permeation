@@ -156,7 +156,7 @@ def calculate_simple_metal_flux(D, K_s, metal_thickness, P_up, P_down):
 def calculate_defective_metal_flux(D_lattice, K_s, metal_thickness, P_up, P_down,
                                     temperature, microstructure_params,
                                     lattice_density,
-                                    method='average', n_points=10, mode='both'):
+                                    method='average', n_profile_points=10, mode='both'):
     r"""
     Calculate hydrogen permeation flux through metal with microstructure effects.
     
@@ -198,7 +198,7 @@ def calculate_defective_metal_flux(D_lattice, K_s, metal_thickness, P_up, P_down
         - 'harmonic': Harmonic mean (series resistance)
         - 'inlet': Use high-concentration side only
         - 'outlet': Use low-concentration side only
-    n_points : int, optional
+    n_profile_points : int, optional
         Points for numerical integration (default 10)
     
     Returns
@@ -317,7 +317,7 @@ def calculate_defective_metal_flux(D_lattice, K_s, metal_thickness, P_up, P_down
     # =========================================================================
     
     # Create position array through metal metal_thickness
-    x_array = np.linspace(0, metal_thickness, n_points)
+    x_array = np.linspace(0, metal_thickness, n_profile_points)
     
     # For Sieverts' law, sqrt(P) is linear in steady state
     # C(x) = K_s × sqrt(P(x)) where sqrt(P) varies linearly
@@ -330,9 +330,9 @@ def calculate_defective_metal_flux(D_lattice, K_s, metal_thickness, P_up, P_down
     C_array = K_s * sqrt_P_array
     
     # Calculate D_eff at each position
-    D_array = np.zeros(n_points)
-    theta_array = np.zeros(n_points)
-    gb_factor_array = np.zeros(n_points)
+    D_array = np.zeros(n_profile_points)
+    theta_array = np.zeros(n_profile_points)
+    gb_factor_array = np.zeros(n_profile_points)
     
     for i, C_local in enumerate(C_array):
         # Ensure minimum concentration for numerical stability
@@ -454,7 +454,7 @@ def calculate_defective_metal_flux(D_lattice, K_s, metal_thickness, P_up, P_down
             'D_variation': D_variation,
             'dominant_effect': dominant_effect,
             'method_used': method,
-            'n_points': n_points
+            'n_profile_points': n_profile_points
         },
         
         # Profile data (for detailed analysis)
@@ -478,7 +478,7 @@ def calculate_defective_metal_flux(D_lattice, K_s, metal_thickness, P_up, P_down
 def calculate_defective_metal_flux_sieverts(D_lattice, K_s, metal_thickness, P_interface, P_downstream,
                                             temperature, microstructure_params,
                                             lattice_density,
-                                            method='average', n_points=10, mode='both'):
+                                            method='average', n_profile_points=10, mode='both'):
     """
     Calculate flux through defective metal using Sieverts' law boundary conditions.
     
@@ -505,7 +505,7 @@ def calculate_defective_metal_flux_sieverts(D_lattice, K_s, metal_thickness, P_i
         Lattice site density [m⁻³]
     method : str, optional
         D_eff averaging method
-    n_points : int, optional
+    n_profile_points : int, optional
         Points for integration
     
     Returns
@@ -529,7 +529,7 @@ def calculate_defective_metal_flux_sieverts(D_lattice, K_s, metal_thickness, P_i
         microstructure_params=microstructure_params,
         lattice_density=lattice_density,
         method=method,
-        n_points=n_points,
+        n_profile_points=n_profile_points,
         mode=mode
     )
     

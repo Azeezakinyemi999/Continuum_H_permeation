@@ -514,7 +514,7 @@ def level5(oxide_props, metal_props, defect_params, P_up, P_down, temperature,
     kw = dict(oxide_props=oxide_props, metal_props=metal_props,
               defect_params=defect_params, temperature=temperature,
               microstructure_params=microstructure_params,
-              lattice_density=lattice_density, method=method, n_points=10, mode=mode)
+              lattice_density=lattice_density, method=method, n_profile_points=10, mode=mode)
     r = solve(P_upstream=P_up, P_downstream=P_down, **kw)
     L_tot = oxide_props['thickness'] + metal_props['thickness']
     n = pressure_exponent(

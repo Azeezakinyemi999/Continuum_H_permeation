@@ -309,7 +309,7 @@ def calculate_oxide_metal_system(P_upstream, P_downstream, oxide_props, metal_pr
     return solution
 
 
-def calculate_concentration_profile(P_upstream, P_downstream, oxide_props, metal_props, n_points=100):
+def calculate_concentration_profile(P_upstream, P_downstream, oxide_props, metal_props, n_profile_points=100):
     """
     Calculate concentration profile through oxide and metal layers.
     
@@ -319,7 +319,7 @@ def calculate_concentration_profile(P_upstream, P_downstream, oxide_props, metal
         Boundary pressures (Pa)
     oxide_props, metal_props : dict
         Layer properties
-    n_points : int
+    n_profile_points : int
         Number of points in each layer
     
     Returns
@@ -332,7 +332,7 @@ def calculate_concentration_profile(P_upstream, P_downstream, oxide_props, metal
     P_interface = max(solution['P_interface'], min_pressure)  # Ensure positive for sqrt
     
     # Oxide layer positions and concentrations
-    x_oxide = np.linspace(0, oxide_props['thickness'], n_points)
+    x_oxide = np.linspace(0, oxide_props['thickness'], n_profile_points)
     # Linear profile in oxide
     C_oxide_up = oxide_props['K_ox'] * P_upstream
     C_oxide_interface = oxide_props['K_ox'] * P_interface
@@ -342,7 +342,7 @@ def calculate_concentration_profile(P_upstream, P_downstream, oxide_props, metal
     x_metal_start = oxide_props['thickness']
     x_metal = np.linspace(x_metal_start, 
                           x_metal_start + metal_props['thickness'], 
-                          n_points)
+                          n_profile_points)
     # Square root profile in metal
     C_metal_interface = metal_props['K_s_metal'] * np.sqrt(P_interface)
     C_metal_down = metal_props['K_s_metal'] * np.sqrt(P_downstream)
@@ -373,7 +373,7 @@ def calculate_defective_metal_flux_sieverts(D_lattice, K_s_metal, metal_thicknes
                                             P_interface, P_downstream,
                                             temperature, microstructure_params,
                                             lattice_density,
-                                            method='average', n_points=10, mode='both'):
+                                            method='average', n_profile_points=10, mode='both'):
     """
     Calculate flux through defective metal using Sieverts' law boundary conditions.
     
@@ -400,7 +400,7 @@ def calculate_defective_metal_flux_sieverts(D_lattice, K_s_metal, metal_thicknes
         Lattice site density [m⁻³]
     method : str, optional
         D_eff averaging method ('average', 'harmonic', 'inlet', 'outlet')
-    n_points : int, optional
+    n_profile_points : int, optional
         Points for integration
     
     Returns
@@ -420,7 +420,7 @@ def calculate_defective_metal_flux_sieverts(D_lattice, K_s_metal, metal_thicknes
         microstructure_params=microstructure_params,
         lattice_density=lattice_density,
         method=method,
-        n_points=n_points,
+        n_profile_points=n_profile_points,
         mode=mode
     )
     
@@ -430,7 +430,7 @@ def calculate_defective_metal_flux_sieverts(D_lattice, K_s_metal, metal_thicknes
 def flux_balance_equation_defective_metal(P_interface, P_upstream, P_downstream, 
                                           oxide_props, metal_props, temperature,
                                           microstructure_params, lattice_density,
-                                          method='average', n_points=10, mode='both'):
+                                          method='average', n_profile_points=10, mode='both'):
     """
     Flux balance equation for oxide + defective metal system.
     
@@ -457,7 +457,7 @@ def flux_balance_equation_defective_metal(P_interface, P_upstream, P_downstream,
         Lattice site density [m⁻³]
     method : str
         D_eff averaging method
-    n_points : int
+    n_profile_points : int
         Points for integration
     
     Returns
@@ -487,7 +487,7 @@ def flux_balance_equation_defective_metal(P_interface, P_upstream, P_downstream,
         microstructure_params=microstructure_params,
         lattice_density=lattice_density,
         method=method,
-        n_points=n_points,
+        n_profile_points=n_profile_points,
         mode=mode
     )
     
@@ -497,7 +497,7 @@ def flux_balance_equation_defective_metal(P_interface, P_upstream, P_downstream,
 def solve_interface_pressure_defective_metal(P_upstream, P_downstream, oxide_props, 
                                              metal_props, temperature, microstructure_params,
                                              lattice_density, method='average',
-                                             n_points=10, solver_method='brentq',
+                                             n_profile_points=10, solver_method='brentq',
                                              max_iterations=10, tolerance=1e-6, mode='both'):
     """
     Solve for interface pressure with Level 4 defective metal (iterative).
@@ -528,7 +528,7 @@ def solve_interface_pressure_defective_metal(P_upstream, P_downstream, oxide_pro
         Lattice site density [m⁻³] (default 1.06e29 for FCC)
     method : str, optional
         D_eff averaging method ('average', 'harmonic', 'inlet', 'outlet')
-    n_points : int, optional
+    n_profile_points : int, optional
         Points for D_eff integration (default 10)
     solver_method : str, optional
         Root finding method ('brentq' or 'root_scalar')
@@ -617,11 +617,11 @@ def solve_interface_pressure_defective_metal(P_upstream, P_downstream, oxide_pro
                 # Check if function has different signs at boundaries
                 f_min = flux_balance_equation_defective_metal(
                     P_min, P_upstream, P_downstream, oxide_props, metal_props,
-                    temperature, microstructure_params, lattice_density, method, n_points, mode
+                    temperature, microstructure_params, lattice_density, method, n_profile_points, mode
                 )
                 f_max = flux_balance_equation_defective_metal(
                     P_max, P_upstream, P_downstream, oxide_props, metal_props,
-                    temperature, microstructure_params, lattice_density, method, n_points, mode
+                    temperature, microstructure_params, lattice_density, method, n_profile_points, mode
                 )
                 
                 if f_min * f_max > 0:
@@ -634,7 +634,7 @@ def solve_interface_pressure_defective_metal(P_upstream, P_downstream, oxide_pro
                         P_min, P_max,
                         args=(P_upstream, P_downstream, oxide_props, metal_props,
                               temperature, microstructure_params, lattice_density, 
-                              method, n_points, mode),
+                              method, n_profile_points, mode),
                         xtol=1e-12,
                         rtol=1e-12
                     )
@@ -655,7 +655,7 @@ def solve_interface_pressure_defective_metal(P_upstream, P_downstream, oxide_pro
             microstructure_params=microstructure_params,
             lattice_density=lattice_density,
             method=method,
-            n_points=n_points,
+            n_profile_points=n_profile_points,
             mode=mode
         )
         
@@ -722,7 +722,7 @@ def solve_interface_pressure_defective_metal(P_upstream, P_downstream, oxide_pro
 def calculate_oxide_defective_metal_system(P_upstream, P_downstream, oxide_props, 
                                            metal_props, temperature, microstructure_params,
                                            lattice_density, method='average',
-                                           n_points=10, max_iterations=10, tolerance=1e-6,mode='both'):
+                                           n_profile_points=10, max_iterations=10, tolerance=1e-6,mode='both'):
     """
     Main function to calculate flux through oxide + defective metal system.
     
@@ -747,7 +747,7 @@ def calculate_oxide_defective_metal_system(P_upstream, P_downstream, oxide_props
         Lattice site density [m⁻³]
     method : str, optional
         D_eff averaging method
-    n_points : int, optional
+    n_profile_points : int, optional
         Points for integration
     max_iterations : int, optional
         Max iterations for D_eff convergence
@@ -772,7 +772,7 @@ def calculate_oxide_defective_metal_system(P_upstream, P_downstream, oxide_props
         temperature, microstructure_params,
         lattice_density=lattice_density,
         method=method,
-        n_points=n_points,
+        n_profile_points=n_profile_points,
         max_iterations=max_iterations,
         tolerance=tolerance,
         mode=mode
