@@ -617,26 +617,48 @@ def build_simulation_config(
 # =============================================================================
 PLOT_STYLE = {
     'figsize':              (14, 12),
-    'fontsize_title':       10,
-    'fontsize_suptitle':    18,
-    'fontsize_axis':        14,
-    'fontsize_tick':        12,
-    'fontsize_legend':      12,
-    'fontsize_annotation':  11,
+    # Panel titles used to be 10 against 14 for axis labels -- a panel's title read
+    # SMALLER than the label beneath it, which no amount of resolution fixes. Sizes
+    # raised throughout and the ordering corrected: suptitle > title >= axis > tick.
+    'fontsize_title':       15,
+    'fontsize_suptitle':    20,
+    'fontsize_axis':        15,
+    'fontsize_tick':        13,
+    'fontsize_legend':      13,
+    'fontsize_annotation':  12,
+    # Marks stay as they were. The ask was for text and colour; thickening the curves
+    # too would crowd a four-panel figure, and a heavy line hides where two levels
+    # coincide -- which is exactly what the limit-check panels exist to show.
     'linewidth':            2.5,
-    'markersize':           8,
-    'grid_alpha':           0.3,
+    'markersize':           9,
+    'grid_alpha':           0.25,
 }
 
+# Hues chosen against the data-visualisation palette and CHECKED, not eyeballed: the
+# validator reports lightness band, chroma floor, contrast, and pairwise separation
+# under normal vision and under protan/deutan/tritan colour-vision deficiency.
+#
+# What the old set got wrong. 'cyan' is #00FFFF -- almost invisible on white. 'crimson'
+# and 'red' sat on L4_both and L5, which share a panel, at a normal-vision separation
+# far under the floor. And 'orange' against 'green', the L4 trapping and GB curves on
+# one axes, came to deltaE 3.2 for a protan reader: indistinguishable.
+#
+# Checked per PANEL rather than globally, because what must be separable is what is
+# drawn together. The binding case is the Level 5 summary, six hues at once, which
+# clears the hard normal-vision floor at 15.6 with worst CVD 6.9 -- legal because every
+# level also carries its own linestyle and marker in CURVE_STYLES below. L2a may take
+# orange, whose only conflicts are with red and green, because it appears beside
+# neither. L1 stays black: it is the baseline every other curve is measured against,
+# and reads as reference ink rather than as one series among many.
 COLORS = {
-    'L1':       'black',
-    'L2a':      'blue',
-    'L2b':      'purple',
-    'L3':       'cyan',
-    'L4_gb':    'green',
-    'L4_trap':  'orange',
-    'L4_both':  'crimson',
-    'L5':       'red',
+    'L1':       'black',        # baseline reference
+    'L2a':      '#eb6834',      # orange
+    'L2b':      '#4a3aa7',      # violet   (was purple)
+    'L3':       '#1baf7a',      # aqua     (was cyan -- the worst offender)
+    'L4_gb':    '#008300',      # green
+    'L4_trap':  '#eda100',      # yellow   (was orange, which clashed with green)
+    'L4_both':  '#2a78d6',      # blue     (was crimson, which clashed with L5 red)
+    'L5':       '#e34948',      # red
 }
 
 # =============================================================================
@@ -648,40 +670,40 @@ CURVE_STYLES = {
     # Model levels
     'L1':       {'color': 'black',   'ls': '-',    'marker': 'o',  'lw': 2.5, 'ms': 6},
     'L1_L6':    {'color': 'black',   'ls': '--',   'marker': 's',  'lw': 2.5, 'ms': 6},
-    'L2a':      {'color': '#1f77b4', 'ls': '-',    'marker': 'o',  'lw': 2.5, 'ms': 6},  # blue
-    'L2a_L6':   {'color': '#1f77b4', 'ls': '--',   'marker': 's',  'lw': 2.5, 'ms': 6},
-    'L2b':      {'color': 'purple',  'ls': '-',    'marker': 'o',  'lw': 2.5, 'ms': 6},
-    'L2_L6':    {'color': 'purple',  'ls': '--',   'marker': 's',  'lw': 2.5, 'ms': 6},
-    'L3':       {'color': 'cyan',    'ls': '-',    'marker': 'o',  'lw': 2.5, 'ms': 6},
-    'L3_L6':    {'color': 'teal',    'ls': '--',   'marker': 's',  'lw': 2.5, 'ms': 6},
-    'L4_gb':    {'color': 'green',   'ls': '-',    'marker': '^',  'lw': 2.5, 'ms': 6},
-    'L4_trap':  {'color': 'orange',  'ls': '-',    'marker': 'v',  'lw': 2.5, 'ms': 6},
-    'L4_both':  {'color': 'crimson', 'ls': '-',    'marker': 'D',  'lw': 2.5, 'ms': 6},
-    'L5':       {'color': 'red',     'ls': '-',    'marker': 'o',  'lw': 2.5, 'ms': 6},
-    'L3_L4_L6': {'color': 'red',     'ls': '--',   'marker': 's',  'lw': 2.5, 'ms': 6},
+    'L2a':      {'color': '#eb6834', 'ls': '-',    'marker': 'o',  'lw': 2.5, 'ms': 6},  # blue
+    'L2a_L6':   {'color': '#eb6834', 'ls': '--',   'marker': 's',  'lw': 2.5, 'ms': 6},
+    'L2b':      {'color': '#4a3aa7',  'ls': '-',    'marker': 'o',  'lw': 2.5, 'ms': 6},
+    'L2_L6':    {'color': '#4a3aa7',  'ls': '--',   'marker': 's',  'lw': 2.5, 'ms': 6},
+    'L3':       {'color': '#1baf7a',    'ls': '-',    'marker': 'o',  'lw': 2.5, 'ms': 6},
+    'L3_L6':    {'color': '#1baf7a',    'ls': '--',   'marker': 's',  'lw': 2.5, 'ms': 6},
+    'L4_gb':    {'color': '#008300',   'ls': '-',    'marker': '^',  'lw': 2.5, 'ms': 6},
+    'L4_trap':  {'color': '#eda100',  'ls': '-',    'marker': 'v',  'lw': 2.5, 'ms': 6},
+    'L4_both':  {'color': '#2a78d6', 'ls': '-',    'marker': 'D',  'lw': 2.5, 'ms': 6},
+    'L5':       {'color': '#e34948',     'ls': '-',    'marker': 'o',  'lw': 2.5, 'ms': 6},
+    'L3_L4_L6': {'color': '#e34948',     'ls': '--',   'marker': 's',  'lw': 2.5, 'ms': 6},
 
     # Defect fractions (used in L3 sweep plots)
     'f_0':      {'color': 'black',   'ls': '-',    'marker': None, 'lw': 2.5, 'ms': 0},
-    'f_001':    {'color': '#2196F3', 'ls': '--',   'marker': None, 'lw': 2.0, 'ms': 0},  # 0.1%
-    'f_01':     {'color': '#FF9800', 'ls': '-.',   'marker': None, 'lw': 2.0, 'ms': 0},  # 1%
-    'f_10':     {'color': '#F44336', 'ls': ':',    'marker': None, 'lw': 2.0, 'ms': 0},  # 10%
+    'f_001':    {'color': '#2a78d6', 'ls': '--',   'marker': None, 'lw': 2.0, 'ms': 0},  # 0.1%
+    'f_01':     {'color': '#eda100', 'ls': '-.',   'marker': None, 'lw': 2.0, 'ms': 0},  # 1%
+    'f_10':     {'color': '#e34948', 'ls': ':',    'marker': None, 'lw': 2.0, 'ms': 0},  # 10%
 
     # Defect types
     'intact':   {'color': 'black',   'ls': '-',    'marker': 'o',  'lw': 2.5, 'ms': 5},
-    'pinhole':  {'color': '#F44336', 'ls': '--',   'marker': '^',  'lw': 2.0, 'ms': 5},  # red
-    'crack':    {'color': '#FF9800', 'ls': '-.',   'marker': 's',  'lw': 2.0, 'ms': 5},  # orange
-    'gb':       {'color': '#4CAF50', 'ls': ':',    'marker': 'D',  'lw': 2.0, 'ms': 5},  # green
+    'pinhole':  {'color': '#e34948', 'ls': '--',   'marker': '^',  'lw': 2.0, 'ms': 5},  # red
+    'crack':    {'color': '#eda100', 'ls': '-.',   'marker': 's',  'lw': 2.0, 'ms': 5},  # orange
+    'gb':       {'color': '#008300', 'ls': ':',    'marker': 'D',  'lw': 2.0, 'ms': 5},  # green
 
     # Rate-limiting regions (shading)
-    'surface_region': {'color': '#F44336', 'alpha': 0.9},  # red
-    'oxide_region':   {'color': '#FF9800', 'alpha': 0.9},  # orange
-    'metal_region':   {'color': '#2196F3', 'alpha': 0.9},  # blue
-    'mixed_region':   {'color': '#4CAF50', 'alpha': 0.9},  # green
+    'surface_region': {'color': '#e34948', 'alpha': 0.9},  # red
+    'oxide_region':   {'color': '#eda100', 'alpha': 0.9},  # orange
+    'metal_region':   {'color': '#2a78d6', 'alpha': 0.9},  # blue
+    'mixed_region':   {'color': '#1baf7a', 'alpha': 0.9},  # green
 
     # Reference lines (slopes, theory)
-    'slope_1':  {'color': '#F44336', 'ls': '--',   'lw': 1.5, 'alpha': 0.6},
-    'slope_05': {'color': '#4CAF50', 'ls': '--',   'lw': 1.5, 'alpha': 0.6},
-    'parity':   {'color': 'red',     'ls': '--',   'lw': 2.0, 'alpha': 0.8},
+    'slope_1':  {'color': '#e34948', 'ls': '--',   'lw': 1.5, 'alpha': 0.6},
+    'slope_05': {'color': '#008300', 'ls': '--',   'lw': 1.5, 'alpha': 0.6},
+    'parity':   {'color': '#e34948',     'ls': '--',   'lw': 2.0, 'alpha': 0.8},
     'threshold':{'color': 'gray',    'ls': '--',   'lw': 1.5, 'alpha': 0.5},
 }
 

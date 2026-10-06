@@ -87,6 +87,51 @@ def _sharpen_inline_display(fmt=INLINE_FORMAT):
         pass
 
 
+#: Weight and frame settings applied through rcParams rather than at the call sites.
+#: The notebooks pass an explicit ``fontsize=`` to every label -- which is why the sizes
+#: live in ``PLOT_STYLE`` -- but they pass no ``fontweight``, so rcParams is the only
+#: lever that reaches them, and it reaches all of them at once.
+TEXT_STYLE = {
+    "font.weight":        "bold",
+    "axes.labelweight":   "bold",
+    "axes.titleweight":   "bold",
+    "figure.titleweight": "bold",
+    # A heavier frame and longer ticks, so the axes read as a drawn box rather than a
+    # hairline. Matplotlib's defaults are 0.8 and 3.5.
+    "axes.linewidth":      1.4,
+    "xtick.major.width":   1.4,
+    "ytick.major.width":   1.4,
+    "xtick.major.size":    6.0,
+    "ytick.major.size":    6.0,
+    "xtick.minor.width":   0.9,
+    "ytick.minor.width":   0.9,
+    # The legend is load-bearing here: several of the validated hues sit under 3:1
+    # contrast on white, and the palette's relief rule is satisfied by a legible
+    # legend rather than by colour alone.
+    "legend.framealpha":   0.95,
+    "legend.edgecolor":    "0.55",
+}
+
+
+def apply_text_style(overrides=None):
+    """Make every figure's text bold and its axes frame heavier.
+
+    Applied on import for the same reason as the inline format: every notebook already
+    imports this module, so there is one place to change and nothing to keep in sync
+    across the four studies.
+
+    Sizes are NOT set here. They come from ``PLOT_STYLE`` in model_config, because the
+    notebooks pass ``fontsize=`` explicitly at each call and an explicit argument beats
+    an rcParam.
+    """
+    settings = dict(TEXT_STYLE)
+    if overrides:
+        settings.update(overrides)
+    plt.rcParams.update(settings)
+
+
+apply_text_style()
+
 _sharpen_inline_display()
 
 
