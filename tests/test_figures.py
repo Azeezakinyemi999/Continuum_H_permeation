@@ -8,6 +8,7 @@ expected. The last test guards the convention itself against drifting back.
 import ast
 import json
 import re
+import subprocess
 
 import matplotlib
 matplotlib.use("Agg")                     # no window server in a test run
@@ -17,7 +18,34 @@ import pytest                             # noqa: E402
 from calculations.figures import RESULTS_SUFFIX, results_dir, save_figure  # noqa: E402
 from conftest import ROOT                 # noqa: E402
 
-NOTEBOOKS = sorted(ROOT.glob("*/[A-Za-z]*.ipynb"))
+def _not_ignored(paths):
+    """Drop paths .gitignore excludes.
+
+    The glob walks the filesystem, so a scratch folder beside the studies -- a
+    one-off calculation, a copy kept for a paper -- was collected and failed the
+    convention tests, which exist to police the STUDY notebooks. Asking git rather
+    than hardcoding a folder name means a new scratch directory is handled by adding
+    one line to .gitignore, where it belongs.
+
+    `git check-ignore` exits 1 when nothing matches, which is the normal case, so the
+    return code is not an error here. If git is unavailable the glob is used as-is:
+    over-collecting is the safer failure, since it only ever adds coverage.
+    """
+    if not paths:
+        return paths
+    try:
+        done = subprocess.run(
+            ["git", "check-ignore", "--stdin"],
+            input="\n".join(str(p) for p in paths),
+            capture_output=True, text=True, cwd=ROOT, timeout=30,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return paths
+    ignored = {line.strip() for line in done.stdout.splitlines() if line.strip()}
+    return [p for p in paths if str(p) not in ignored]
+
+
+NOTEBOOKS = _not_ignored(sorted(ROOT.glob("*/[A-Za-z]*.ipynb")))
 
 
 # --------------------------------------------------------------------------
