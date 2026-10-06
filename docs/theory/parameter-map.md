@@ -21,9 +21,12 @@ under a unified scheme; the "replaces" column holds the name that is real today 
 that you must use. A ✅ marks one that has since been adopted, and for those the
 canonical name is the real one.
 
-Adopted so far: the three model switches in section G, because
-`include_gb_enhancement` and `include_gb_trapping` sat one word apart while doing
-opposite things to the diffusivity.
+Adopted so far: the three model switches in section G; `f_gb_defect`,
+`data_pressure_range`, `crack_thickness_ratio` and `gb_diffusivity_ratio`; and the
+`thickness` function parameters. Each was taken because the short name meant two
+different things in two places, not for tidiness. `alpha` and `beta` in
+`calculations.surface_kinetics` are left alone on purpose: they are the permeances
+the theory chapters derive under those symbols.
 ```
 
 ## How to read it
@@ -424,11 +427,16 @@ reader a moment; a collision silently produces the wrong number.
 * - current
   - splits into
   - why it must split
-* - `thickness`
+* - `thickness` ✅ **done (parameters)**
   - `metal_thickness` · `oxide_thickness` · `layer_thickness`
   - the metal in `calculate_simple_metal_flux` and `calculate_defective_metal_flux`,
     the oxide in `molecular_diffusion_flux` and `calculate_oxide_resistance`, and
-    **genuinely generic** in `fick_flux`, which is applied to both layers
+    **genuinely generic** in `fick_flux`, which is applied to both layers.
+    All ten declarations renamed — seven metal, two oxide, and `fick_flux` to
+    `layer_thickness`. The **dict key is deliberately left as `thickness`**:
+    inside `metal_props['thickness']` the dict already says which layer it is, so
+    it was never the ambiguous half, and renaming it would have reached 112
+    notebook sites for no gain
 * - `f_gb`
   - `metal_gb_volume_fraction` · `oxide_gb_area_fraction`
   - a volume fraction inside the metal against an area fraction of oxide defects.

@@ -34,7 +34,7 @@ def sieverts_concentration(K_s, pressure):
     return concentration
 
 
-def fick_flux(D, C_up, C_down, thickness):
+def fick_flux(D, C_up, C_down, layer_thickness):
     r"""
     Calculate diffusive flux using Fick's first law..
     
@@ -46,8 +46,8 @@ def fick_flux(D, C_up, C_down, thickness):
         Upstream concentration [mol/m³]
     C_down : float
         Downstream concentration [mol/m³]
-    thickness : float
-        Material thickness [m]
+    layer_thickness : float
+        Material layer_thickness [m]
     
     Returns
     -------
@@ -67,16 +67,16 @@ def fick_flux(D, C_up, C_down, thickness):
 
     Positive flux is from upstream to downstream
     """
-    if thickness <= 0:
-        raise ValueError(f"Thickness must be positive: {thickness} m")
+    if layer_thickness <= 0:
+        raise ValueError(f"Thickness must be positive: {layer_thickness} m")
     if D < 0:
         raise ValueError(f"Diffusion coefficient cannot be negative: {D} m²/s")
     
-    flux = D * (C_up - C_down) / thickness
+    flux = D * (C_up - C_down) / layer_thickness
     return flux
 
 
-def calculate_simple_metal_flux(D, K_s, thickness, P_up, P_down):
+def calculate_simple_metal_flux(D, K_s, metal_thickness, P_up, P_down):
     """
     Calculate hydrogen permeation flux through clean metal..
     
@@ -89,8 +89,8 @@ def calculate_simple_metal_flux(D, K_s, thickness, P_up, P_down):
         Diffusion coefficient [m²/s]
     K_s : float
         Solubility constant [mol/m³/Pa^0.5]
-    thickness : float
-        Metal thickness [m]
+    metal_thickness : float
+        Metal metal_thickness [m]
     P_up : float
         Upstream hydrogen pressure [Pa]
     P_down : float
@@ -125,7 +125,7 @@ def calculate_simple_metal_flux(D, K_s, thickness, P_up, P_down):
     C_down = sieverts_concentration(K_s, P_down)
     
     # Calculate flux using Fick's law
-    flux = fick_flux(D, C_up, C_down, thickness)
+    flux = fick_flux(D, C_up, C_down, metal_thickness)
     
     # Calculate effective permeability
     # P = D * K_s for metal membranes
@@ -153,7 +153,7 @@ def calculate_simple_metal_flux(D, K_s, thickness, P_up, P_down):
 # LEVEL 4: Defective Metal Flux Calculations
 # =============================================================================
 
-def calculate_defective_metal_flux(D_lattice, K_s, thickness, P_up, P_down,
+def calculate_defective_metal_flux(D_lattice, K_s, metal_thickness, P_up, P_down,
                                     temperature, microstructure_params,
                                     lattice_density,
                                     method='average', n_points=10, mode='both'):
@@ -172,8 +172,8 @@ def calculate_defective_metal_flux(D_lattice, K_s, thickness, P_up, P_down,
         Intrinsic lattice diffusion coefficient [m²/s]
     K_s : float
         Solubility constant [mol/m³/Pa^0.5] (unchanged by microstructure)
-    thickness : float
-        Metal thickness [m]
+    metal_thickness : float
+        Metal metal_thickness [m]
     P_up : float
         Upstream hydrogen pressure [Pa]
     P_down : float
@@ -221,7 +221,7 @@ def calculate_defective_metal_flux(D_lattice, K_s, thickness, P_up, P_down,
     calculate_simple_metal_flux() when microstructure effects are important.
     
     The key physics difference is that D_eff depends on local hydrogen 
-    concentration, which varies through the thickness. The 'method' parameter 
+    concentration, which varies through the metal_thickness. The 'method' parameter 
     controls how this position-dependence is averaged for flux calculation.
     
     Theory
@@ -256,7 +256,7 @@ def calculate_defective_metal_flux(D_lattice, K_s, thickness, P_up, P_down,
     ...     ]
     ... }
     >>> result = calculate_defective_metal_flux(
-    ...     D_lattice=1e-10, K_s=0.5, thickness=1e-3,
+    ...     D_lattice=1e-10, K_s=0.5, metal_thickness=1e-3,
     ...     P_up=1e5, P_down=0,
     ...     temperature=1073, microstructure_params=microstructure
     ... )
@@ -277,8 +277,8 @@ def calculate_defective_metal_flux(D_lattice, K_s, thickness, P_up, P_down,
     
     if P_up < 0 or P_down < 0:
         raise ValueError("Pressures must be non-negative")
-    if thickness <= 0:
-        raise ValueError(f"Thickness must be positive: {thickness} m")
+    if metal_thickness <= 0:
+        raise ValueError(f"Thickness must be positive: {metal_thickness} m")
     if D_lattice <= 0:
         raise ValueError(f"Diffusion coefficient must be positive: {D_lattice} m²/s")
     if temperature <= 0:
@@ -316,8 +316,8 @@ def calculate_defective_metal_flux(D_lattice, K_s, thickness, P_up, P_down,
     # Calculate Position-Dependent Effective Diffusivity
     # =========================================================================
     
-    # Create position array through metal thickness
-    x_array = np.linspace(0, thickness, n_points)
+    # Create position array through metal metal_thickness
+    x_array = np.linspace(0, metal_thickness, n_points)
     
     # For Sieverts' law, sqrt(P) is linear in steady state
     # C(x) = K_s × sqrt(P(x)) where sqrt(P) varies linearly
@@ -326,7 +326,7 @@ def calculate_defective_metal_flux(D_lattice, K_s, thickness, P_up, P_down,
     sqrt_P_down = np.sqrt(max(P_down, 0))
     
     # Linear profile in sqrt(P) space
-    sqrt_P_array = sqrt_P_up - (sqrt_P_up - sqrt_P_down) * x_array / thickness
+    sqrt_P_array = sqrt_P_up - (sqrt_P_up - sqrt_P_down) * x_array / metal_thickness
     C_array = K_s * sqrt_P_array
     
     # Calculate D_eff at each position
@@ -394,7 +394,7 @@ def calculate_defective_metal_flux(D_lattice, K_s, thickness, P_up, P_down,
     # Calculate Flux Using Effective Diffusivity
     # =========================================================================
     
-    flux = fick_flux(D_eff, C_up, C_down, thickness)
+    flux = fick_flux(D_eff, C_up, C_down, metal_thickness)
     
     # Effective permeability with modified diffusivity
     permeability = D_eff * K_s
@@ -475,7 +475,7 @@ def calculate_defective_metal_flux(D_lattice, K_s, thickness, P_up, P_down,
     }
 
 
-def calculate_defective_metal_flux_sieverts(D_lattice, K_s, thickness, P_interface, P_downstream,
+def calculate_defective_metal_flux_sieverts(D_lattice, K_s, metal_thickness, P_interface, P_downstream,
                                             temperature, microstructure_params,
                                             lattice_density,
                                             method='average', n_points=10, mode='both'):
@@ -491,8 +491,8 @@ def calculate_defective_metal_flux_sieverts(D_lattice, K_s, thickness, P_interfa
         Intrinsic lattice diffusion coefficient [m²/s]
     K_s : float
         Sieverts' constant [mol/m³/Pa^0.5]
-    thickness : float
-        Metal thickness [m]
+    metal_thickness : float
+        Metal metal_thickness [m]
     P_interface : float
         Pressure at oxide/metal interface [Pa]
     P_downstream : float
@@ -522,7 +522,7 @@ def calculate_defective_metal_flux_sieverts(D_lattice, K_s, thickness, P_interfa
     result = calculate_defective_metal_flux(
         D_lattice=D_lattice,
         K_s=K_s,
-        thickness=thickness,
+        metal_thickness=metal_thickness,
         P_up=P_interface,
         P_down=P_downstream,
         temperature=temperature,

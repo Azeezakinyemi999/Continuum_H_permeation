@@ -8,7 +8,7 @@ from calculations.oxide_permeation import (
     calculate_metal_resistance
 )
 
-def calculate_metal_flux_sieverts(D_metal, K_s_metal, thickness, P_interface, P_downstream):
+def calculate_metal_flux_sieverts(D_metal, K_s_metal, metal_thickness, P_interface, P_downstream):
     """
     Calculate flux through metal using Sieverts' law.
     
@@ -18,8 +18,8 @@ def calculate_metal_flux_sieverts(D_metal, K_s_metal, thickness, P_interface, P_
         Diffusion coefficient in metal (m²/s)
     K_s_metal : float
         Sieverts' constant (mol/m³/Pa^0.5)
-    thickness : float
-        Metal thickness (m)
+    metal_thickness : float
+        Metal metal_thickness (m)
     P_interface : float
         Pressure at oxide/metal interface (Pa)
     P_downstream : float
@@ -36,7 +36,7 @@ def calculate_metal_flux_sieverts(D_metal, K_s_metal, thickness, P_interface, P_
     C_interface = K_s_metal * np.sqrt(P_interface)
     C_downstream = K_s_metal * np.sqrt(P_downstream)
     
-    flux = D_metal * (C_interface - C_downstream) / thickness
+    flux = D_metal * (C_interface - C_downstream) / metal_thickness
     return flux
 
 
@@ -369,7 +369,7 @@ def calculate_concentration_profile(P_upstream, P_downstream, oxide_props, metal
 # LEVEL 4: Interface Solvers for Defective Metal
 # =============================================================================
 
-def calculate_defective_metal_flux_sieverts(D_lattice, K_s_metal, thickness, 
+def calculate_defective_metal_flux_sieverts(D_lattice, K_s_metal, metal_thickness, 
                                             P_interface, P_downstream,
                                             temperature, microstructure_params,
                                             lattice_density,
@@ -386,8 +386,8 @@ def calculate_defective_metal_flux_sieverts(D_lattice, K_s_metal, thickness,
         Intrinsic lattice diffusion coefficient [m²/s]
     K_s_metal : float
         Sieverts' constant [mol/m³/Pa^0.5]
-    thickness : float
-        Metal thickness [m]
+    metal_thickness : float
+        Metal metal_thickness [m]
     P_interface : float
         Pressure at oxide/metal interface [Pa]
     P_downstream : float
@@ -413,7 +413,7 @@ def calculate_defective_metal_flux_sieverts(D_lattice, K_s_metal, thickness,
     result = calculate_defective_metal_flux(
         D_lattice=D_lattice,
         K_s=K_s_metal,
-        thickness=thickness,
+        metal_thickness=metal_thickness,
         P_up=P_interface,
         P_down=P_downstream,
         temperature=temperature,
@@ -480,7 +480,7 @@ def flux_balance_equation_defective_metal(P_interface, P_upstream, P_downstream,
     flux_metal = calculate_defective_metal_flux_sieverts(
         D_lattice=metal_props['D_metal'],  # This is D_lattice for Level 4
         K_s_metal=metal_props['K_s_metal'],
-        thickness=metal_props['thickness'],
+        metal_thickness=metal_props['thickness'],
         P_interface=P_interface,
         P_downstream=P_downstream,
         temperature=temperature,
@@ -648,7 +648,7 @@ def solve_interface_pressure_defective_metal(P_upstream, P_downstream, oxide_pro
         metal_result = calculate_defective_metal_flux(
             D_lattice=metal_props['D_metal'],
             K_s=metal_props['K_s_metal'],
-            thickness=metal_props['thickness'],
+            metal_thickness=metal_props['thickness'],
             P_up=P_interface_new,
             P_down=P_downstream,
             temperature=temperature,
