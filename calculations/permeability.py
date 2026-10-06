@@ -171,8 +171,8 @@ def effective_metal_permeability(D_eff, K_s):
     return {'permeability': D_eff * K_s, 'units': UNITS_SIEVERTS, 'tier': 2}
 
 
-def oxide_only_permeability(Phi_ox, f_crack=0.0, gamma=0.1,
-                            f_gb=0.0, beta=10.0, f_pinhole=0.0, model=MODEL_1):
+def oxide_only_permeability(Phi_ox, f_crack=0.0, crack_thickness_ratio=0.1,
+                            f_gb_defect=0.0, gb_diffusivity_ratio=10.0, f_pinhole=0.0, model=MODEL_1):
     r"""Tier 2: free-standing defective oxide, cracks and grain boundaries only.
 
     Parallel paths under one sorption law, so conductances add by area:
@@ -186,6 +186,14 @@ def oxide_only_permeability(Phi_ox, f_crack=0.0, gamma=0.1,
     (:math:`\alpha_{cr} = \alpha_{int}/\gamma`, :math:`\alpha_{gb} = \beta\alpha_{int}`)
     summed by area rather than solved path by path. Depends only on the *ratio*
     :math:`\gamma`, never on :math:`L_{ox}`.
+
+    The maths above keeps the symbols the derivations use; the arguments carry
+    descriptive names, because the short ones collide. :math:`\gamma` is
+    ``crack_thickness_ratio`` and :math:`\beta` is ``gb_diffusivity_ratio`` --
+    both dimensionless. Note that :func:`model1_bilayer_closed_form` in this same
+    module uses ``beta`` for something else entirely, the metal PERMEANCE
+    :math:`\Phi_m/L_m`, which is what :py:mod:`calculations.surface_kinetics`
+    means by it throughout. That function keeps the symbol deliberately.
 
     Raises
     ------
@@ -203,25 +211,25 @@ def oxide_only_permeability(Phi_ox, f_crack=0.0, gamma=0.1,
             "infinite and the transport is aperture flow, not permeation. Use "
             "lumped_oxide_permeability() for the coupled wall."
         )
-    if not 0.0 <= f_crack + f_gb <= 1.0:
-        raise ValueError(f"f_crack + f_gb must lie in [0, 1], got {f_crack + f_gb}")
-    if not 0.0 < gamma <= 1.0:
-        raise ValueError(f"gamma = L_crack/L_ox must lie in (0, 1], got {gamma}")
-    if beta < 1.0:
-        raise ValueError(f"beta = D_gb/D_ox must be >= 1, got {beta}")
+    if not 0.0 <= f_crack + f_gb_defect <= 1.0:
+        raise ValueError(f"f_crack + f_gb_defect must lie in [0, 1], got {f_crack + f_gb_defect}")
+    if not 0.0 < crack_thickness_ratio <= 1.0:
+        raise ValueError(f"crack_thickness_ratio = L_crack/L_ox must lie in (0, 1], got {crack_thickness_ratio}")
+    if gb_diffusivity_ratio < 1.0:
+        raise ValueError(f"gb_diffusivity_ratio = D_gb/D_ox must be >= 1, got {gb_diffusivity_ratio}")
 
-    ratio = (1.0 - f_crack - f_gb) + f_crack / gamma + f_gb * beta
+    ratio = (1.0 - f_crack - f_gb_defect) + f_crack / crack_thickness_ratio + f_gb_defect * gb_diffusivity_ratio
     return {
         'permeability': Phi_ox * ratio,
         'enhancement_ratio': ratio,
         'units': UNITS_HENRY if model == MODEL_1 else UNITS_SIEVERTS,
         'tier': 2,
-        'contrast': {'crack': 1.0 / gamma, 'grain_boundary': beta},
+        'contrast': {'crack': 1.0 / crack_thickness_ratio, 'grain_boundary': gb_diffusivity_ratio},
     }
 
 
 def lumped_oxide_permeability(Phi_ox, L_ox, Phi_m, L_m, f_pinhole=0.0,
-                              f_crack=0.0, gamma=0.1, f_gb=0.0, beta=10.0,
+                              f_crack=0.0, crack_thickness_ratio=0.1, f_gb_defect=0.0, gb_diffusivity_ratio=10.0,
                               model=MODEL_1, metal_dominance_threshold=10.0):
     r"""Coupled wall: may the defect branches be replaced by one lumped oxide?
 
@@ -270,7 +278,7 @@ def lumped_oxide_permeability(Phi_ox, L_ox, Phi_m, L_m, f_pinhole=0.0,
         )
     else:
         value = oxide_only_permeability(
-            Phi_ox, f_crack=f_crack, gamma=gamma, f_gb=f_gb, beta=beta, model=model
+            Phi_ox, f_crack=f_crack, crack_thickness_ratio=crack_thickness_ratio, f_gb_defect=f_gb_defect, gb_diffusivity_ratio=gb_diffusivity_ratio, model=model
         )['permeability']
         reason = 'cracks and grain boundaries only: homogenises exactly'
 

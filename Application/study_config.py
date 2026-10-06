@@ -281,7 +281,7 @@ METALS = {
         'pressure':       [],
         'reference':      'Guo et al. 2025',
         'temperature_range': [468, 823],
-        'pressure_range': [1.33e2, 1e5],
+        'data_pressure_range': [1.33e2, 1e5],
         'sample_thickness': [5e-3],
         'gas':            'H₂',
         'Notes':          'Phi_ref = D_ref * Ks_ref.',

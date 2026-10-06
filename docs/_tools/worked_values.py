@@ -136,7 +136,7 @@ def report() -> str:
         k_diss=sk["k_diss_metal_ref"], K_eq=sk["K_eq_metal_ref"],
         D_m=mp["D_metal"], K_s_m=mp["K_s_metal"])
     w("  (k_diss/K_eq are the study's *_ref values, as pinned by the smoke test)")
-    for k in ("J_ss", "P_int", "theta", "beta", "rate_limiting"):
+    for k in ("J_ss", "P_int", "theta", "gb_diffusivity_ratio", "rate_limiting"):
         v = r6.get(k)
         w(f"  {k:<26} {v:.6e}" if isinstance(v, float) else f"  {k:<26} {v}")
 
@@ -152,9 +152,9 @@ def report() -> str:
     # tier 2 -- free-standing defective oxide, cracks and oxide GB only
     for fc, fg in ((1e-3, 0.0), (0.0, 1e-3), (1e-2, 1e-2)):
         ox_eff = pmod.oxide_only_permeability(
-            Phi_ox_1["permeability"], f_crack=fc, gamma=0.1, f_gb=fg, beta=10.0)
+            Phi_ox_1["permeability"], f_crack=fc, crack_thickness_ratio=0.1, f_gb_defect=fg, gb_diffusivity_ratio=10.0)
         w(f"  tier 2 Phi_ox_eff/Phi_ox   {ox_eff['enhancement_ratio']:.6f}"
-          f"   (f_crack={fc:g}, f_gb={fg:g})")
+          f"   (f_crack={fc:g}, f_gb_defect={fg:g})")
 
     # Model 1 bilayer: closed form against the brentq solve
     cf = pmod.model1_bilayer_closed_form(

@@ -297,7 +297,7 @@ METALS = {
         'pressure':       [],
         'reference':      'Schmidt 1985	Schmidt H, Batfalsky P	J. Nuclear Materials 131	1985		H₂ and T₂ permeation in 30+ heat-resistant alloys. Full D+Ks+Phi for many Ni-Cr alloys.	Metals: X40 NiCrAlTi (Incoloy 802) — use as primary reference for Incoloy 800.',
         'temperature_range': [1023, 1223],
-        'pressure_range': [1.33e2, 1e5],
+        'data_pressure_range': [1.33e2, 1e5],
         'sample_thickness': [5e-3],
         'gas':            'H₂',
         'Notes':          'Phi_ref = D_ref * Ks_ref.',
