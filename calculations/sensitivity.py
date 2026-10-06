@@ -426,8 +426,8 @@ def level5_model_wrapper(params_dict, return_full_record=False):
         lattice_density = full_params['lattice_density']
         method          = full_params.get('D_eff_method', 'average')
 
-        include_gb   = full_params.get('include_gb_enhancement', True)
-        include_trap = full_params.get('include_trapping', True)
+        include_gb   = full_params.get('enable_gb_enhancement', True)
+        include_trap = full_params.get('enable_trapping', True)
         if include_gb and include_trap:
             mode = 'both'
         elif include_gb:
@@ -775,8 +775,8 @@ def level5L6_model_wrapper(params_dict, return_full_record=False):
             'trap_list':             trap_list,
         }
 
-        include_gb   = full_params.get('include_gb_enhancement', True)
-        include_trap = full_params.get('include_trapping', True)
+        include_gb   = full_params.get('enable_gb_enhancement', True)
+        include_trap = full_params.get('enable_trapping', True)
         if include_gb and include_trap:
             mode = 'both'
         elif include_gb:

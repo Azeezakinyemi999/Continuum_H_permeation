@@ -429,8 +429,8 @@ DEFAULT_PARAMS_LEVEL5 = {
     'trap_carbide_N_T':     _sa_trap('carbides')['density'],                 # m⁻³
 
     # Model options — how to run the model, not what it is; no config source
-    'include_gb_enhancement': MODEL_OPTIONS['include_gb_enhancement'],
-    'include_trapping':       MODEL_OPTIONS['include_trapping'],
+    'enable_gb_enhancement': MODEL_OPTIONS['enable_gb_enhancement'],
+    'enable_trapping':       MODEL_OPTIONS['enable_trapping'],
     'D_eff_method':           MODEL_OPTIONS['D_eff_method'],
 }
 

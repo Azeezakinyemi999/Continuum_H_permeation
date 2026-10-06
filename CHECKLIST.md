@@ -37,8 +37,8 @@ overrides the geometry.
 - [x] **Fix 3b — re-section the study file.** Five labelled sections in dependency
       order: identity, what is being studied (CONDITIONS, OXIDE_DEFECTS, MODEL_OPTIONS,
       ranges, presets, VALIDATION grids), what the materials are, derived, presentation.
-      Gathers the five model switches — `include_gb_trapping`, `use_sieverts_pinhole`,
-      `include_gb_enhancement`, `include_trapping`, `D_eff_method` — which are scattered
+      Gathers the five model switches — `enable_gb_as_trap`, `use_sieverts_pinhole`,
+      `enable_gb_enhancement`, `enable_trapping`, `D_eff_method` — which are scattered
       across three dicts and are not data. A pure move: verified by diffing the module
       namespace before and after, which must be identical.
 - [x] **Fix 4 — `CONDITIONS` owns the swept operating ranges.** The range of conditions

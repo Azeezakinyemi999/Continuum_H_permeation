@@ -363,7 +363,7 @@ def test_model_switches_reference_model_options():
     MICROSTRUCTURE and OXIDE_DEFECTS are study data and keep their references in each
     study file; DEFAULT_PARAMS_LEVEL5 is derived and is checked once, in model_config.
     """
-    for key in ("include_gb_enhancement", "include_trapping", "D_eff_method"):
+    for key in ("enable_gb_enhancement", "enable_trapping", "D_eff_method"):
         value = derived_dict("DEFAULT_PARAMS_LEVEL5")[key]
         assert any(isinstance(n, ast.Name) and n.id == "MODEL_OPTIONS"
                    for n in ast.walk(value)), (
@@ -376,7 +376,7 @@ def test_study_dicts_reference_model_options(folder):
     """The two switch-carrying dicts that are still study data."""
     tree = ast.parse((ROOT / folder / "study_config.py").read_text())
     wanted = {
-        "MICROSTRUCTURE": ["include_gb_trapping"],
+        "MICROSTRUCTURE": ["enable_gb_as_trap"],
         "OXIDE_DEFECTS":  ["use_sieverts_pinhole"],
     }
     seen = {}

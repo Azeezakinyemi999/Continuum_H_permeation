@@ -189,7 +189,7 @@ def calculate_defective_metal_flux(D_lattice, K_s, thickness, P_up, P_down,
         Optional:
         - 'gb_thickness': GB width [m] (default 0.5e-9)
         - 'model': 'parallel' or 'hart' (default 'parallel')
-        - 'include_gb_trapping': bool (default True)
+        - 'enable_gb_as_trap': bool (default True)
     lattice_density : float, optional
         Lattice site density [m⁻³] (default 1.06e29 for FCC)
     method : str, optional
