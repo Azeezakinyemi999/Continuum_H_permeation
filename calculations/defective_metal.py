@@ -557,17 +557,19 @@ def gb_enhancement_factor(temperature, temperature_unit='K', gb_type='HAGB', dat
         Default: 'HAGB' (most common and highest enhancement)
     
     data_source : str or dict, optional
-        - 'default': compute alpha from the ACTIVE METAL's own ``E_D``, read from the
-          METALS entry of the study config. No enhancement data is stored here.
-        - dict: an explicit table, ``{T_celsius: enhancement_factor}``, interpolated
+        Where the enhancement comes from. Default: ``'default'``.
+
+        - ``'default'``: compute alpha from the ACTIVE METAL's own ``E_D``, read from
+          the METALS entry of the study config. No enhancement data is stored here.
+        - a dict: an explicit table, ``{T_celsius: enhancement_factor}``, interpolated
           in log space. Note ``np.interp`` clamps outside the supplied range rather
           than extrapolating, so the nearest endpoint is returned there.
-        Default: 'default'
     
     Returns
     -------
     dict
         Dictionary containing:
+
         - 'enhancement_factor': D_gb/D_bulk ratio [-]
         - 'uncertainty': Estimated relative uncertainty (fractional); 0.2 inside the
           validated window, 0.5 outside it, x1.5 for a GB type other than HAGB
