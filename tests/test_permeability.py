@@ -91,28 +91,28 @@ def test_02_effective_metal(m1, micro):
 # --- 3 / 3b: oxide-only closed form, and the coupled lumping ----------------
 
 def test_03_oxide_only_closed_form(m1):
-    Phi_ox, gamma, beta = m1['D_ox'] * m1['K_ox'], 0.1, 10.0
+    Phi_ox, crack_thickness_ratio, gb_diffusivity_ratio = m1['D_ox'] * m1['K_ox'], 0.1, 10.0
     for fc, fg in [(0, 0), (1e-3, 0), (0, 1e-3), (1e-2, 1e-2), (5e-2, 5e-2)]:
-        got = pm.oxide_only_permeability(Phi_ox, f_crack=fc, gamma=gamma,
-                                         f_gb=fg, beta=beta)
-        want = (1 - fc - fg) + fc / gamma + fg * beta
+        got = pm.oxide_only_permeability(Phi_ox, f_crack=fc, crack_thickness_ratio=crack_thickness_ratio,
+                                         f_gb_defect=fg, gb_diffusivity_ratio=gb_diffusivity_ratio)
+        want = (1 - fc - fg) + fc / crack_thickness_ratio + fg * gb_diffusivity_ratio
         assert np.isclose(got['enhancement_ratio'], want, rtol=0, atol=0)
 
 
 def test_03_oxide_only_matches_solver_with_free_metal(m1):
     """The closed form must reproduce the parallel-path solver when the metal is free."""
     from calculations.parallel_oxide_defect_paths import calculate_parallel_path_flux
-    Phi_ox, gamma, beta = m1['D_ox'] * m1['K_ox'], 0.1, 10.0
+    Phi_ox, crack_thickness_ratio, gb_diffusivity_ratio = m1['D_ox'] * m1['K_ox'], 0.1, 10.0
     L_ox = 1e-6
     ox = {'D_ox': m1['D_ox'], 'K_ox': m1['K_ox'], 'thickness': L_ox}
     me = {'D_metal': m1['D_m'] * 1e12, 'K_s_metal': m1['K_s'], 'thickness': m1['L_m']}
     for fc, fg in [(0, 0), (1e-3, 0), (0, 1e-3), (1e-2, 1e-2), (5e-2, 5e-2)]:
         dp = {'area_fraction': fc + fg, 'type': 'mixed',
               'components': {'pinholes': 0, 'cracks': fc, 'grain_boundaries': fg},
-              'thickness_factor': gamma, 'diffusivity_factor': beta}
+              'thickness_factor': crack_thickness_ratio, 'diffusivity_factor': gb_diffusivity_ratio}
         J_code = calculate_parallel_path_flux(m1['P_up'], m1['P_down'], ox, me, dp)['flux_total']
-        Phi_eff = pm.oxide_only_permeability(Phi_ox, f_crack=fc, gamma=gamma,
-                                            f_gb=fg, beta=beta)['permeability']
+        Phi_eff = pm.oxide_only_permeability(Phi_ox, f_crack=fc, crack_thickness_ratio=crack_thickness_ratio,
+                                            f_gb_defect=fg, gb_diffusivity_ratio=gb_diffusivity_ratio)['permeability']
         J_closed = Phi_eff * (m1['P_up'] - m1['P_down']) / L_ox   # Henry
         assert abs(J_closed / J_code - 1.0) < 1e-6
 
@@ -220,7 +220,7 @@ def test_10_prf_is_permeance_ratio(m1, micro):
           'thickness_factor': 0.1, 'diffusivity_factor': 10.0}
     coated = pm.level5(ox, me, dp, m1['P_up'], m1['P_down'], m1['T'], micro)
     bare_flux = calculate_defective_metal_flux(
-        D_lattice=m1['D_m'], K_s=m1['K_s'], thickness=m1['L_m'],
+        D_lattice=m1['D_m'], K_s=m1['K_s'], metal_thickness=m1['L_m'],
         P_up=m1['P_up'], P_down=m1['P_down'], temperature=m1['T'],
         microstructure_params=micro,
         lattice_density=P5['lattice_density'])['flux']

@@ -247,6 +247,32 @@ def check_against_config(raise_on_fail=True, verbose=True):
                 problems.append(f"'{reg}' preset: L5 and L5L6 disagree on {k} "
                                 f"({ov5[k]!r} vs {ov6[k]!r}) — both compose the same blocks")
 
+    # 4c. every preset must pin a parameter that EXISTS.
+    #
+    # This is the one inconsistency in this file that nothing else can catch. A model
+    # wrapper builds its parameters as DEFAULT_PARAMS.copy() then .update(params_dict),
+    # so a key that is misspelled, or left behind by a rename, is stored and then never
+    # read. No error, no warning: the flux comes back bit-identical to the unpinned
+    # case. Verified by passing a deliberately stale name through
+    # level5_model_wrapper -- the result was unchanged to the last digit.
+    #
+    # The checks above do not reach it. 3 demands a default for every swept RANGE, and
+    # 4b compares the two preset dicts against EACH OTHER, so a name that is wrong in
+    # both, or wrong in a parameter no range sweeps, passes clean.
+    #
+    # What that costs is the whole point of a preset. A preset exists to pin a
+    # parameter so a regime scan lands inside one regime; a preset that silently stops
+    # pinning turns a targeted scan into an untargeted one, and every test still
+    # passes. The L5L6 presets pin 36 distinct names and the L5 presets 28, which is
+    # the surface this protects.
+    for label, presets, params in (('L5L6', REGIME_PRESETS, DEFAULT_PARAMS_LEVEL5L6),
+                                   ('L5', REGIME_PRESETS_L5, DEFAULT_PARAMS_LEVEL5)):
+        for reg, block in presets.items():
+            for k in sorted(set(block) - set(params)):
+                problems.append(
+                    f"{label} '{reg}' preset pins {k!r}, which is not a "
+                    f"{label} parameter — it would be silently ignored, not applied")
+
     if verbose:
         if problems:
             print(f"check_against_config: {len(problems)} problem(s)")
@@ -400,8 +426,8 @@ def level5_model_wrapper(params_dict, return_full_record=False):
         lattice_density = full_params['lattice_density']
         method          = full_params.get('D_eff_method', 'average')
 
-        include_gb   = full_params.get('include_gb_enhancement', True)
-        include_trap = full_params.get('include_trapping', True)
+        include_gb   = full_params.get('enable_gb_enhancement', True)
+        include_trap = full_params.get('enable_trapping', True)
         if include_gb and include_trap:
             mode = 'both'
         elif include_gb:
@@ -421,21 +447,21 @@ def level5_model_wrapper(params_dict, return_full_record=False):
             microstructure_params=microstructure_params,
             lattice_density=lattice_density,
             method=method,
-            n_points=10,
+            n_profile_points=10,
             mode=mode,
         )
 
         result_bare = calculate_defective_metal_flux(
             D_lattice=D_metal,
             K_s=K_s_metal,
-            thickness=metal_props['thickness'],
+            metal_thickness=metal_props['thickness'],
             P_up=P_upstream,
             P_down=P_downstream,
             temperature=T,
             microstructure_params=microstructure_params,
             lattice_density=lattice_density,
             method=method,
-            n_points=10,
+            n_profile_points=10,
             mode=mode,
         )
 
@@ -749,8 +775,8 @@ def level5L6_model_wrapper(params_dict, return_full_record=False):
             'trap_list':             trap_list,
         }
 
-        include_gb   = full_params.get('include_gb_enhancement', True)
-        include_trap = full_params.get('include_trapping', True)
+        include_gb   = full_params.get('enable_gb_enhancement', True)
+        include_trap = full_params.get('enable_trapping', True)
         if include_gb and include_trap:
             mode = 'both'
         elif include_gb:
@@ -788,7 +814,7 @@ def level5L6_model_wrapper(params_dict, return_full_record=False):
             defect_config=defect_config,
             lattice_density=lattice_density,
             method=method,
-            n_points=10,
+            n_profile_points=10,
             mode=mode,
             k_diss_metal=k_diss_metal,
             K_eq_metal=K_eq_metal,

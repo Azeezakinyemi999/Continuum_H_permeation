@@ -171,8 +171,8 @@ def effective_metal_permeability(D_eff, K_s):
     return {'permeability': D_eff * K_s, 'units': UNITS_SIEVERTS, 'tier': 2}
 
 
-def oxide_only_permeability(Phi_ox, f_crack=0.0, gamma=0.1,
-                            f_gb=0.0, beta=10.0, f_pinhole=0.0, model=MODEL_1):
+def oxide_only_permeability(Phi_ox, f_crack=0.0, crack_thickness_ratio=0.1,
+                            f_gb_defect=0.0, gb_diffusivity_ratio=10.0, f_pinhole=0.0, model=MODEL_1):
     r"""Tier 2: free-standing defective oxide, cracks and grain boundaries only.
 
     Parallel paths under one sorption law, so conductances add by area:
@@ -186,6 +186,14 @@ def oxide_only_permeability(Phi_ox, f_crack=0.0, gamma=0.1,
     (:math:`\alpha_{cr} = \alpha_{int}/\gamma`, :math:`\alpha_{gb} = \beta\alpha_{int}`)
     summed by area rather than solved path by path. Depends only on the *ratio*
     :math:`\gamma`, never on :math:`L_{ox}`.
+
+    The maths above keeps the symbols the derivations use; the arguments carry
+    descriptive names, because the short ones collide. :math:`\gamma` is
+    ``crack_thickness_ratio`` and :math:`\beta` is ``gb_diffusivity_ratio`` --
+    both dimensionless. Note that :func:`model1_bilayer_closed_form` in this same
+    module uses ``beta`` for something else entirely, the metal PERMEANCE
+    :math:`\Phi_m/L_m`, which is what :py:mod:`calculations.surface_kinetics`
+    means by it throughout. That function keeps the symbol deliberately.
 
     Raises
     ------
@@ -203,25 +211,25 @@ def oxide_only_permeability(Phi_ox, f_crack=0.0, gamma=0.1,
             "infinite and the transport is aperture flow, not permeation. Use "
             "lumped_oxide_permeability() for the coupled wall."
         )
-    if not 0.0 <= f_crack + f_gb <= 1.0:
-        raise ValueError(f"f_crack + f_gb must lie in [0, 1], got {f_crack + f_gb}")
-    if not 0.0 < gamma <= 1.0:
-        raise ValueError(f"gamma = L_crack/L_ox must lie in (0, 1], got {gamma}")
-    if beta < 1.0:
-        raise ValueError(f"beta = D_gb/D_ox must be >= 1, got {beta}")
+    if not 0.0 <= f_crack + f_gb_defect <= 1.0:
+        raise ValueError(f"f_crack + f_gb_defect must lie in [0, 1], got {f_crack + f_gb_defect}")
+    if not 0.0 < crack_thickness_ratio <= 1.0:
+        raise ValueError(f"crack_thickness_ratio = L_crack/L_ox must lie in (0, 1], got {crack_thickness_ratio}")
+    if gb_diffusivity_ratio < 1.0:
+        raise ValueError(f"gb_diffusivity_ratio = D_gb/D_ox must be >= 1, got {gb_diffusivity_ratio}")
 
-    ratio = (1.0 - f_crack - f_gb) + f_crack / gamma + f_gb * beta
+    ratio = (1.0 - f_crack - f_gb_defect) + f_crack / crack_thickness_ratio + f_gb_defect * gb_diffusivity_ratio
     return {
         'permeability': Phi_ox * ratio,
         'enhancement_ratio': ratio,
         'units': UNITS_HENRY if model == MODEL_1 else UNITS_SIEVERTS,
         'tier': 2,
-        'contrast': {'crack': 1.0 / gamma, 'grain_boundary': beta},
+        'contrast': {'crack': 1.0 / crack_thickness_ratio, 'grain_boundary': gb_diffusivity_ratio},
     }
 
 
 def lumped_oxide_permeability(Phi_ox, L_ox, Phi_m, L_m, f_pinhole=0.0,
-                              f_crack=0.0, gamma=0.1, f_gb=0.0, beta=10.0,
+                              f_crack=0.0, crack_thickness_ratio=0.1, f_gb_defect=0.0, gb_diffusivity_ratio=10.0,
                               model=MODEL_1, metal_dominance_threshold=10.0):
     r"""Coupled wall: may the defect branches be replaced by one lumped oxide?
 
@@ -270,7 +278,7 @@ def lumped_oxide_permeability(Phi_ox, L_ox, Phi_m, L_m, f_pinhole=0.0,
         )
     else:
         value = oxide_only_permeability(
-            Phi_ox, f_crack=f_crack, gamma=gamma, f_gb=f_gb, beta=beta, model=model
+            Phi_ox, f_crack=f_crack, crack_thickness_ratio=crack_thickness_ratio, f_gb_defect=f_gb_defect, gb_diffusivity_ratio=gb_diffusivity_ratio, model=model
         )['permeability']
         reason = 'cracks and grain boundaries only: homogenises exactly'
 
@@ -460,7 +468,7 @@ def level4(D_lattice, K_s, L_m, P_up, P_down, temperature,
     """L4 -- bare defective metal. Tier 2: apparent value equals ``D_eff*K_s``."""
     from calculations.permeation_calc import calculate_defective_metal_flux
     r = calculate_defective_metal_flux(
-        D_lattice=D_lattice, K_s=K_s, thickness=L_m, P_up=P_up, P_down=P_down,
+        D_lattice=D_lattice, K_s=K_s, metal_thickness=L_m, P_up=P_up, P_down=P_down,
         temperature=temperature, microstructure_params=microstructure_params,
         lattice_density=lattice_density, method=method, mode=mode)
     return _row('L4', MODEL_1, 2, r['flux'], P_up, P_down, L_m, UNITS_SIEVERTS,
@@ -506,7 +514,7 @@ def level5(oxide_props, metal_props, defect_params, P_up, P_down, temperature,
     kw = dict(oxide_props=oxide_props, metal_props=metal_props,
               defect_params=defect_params, temperature=temperature,
               microstructure_params=microstructure_params,
-              lattice_density=lattice_density, method=method, n_points=10, mode=mode)
+              lattice_density=lattice_density, method=method, n_profile_points=10, mode=mode)
     r = solve(P_upstream=P_up, P_downstream=P_down, **kw)
     L_tot = oxide_props['thickness'] + metal_props['thickness']
     n = pressure_exponent(
@@ -603,7 +611,7 @@ def level4_L6(P_up, P_down, L_m, temperature, k_diss, K_eq, D_ox, K_ox, L_ox,
     """L4+L6 -- pristine oxide + defective metal + surface. Tier 3 x eta_surf."""
     from calculations.surface_kinetics import calculate_defective_metal_flux_L6
     r = calculate_defective_metal_flux_L6(
-        P_up=P_up, P_down=P_down, thickness=L_m, temperature=temperature,
+        P_up=P_up, P_down=P_down, metal_thickness=L_m, temperature=temperature,
         k_diss=k_diss, K_eq=K_eq, D_ox=D_ox, K_ox=K_ox, L_ox=L_ox,
         D_lattice=D_lattice, K_s_m=K_s_m,
         microstructure_params=microstructure_params,

@@ -88,8 +88,8 @@ Switches, not physical quantities. All **fixed** (never sampled).
 
 | Parameter | Value | Meaning |
 |---|---|---|
-| `include_gb_enhancement` | `True` | enable GB short-circuit diffusion path |
-| `include_trapping` | `True` | enable Oriani trapping reduction |
+| `enable_gb_enhancement` | `True` | enable GB short-circuit diffusion path |
+| `enable_trapping` | `True` | enable Oriani trapping reduction |
 | `D_eff_method` | `'average'` | how $D_{eff}(x)$ is collapsed to a scalar |
 
 ## I. Oxide surface kinetics (Level 6) — 5
@@ -116,7 +116,7 @@ Switches, not physical quantities. All **fixed** (never sampled).
 
 ## K. Never sampled in the SA — 10
 
-`T_ref_metal`, `T_ref_oxide`, `P_downstream`, `grain_shape`, `gb_type`, `include_gb_enhancement`, `include_trapping`, `D_eff_method`, `T_ref_surface`, `T_ref_surface_metal`
+`T_ref_metal`, `T_ref_oxide`, `P_downstream`, `grain_shape`, `gb_type`, `enable_gb_enhancement`, `enable_trapping`, `D_eff_method`, `T_ref_surface`, `T_ref_surface_metal`
 
 Reference temperatures are measurement anchors (varying them is meaningless), `P_downstream` is 0 by construction, and the rest are switches or categorical choices.
 
@@ -133,7 +133,7 @@ These live in structured config dicts or as function defaults, and never appear 
 | Parameter | Value | Location | Meaning |
 |---|---|---|---|
 | `use_sieverts_pinhole` | `False` | `OXIDE_DEFECTS` | pinhole boundary-condition mode |
-| `include_gb_trapping` | `False` | `MICROSTRUCTURE` | GB **trapping** — distinct from `include_gb_enhancement` |
+| `enable_gb_as_trap` | `False` | `MICROSTRUCTURE` | adds grain boundaries as a **trap** population (slows diffusion). Renamed from `include_gb_trapping`, which sat one word away from `include_gb_enhancement` while doing the opposite: enhancement is a fast path that speeds diffusion up. |
 | `area_fraction` | 0.02 | `OXIDE_DEFECTS` | total defect fraction (= sum of components) |
 | `type` | `'mixed'` | `OXIDE_DEFECTS` | defect-population label |
 | `N_L` | 8.774e28 | `MICROSTRUCTURE` | alias of `lattice_density` |

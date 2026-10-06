@@ -64,13 +64,13 @@ CONDITIONS = {
 # -----------------------------------------------------------------------------
 MODEL_OPTIONS = {
     # Level 4: trap grain boundaries as well as enhancing diffusion along them.
-    'include_gb_trapping':    False,
+    'enable_gb_as_trap':    False,
     # Level 3: treat a pinhole as fast metal kinetics (Sieverts) rather than using the
     # metal's own surface kinetics.
     'use_sieverts_pinhole':   False,
     # Level 4, read by the model wrappers.
-    'include_gb_enhancement': True,
-    'include_trapping':       True,
+    'enable_gb_enhancement': True,
+    'enable_trapping':       True,
     'D_eff_method':           'average',
 }
 
@@ -284,7 +284,7 @@ METALS = {
         'pressure':       [],
         'reference':      'Schmidt 1985	Schmidt H, Batfalsky P	J. Nuclear Materials 131	1985		H₂ and T₂ permeation in 30+ heat-resistant alloys. Full D+Ks+Phi for many Ni-Cr alloys.	Metals: X40 NiCrAlTi (Incoloy 802) — use as primary reference for Incoloy 800.',
         'temperature_range': [1023, 1223],
-        'pressure_range': [1.33e2, 1e5],
+        'data_pressure_range': [1.33e2, 1e5],
         'sample_thickness': [5e-3],
         'gas':            'H₂',
         'Notes':          'Phi_ref = D_ref * Ks_ref.',
@@ -351,7 +351,7 @@ MICROSTRUCTURE = {
     'gb_thickness':        0.5e-9,      # m  (unchanged -- no Has-N measurement)
     'grain_shape':         'equiaxed',  # confirmed Zhu 2021
     'gb_type':             'LAGB',     # ~50% Sigma3 (0 eV) + ~50% HAGB (0.27 eV)
-    'include_gb_trapping': MODEL_OPTIONS['include_gb_trapping'],
+    'enable_gb_as_trap': MODEL_OPTIONS['enable_gb_as_trap'],
 
     'trap_list': [
         {
