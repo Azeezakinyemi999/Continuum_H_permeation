@@ -1200,7 +1200,11 @@ def calculate_gb_enhanced_diffusivity(D_bulk, temperature, grain_size,
         raise ValueError(f"Model must be 'parallel' or 'hart', got '{model}'")
     
     # Calculate GB volume fraction
-    # f_gb = 3δ/d for randomly oriented grains
+    # f_gb = 3δ/d for randomly oriented grains.
+    #
+    # This is the METAL's grain-boundary VOLUME fraction, of order 1e-5 at a 100 um
+    # grain. It is not the oxide's grain-boundary DEFECT area fraction, which is of
+    # order 1e-3 and is called f_gb_defect in the config and the sensitivity layer.
     f_gb = 3 * gb_thickness / grain_size
     f_bulk = 1.0 - f_gb
     
