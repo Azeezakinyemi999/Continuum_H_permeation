@@ -447,7 +447,7 @@ def level5_model_wrapper(params_dict, return_full_record=False):
             microstructure_params=microstructure_params,
             lattice_density=lattice_density,
             method=method,
-            n_points=10,
+            n_profile_points=10,
             mode=mode,
         )
 
@@ -461,7 +461,7 @@ def level5_model_wrapper(params_dict, return_full_record=False):
             microstructure_params=microstructure_params,
             lattice_density=lattice_density,
             method=method,
-            n_points=10,
+            n_profile_points=10,
             mode=mode,
         )
 
@@ -814,7 +814,7 @@ def level5L6_model_wrapper(params_dict, return_full_record=False):
             defect_config=defect_config,
             lattice_density=lattice_density,
             method=method,
-            n_points=10,
+            n_profile_points=10,
             mode=mode,
             k_diss_metal=k_diss_metal,
             K_eq_metal=K_eq_metal,

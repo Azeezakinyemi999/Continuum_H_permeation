@@ -441,10 +441,13 @@ reader a moment; a collision silently produces the wrong number.
   - `metal_gb_volume_fraction` · `oxide_gb_area_fraction`
   - a volume fraction inside the metal against an area fraction of oxide defects.
     For the shipped studies they differ by more than two orders of magnitude
-* - `n_points`
-  - `n_sweep_samples` · `n_profile_points`
+* - `n_points` ✅ **done (parameters)**
+  - `n_profile_points` · `n_points` *(config, kept)*
   - the sensitivity analysis's samples per axis against the wall discretisation,
-    whose default differs per level
+    whose default differs per level. The thirteen function parameters are now
+    `n_profile_points`; the config key stays `n_points`, because once the other
+    meaning is gone there is nothing left for it to collide with, and the
+    notebooks read it 200 times
 * - `beta`
   - `metal_permeance` · `oxide_gb_diffusivity_ratio`
   - a permeance carrying units in `calculations.surface_kinetics`, a dimensionless
