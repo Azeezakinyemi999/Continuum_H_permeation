@@ -202,7 +202,7 @@ def trap_occupancy(temperature, binding_energy, trap_density, lattice_density,
     -------
     dict
         Dictionary containing:
-        - 'theta_T': Trap occupancy fraction (0 ≤ θ ≤ 1) [-]
+        - 'theta': Trap occupancy fraction (0 ≤ θ ≤ 1) [-]
         - 'K_equilibrium': Equilibrium constant [-]
         - 'approximation_used': 'low_coverage' or 'full_equation'
         - 'theta_lattice': Lattice site occupancy fraction [-]
