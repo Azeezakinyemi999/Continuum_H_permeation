@@ -48,6 +48,15 @@ Adding a thickness is a real demotion — $\Phi = DK$ is intrinsic, and anything
 containing $L_{ox}/L_m$ is a property of one particular stack. But it is not the
 same demotion as needing a pressure. Hence four tiers, not two:
 
+```{figure} ../figures/fig-15-permeability-tiers.svg
+:alt: Four permeability tiers and what each one needs before it can be reproduced.
+:width: 100%
+
+**Figure 15.** Look at the dashed line. Above it, a value follows from parameters
+alone; below it, a value is a property of the wall **and** the experiment, so it is
+meaningless without its operating point. Under Model 1 tier 3 does not exist at all.
+```
+
 | tier | depends on | meaning |
 |---|---|---|
 | **1 — intrinsic** | nothing | material constant |
@@ -73,6 +82,17 @@ $\Phi_{\text{transport}}$ for Model 1.** This is not a defect to be fixed; it is
 what a molecular-transport barrier on an atomic-transport substrate costs you.
 
 ### Tier 4 — the wall, and it genuinely drifts with pressure
+
+```{figure} ../figures/fig-16-pressure-exponent.svg
+:alt: The pressure exponent of a mixed wall sitting between one half and one across five decades of pressure.
+:width: 90%
+
+**Figure 16.** Look at where the wall's curve sits relative to the two dashed
+references. The exponent $n = \mathrm{d}\ln J/\mathrm{d}\ln P$ is read off a wall with
+no model internals at all: ½ for a pure Sieverts step, 1 for a Henry layer, between for
+a mixed wall — and it moves as pressure shifts which step controls. This makes it an
+independent check on `classify_regime`: if the two disagree, one of them is wrong.
+```
 
 Sweeping $P_{up}$ over five decades on a pristine bilayer:
 
