@@ -220,8 +220,8 @@ occupancy sum is carried "for info" and appears in **no** formula.
 
 The project's earlier design note wrote the denominator as $1 + \theta_{\text{total}}$,
 using the name the code gives the occupancy sum. Substituting the occupancy sum
-into the formula gives $D_{\text{eff}} = 2.304828\times10^{-10}$ instead of the
-correct $1.746573\times10^{-10}$ — **32% high**. If you have inherited that
+into the formula gives $D_{\text{eff}} = 2.303157\times10^{-10}$ instead of the
+correct $1.745310\times10^{-10}$ — **32% high**. If you have inherited that
 formula, check which quantity you fed it.
 ```
 
