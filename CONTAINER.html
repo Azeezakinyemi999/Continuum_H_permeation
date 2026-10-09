@@ -190,8 +190,9 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-  <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+  <p class="caption" role="heading"><span class="caption-text">Overview</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Part I — Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting started</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">How-to</span></p>
@@ -200,26 +201,51 @@
 <li class="toctree-l1"><a class="reference internal" href="how-to/sensitivity-analysis.html">How to run a regime-stratified sensitivity analysis</a></li>
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Hydrogen Permeation Model — Offline Analysis Environment</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Theory</span></p>
+<p class="caption" role="heading"><span class="caption-text">Part II — Theory</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="theory/two-models.html">Two models, not six levels</a></li>
 <li class="toctree-l1"><a class="reference internal" href="theory/foundations.html">Foundations: chemical potential and the driving force</a></li>
 <li class="toctree-l1"><a class="reference internal" href="theory/equilibrium-models.html">Equilibrium models: Sieverts, Henry and Langmuir</a></li>
 <li class="toctree-l1"><a class="reference internal" href="STEADY_STATE.html">Steady State, Transients, and the Accumulation Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory/equations.html">Equation catalogue</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Part III — The levels</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="theory/level1-metal.html">Level 1 — the perfect metal</a></li>
 <li class="toctree-l1"><a class="reference internal" href="theory/level2-oxide.html">Level 2 — the oxide layer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="theory/level3-defective-oxide.html">Level 3 — the defective oxide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="theory/level4-microstructure.html">Level 4 — metal microstructure</a></li>
 <li class="toctree-l1"><a class="reference internal" href="theory/level5-full-system.html">Level 5 — the full system</a></li>
 <li class="toctree-l1"><a class="reference internal" href="theory/level6-surface-kinetics.html">Level 6 — surface kinetics</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Cross-cutting</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="theory/permeability.html">Permeability — two models, four tiers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="theory/equations.html">Equation catalogue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory/parameter-map.html">Parameter map</a></li>
+<li class="toctree-l1"><a class="reference internal" href="caveats.html">Warnings and caveats</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Part IV — Sensitivity</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="sensitivity/index.html">Part IV — The sensitivity workflow</a><input aria-label="Toggle navigation of Part IV — The sensitivity workflow" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="sensitivity/01-validate.html">Stage 1 — Validate the configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sensitivity/02-scan.html">Stage 2 — The global scan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sensitivity/03-partition.html">Stage 3 — Partition by regime</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sensitivity/04-target.html">Stage 4 — Aim the sampling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sensitivity/05-indices.html">Stage 5 — Indices, and reading them</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Part V — Practical</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="practical.html">Practical</a></li>
+<li class="toctree-l1"><a class="reference internal" href="appendices.html">Appendices</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="config-file.html">The study configuration file</a></li>
 <li class="toctree-l1"><a class="reference internal" href="PARAMETERS.html">Complete Parameter Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="OUTPUTS.html">Complete Output Reference</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="api/index.html">API Reference</a><input aria-label="Toggle navigation of API Reference" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="api/index.html">API Reference</a><input aria-label="Toggle navigation of API Reference" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="api/utils.html"><code class="docutils literal notranslate"><span class="pre">utils</span></code> — shared Arrhenius helpers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/permeation_calc.html"><code class="docutils literal notranslate"><span class="pre">permeation_calc</span></code> — Levels 1-2: Sieverts solubility and bulk diffusion</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/oxide_permeation.html"><code class="docutils literal notranslate"><span class="pre">oxide_permeation</span></code> — Levels 2-3: molecular transport through the oxide</a></li>
@@ -229,6 +255,7 @@
 <li class="toctree-l2"><a class="reference internal" href="api/surface_kinetics.html"><code class="docutils literal notranslate"><span class="pre">surface_kinetics</span></code> — Level 6: dissociation kinetics and Langmuir coverage</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/classify_regime.html"><code class="docutils literal notranslate"><span class="pre">classify_regime</span></code> — hierarchical regime classification</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/sensitivity.html"><code class="docutils literal notranslate"><span class="pre">sensitivity</span></code> — regime-stratified sensitivity analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/figures.html"><code class="docutils literal notranslate"><span class="pre">figures</span></code> — where a notebook’s figures go</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/config.html"><code class="docutils literal notranslate"><span class="pre">config</span></code> — study selection</a></li>
 </ul>
 </li>
@@ -241,10 +268,6 @@
 <li class="toctree-l1"><a class="reference internal" href="TRAPPING_VALIDATION.html#appendix-c-where-each-quantity-lives">Appendix C — Where each quantity lives</a></li>
 <li class="toctree-l1"><a class="reference internal" href="PACKAGING_1.0.0.html">Packaging decisions — <code class="docutils literal notranslate"><span class="pre">hydrogen-model:1.0.0</span></code> offline container</a></li>
 <li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Warnings and caveats</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="caveats.html">Warnings and caveats</a></li>
 </ul>
 
 </div>
@@ -292,10 +315,10 @@ packages are installed, and no internet access is required, at any point.</stron
 <hr class="docutils" />
 <section id="what-you-received">
 <h2>What you received<a class="headerlink" href="#what-you-received" title="Link to this heading">¶</a></h2>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Hydrogen_Model_Environment_1.1.0/
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Hydrogen_Model_Environment_1.2.0/
 ├── image/
-│   ├── hydrogen-model-1.1.0.tar      the container image
-│   └── hydrogen-model-1.1.0.sha256   checksum for the above
+│   ├── hydrogen-model-1.2.0.tar      the container image
+│   └── hydrogen-model-1.2.0.sha256   checksum for the above
 ├── scripts/
 │   ├── verify.sh                     run the two acceptance gates
 │   └── start.sh                      launch JupyterLab
@@ -323,13 +346,13 @@ Podman in Docker-compatible mode) able to run <strong>Linux <code class="docutil
 <section id="first-time-setup">
 <h2>First-time setup<a class="headerlink" href="#first-time-setup" title="Link to this heading">¶</a></h2>
 <p><strong>1. Check the archive is intact.</strong> From the package root:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>shasum<span class="w"> </span>-a<span class="w"> </span><span class="m">256</span><span class="w"> </span>-c<span class="w"> </span>image/hydrogen-model-1.1.0.sha256
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>shasum<span class="w"> </span>-a<span class="w"> </span><span class="m">256</span><span class="w"> </span>-c<span class="w"> </span>image/hydrogen-model-1.2.0.sha256
 </pre></div>
 </div>
-<p>Expect <code class="docutils literal notranslate"><span class="pre">image/hydrogen-model-1.1.0.tar:</span> <span class="pre">OK</span></code>. On Linux without <code class="docutils literal notranslate"><span class="pre">shasum</span></code>, use
+<p>Expect <code class="docutils literal notranslate"><span class="pre">image/hydrogen-model-1.2.0.tar:</span> <span class="pre">OK</span></code>. On Linux without <code class="docutils literal notranslate"><span class="pre">shasum</span></code>, use
 <code class="docutils literal notranslate"><span class="pre">sha256sum</span> <span class="pre">-c</span></code>. If this fails, the transfer was corrupted — do not proceed.</p>
 <p><strong>2. Load the image.</strong></p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>load<span class="w"> </span>-i<span class="w"> </span>image/hydrogen-model-1.1.0.tar
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>load<span class="w"> </span>-i<span class="w"> </span>image/hydrogen-model-1.2.0.tar
 docker<span class="w"> </span>images<span class="w"> </span>hydrogen-model
 </pre></div>
 </div>
@@ -338,7 +361,7 @@ docker<span class="w"> </span>images<span class="w"> </span>hydrogen-model
 </pre></div>
 </div>
 <p>This runs with <code class="docutils literal notranslate"><span class="pre">--network</span> <span class="pre">none</span></code> and must end with:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>VERIFICATION PASSED — hydrogen-model:1.1.0 is the validated environment.
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>VERIFICATION PASSED — hydrogen-model:1.2.0 is the validated environment.
 </pre></div>
 </div>
 <p>It checks two separate things: that all 106 pinned packages are exactly the
@@ -359,20 +382,32 @@ is new each time the server starts.</p>
 <h2>The workspace<a class="headerlink" href="#the-workspace" title="Link to this heading">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>workspace/
 ├── calculations/          the model. Python package; do not rename.
-└── Application/
-    ├── Proposal.ipynb                  levels 1-5, self-contained
-    ├── Surface_proposal.ipynb          surface kinetics (level 6), self-contained
-    ├── sensitivity_regime_L5.ipynb     regime sensitivity analysis
-    ├── sensitivity_regime_L5L6.ipynb   regime sensitivity incl. surface
-    ├── regime_parallel_coords.ipynb    visualises sensitivity_regime_L5L6 output
-    ├── regime_parallel_coords_L5.ipynb visualises sensitivity_regime_L5 output
-    ├── sa_results/                     results land here (starts empty)
-    └── sa_results_L5/                  results land here (starts empty)
+├── Guo_etal_2025/         316L / Cr2O3 (Guo et al. 2025)
+├── Fuerst_et_al_2024/     Hastelloy N / Cr2O3 (Fuerst et al. 2024)
+└── incoloy802_cr2o3/      Incoloy 802 / Cr2O3
 </pre></div>
 </div>
+<p>Each study folder is self-contained and holds the same six notebooks plus its own
+input file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;study&gt;/
+├── study_config.py                 THE INPUT FILE — every number this study runs on
+├── Proposal.ipynb                  levels 1-5, self-contained
+├── Surface_proposal.ipynb          surface kinetics (level 6), self-contained
+├── sensitivity_regime_L5.ipynb     regime sensitivity analysis
+├── sensitivity_regime_L5L6.ipynb   regime sensitivity incl. surface
+├── regime_parallel_coords.ipynb    visualises sensitivity_regime_L5L6 output
+├── regime_parallel_coords_L5.ipynb visualises sensitivity_regime_L5 output
+├── sa_results/                     scan CSVs land here (starts empty)
+└── sa_results_L5/                  scan CSVs land here (starts empty)
+</pre></div>
+</div>
+<p>A notebook picks up the <code class="docutils literal notranslate"><span class="pre">study_config.py</span></code> in its own folder by virtue of running
+there — there is no switch to set. Edit that file and you change that study alone.
+To add a study, copy a folder.</p>
 <p>Anything you put in <code class="docutils literal notranslate"><span class="pre">workspace/</span></code> is visible inside JupyterLab, and anything the
-notebooks write appears on your own filesystem. Results are written <strong>next to the
-notebook that produces them</strong>, not to a central output directory.</p>
+notebooks write appears on your own filesystem. Figures are written into a folder
+per notebook beside it — <code class="docutils literal notranslate"><span class="pre">Proposal.ipynb</span></code> writes <code class="docutils literal notranslate"><span class="pre">Proposal-results/</span></code> — not to a
+central output directory.</p>
 <section id="run-order-matters">
 <h3>Run order matters<a class="headerlink" href="#run-order-matters" title="Link to this heading">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">Proposal.ipynb</span></code> and <code class="docutils literal notranslate"><span class="pre">Surface_proposal.ipynb</span></code> are self-contained — run them in
@@ -408,14 +443,48 @@ reconstructed exactly.</p>
 <ul class="simple">
 <li><p>the output of <code class="docutils literal notranslate"><span class="pre">./scripts/verify.sh</span></code> in full</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">--version</span></code> and your OS</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">image</span> <span class="pre">inspect</span> <span class="pre">hydrogen-model:1.1.0</span> <span class="pre">--format</span> <span class="pre">'{{.Id}}</span> <span class="pre">{{.Architecture}}'</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">image</span> <span class="pre">inspect</span> <span class="pre">hydrogen-model:1.2.0</span> <span class="pre">--format</span> <span class="pre">'{{.Id}}</span> <span class="pre">{{.Architecture}}'</span></code></p></li>
 <li><p>which notebook and which cell, with the error text</p></li>
 </ul>
 </section>
 <section id="version">
 <h2>Version<a class="headerlink" href="#version" title="Link to this heading">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">hydrogen-model:1.1.0</span></code> — Python 3.12, linux/amd64. Cite this tag alongside any
+<p><code class="docutils literal notranslate"><span class="pre">hydrogen-model:1.2.0</span></code> — Python 3.12, linux/amd64. Cite this tag alongside any
 results, so they can be tied back to a known environment.</p>
+<section id="changes-since-1-1-0">
+<h3>Changes since 1.1.0<a class="headerlink" href="#changes-since-1-1-0" title="Link to this heading">¶</a></h3>
+<p>The environment is unchanged again — same Dockerfile, same 106-package lock — so a
+result computed under 1.1.0 runs in the same interpreter here. What changed is the
+model, and two of the changes move numbers:</p>
+<ul class="simple">
+<li><p><strong>There is no <code class="docutils literal notranslate"><span class="pre">ACTIVE_STUDY</span></code> switch any more, and no <code class="docutils literal notranslate"><span class="pre">calculations/config/studies/</span></code>.</strong>
+Each study folder holds its own <code class="docutils literal notranslate"><span class="pre">study_config.py</span></code> — the real input file — and it is
+selected by running in that folder, or by naming one in <code class="docutils literal notranslate"><span class="pre">$PERMEATION_STUDY</span></code>. Running from
+the workspace root, which belongs to no study, is an error rather than a silent
+default.</p></li>
+<li><p><strong>1.1.0 results will not reproduce under 1.2.0.</strong> Two changes are responsible. The
+operating point in <code class="docutils literal notranslate"><span class="pre">CONDITIONS</span></code> is now the authority for the wall being simulated,
+so the oxide layer is its 1 µm <code class="docutils literal notranslate"><span class="pre">L_oxide</span></code> rather than the 48 nm coupon thickness
+recorded on the material — which drops the Level 5L6 flux about threefold and
+flips that level from metal-limited to oxide-limited. And <code class="docutils literal notranslate"><span class="pre">permeability</span></code> is now an
+<em>apparent</em> permeability derived from the flux each level actually solved, rather
+than a harmonic mean of two bulk material constants: a factor of 775 at the default
+operating point, and it no longer reports the same value for two levels whose
+fluxes differ.</p></li>
+<li><p><strong>Figures are written into a folder per notebook</strong>, <code class="docutils literal notranslate"><span class="pre">&lt;notebook&gt;-results/</span></code>, rather
+than beside the notebook.</p></li>
+<li><p><strong>Three studies ship, one folder each.</strong> <code class="docutils literal notranslate"><span class="pre">Guo_etal_2025/</span></code>, <code class="docutils literal notranslate"><span class="pre">Fuerst_et_al_2024/</span></code>
+and <code class="docutils literal notranslate"><span class="pre">incoloy802_cr2o3/</span></code>, each self-contained. A fourth folder, <code class="docutils literal notranslate"><span class="pre">Application/</span></code>,
+was withdrawn on 2026-09-28: its <code class="docutils literal notranslate"><span class="pre">study_config.py</span></code> was a delivery copy of the Guo
+study — identical bar the docstring, same <code class="docutils literal notranslate"><span class="pre">STUDY_NAME</span></code> — so it advertised a fourth
+study that reproduced a third one’s numbers. Use <code class="docutils literal notranslate"><span class="pre">Guo_etal_2025/</span></code> for 316L / Cr2O3.</p></li>
+<li><p><strong>The derived parameter block lives in one place.</strong> It used to be duplicated
+verbatim in every study file; it is now in <code class="docutils literal notranslate"><span class="pre">calculations/config/model_config.py</span></code>,
+so a study file holds only its own data.</p></li>
+</ul>
+<p>Cite the image tag with any result computed from it, which is what makes this
+distinction recoverable later.</p>
+</section>
 <section id="changes-since-1-0-1">
 <h3>Changes since 1.0.1<a class="headerlink" href="#changes-since-1-0-1" title="Link to this heading">¶</a></h3>
 <p>The environment is byte-for-byte the same specification — identical Dockerfile,
@@ -425,7 +494,8 @@ What changed is the model and the workspace:</p>
 <li><p><strong>Multiple studies, one switch.</strong> <code class="docutils literal notranslate"><span class="pre">calculations/config/studies/</span></code> now holds three
 studies — Incoloy 802 / Cr2O3, Hastelloy N (Fuerst 2024), and 316L (Guo 2025).
 <code class="docutils literal notranslate"><span class="pre">ACTIVE_STUDY</span></code> in <code class="docutils literal notranslate"><span class="pre">calculations/config/model_config.py</span></code> selects one, and every
-module and notebook follows it. Nothing else needs editing.</p></li>
+module and notebook follows it. Nothing else needs editing.
+<em>(True of the 1.1.0 image. Superseded in 1.2.0 — see “Changes since 1.1.0” above.)</em></p></li>
 <li><p><strong>A study contract.</strong> Selecting a study that is missing a required export now
 fails immediately, naming the study and the missing names, instead of raising
 deep inside an import.</p></li>
@@ -518,6 +588,7 @@ reference value are identical.</p>
 <li><a class="reference internal" href="#adding-a-python-package">Adding a Python package</a></li>
 <li><a class="reference internal" href="#reporting-a-problem">Reporting a problem</a></li>
 <li><a class="reference internal" href="#version">Version</a><ul>
+<li><a class="reference internal" href="#changes-since-1-1-0">Changes since 1.1.0</a></li>
 <li><a class="reference internal" href="#changes-since-1-0-1">Changes since 1.0.1</a></li>
 <li><a class="reference internal" href="#changes-since-1-0-0">Changes since 1.0.0</a></li>
 </ul>

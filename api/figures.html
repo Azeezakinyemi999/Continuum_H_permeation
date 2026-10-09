@@ -1,0 +1,542 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="config — study selection" href="config.html"><link rel="prev" title="sensitivity — regime-stratified sensitivity analysis" href="sensitivity.html">
+
+    <!-- Generated with Sphinx 7.4.7 and Furo 2025.12.19 -->
+        <title>figures — where a notebook’s figures go - Hierarchical Hydrogen Permeation Model 1.1.0</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">Hierarchical Hydrogen Permeation Model 1.1.0</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  <span class="sidebar-brand-text">Hierarchical Hydrogen Permeation Model 1.1.0</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Overview</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Part I — Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting-started.html">Getting started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">How-to</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../how-to/switch-study.html">How to switch material study</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../how-to/sensitivity-analysis.html">How to run a regime-stratified sensitivity analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CONTAINER.html">Hydrogen Permeation Model — Offline Analysis Environment</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Part II — Theory</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../theory/two-models.html">Two models, not six levels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/foundations.html">Foundations: chemical potential and the driving force</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/equilibrium-models.html">Equilibrium models: Sieverts, Henry and Langmuir</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../STEADY_STATE.html">Steady State, Transients, and the Accumulation Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/equations.html">Equation catalogue</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Part III — The levels</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../theory/level1-metal.html">Level 1 — the perfect metal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/level2-oxide.html">Level 2 — the oxide layer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/level3-defective-oxide.html">Level 3 — the defective oxide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/level4-microstructure.html">Level 4 — metal microstructure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/level5-full-system.html">Level 5 — the full system</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/level6-surface-kinetics.html">Level 6 — surface kinetics</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Cross-cutting</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../theory/permeability.html">Permeability — two models, four tiers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/parameter-map.html">Parameter map</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../caveats.html">Warnings and caveats</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Part IV — Sensitivity</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../sensitivity/index.html">Part IV — The sensitivity workflow</a><input aria-label="Toggle navigation of Part IV — The sensitivity workflow" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../sensitivity/01-validate.html">Stage 1 — Validate the configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../sensitivity/02-scan.html">Stage 2 — The global scan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../sensitivity/03-partition.html">Stage 3 — Partition by regime</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../sensitivity/04-target.html">Stage 4 — Aim the sampling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../sensitivity/05-indices.html">Stage 5 — Indices, and reading them</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Part V — Practical</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../practical.html">Practical</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendices.html">Appendices</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../config-file.html">The study configuration file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../PARAMETERS.html">Complete Parameter Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../OUTPUTS.html">Complete Output Reference</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">API Reference</a><input aria-label="Toggle navigation of API Reference" checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="utils.html"><code class="docutils literal notranslate"><span class="pre">utils</span></code> — shared Arrhenius helpers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="permeation_calc.html"><code class="docutils literal notranslate"><span class="pre">permeation_calc</span></code> — Levels 1-2: Sieverts solubility and bulk diffusion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="oxide_permeation.html"><code class="docutils literal notranslate"><span class="pre">oxide_permeation</span></code> — Levels 2-3: molecular transport through the oxide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="interface_solver.html"><code class="docutils literal notranslate"><span class="pre">interface_solver</span></code> — the oxide/metal interface pressure solve</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parallel_oxide_defect_paths.html"><code class="docutils literal notranslate"><span class="pre">parallel_oxide_defect_paths</span></code> — Level 3: defective oxide, parallel paths</a></li>
+<li class="toctree-l2"><a class="reference internal" href="defective_metal.html"><code class="docutils literal notranslate"><span class="pre">defective_metal</span></code> — Level 4: grain boundaries and trapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="surface_kinetics.html"><code class="docutils literal notranslate"><span class="pre">surface_kinetics</span></code> — Level 6: dissociation kinetics and Langmuir coverage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classify_regime.html"><code class="docutils literal notranslate"><span class="pre">classify_regime</span></code> — hierarchical regime classification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sensitivity.html"><code class="docutils literal notranslate"><span class="pre">sensitivity</span></code> — regime-stratified sensitivity analysis</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">figures</span></code> — where a notebook’s figures go</a></li>
+<li class="toctree-l2"><a class="reference internal" href="config.html"><code class="docutils literal notranslate"><span class="pre">config</span></code> — study selection</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Validation and release</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../TRAPPING_VALIDATION.html">Validating the Trapping Block Against TDS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TRAPPING_VALIDATION.html#appendix-a-symbols">Appendix A — Symbols</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TRAPPING_VALIDATION.html#appendix-b-equation-reference">Appendix B — Equation reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TRAPPING_VALIDATION.html#appendix-c-where-each-quantity-lives">Appendix C — Where each quantity lives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../PACKAGING_1.0.0.html">Packaging decisions — <code class="docutils literal notranslate"><span class="pre">hydrogen-model:1.0.0</span></code> offline container</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references.html">References</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="../_sources/api/figures.md.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section class="tex2jax_ignore mathjax_ignore" id="figures-where-a-notebook-s-figures-go">
+<h1><code class="docutils literal notranslate"><span class="pre">figures</span></code> — where a notebook’s figures go<a class="headerlink" href="#figures-where-a-notebook-s-figures-go" title="Link to this heading">¶</a></h1>
+<p>Each notebook writes into one folder beside it, named after it, created relative to
+the working directory — the same rule the study lookup and <code class="docutils literal notranslate"><span class="pre">RESULTS_DIR</span></code> follow:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">calculations.figures</span><span class="w"> </span><span class="kn">import</span> <span class="n">results_dir</span><span class="p">,</span> <span class="n">save_figure</span>
+
+<span class="n">FIGS</span> <span class="o">=</span> <span class="n">results_dir</span><span class="p">(</span><span class="s2">&quot;Proposal&quot;</span><span class="p">)</span>            <span class="c1"># -&gt; Proposal-results/</span>
+<span class="n">save_figure</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="s2">&quot;Level1_Perfect_Metal&quot;</span><span class="p">,</span> <span class="n">FIGS</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The sensitivity plotters in <a class="reference internal" href="sensitivity.html"><span class="doc">sensitivity — regime-stratified sensitivity analysis</span></a> all return their figure, so they wrap
+directly — including the ones that return <code class="docutils literal notranslate"><span class="pre">None</span></code> for a plot they declined to draw,
+which <code class="docutils literal notranslate"><span class="pre">save_figure</span></code> treats as a no-op rather than an error.</p>
+<p id="module-calculations.figures">Where a notebook’s figures go.</p>
+<p>Each notebook writes into one folder beside it, named after it:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Guo_etal_2025/
+├── Proposal.ipynb
+└── Proposal-results/        Level1_Perfect_Metal.png, ...
+</pre></div>
+</div>
+<p>The folder is resolved against the WORKING DIRECTORY, which for a correctly launched
+notebook is its own study folder — the same rule <code class="docutils literal notranslate"><span class="pre">RESULTS_DIR</span> <span class="pre">=</span> <span class="pre">&quot;sa_results&quot;</span></code> and the
+<code class="docutils literal notranslate"><span class="pre">study_config.py</span></code> lookup already follow. Notebooks call
+<code class="docutils literal notranslate"><span class="pre">calculations.config.assert_study_is_local()</span></code> in their first cell, so a kernel started
+in the wrong place fails there, before anything is written to the wrong study.</p>
+<p>Usage, in the notebook’s first cell:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">calculations.figures</span><span class="w"> </span><span class="kn">import</span> <span class="n">results_dir</span><span class="p">,</span> <span class="n">save_figure</span>
+<span class="n">FIGS</span> <span class="o">=</span> <span class="n">results_dir</span><span class="p">(</span><span class="s2">&quot;Proposal&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>and then, wherever a figure is finished:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">save_figure</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="s2">&quot;Level1_Perfect_Metal&quot;</span><span class="p">,</span> <span class="n">FIGS</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The sensitivity plotters in <code class="docutils literal notranslate"><span class="pre">calculations.sensitivity</span></code> all return their figure, so
+they wrap directly:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">save_figure</span><span class="p">(</span><span class="n">plot_givendata_results</span><span class="p">(</span><span class="n">gd</span><span class="p">,</span> <span class="n">reg</span><span class="p">,</span> <span class="s1">&#39;flux&#39;</span><span class="p">,</span> <span class="n">PARAMS</span><span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;givendata_</span><span class="si">{</span><span class="n">reg</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">FIGS</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py data">
+<dt class="sig sig-object py" id="calculations.figures.RESULTS_SUFFIX">
+<span class="sig-prename descclassname"><span class="pre">calculations.figures.</span></span><span class="sig-name descname"><span class="pre">RESULTS_SUFFIX</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'-results'</span></em><a class="headerlink" href="#calculations.figures.RESULTS_SUFFIX" title="Link to this definition">¶</a></dt>
+<dd><p>Appended to a notebook’s name to make its results folder.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="calculations.figures.DPI">
+<span class="sig-prename descclassname"><span class="pre">calculations.figures.</span></span><span class="sig-name descname"><span class="pre">DPI</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">450</span></em><a class="headerlink" href="#calculations.figures.DPI" title="Link to this definition">¶</a></dt>
+<dd><p>Raster resolution. Was 300, copied from the plt.savefig calls this module replaced.
+Raised to 450 for sharper figures on a high-density display.</p>
+<p>There is a ceiling. Matplotlib refuses an image above 2**16 px in either direction,
+which at 450 dpi is 145.6 inches – down from 218 at 300 dpi. That is normally vast
+next to a 14-inch figure, but <cite>bbox_inches=”tight”</cite> sizes the output from the
+ARTISTS, not from figsize, so one annotation on a near-flat log axis can ask for
+thousands of inches. It has happened: the Level 4 grain-size panel demanded 7415.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="calculations.figures.VECTOR_FORMAT">
+<span class="sig-prename descclassname"><span class="pre">calculations.figures.</span></span><span class="sig-name descname"><span class="pre">VECTOR_FORMAT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'pdf'</span></em><a class="headerlink" href="#calculations.figures.VECTOR_FORMAT" title="Link to this definition">¶</a></dt>
+<dd><p>Written beside the PNG, sharp at any zoom. PDF rather than SVG because these figures
+carry scatter and parallel-coordinate plots with thousands of elements, which SVG
+renders slowly and stores verbosely. Set to None to write the raster alone.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="calculations.figures.INLINE_FORMAT">
+<span class="sig-prename descclassname"><span class="pre">calculations.figures.</span></span><span class="sig-name descname"><span class="pre">INLINE_FORMAT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'retina'</span></em><a class="headerlink" href="#calculations.figures.INLINE_FORMAT" title="Link to this definition">¶</a></dt>
+<dd><p>Inline display density. Jupyter embeds a figure at matplotlib’s default 100 dpi,
+roughly a quarter of the pixel density of a current display – which is why figures
+look soft IN THE NOTEBOOK while the saved PNG, written at DPI above, is sharp. The
+two are separate settings and only this one affects what you see while working.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="calculations.figures.TEXT_STYLE">
+<span class="sig-prename descclassname"><span class="pre">calculations.figures.</span></span><span class="sig-name descname"><span class="pre">TEXT_STYLE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'axes.labelweight':</span> <span class="pre">'bold',</span> <span class="pre">'axes.linewidth':</span> <span class="pre">1.4,</span> <span class="pre">'axes.titleweight':</span> <span class="pre">'bold',</span> <span class="pre">'figure.titleweight':</span> <span class="pre">'bold',</span> <span class="pre">'font.weight':</span> <span class="pre">'bold',</span> <span class="pre">'legend.edgecolor':</span> <span class="pre">'0.55',</span> <span class="pre">'legend.framealpha':</span> <span class="pre">0.95,</span> <span class="pre">'xtick.major.size':</span> <span class="pre">6.0,</span> <span class="pre">'xtick.major.width':</span> <span class="pre">1.4,</span> <span class="pre">'xtick.minor.width':</span> <span class="pre">0.9,</span> <span class="pre">'ytick.major.size':</span> <span class="pre">6.0,</span> <span class="pre">'ytick.major.width':</span> <span class="pre">1.4,</span> <span class="pre">'ytick.minor.width':</span> <span class="pre">0.9}</span></em><a class="headerlink" href="#calculations.figures.TEXT_STYLE" title="Link to this definition">¶</a></dt>
+<dd><p>Weight and frame settings applied through rcParams rather than at the call sites.
+The notebooks pass an explicit <code class="docutils literal notranslate"><span class="pre">fontsize=</span></code> to every label – which is why the sizes
+live in <code class="docutils literal notranslate"><span class="pre">PLOT_STYLE</span></code> – but they pass no <code class="docutils literal notranslate"><span class="pre">fontweight</span></code>, so rcParams is the only
+lever that reaches them, and it reaches all of them at once.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="calculations.figures.apply_text_style">
+<span class="sig-prename descclassname"><span class="pre">calculations.figures.</span></span><span class="sig-name descname"><span class="pre">apply_text_style</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">overrides</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/calculations/figures.html#apply_text_style"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#calculations.figures.apply_text_style" title="Link to this definition">¶</a></dt>
+<dd><p>Make every figure’s text bold and its axes frame heavier.</p>
+<p>Applied on import for the same reason as the inline format: every notebook already
+imports this module, so there is one place to change and nothing to keep in sync
+across the four studies.</p>
+<p>Sizes are NOT set here. They come from <code class="docutils literal notranslate"><span class="pre">PLOT_STYLE</span></code> in model_config, because the
+notebooks pass <code class="docutils literal notranslate"><span class="pre">fontsize=</span></code> explicitly at each call and an explicit argument beats
+an rcParam.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="calculations.figures.results_dir">
+<span class="sig-prename descclassname"><span class="pre">calculations.figures.</span></span><span class="sig-name descname"><span class="pre">results_dir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">notebook</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/calculations/figures.html#results_dir"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#calculations.figures.results_dir" title="Link to this definition">¶</a></dt>
+<dd><p>The results folder for <code class="docutils literal notranslate"><span class="pre">notebook</span></code>, created if it does not exist.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>notebook</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – The notebook’s name, with or without the <code class="docutils literal notranslate"><span class="pre">.ipynb</span></code> extension. Case is kept, so
+the folder sorts next to the notebook it belongs to.</p></li>
+<li><p><strong>base</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a>, <em>optional</em>) – Where to put it. Defaults to the working directory — the study folder.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The folder. Safe to call repeatedly; it does not clear what is already there.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="calculations.figures.save_figure">
+<span class="sig-prename descclassname"><span class="pre">calculations.figures.</span></span><span class="sig-name descname"><span class="pre">save_figure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dpi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">DPI</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">close</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">VECTOR_FORMAT</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/calculations/figures.html#save_figure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#calculations.figures.save_figure" title="Link to this definition">¶</a></dt>
+<dd><p>Write <code class="docutils literal notranslate"><span class="pre">fig</span></code> into <code class="docutils literal notranslate"><span class="pre">folder</span></code> as a PNG and a vector copy, and close it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fig</strong> (<a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure" title="(in Matplotlib v3.11.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">matplotlib.figure.Figure</span></code></a> or <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>) – <code class="docutils literal notranslate"><span class="pre">None</span></code> is accepted and does nothing. The sensitivity plotters return it for a
+plot they declined to draw — <code class="docutils literal notranslate"><span class="pre">plot_givendata_results</span></code> when a regime was
+skipped, <code class="docutils literal notranslate"><span class="pre">plot_regime_comparison_heatmap</span></code> on an empty matrix — and wrapping
+those calls must not turn a skipped plot into a crash.</p></li>
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – Filename without extension. <code class="docutils literal notranslate"><span class="pre">.png</span></code> is appended unless already present.</p></li>
+<li><p><strong>folder</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a>, <em>optional</em>) – Defaults to the working directory, but pass the <code class="docutils literal notranslate"><span class="pre">results_dir</span></code> you made in the
+first cell — that is the point of this module.</p></li>
+<li><p><strong>dpi</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) – Raster resolution, defaulting to <a class="reference internal" href="#calculations.figures.DPI" title="calculations.figures.DPI"><code class="xref py py-data docutils literal notranslate"><span class="pre">DPI</span></code></a>.</p></li>
+<li><p><strong>vector</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>) – Extension of a vector copy written beside the PNG, defaulting to
+<a class="reference internal" href="#calculations.figures.VECTOR_FORMAT" title="calculations.figures.VECTOR_FORMAT"><code class="xref py py-data docutils literal notranslate"><span class="pre">VECTOR_FORMAT</span></code></a>. <code class="docutils literal notranslate"><span class="pre">None</span></code> writes the raster alone. The vector file
+carries no dpi: it is resolution-independent, which is the point.</p></li>
+<li><p><strong>close</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – Close the figure once written. On by default: a notebook run saves dozens of
+figures and nothing else closes them, so they would all stay open for the life
+of the kernel. The figure has normally been displayed by the plotter’s own
+<code class="docutils literal notranslate"><span class="pre">plt.show()</span></code> before this is called, so closing costs nothing visible.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Where the PNG was written, or <code class="docutils literal notranslate"><span class="pre">None</span></code> if there was no figure. The vector
+copy sits beside it with the same stem; the PNG path is returned because
+callers and tests treat it as the figure’s identity.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a> or <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="config.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title"><code class="docutils literal notranslate"><span class="pre">config</span></code> — study selection</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="sensitivity.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title"><code class="docutils literal notranslate"><span class="pre">sensitivity</span></code> — regime-stratified sensitivity analysis</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2026, Azeez Akinyemi
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">figures</span></code> — where a notebook’s figures go</a><ul>
+<li><a class="reference internal" href="#calculations.figures.RESULTS_SUFFIX"><code class="docutils literal notranslate"><span class="pre">RESULTS_SUFFIX</span></code></a></li>
+<li><a class="reference internal" href="#calculations.figures.DPI"><code class="docutils literal notranslate"><span class="pre">DPI</span></code></a></li>
+<li><a class="reference internal" href="#calculations.figures.VECTOR_FORMAT"><code class="docutils literal notranslate"><span class="pre">VECTOR_FORMAT</span></code></a></li>
+<li><a class="reference internal" href="#calculations.figures.INLINE_FORMAT"><code class="docutils literal notranslate"><span class="pre">INLINE_FORMAT</span></code></a></li>
+<li><a class="reference internal" href="#calculations.figures.TEXT_STYLE"><code class="docutils literal notranslate"><span class="pre">TEXT_STYLE</span></code></a></li>
+<li><a class="reference internal" href="#calculations.figures.apply_text_style"><code class="docutils literal notranslate"><span class="pre">apply_text_style()</span></code></a></li>
+<li><a class="reference internal" href="#calculations.figures.results_dir"><code class="docutils literal notranslate"><span class="pre">results_dir()</span></code></a></li>
+<li><a class="reference internal" href="#calculations.figures.save_figure"><code class="docutils literal notranslate"><span class="pre">save_figure()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/documentation_options.js?v=fc837d61"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
+    </body>
+</html>
