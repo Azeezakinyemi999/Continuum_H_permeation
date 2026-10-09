@@ -190,8 +190,9 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-  <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+  <p class="caption" role="heading"><span class="caption-text">Overview</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Part I — Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting-started.html">Getting started</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">How-to</span></p>
@@ -200,26 +201,51 @@
 <li class="toctree-l1"><a class="reference internal" href="../how-to/sensitivity-analysis.html">How to run a regime-stratified sensitivity analysis</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../CONTAINER.html">Hydrogen Permeation Model — Offline Analysis Environment</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Theory</span></p>
-<ul class="current">
+<p class="caption" role="heading"><span class="caption-text">Part II — Theory</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="two-models.html">Two models, not six levels</a></li>
 <li class="toctree-l1"><a class="reference internal" href="foundations.html">Foundations: chemical potential and the driving force</a></li>
 <li class="toctree-l1"><a class="reference internal" href="equilibrium-models.html">Equilibrium models: Sieverts, Henry and Langmuir</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../STEADY_STATE.html">Steady State, Transients, and the Accumulation Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="equations.html">Equation catalogue</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Part III — The levels</span></p>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="level1-metal.html">Level 1 — the perfect metal</a></li>
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Level 2 — the oxide layer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="level3-defective-oxide.html">Level 3 — the defective oxide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="level4-microstructure.html">Level 4 — metal microstructure</a></li>
 <li class="toctree-l1"><a class="reference internal" href="level5-full-system.html">Level 5 — the full system</a></li>
 <li class="toctree-l1"><a class="reference internal" href="level6-surface-kinetics.html">Level 6 — surface kinetics</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Cross-cutting</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="permeability.html">Permeability — two models, four tiers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="equations.html">Equation catalogue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parameter-map.html">Parameter map</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../caveats.html">Warnings and caveats</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Part IV — Sensitivity</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../sensitivity/index.html">Part IV — The sensitivity workflow</a><input aria-label="Toggle navigation of Part IV — The sensitivity workflow" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../sensitivity/01-validate.html">Stage 1 — Validate the configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../sensitivity/02-scan.html">Stage 2 — The global scan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../sensitivity/03-partition.html">Stage 3 — Partition by regime</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../sensitivity/04-target.html">Stage 4 — Aim the sampling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../sensitivity/05-indices.html">Stage 5 — Indices, and reading them</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Part V — Practical</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../practical.html">Practical</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendices.html">Appendices</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../config-file.html">The study configuration file</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../PARAMETERS.html">Complete Parameter Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../OUTPUTS.html">Complete Output Reference</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../api/index.html">API Reference</a><input aria-label="Toggle navigation of API Reference" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/index.html">API Reference</a><input aria-label="Toggle navigation of API Reference" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../api/utils.html"><code class="docutils literal notranslate"><span class="pre">utils</span></code> — shared Arrhenius helpers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/permeation_calc.html"><code class="docutils literal notranslate"><span class="pre">permeation_calc</span></code> — Levels 1-2: Sieverts solubility and bulk diffusion</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/oxide_permeation.html"><code class="docutils literal notranslate"><span class="pre">oxide_permeation</span></code> — Levels 2-3: molecular transport through the oxide</a></li>
@@ -229,6 +255,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../api/surface_kinetics.html"><code class="docutils literal notranslate"><span class="pre">surface_kinetics</span></code> — Level 6: dissociation kinetics and Langmuir coverage</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/classify_regime.html"><code class="docutils literal notranslate"><span class="pre">classify_regime</span></code> — hierarchical regime classification</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/sensitivity.html"><code class="docutils literal notranslate"><span class="pre">sensitivity</span></code> — regime-stratified sensitivity analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/figures.html"><code class="docutils literal notranslate"><span class="pre">figures</span></code> — where a notebook’s figures go</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/config.html"><code class="docutils literal notranslate"><span class="pre">config</span></code> — study selection</a></li>
 </ul>
 </li>
@@ -241,10 +268,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../TRAPPING_VALIDATION.html#appendix-c-where-each-quantity-lives">Appendix C — Where each quantity lives</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../PACKAGING_1.0.0.html">Packaging decisions — <code class="docutils literal notranslate"><span class="pre">hydrogen-model:1.0.0</span></code> offline container</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../references.html">References</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Warnings and caveats</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../caveats.html">Warnings and caveats</a></li>
 </ul>
 
 </div>
@@ -291,30 +314,65 @@
 intact H₂ under Henry’s law. The Level 6 family makes a different choice — see
 <a class="reference internal" href="two-models.html"><span class="doc">Two models, not six levels</span></a> before comparing results across the two.</p>
 </div>
-<p>Level 2 comes in two parts. <strong>Level 2a</strong> is the oxide alone, which is mostly a
-vehicle for understanding how oxide transport differs from metal transport.
-<strong>Level 2b</strong> is the useful one: oxide and metal in series, coupled through an
-interface pressure that has to be solved for.</p>
-<section id="level-2a-the-perfect-oxide">
-<h2>Level 2a — the perfect oxide<a class="headerlink" href="#level-2a-the-perfect-oxide" title="Link to this heading">¶</a></h2>
+<section id="purpose">
+<h2>Purpose<a class="headerlink" href="#purpose" title="Link to this heading">¶</a></h2>
+<p>Level 2 comes in two parts. <strong>Level 2a</strong> is the oxide alone, which is mostly a vehicle
+for understanding how oxide transport differs from metal transport. <strong>Level 2b</strong> is the
+useful one: oxide and metal in series, coupled through an interface pressure that has to
+be solved for.</p>
+<p><strong>What it cannot tell you.</strong> It assumes the oxide is <strong>perfect</strong> — continuous, uniform,
+unbroken. Real oxides crack, contain pinholes and have grain boundaries, and because the
+intact oxide is such a good barrier in most systems, those defects tend to dominate
+transport even at tiny area fractions. That is Level 3. It also assumes the metal is a
+<strong>perfect lattice</strong>, with no traps and no grain-boundary fast paths — Level 4. Finally
+it assumes dissociation at the gas-facing surface is infinitely fast, so the surface
+imposes no resistance at all — Level 6.</p>
+</section>
+<section id="at-a-glance">
+<h2>At a glance<a class="headerlink" href="#at-a-glance" title="Link to this heading">¶</a></h2>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p></p></th>
+<th class="head"><p></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Inputs</strong></p></td>
+<td><p><span class="math notranslate nohighlight">\(D_{ox}\)</span>, <span class="math notranslate nohighlight">\(K_{ox}\)</span>, <span class="math notranslate nohighlight">\(L_{ox}\)</span> and, for 2b, the Level 1 metal inputs</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Outputs</strong></p></td>
+<td><p>2a: <code class="docutils literal notranslate"><span class="pre">flux</span></code>, <code class="docutils literal notranslate"><span class="pre">R_oxide</span></code>. 2b: <code class="docutils literal notranslate"><span class="pre">flux</span></code>, <code class="docutils literal notranslate"><span class="pre">P_interface</span></code>, <code class="docutils literal notranslate"><span class="pre">resistance_ratio</span></code>, <code class="docutils literal notranslate"><span class="pre">regime</span></code>, <code class="docutils literal notranslate"><span class="pre">converged</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Code</strong></p></td>
+<td><p><a class="reference internal" href="../api/oxide_permeation.html"><span class="doc std std-doc"><code class="docutils literal notranslate"><span class="pre">oxide_permeation</span></code></span></a>, <a class="reference internal" href="../api/interface_solver.html"><span class="doc std std-doc"><code class="docutils literal notranslate"><span class="pre">interface_solver</span></code></span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Solver</strong></p></td>
+<td><p>2a closed form; 2b <code class="docutils literal notranslate"><span class="pre">scipy.optimize.brentq</span></code> on a bracketed residual</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="concepts">
+<h2>Concepts<a class="headerlink" href="#concepts" title="Link to this heading">¶</a></h2>
 <section id="henry-s-law-not-sieverts">
 <h3>Henry’s law, not Sieverts<a class="headerlink" href="#henry-s-law-not-sieverts" title="Link to this heading">¶</a></h3>
-<p>Below Level 6 the model contains no dissociation step, so hydrogen is taken to
-dissolve and diffuse through the oxide <strong>as intact H₂ molecules</strong>. A molecule
-that stays whole has no factor-of-two stoichiometry to account for, so
-concentration is <em>linear</em> in pressure:</p>
+<p>Below Level 6 the model contains no dissociation step, so hydrogen is taken to dissolve
+and diffuse through the oxide <strong>as intact H₂ molecules</strong>. A molecule that stays whole
+has no factor-of-two stoichiometry to account for, so concentration is <em>linear</em> in
+pressure:</p>
 <div class="math-wrapper docutils container">
 <div class="math notranslate nohighlight">
 \[C = K_{ox}P\]</div>
 </div>
-<p>This is Henry’s law, and it is the single most important difference between the
-oxide and the metal. Everything downstream follows from it. (Once Level 6 models
-dissociation explicitly the species entering the oxide becomes atomic and this
-changes — see <a class="reference internal" href="equilibrium-models.html"><span class="doc">Equilibrium models: Sieverts, Henry and Langmuir</span></a>, which also records an unresolved
-consequence for the shared <code class="docutils literal notranslate"><span class="pre">K_ox</span></code> constant.)</p>
-<p>The bulk treatment is identical to Level 1 — steady state, so <span class="math notranslate nohighlight">\(d^2C/dz^2 = 0\)</span>, so
-a linear profile and a constant gradient. Substituting the Henry boundary
-conditions:</p>
+<p>This is Henry’s law, and it is the single most important difference between the oxide
+and the metal. Everything downstream follows from it. (Once Level 6 models dissociation
+explicitly the species entering the oxide becomes atomic and this changes — see
+<a class="reference internal" href="equilibrium-models.html"><span class="doc">Equilibrium models: Sieverts, Henry and Langmuir</span></a>, which also records an unresolved consequence for the shared
+<code class="docutils literal notranslate"><span class="pre">K_ox</span></code> constant.)</p>
+<p>The bulk treatment is identical to Level 1 — steady state, so <span class="math notranslate nohighlight">\(d^2C/dz^2 = 0\)</span>, so a
+linear profile and a constant gradient. Substituting the Henry boundary conditions:</p>
 <div class="math-wrapper docutils container">
 <div class="math notranslate nohighlight">
 \[\boxed{\;J_{ox} = \frac{D_{ox}K_{ox}}{L_{ox}}\left(P_{\text{up}} - P_{\text{down}}\right)\;}\]</div>
@@ -323,47 +381,39 @@ conditions:</p>
 <section id="what-linearity-buys-you">
 <h3>What linearity buys you<a class="headerlink" href="#what-linearity-buys-you" title="Link to this heading">¶</a></h3>
 <p><strong>A different diagnostic slope.</strong> With <span class="math notranslate nohighlight">\(P_{\text{down}} = 0\)</span>, <span class="math notranslate nohighlight">\(J \propto P\)</span>, so a
-log–log plot of flux against pressure has <strong>slope 1.0</strong>, against 0.5 for the
-metal. Measuring that slope tells you which layer is in control without needing
-to know either material’s properties.</p>
+log–log plot of flux against pressure has <strong>slope 1.0</strong>, against 0.5 for the metal.
+Measuring that slope tells you which layer is in control without needing to know either
+material’s properties — see Figure 4 in <a class="reference internal" href="two-models.html"><span class="doc">Two models, not six levels</span></a>, and <a class="reference internal" href="permeability.html"><span class="doc">Permeability — two models, four tiers</span></a> for
+the exponent as a general diagnostic.</p>
 <p><strong>A pressure-independent resistance.</strong> Defining</p>
 <div class="math-wrapper docutils container">
 <div class="math notranslate nohighlight">
 \[R_{ox} = \frac{L_{ox}}{D_{ox}K_{ox}}\]</div>
 </div>
-<p>gives <span class="math notranslate nohighlight">\(J = \Delta P / R_{ox}\)</span> with <span class="math notranslate nohighlight">\(R_{ox}\)</span> a genuine constant. The metal’s
-resistance is not — it depends on the pressure at which you evaluate it, because
-<span class="math notranslate nohighlight">\(\sqrt{P}\)</span> is nonlinear. That asymmetry matters as soon as the two are put in
-series.</p>
+<p>gives <span class="math notranslate nohighlight">\(J = \Delta P / R_{ox}\)</span> with <span class="math notranslate nohighlight">\(R_{ox}\)</span> a genuine constant. The metal’s resistance
+is not — it depends on the pressure at which you evaluate it, because <span class="math notranslate nohighlight">\(\sqrt{P}\)</span> is
+nonlinear. That asymmetry matters as soon as the two are put in series.</p>
 </section>
-<section id="verified-values">
-<h3>Verified values<a class="headerlink" href="#verified-values" title="Link to this heading">¶</a></h3>
-<p>For Cr₂O₃ at 873 K, 48 nm thick, 1 bar → vacuum:</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>D_ox        1.394877e-17  m²/s
-K_ox        2.868829e+02  (see the units warning in equilibrium-models)
-R_oxide     1.199501e+07  Pa·s·m²/mol
-flux        8.336797e-03  mol/m²/s
-</pre></div>
-</div>
-<p>Compare that flux against Level 1’s <code class="docutils literal notranslate"><span class="pre">4.327598e-06</span></code> for the same conditions: the
-oxide, taken alone, is roughly <strong>1900× more permeable than the metal</strong>. A 48 nm
-Cr₂O₃ layer at this temperature is not a barrier. This is the fact that makes the
-active study metal-limited at every subsequent level, and it is worth absorbing
-early because it explains why coating parameters barely move the answer.</p>
-</section>
-</section>
-<section id="level-2b-oxide-and-metal-in-series">
-<h2>Level 2b — oxide and metal in series<a class="headerlink" href="#level-2b-oxide-and-metal-in-series" title="Link to this heading">¶</a></h2>
 <section id="the-coupling">
 <h3>The coupling<a class="headerlink" href="#the-coupling" title="Link to this heading">¶</a></h3>
-<p>Two layers in series must pass the same flux at steady state, because hydrogen
-cannot accumulate at the interface between them:</p>
+<figure class="align-default" id="id1">
+<a class="reference internal image-reference" href="../_images/fig-06-interface-root.svg"><img alt="Oxide flux falling and metal flux rising with interface pressure, crossing at the solution." src="../_images/fig-06-interface-root.svg" style="width: 90%;" /></a>
+<figcaption>
+<p><span class="caption-text"><strong>Figure 6.</strong> Look at the single crossing. The oxide flux falls as the interface
+pressure rises and the metal flux rises, so they meet at exactly one interface
+pressure — and that crossing is the answer. The curve shapes differ because the laws
+differ: the oxide line is straight in <span class="math notranslate nohighlight">\(P\)</span>, the metal curve goes as <span class="math notranslate nohighlight">\(\sqrt{P}\)</span>. The
+shaded band is the bracket <code class="docutils literal notranslate"><span class="pre">brentq</span></code> searches, and the root is guaranteed to lie in it.</span><a class="headerlink" href="#id1" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>Two layers in series must pass the same flux at steady state, because hydrogen cannot
+accumulate at the interface between them:</p>
 <div class="math-wrapper docutils container">
 <div class="math notranslate nohighlight">
 \[J_{ox} = J_{\text{metal}}\]</div>
 </div>
-<p>Writing each in terms of the unknown interface pressure <span class="math notranslate nohighlight">\(P_{\text{int}}\)</span>, and
-defining the two permeances</p>
+<p>Writing each in terms of the unknown interface pressure <span class="math notranslate nohighlight">\(P_{\text{int}}\)</span>, and defining
+the two permeances</p>
 <div class="math-wrapper docutils container">
 <div class="math notranslate nohighlight">
 \[\alpha = \frac{D_{ox}K_{ox}}{L_{ox}}, \qquad \beta = \frac{D_mK_{s,m}}{L_m}\]</div>
@@ -376,110 +426,18 @@ defining the two permeances</p>
 </div>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
-<p><strong><span class="math notranslate nohighlight">\(\alpha\)</span> and <span class="math notranslate nohighlight">\(\beta\)</span> do not have the same units</strong>, because one multiplies a
-pressure and the other a square-root pressure:</p>
+<p><strong><span class="math notranslate nohighlight">\(\alpha\)</span> and <span class="math notranslate nohighlight">\(\beta\)</span> do not have the same units</strong>, because one multiplies a pressure
+and the other a square-root pressure:</p>
 <div class="math-wrapper docutils container">
 <div class="math notranslate nohighlight">
 \[[\alpha] = \mathrm{mol\,m^{-2}s^{-1}Pa^{-1}}, \qquad
 [\beta] = \mathrm{mol\,m^{-2}s^{-1}Pa^{-0.5}}\]</div>
 </div>
-<p>So you cannot compare them directly, and you cannot add <span class="math notranslate nohighlight">\(1/\alpha\)</span> and <span class="math notranslate nohighlight">\(1/\beta\)</span>
-as series resistances the way you would two electrical resistors. The mixed
-currency is exactly why this level needs a numerical solve instead of an
-algebraic one.</p>
+<p>So you cannot compare them directly, and you cannot add <span class="math notranslate nohighlight">\(1/\alpha\)</span> and <span class="math notranslate nohighlight">\(1/\beta\)</span> as
+series resistances the way you would two electrical resistors. The mixed currency is
+exactly why this level needs a numerical solve instead of an algebraic one, and why
+Model 1 has no single system permeability at all — <a class="reference internal" href="permeability.html"><span class="doc">Permeability — two models, four tiers</span></a>.</p>
 </div>
-</section>
-<section id="why-there-is-no-closed-form">
-<h3>Why there is no closed form<a class="headerlink" href="#why-there-is-no-closed-form" title="Link to this heading">¶</a></h3>
-<p>The equation is linear in <span class="math notranslate nohighlight">\(P_{\text{int}}\)</span> on the left and square-root on the
-right. Substituting <span class="math notranslate nohighlight">\(u = \sqrt{P_{\text{int}}}\)</span> turns it into a quadratic in <span class="math notranslate nohighlight">\(u\)</span>,
-which <em>is</em> solvable for this particular pair of laws — but the same structure
-recurs at Levels 3, 4 and 6 with additional nonlinearities that are not
-reducible, so the project solves all of them the same numerical way rather than
-special-casing this one.</p>
-</section>
-<section id="solved-as-a-root-finding-problem">
-<h3>Solved as a root-finding problem<a class="headerlink" href="#solved-as-a-root-finding-problem" title="Link to this heading">¶</a></h3>
-<p>Define the residual</p>
-<div class="math-wrapper docutils container">
-<div class="math notranslate nohighlight">
-\[f(P_{\text{int}}) = J_{ox}(P_{\text{int}}) - J_{\text{metal}}(P_{\text{int}})\]</div>
-</div>
-<p>and find its zero. The solution is guaranteed to exist and be unique inside
-<span class="math notranslate nohighlight">\([P_{\text{down}}, P_{\text{up}}]\)</span> by a sign argument:</p>
-<div class="table-wrapper colwidths-auto docutils container">
-<table class="docutils align-default">
-<thead>
-<tr class="row-odd"><th class="head"><p>At</p></th>
-<th class="head"><p><span class="math notranslate nohighlight">\(J_{ox}\)</span></p></th>
-<th class="head"><p><span class="math notranslate nohighlight">\(J_{\text{metal}}\)</span></p></th>
-<th class="head"><p><span class="math notranslate nohighlight">\(f\)</span></p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(P_{\text{int}} \to P_{\text{down}}\)</span></p></td>
-<td><p>large — full ΔP across the oxide</p></td>
-<td><p>≈ 0 — no driving force</p></td>
-<td><p><span class="math notranslate nohighlight">\(&gt; 0\)</span></p></td>
-</tr>
-<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(P_{\text{int}} \to P_{\text{up}}\)</span></p></td>
-<td><p>≈ 0 — no driving force</p></td>
-<td><p>large — full ΔP across the metal</p></td>
-<td><p><span class="math notranslate nohighlight">\(&lt; 0\)</span></p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p><span class="math notranslate nohighlight">\(f\)</span> is continuous and monotonically decreasing between those, so it crosses zero
-exactly once. <code class="docutils literal notranslate"><span class="pre">solve_interface_pressure</span></code> brackets with</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">P_min</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">P_downstream</span> <span class="o">+</span> <span class="n">P_upstream</span> <span class="o">*</span> <span class="mf">1e-10</span><span class="p">,</span> <span class="n">min_pressure</span><span class="p">)</span>
-<span class="n">P_max</span> <span class="o">=</span> <span class="n">P_upstream</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="mf">1e-10</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>and calls <code class="docutils literal notranslate"><span class="pre">scipy.optimize.brentq</span></code>, which combines bisection’s guaranteed
-convergence with faster interpolation when the function is well behaved.</p>
-</section>
-<section id="verified-behaviour-at-the-default-point">
-<h3>Verified behaviour at the default point<a class="headerlink" href="#verified-behaviour-at-the-default-point" title="Link to this heading">¶</a></h3>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>alpha (oxide permeance)   8.336797e-08  mol/m²/s/Pa
-beta  (metal permeance)   1.368507e-08  mol/m²/s/Pa^0.5
-converged                 True
-P_interface               9.994810e+04  Pa   — 99.948% of P_up
-flux                      4.326475e-06  mol/m²/s
-flux_error                2.608e-11
-resistance_ratio          2.596154e-04
-regime                    metal_limited
-</pre></div>
-</div>
-<p>The interface pressure sits at 99.95% of upstream, meaning the oxide consumes
-0.05% of the available driving force and the metal takes the rest. The composite
-flux <code class="docutils literal notranslate"><span class="pre">4.326475e-06</span></code> is within 0.03% of the bare-metal Level 1 value — the coating
-is very nearly invisible.</p>
-<p>Three checks, all run against the current code:</p>
-<div class="table-wrapper colwidths-auto docutils container">
-<table class="docutils align-default">
-<thead>
-<tr class="row-odd"><th class="head"><p>Check</p></th>
-<th class="head"><p>Result</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>flux continuity, <span class="math notranslate nohighlight">\(\lvert J_{ox} - J_{\text{metal}}\rvert\)</span></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">2.608e-11</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(P_{\text{int}}\)</span> increases monotonically with <span class="math notranslate nohighlight">\(P_{\text{up}}\)</span></p></td>
-<td><p>holds over <span class="math notranslate nohighlight">\(10^3\)</span>–<span class="math notranslate nohighlight">\(10^6\)</span> Pa, <code class="docutils literal notranslate"><span class="pre">converged</span></code> throughout</p></td>
-</tr>
-<tr class="row-even"><td><p>log–log slope of flux vs <span class="math notranslate nohighlight">\(P_{\text{up}}\)</span></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">0.5002</span></code>, <code class="docutils literal notranslate"><span class="pre">0.5001</span></code></p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p>That last row is the most informative line in this chapter. The composite system
-reproduces the <strong>metal’s</strong> slope of 0.5, not the oxide’s 1.0, which is an
-independent confirmation that the metal is in control — arrived at without
-consulting a single resistance value.</p>
 </section>
 <section id="reading-the-regime">
 <h3>Reading the regime<a class="headerlink" href="#reading-the-regime" title="Link to this heading">¶</a></h3>
@@ -504,44 +462,217 @@ consulting a single resistance value.</p>
 </tbody>
 </table>
 </div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>The two resistances are not the same kind of object. <span class="math notranslate nohighlight">\(R_{ox} = L_{ox}/(D_{ox}K_{ox})\)</span>
-is a true constant, whereas the metal’s is a <strong>linearised differential</strong>
-resistance evaluated at the interface pressure,</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>The two resistances are not the same kind of object. <span class="math notranslate nohighlight">\(R_{ox} = L_{ox}/(D_{ox}K_{ox})\)</span> is
+a true constant, whereas the metal’s is a <strong>linearised differential</strong> resistance
+evaluated at the interface pressure,</p>
 <div class="math-wrapper docutils container">
 <div class="math notranslate nohighlight">
 \[R_{\text{metal}} = \frac{2L_m\sqrt{P_{\text{int}}}}{D_mK_{s,m}}\]</div>
 </div>
-<p>which is the derivative of the <span class="math notranslate nohighlight">\(\sqrt{P}\)</span> flux law at that operating point. So
-the ratio is a local diagnostic, valid near <span class="math notranslate nohighlight">\(P_{\text{int}}\)</span>, not a global
-material comparison. Verified at the default point: <span class="math notranslate nohighlight">\(R_{ox} = 1.199501\mathrm{e}{+7}\)</span>,
-<span class="math notranslate nohighlight">\(R_{\text{metal}} = 4.620302\mathrm{e}{+10}\)</span>, ratio <span class="math notranslate nohighlight">\(2.596154\mathrm{e}{-4}\)</span> →
-<code class="docutils literal notranslate"><span class="pre">metal_limited</span></code>.</p>
+<p>which is the derivative of the <span class="math notranslate nohighlight">\(\sqrt{P}\)</span> flux law at that operating point. So the ratio
+is a local diagnostic, valid near <span class="math notranslate nohighlight">\(P_{\text{int}}\)</span>, not a global material comparison.</p>
 </div>
 </section>
 <section id="the-limiting-cases">
 <h3>The limiting cases<a class="headerlink" href="#the-limiting-cases" title="Link to this heading">¶</a></h3>
 <ul class="simple">
-<li><p><span class="math notranslate nohighlight">\(\alpha \gg \beta\)</span> — the oxide is transparent, <span class="math notranslate nohighlight">\(P_{\text{int}} \to P_{\text{up}}\)</span>,
-and the result collapses to Level 1. This is the active study’s situation.</p></li>
-<li><p><span class="math notranslate nohighlight">\(\alpha \ll \beta\)</span> — the oxide dominates, <span class="math notranslate nohighlight">\(P_{\text{int}} \to P_{\text{down}}\)</span>,
-and the result collapses to Level 2a.</p></li>
+<li><p><span class="math notranslate nohighlight">\(\alpha \gg \beta\)</span> — the oxide is transparent, <span class="math notranslate nohighlight">\(P_{\text{int}} \to P_{\text{up}}\)</span>, and
+the result collapses to Level 1. This is the active study’s situation.</p></li>
+<li><p><span class="math notranslate nohighlight">\(\alpha \ll \beta\)</span> — the oxide dominates, <span class="math notranslate nohighlight">\(P_{\text{int}} \to P_{\text{down}}\)</span>, and
+the result collapses to Level 2a.</p></li>
 </ul>
-<p>Both limits are worth testing after any change to the solver, because they are
-the two cases where a wrong answer still looks physically plausible.</p>
+<p>Both limits are worth testing after any change to the solver, because they are the two
+cases where a wrong answer still looks physically plausible.</p>
 </section>
 </section>
-<section id="what-level-2-cannot-tell-you">
-<h2>What Level 2 cannot tell you<a class="headerlink" href="#what-level-2-cannot-tell-you" title="Link to this heading">¶</a></h2>
-<p>It assumes the oxide is <strong>perfect</strong> — continuous, uniform, unbroken. Real oxides
-crack, contain pinholes, and have grain boundaries, and because the intact oxide
-is such a good barrier in most systems, those defects tend to dominate transport
-even at tiny area fractions. That is Level 3.</p>
-<p>It also assumes the metal is a <strong>perfect lattice</strong>, with no traps and no
-grain-boundary fast paths. That is Level 4.</p>
-<p>Finally, it assumes dissociation at the gas-facing surface is infinitely fast, so
-that the surface imposes no resistance at all. That is Level 6.</p>
+<section id="procedure">
+<h2>Procedure<a class="headerlink" href="#procedure" title="Link to this heading">¶</a></h2>
+<p>Level 2b, in the order the code runs it:</p>
+<ol class="arabic">
+<li><p>Evaluate both materials at the operating temperature —
+<code class="docutils literal notranslate"><span class="pre">get_oxide_properties_at_T</span></code>, <code class="docutils literal notranslate"><span class="pre">get_metal_properties_at_T</span></code>. Both warn if <span class="math notranslate nohighlight">\(T\)</span> falls
+outside the measured window.</p></li>
+<li><p>Short-circuit if <span class="math notranslate nohighlight">\(P_{\text{up}} \le\)</span> <code class="docutils literal notranslate"><span class="pre">min_pressure</span></code> (1e-20 Pa): set
+<span class="math notranslate nohighlight">\(P_{\text{int}} = P_{\text{down}} + \texttt{min\_pressure}\)</span>, return with
+<code class="docutils literal notranslate"><span class="pre">converged=False</span></code>. The result is an approximation, not a solve.</p></li>
+<li><p>Bracket the root:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">P_min</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">P_downstream</span> <span class="o">+</span> <span class="n">P_upstream</span> <span class="o">*</span> <span class="mf">1e-10</span><span class="p">,</span> <span class="n">min_pressure</span><span class="p">)</span>
+<span class="n">P_max</span> <span class="o">=</span> <span class="n">P_upstream</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="mf">1e-10</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p>Define the residual
+<span class="math notranslate nohighlight">\(f(P_{\text{int}}) = J_{ox}(P_{\text{int}}) - J_{\text{metal}}(P_{\text{int}})\)</span> and
+call <code class="docutils literal notranslate"><span class="pre">brentq</span></code> on it.</p></li>
+<li><p>Evaluate the flux at the root, from either side — they agree by construction.</p></li>
+<li><p>Form <span class="math notranslate nohighlight">\(R_{ox}\)</span> and the linearised <span class="math notranslate nohighlight">\(R_{\text{metal}}\)</span> at <span class="math notranslate nohighlight">\(P_{\text{int}}\)</span>, take their
+ratio, and threshold it into <code class="docutils literal notranslate"><span class="pre">regime</span></code>.</p></li>
+</ol>
+<p>The root is guaranteed to exist and be unique inside
+<span class="math notranslate nohighlight">\([P_{\text{down}}, P_{\text{up}}]\)</span> by a sign argument:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>At</p></th>
+<th class="head"><p><span class="math notranslate nohighlight">\(J_{ox}\)</span></p></th>
+<th class="head"><p><span class="math notranslate nohighlight">\(J_{\text{metal}}\)</span></p></th>
+<th class="head"><p><span class="math notranslate nohighlight">\(f\)</span></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(P_{\text{int}} \to P_{\text{down}}\)</span></p></td>
+<td><p>large — full ΔP across the oxide</p></td>
+<td><p>≈ 0 — no driving force</p></td>
+<td><p><span class="math notranslate nohighlight">\(&gt; 0\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(P_{\text{int}} \to P_{\text{up}}\)</span></p></td>
+<td><p>≈ 0 — no driving force</p></td>
+<td><p>large — full ΔP across the metal</p></td>
+<td><p><span class="math notranslate nohighlight">\(&lt; 0\)</span></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><span class="math notranslate nohighlight">\(f\)</span> is continuous and monotonically decreasing between those, so it crosses zero exactly
+once.</p>
+</section>
+<section id="design-choices">
+<h2>Design choices<a class="headerlink" href="#design-choices" title="Link to this heading">¶</a></h2>
+<p><strong>Why a numerical solve when a closed form exists here.</strong> The equation is linear in
+<span class="math notranslate nohighlight">\(P_{\text{int}}\)</span> on the left and square-root on the right. Substituting
+<span class="math notranslate nohighlight">\(u = \sqrt{P_{\text{int}}}\)</span> turns it into a quadratic in <span class="math notranslate nohighlight">\(u\)</span>, which <em>is</em> solvable for
+this particular pair of laws. But the same structure recurs at Levels 3, 4 and 6 with
+additional nonlinearities that are not reducible, so the project solves all of them the
+same numerical way rather than special-casing this one.</p>
+<p>That closed form is not wasted: the documentation’s own <code class="docutils literal notranslate"><span class="pre">check_equations.py</span></code> uses it as
+an independent target, testing <code class="docutils literal notranslate"><span class="pre">brentq</span></code> against the exact quadratic root on the Example
+Wall rather than against itself. They agree to about <span class="math notranslate nohighlight">\(2\times10^{-16}\)</span>.</p>
+<p><strong>Why <code class="docutils literal notranslate"><span class="pre">brentq</span></code> rather than Newton.</strong> The bracket is known and the sign change is
+guaranteed, so a bracketing method cannot diverge. <code class="docutils literal notranslate"><span class="pre">brentq</span></code> combines bisection’s
+guaranteed convergence with faster interpolation when the function is well behaved,
+which it is here.</p>
+<p><strong>Why the regime ratio is linearised rather than exact.</strong> There is no single resistance
+for a <span class="math notranslate nohighlight">\(\sqrt{P}\)</span> law, only a slope at a point. Reporting the derivative at
+<span class="math notranslate nohighlight">\(P_{\text{int}}\)</span> makes the comparison local and honest; a “global” metal resistance
+would have to pick a pressure anyway and would hide that it had.</p>
+</section>
+<section id="checks-and-failure-modes">
+<h2>Checks and failure modes<a class="headerlink" href="#checks-and-failure-modes" title="Link to this heading">¶</a></h2>
+<figure class="align-default" id="id2">
+<a class="reference internal image-reference" href="../_images/fig-10-level2-limit.svg"><img alt="Series flux rising to the bare-metal value as the oxide is thinned to nothing." src="../_images/fig-10-level2-limit.svg" style="width: 90%;" /></a>
+<figcaption>
+<p><span class="caption-text"><strong>Figure 10.</strong> The limit check, in the notebooks’ panel (D) idiom. Look at where the
+curve flattens: as the oxide is thinned the series wall must climb to the bare-metal
+flux, and it does. A solver that failed to recover the level below would flatten at the
+wrong value — which is why this is drawn rather than asserted.</span><a class="headerlink" href="#id2" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Check</p></th>
+<th class="head"><p>Expected</p></th>
+<th class="head"><p>Where</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(P_{\text{int}}\)</span> matches the closed-form quadratic root</p></td>
+<td><p>exact</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">check_equations.py</span></code> — <em>L2b: P_int matches closed form</em></p></td>
+</tr>
+<tr class="row-odd"><td><p>flux continuity, <span class="math notranslate nohighlight">\(\lvert J_{ox} - J_{\text{metal}}\rvert\)</span></p></td>
+<td><p>≈ 0</p></td>
+<td><p><em>L2b: flux balance</em></p></td>
+</tr>
+<tr class="row-even"><td><p>series flux below <strong>both</strong> single-layer fluxes</p></td>
+<td><p>always</p></td>
+<td><p><em>L2b: J_series &lt; min(…)</em></p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(L_{ox} \to 0\)</span> recovers Level 1</p></td>
+<td><p>exact</p></td>
+<td><p><em>L2b → L1</em></p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(J \propto P\)</span> for the oxide alone</p></td>
+<td><p>linearity</p></td>
+<td><p><em>L2a: J(P/2) = J(P)/2</em></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Symptom</p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">converged:</span> <span class="pre">False</span></code>, <span class="math notranslate nohighlight">\(P_{\text{int}} \approx P_{\text{down}}\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(P_{\text{up}}\)</span> at or below <code class="docutils literal notranslate"><span class="pre">min_pressure</span></code>; approximated, not solved</p></td>
+</tr>
+<tr class="row-odd"><td><p>Series flux above either single-layer flux</p></td>
+<td><p>Impossible. A layer in series can only add resistance.</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(L_{ox} \to 0\)</span> does not recover Level 1</p></td>
+<td><p>The series composition is wrong, not the oxide data</p></td>
+</tr>
+<tr class="row-odd"><td><p>Regime label flipping under a small change</p></td>
+<td><p>Expected near a threshold; read the ratio, not only the label</p></td>
+</tr>
+<tr class="row-even"><td><p>log–log slope near 1.0 rather than 0.5</p></td>
+<td><p>The oxide is in control — a different study, or a much thicker coating</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>Worked values.</strong> Real numbers from the active study — 316L / Cr₂O₃ at 873 K, 1 bar →
+vacuum, 1 mm wall, 1 µm coating. Regenerated by <code class="docutils literal notranslate"><span class="pre">docs/_tools/worked_values.py</span></code>.</p>
+<p>Level 2a, the oxide alone:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>D_ox        1.394877e-17  m²/s
+K_ox        2.868829e+02  (see the units warning in equilibrium-models)
+R_oxide     2.498961e+08  Pa·s·m²/mol
+flux        4.001663e-04  mol/m²/s
+</pre></div>
+</div>
+<p>Against Level 1’s <code class="docutils literal notranslate"><span class="pre">4.327598e-06</span></code> for the same conditions, the oxide taken alone is
+roughly <strong>92× more permeable than the metal</strong>. A 1 µm Cr₂O₃ layer at this temperature is
+still not a barrier under Model 1, and that is what makes the study metal-limited
+through Level 5. Worth absorbing early: it explains why coating parameters barely move a
+Level 5 answer — and why they move a Level 5L6 answer a great deal, the oxide there
+carrying atomic H under Sieverts.</p>
+<p>Level 2b, the series wall:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>alpha (oxide permeance)   4.001663e-09  mol/m²/s/Pa
+beta  (metal permeance)   1.368507e-08  mol/m²/s/Pa^0.5
+converged                 True
+P_interface               9.892438e+04  Pa   — 98.924% of P_up
+flux                      4.304261e-06  mol/m²/s
+flux_error                2.287e-19
+R_ox                      2.498961e+08
+R_metal                   4.596579e+10
+resistance_ratio          5.436567e-03
+regime                    metal_limited
+</pre></div>
+</div>
+<p>The interface pressure sits at 98.9% of upstream, so the oxide consumes about 1.1% of
+the available driving force and the metal takes the rest. The composite flux is 0.5%
+below the bare-metal Level 1 value — the coating is very nearly invisible.</p>
+<p>Log–log slope of flux against <span class="math notranslate nohighlight">\(P_{\text{up}}\)</span>, measured at <span class="math notranslate nohighlight">\(10^4\)</span>, <span class="math notranslate nohighlight">\(10^5\)</span> and <span class="math notranslate nohighlight">\(10^6\)</span> Pa:
+<code class="docutils literal notranslate"><span class="pre">0.5085</span></code>, <code class="docutils literal notranslate"><span class="pre">0.5027</span></code>, <code class="docutils literal notranslate"><span class="pre">0.5009</span></code>. <strong>This is the most informative line in the chapter.</strong> The
+composite system reproduces the <em>metal’s</em> slope of 0.5, not the oxide’s 1.0 — an
+independent confirmation that the metal is in control, arrived at without consulting a
+single resistance value. The slight excess over 0.5, shrinking with pressure, is the
+oxide’s small linear contribution.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>An earlier version of this block was computed at a <strong>48 nm</strong> coating, where <span class="math notranslate nohighlight">\(\alpha\)</span> was
+<code class="docutils literal notranslate"><span class="pre">8.336797e-08</span></code> and the interface sat at 99.95% of upstream. The configured thickness is
+now 1 µm. If you have inherited those figures, they are from that older geometry.</p>
+</div>
 </section>
 </section>
 
@@ -601,22 +732,19 @@ that the surface imposes no resistance at all. That is Level 6.</p>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Level 2 — the oxide layer</a><ul>
-<li><a class="reference internal" href="#level-2a-the-perfect-oxide">Level 2a — the perfect oxide</a><ul>
+<li><a class="reference internal" href="#purpose">Purpose</a></li>
+<li><a class="reference internal" href="#at-a-glance">At a glance</a></li>
+<li><a class="reference internal" href="#concepts">Concepts</a><ul>
 <li><a class="reference internal" href="#henry-s-law-not-sieverts">Henry’s law, not Sieverts</a></li>
 <li><a class="reference internal" href="#what-linearity-buys-you">What linearity buys you</a></li>
-<li><a class="reference internal" href="#verified-values">Verified values</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#level-2b-oxide-and-metal-in-series">Level 2b — oxide and metal in series</a><ul>
 <li><a class="reference internal" href="#the-coupling">The coupling</a></li>
-<li><a class="reference internal" href="#why-there-is-no-closed-form">Why there is no closed form</a></li>
-<li><a class="reference internal" href="#solved-as-a-root-finding-problem">Solved as a root-finding problem</a></li>
-<li><a class="reference internal" href="#verified-behaviour-at-the-default-point">Verified behaviour at the default point</a></li>
 <li><a class="reference internal" href="#reading-the-regime">Reading the regime</a></li>
 <li><a class="reference internal" href="#the-limiting-cases">The limiting cases</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#what-level-2-cannot-tell-you">What Level 2 cannot tell you</a></li>
+<li><a class="reference internal" href="#procedure">Procedure</a></li>
+<li><a class="reference internal" href="#design-choices">Design choices</a></li>
+<li><a class="reference internal" href="#checks-and-failure-modes">Checks and failure modes</a></li>
 </ul>
 </li>
 </ul>

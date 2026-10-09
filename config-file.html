@@ -1,0 +1,903 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="./">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="Complete Parameter Reference" href="PARAMETERS.html"><link rel="prev" title="Appendices" href="appendices.html">
+
+    <!-- Generated with Sphinx 7.4.7 and Furo 2025.12.19 -->
+        <title>The study configuration file - MHI Permeation Model 1.1.0</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="index.html"><div class="brand">MHI Permeation Model 1.1.0</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
+  
+  <span class="sidebar-brand-text">MHI Permeation Model 1.1.0</span>
+  
+</a><form class="sidebar-search-container" method="get" action="search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Overview</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Part I — Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">How-to</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="how-to/switch-study.html">How to switch material study</a></li>
+<li class="toctree-l1"><a class="reference internal" href="how-to/sensitivity-analysis.html">How to run a regime-stratified sensitivity analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CONTAINER.html">Hydrogen Permeation Model — Offline Analysis Environment</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Part II — Theory</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="theory/two-models.html">Two models, not six levels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory/foundations.html">Foundations: chemical potential and the driving force</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory/equilibrium-models.html">Equilibrium models: Sieverts, Henry and Langmuir</a></li>
+<li class="toctree-l1"><a class="reference internal" href="STEADY_STATE.html">Steady State, Transients, and the Accumulation Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory/equations.html">Equation catalogue</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Part III — The levels</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="theory/level1-metal.html">Level 1 — the perfect metal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory/level2-oxide.html">Level 2 — the oxide layer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory/level3-defective-oxide.html">Level 3 — the defective oxide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory/level4-microstructure.html">Level 4 — metal microstructure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory/level5-full-system.html">Level 5 — the full system</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory/level6-surface-kinetics.html">Level 6 — surface kinetics</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Cross-cutting</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="theory/permeability.html">Permeability — two models, four tiers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory/parameter-map.html">Parameter map</a></li>
+<li class="toctree-l1"><a class="reference internal" href="caveats.html">Warnings and caveats</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Part IV — Sensitivity</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="sensitivity/index.html">Part IV — The sensitivity workflow</a><input aria-label="Toggle navigation of Part IV — The sensitivity workflow" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="sensitivity/01-validate.html">Stage 1 — Validate the configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sensitivity/02-scan.html">Stage 2 — The global scan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sensitivity/03-partition.html">Stage 3 — Partition by regime</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sensitivity/04-target.html">Stage 4 — Aim the sampling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sensitivity/05-indices.html">Stage 5 — Indices, and reading them</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Part V — Practical</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="practical.html">Practical</a></li>
+<li class="toctree-l1"><a class="reference internal" href="appendices.html">Appendices</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">The study configuration file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PARAMETERS.html">Complete Parameter Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="OUTPUTS.html">Complete Output Reference</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="api/index.html">API Reference</a><input aria-label="Toggle navigation of API Reference" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/utils.html"><code class="docutils literal notranslate"><span class="pre">utils</span></code> — shared Arrhenius helpers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/permeation_calc.html"><code class="docutils literal notranslate"><span class="pre">permeation_calc</span></code> — Levels 1-2: Sieverts solubility and bulk diffusion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/oxide_permeation.html"><code class="docutils literal notranslate"><span class="pre">oxide_permeation</span></code> — Levels 2-3: molecular transport through the oxide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/interface_solver.html"><code class="docutils literal notranslate"><span class="pre">interface_solver</span></code> — the oxide/metal interface pressure solve</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/parallel_oxide_defect_paths.html"><code class="docutils literal notranslate"><span class="pre">parallel_oxide_defect_paths</span></code> — Level 3: defective oxide, parallel paths</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/defective_metal.html"><code class="docutils literal notranslate"><span class="pre">defective_metal</span></code> — Level 4: grain boundaries and trapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/surface_kinetics.html"><code class="docutils literal notranslate"><span class="pre">surface_kinetics</span></code> — Level 6: dissociation kinetics and Langmuir coverage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/classify_regime.html"><code class="docutils literal notranslate"><span class="pre">classify_regime</span></code> — hierarchical regime classification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/sensitivity.html"><code class="docutils literal notranslate"><span class="pre">sensitivity</span></code> — regime-stratified sensitivity analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/figures.html"><code class="docutils literal notranslate"><span class="pre">figures</span></code> — where a notebook’s figures go</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/config.html"><code class="docutils literal notranslate"><span class="pre">config</span></code> — study selection</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Validation and release</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="TRAPPING_VALIDATION.html">Validating the Trapping Block Against TDS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TRAPPING_VALIDATION.html#appendix-a-symbols">Appendix A — Symbols</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TRAPPING_VALIDATION.html#appendix-b-equation-reference">Appendix B — Equation reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TRAPPING_VALIDATION.html#appendix-c-where-each-quantity-lives">Appendix C — Where each quantity lives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PACKAGING_1.0.0.html">Packaging decisions — <code class="docutils literal notranslate"><span class="pre">hydrogen-model:1.0.0</span></code> offline container</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="_sources/config-file.md.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section class="tex2jax_ignore mathjax_ignore" id="the-study-configuration-file">
+<h1>The study configuration file<a class="headerlink" href="#the-study-configuration-file" title="Link to this heading">¶</a></h1>
+<p>Every number the model runs on comes from one file. This page explains that
+file’s structure: what each block holds, which blocks you are meant to edit,
+which are derived from the ones above them, and which entries the code never
+reads at all.</p>
+<p>It describes the <em>shape</em> of the file, not its values — for the values of the
+active study see <a class="reference internal" href="PARAMETERS.html"><span class="doc">Complete Parameter Reference</span></a>. To change which study is active, see
+<a class="reference internal" href="how-to/switch-study.html"><span class="doc">How to switch material study</span></a>; for the loading mechanism, <a class="reference internal" href="api/config.html"><span class="doc">config — study selection</span></a>.</p>
+<section id="one-study-one-file">
+<h2>One study, one file<a class="headerlink" href="#one-study-one-file" title="Link to this heading">¶</a></h2>
+<p>A study is a complete physical system — a metal, an oxide, a microstructure, a
+set of defects and an operating point — and each one lives in a <code class="docutils literal notranslate"><span class="pre">study_config.py</span></code>
+<strong>inside its own study folder</strong>, beside the notebooks that read it. That file is
+the real input file, not a pointer to one. Nothing in <code class="docutils literal notranslate"><span class="pre">calculations/</span></code> imports a
+study directly:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>calculations/*.py  -&gt;  calculations.config.model_config  -&gt;  &lt;study folder&gt;/study_config.py
+</pre></div>
+</div>
+<p>There is no default study and no switch to edit. <code class="docutils literal notranslate"><span class="pre">model_config</span></code> resolves one, in
+this order:</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">$MHI_STUDY</span></code>, if set, naming a study file explicitly;</p></li>
+<li><p>otherwise a <code class="docutils literal notranslate"><span class="pre">study_config.py</span></code> in the working directory, or any parent up to the
+repository root;</p></li>
+<li><p>otherwise it raises, listing the studies it can see.</p></li>
+</ol>
+<p>So a notebook picks up its own folder’s file by virtue of running there, and
+running from the repository root — which belongs to no study — is an error rather
+than a silent default. Each study is self-contained: <code class="docutils literal notranslate"><span class="pre">Guo_etal_2025/</span></code> has nothing
+to do with <code class="docutils literal notranslate"><span class="pre">Fuerst_et_al_2024/</span></code>, and adding a study means copying a folder, not
+registering it anywhere.</p>
+<p>The study files are <strong>structurally identical</strong>. They define the same names in the
+same three sections and differ only in their values, which is what lets one folder
+replace an entire material system.</p>
+</section>
+<section id="the-three-sections">
+<h2>The three sections<a class="headerlink" href="#the-three-sections" title="Link to this heading">¶</a></h2>
+<p>The file is ordered by dependency, and the section banners say so. Python executes
+top to bottom, so nothing may reference a block below it.</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Section</p></th>
+<th class="head"><p>Holds</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>1. Identity and constants</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">STUDY_NAME</span></code>, <code class="docutils literal notranslate"><span class="pre">R</span></code>, <code class="docutils literal notranslate"><span class="pre">F</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>2. What is being studied</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">CONDITIONS</span></code>, <code class="docutils literal notranslate"><span class="pre">MODEL_OPTIONS</span></code>, <code class="docutils literal notranslate"><span class="pre">OXIDE_DEFECTS</span></code>, the <code class="docutils literal notranslate"><span class="pre">SUGGESTED_RANGES_*</span></code>, the presets, <code class="docutils literal notranslate"><span class="pre">DEFAULT_SWEEP_TEMPERATURES</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>3. What the materials are</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">METALS</span></code>, <code class="docutils literal notranslate"><span class="pre">OXIDES</span></code>, <code class="docutils literal notranslate"><span class="pre">MICROSTRUCTURE</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The split between 2 and 3 is the one to internalise. Section 3 says what a
+substance <em>does</em> at a temperature; section 2 says what wall is being built from it
+and at what operating point. A material entry therefore carries no thickness and
+no operating point — see <code class="docutils literal notranslate"><span class="pre">sample_thickness</span></code> below for the one place that reads
+like an exception and is not.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>There used to be two more sections — <strong>4. Derived</strong> (the <code class="docutils literal notranslate"><span class="pre">DEFAULT_PARAMS_*</span></code>,
+<code class="docutils literal notranslate"><span class="pre">build_simulation_config</span></code>, <code class="docutils literal notranslate"><span class="pre">get_surface_kinetics_from_config</span></code>) and
+<strong>5. Presentation</strong> (<code class="docutils literal notranslate"><span class="pre">PLOT_STYLE</span></code>, <code class="docutils literal notranslate"><span class="pre">COLORS</span></code>, <code class="docutils literal notranslate"><span class="pre">CURVE_STYLES</span></code>, <code class="docutils literal notranslate"><span class="pre">apply_style</span></code>). They
+were byte-identical in all four studies, 408 lines duplicated four ways, and they
+have moved into
+<a class="reference external" href="https://github.com/Azeezakinyemi999/MHI_permeation/blob/main/calculations/config/model_config.py"><code class="docutils literal notranslate"><span class="pre">calculations/config/model_config.py</span></code></a>.</p>
+<p>You still import those names from exactly the same place — <code class="docutils literal notranslate"><span class="pre">model_config</span></code>
+re-exports everything — so nothing you write changes. What changed is that they are
+no longer yours to copy: a new study inherits them, and “a literal in the derived
+block is a bug” is now true by construction instead of by four separate checks on
+four separate copies. The copies had already drifted; the Level 5 header comment
+named Incoloy 802 in the 316L study.</p>
+</div>
+</section>
+<section id="three-kinds-of-entry">
+<h2>Three kinds of entry<a class="headerlink" href="#three-kinds-of-entry" title="Link to this heading">¶</a></h2>
+<p>The single most useful thing to know about the file is that its blocks are not
+all the same kind of thing. Reading them the same way is how the config drifted
+before.</p>
+<div class="table-wrapper colwidths-given docutils container">
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 40.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Kind</p></th>
+<th class="head"><p>Blocks</p></th>
+<th class="head"><p>How to treat it</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Measured data</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">METALS</span></code>, <code class="docutils literal notranslate"><span class="pre">OXIDES</span></code>, <code class="docutils literal notranslate"><span class="pre">MICROSTRUCTURE</span></code>, <code class="docutils literal notranslate"><span class="pre">OXIDE_DEFECTS</span></code></p></td>
+<td><p>Authored by hand from the literature, each with a <code class="docutils literal notranslate"><span class="pre">reference</span></code> string. This
+is what you edit when you change material.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>The scenario</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">CONDITIONS</span></code>, <code class="docutils literal notranslate"><span class="pre">MODEL_OPTIONS</span></code></p></td>
+<td><p>The operating point and the switches. Not a property of any material — this
+is what you edit to ask a different question of the same materials.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Derived</strong> — <em>no longer in this file</em></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">DEFAULT_PARAMS_LEVEL5</span></code>, <code class="docutils literal notranslate"><span class="pre">DEFAULT_PARAMS_LEVEL5L6</span></code></p></td>
+<td><p>Computed <em>from the blocks above</em> by reference, never retyped. Flat
+name → value dicts, which is the form the model wrappers want. Now held once
+in <code class="docutils literal notranslate"><span class="pre">model_config</span></code>, and listed here because they are still what the two blocks
+above feed.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Study design</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">SUGGESTED_RANGES_*</span></code>, <code class="docutils literal notranslate"><span class="pre">REGIME_PRESETS*</span></code>, <code class="docutils literal notranslate"><span class="pre">DEFAULT_SWEEP_TEMPERATURES</span></code></p></td>
+<td><p>Deliberately literal. A range that suppresses <code class="docutils literal notranslate"><span class="pre">f_pinhole</span></code> to force an
+oxide-limited cluster expresses intent about the analysis, not a property
+of the material, so it is written out explicitly.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p><strong>Never hardcode a number into <code class="docutils literal notranslate"><span class="pre">DEFAULT_PARAMS_*</span></code>.</strong> Those dicts exist to be
+derived; a literal there is a second copy of a value that already lives in
+<code class="docutils literal notranslate"><span class="pre">METALS</span></code>/<code class="docutils literal notranslate"><span class="pre">OXIDES</span></code>/<code class="docutils literal notranslate"><span class="pre">CONDITIONS</span></code>, and the two will diverge. They already did once:
+when the defaults were hand-copied, the defect area fractions, the operating
+temperature and both surface equilibrium constants disagreed with the material
+blocks above them by up to six orders of magnitude, silently. Change the source
+dict instead.</p>
+</div>
+</section>
+<section id="the-blocks-in-file-order">
+<h2>The blocks, in file order<a class="headerlink" href="#the-blocks-in-file-order" title="Link to this heading">¶</a></h2>
+<div class="table-wrapper colwidths-given docutils container">
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 26.0%" />
+<col style="width: 40.0%" />
+<col style="width: 34.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Block</p></th>
+<th class="head"><p>What it describes</p></th>
+<th class="head"><p>Read by</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">STUDY_NAME</span></code></p></td>
+<td><p>the study’s own name, reported by the loader on import</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">calculations.config</span></code>, the sensitivity stamps, the container gate</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">R</span></code>, <code class="docutils literal notranslate"><span class="pre">F</span></code></p></td>
+<td><p>gas constant; Faraday constant, used to write trap energies in eV</p></td>
+<td><p>the file itself</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">MODEL_OPTIONS</span></code></p></td>
+<td><p>how the model is run — five switches, not data about anything</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">MICROSTRUCTURE</span></code>, <code class="docutils literal notranslate"><span class="pre">OXIDE_DEFECTS</span></code> and <code class="docutils literal notranslate"><span class="pre">DEFAULT_PARAMS_LEVEL5</span></code>, by reference</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">METALS</span></code></p></td>
+<td><p>bulk metal transport + metal-surface kinetics, per alloy</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">calculations.oxide_permeation</span></code>, <code class="docutils literal notranslate"><span class="pre">calculations.surface_kinetics</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">OXIDES</span></code></p></td>
+<td><p>bulk oxide transport + gas/oxide-surface kinetics, per oxide</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">calculations.oxide_permeation</span></code>, <code class="docutils literal notranslate"><span class="pre">calculations.surface_kinetics</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">MICROSTRUCTURE</span></code></p></td>
+<td><p>grains, grain boundaries and trap populations (Level 4)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">calculations.sensitivity</span></code>, notebooks</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">OXIDE_DEFECTS</span></code></p></td>
+<td><p>pinhole / crack / grain-boundary bypass paths (Level 3)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">calculations.sensitivity</span></code>, notebooks</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">CONDITIONS</span></code></p></td>
+<td><p>the operating point and the sweep ranges around it</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">calculations.sensitivity</span></code>, notebooks</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">SUGGESTED_RANGES_LEVEL5</span></code>, <code class="docutils literal notranslate"><span class="pre">SUGGESTED_RANGES_LEVEL5L6</span></code></p></td>
+<td><p>the interval each parameter is sampled over</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">calculations.sensitivity</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">REGIME_PRESETS</span></code>, <code class="docutils literal notranslate"><span class="pre">REGIME_PRESETS_L5</span></code></p></td>
+<td><p>ranges overridden to target one rate-limiting regime</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">calculations.sensitivity</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<section id="metals">
+<h3><code class="docutils literal notranslate"><span class="pre">METALS</span></code><a class="headerlink" href="#metals" title="Link to this heading">¶</a></h3>
+<p>A registry keyed by alloy name. Each entry carries transport data at a reference
+temperature, a nested surface-kinetics block, and provenance.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">METALS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;&lt;alloy_key&gt;&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;T_ref&#39;</span><span class="p">:</span>   <span class="mi">1223</span><span class="p">,</span>        <span class="c1"># K — the temperature the *_ref values were measured at</span>
+        <span class="s1">&#39;D_ref&#39;</span><span class="p">:</span>   <span class="mf">5.285e-09</span><span class="p">,</span>   <span class="c1"># m²/s          lattice diffusivity at T_ref</span>
+        <span class="s1">&#39;E_D&#39;</span><span class="p">:</span>     <span class="mi">7220</span><span class="p">,</span>        <span class="c1"># J/mol         diffusion activation energy</span>
+        <span class="s1">&#39;K_s_ref&#39;</span><span class="p">:</span> <span class="mf">0.05093</span><span class="p">,</span>     <span class="c1"># mol/m³/Pa^0.5 Sieverts constant at T_ref</span>
+        <span class="s1">&#39;H_s&#39;</span><span class="p">:</span>     <span class="mi">7200</span><span class="p">,</span>        <span class="c1"># J/mol         heat of solution</span>
+        <span class="o">...</span>
+        <span class="s1">&#39;surface_kinetics&#39;</span><span class="p">:</span> <span class="p">{</span><span class="o">...</span><span class="p">},</span>
+        <span class="s1">&#39;reference&#39;</span><span class="p">:</span> <span class="s1">&#39;...&#39;</span><span class="p">,</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Properties are evaluated by <code class="docutils literal notranslate"><span class="pre">get_metal_properties_at_T</span></code> in the <strong>reference-point
+Arrhenius</strong> form, which is why a <code class="docutils literal notranslate"><span class="pre">T_ref</span></code> accompanies every <code class="docutils literal notranslate"><span class="pre">*_ref</span></code> value:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[X(T) = X_{\text{ref}}\exp\!\left[\frac{-E}{R}\left(\frac{1}{T} -
+\frac{1}{T_{\text{ref}}}\right)\right]\]</div>
+</div>
+<p>Only five keys are read: <code class="docutils literal notranslate"><span class="pre">T_ref</span></code>, <code class="docutils literal notranslate"><span class="pre">D_ref</span></code>, <code class="docutils literal notranslate"><span class="pre">E_D</span></code>, <code class="docutils literal notranslate"><span class="pre">K_s_ref</span></code>, <code class="docutils literal notranslate"><span class="pre">H_s</span></code>. The rest —
+<code class="docutils literal notranslate"><span class="pre">D_0</span></code>, <code class="docutils literal notranslate"><span class="pre">K_s0</span></code>, <code class="docutils literal notranslate"><span class="pre">Phi_ref</span></code>, <code class="docutils literal notranslate"><span class="pre">Phi_0</span></code>, <code class="docutils literal notranslate"><span class="pre">Q_p</span></code> — are <strong>recorded, not used</strong>. They are
+the same physics in the absolute-Arrhenius form, kept for traceability to the
+source paper. Editing <code class="docutils literal notranslate"><span class="pre">Phi_ref</span></code> changes nothing the model computes.</p>
+<p>The remaining fields are metadata: <code class="docutils literal notranslate"><span class="pre">reference</span></code>, <code class="docutils literal notranslate"><span class="pre">temperature_range</span></code>,
+<code class="docutils literal notranslate"><span class="pre">pressure_range</span></code>, <code class="docutils literal notranslate"><span class="pre">pressure</span></code>, <code class="docutils literal notranslate"><span class="pre">gas</span></code>, <code class="docutils literal notranslate"><span class="pre">Notes</span></code>, and <code class="docutils literal notranslate"><span class="pre">sample_thickness</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">temperature_range</span></code> is the window the source data were measured over.
+<code class="docutils literal notranslate"><span class="pre">get_metal_properties_at_T</span></code> checks it and warns on extrapolation — as does
+<code class="docutils literal notranslate"><span class="pre">get_oxide_properties_at_T</span></code> for the oxide’s. Both materials spell it the same way
+for that reason: the metal’s used to be <code class="docutils literal notranslate"><span class="pre">temp_range</span></code>, which nothing read, so a
+metal extrapolation was silent. <code class="docutils literal notranslate"><span class="pre">pressure_range</span></code> is recorded but read by nothing.</p>
+<p><code class="docutils literal notranslate"><span class="pre">sample_thickness</span></code> is provenance — the specimens the measurements were taken on,
+as a <em>list</em>, e.g. <code class="docutils literal notranslate"><span class="pre">[5e-3]</span></code> — and is not the wall. The wall comes from
+<code class="docutils literal notranslate"><span class="pre">CONDITIONS['L_metal']</span></code>; see <a class="reference internal" href="caveats.html"><span class="doc">Warnings and caveats</span></a>.</p>
+</section>
+<section id="oxides">
+<h3><code class="docutils literal notranslate"><span class="pre">OXIDES</span></code><a class="headerlink" href="#oxides" title="Link to this heading">¶</a></h3>
+<p>Same shape as <code class="docutils literal notranslate"><span class="pre">METALS</span></code>, one entry per oxide, with <code class="docutils literal notranslate"><span class="pre">D_ox_ref</span></code> / <code class="docutils literal notranslate"><span class="pre">E_D_ox</span></code> /
+<code class="docutils literal notranslate"><span class="pre">K_ox_ref</span></code> / <code class="docutils literal notranslate"><span class="pre">H_sol_ox</span></code> in place of the metal quartet, and the same
+<code class="docutils literal notranslate"><span class="pre">temperature_range</span></code> validity window.</p>
+<p>Its <code class="docutils literal notranslate"><span class="pre">sample_thickness</span></code> is a scalar rather than a list — the single coupon the
+oxide data came from, e.g. <code class="docutils literal notranslate"><span class="pre">4.8e-08</span></code> — and, as for the metal, it is provenance and
+not the layer being simulated. The oxide layer the model builds is
+<code class="docutils literal notranslate"><span class="pre">CONDITIONS['L_oxide']</span></code>, which <code class="docutils literal notranslate"><span class="pre">build_simulation_config</span></code> injects into the assembled
+oxide dict as <code class="docutils literal notranslate"><span class="pre">thickness</span></code>. There is exactly one authored oxide thickness; an
+earlier revision carried two, differing by more than an order of magnitude.</p>
+<p>As with the metal, <code class="docutils literal notranslate"><span class="pre">D_ox_0</span></code>, <code class="docutils literal notranslate"><span class="pre">K_ox_0</span></code>, <code class="docutils literal notranslate"><span class="pre">Phi_ox_ref</span></code> and <code class="docutils literal notranslate"><span class="pre">Q_p_ox_J_per_mol</span></code> are
+recorded but never read.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">K_ox_ref</span></code> means different things in the two models — a Henry constant under
+Model 1 and a Sieverts constant under the Level 6 family — and the two cannot
+share units. The config carries one entry for both. See
+<a class="reference internal" href="theory/equilibrium-models.html"><span class="doc">Equilibrium models: Sieverts, Henry and Langmuir</span></a>.</p>
+</div>
+</section>
+<section id="surface-kinetics-nested-in-both">
+<h3><code class="docutils literal notranslate"><span class="pre">surface_kinetics</span></code> (nested in both)<a class="headerlink" href="#surface-kinetics-nested-in-both" title="Link to this heading">¶</a></h3>
+<p>Each material entry carries its own dissociation/recombination block, evaluated
+in the same reference-point Arrhenius form, with <code class="docutils literal notranslate"><span class="pre">k_recomb</span> <span class="pre">=</span> <span class="pre">k_diss</span> <span class="pre">/</span> <span class="pre">K_eq</span></code>
+derived rather than stored. <strong>The two use different key names:</strong></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Oxide entry (gas/oxide surface)</p></th>
+<th class="head"><p>Metal entry (pinhole paths)</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">k_diss_ref</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">k_diss_metal_ref</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">E_diss</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">E_diss_metal</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">K_eq_ref</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">K_eq_metal_ref</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">H_eq</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">H_eq_metal</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">get_surface_kinetics_from_config</span></code> discriminates on the presence of
+<code class="docutils literal notranslate"><span class="pre">k_diss_ref</span></code>: found, and it reads the oxide names; absent, it falls through to
+the metal names. A typo in an oxide key therefore does not fall back silently —
+it routes to the metal branch and raises <code class="docutils literal notranslate"><span class="pre">KeyError</span></code> on a name that is not there.</p>
+<p>Check the comments before trusting the equilibrium constants: the oxide’s
+<code class="docutils literal notranslate"><span class="pre">K_eq_ref</span></code> and <code class="docutils literal notranslate"><span class="pre">H_eq</span></code> are marked <code class="docutils literal notranslate"><span class="pre">PLACEHOLDER</span></code> in every shipped study, and the
+metal’s <code class="docutils literal notranslate"><span class="pre">K_eq_metal_ref</span></code> and <code class="docutils literal notranslate"><span class="pre">H_eq_metal</span></code> are placeholders in all but the 316L
+study. They are order-of-magnitude stand-ins, not measurements.</p>
+</section>
+<section id="microstructure">
+<h3><code class="docutils literal notranslate"><span class="pre">MICROSTRUCTURE</span></code><a class="headerlink" href="#microstructure" title="Link to this heading">¶</a></h3>
+<p>Level 4 inputs: <code class="docutils literal notranslate"><span class="pre">grain_size</span></code>, <code class="docutils literal notranslate"><span class="pre">gb_thickness</span></code>, <code class="docutils literal notranslate"><span class="pre">grain_shape</span></code>, <code class="docutils literal notranslate"><span class="pre">gb_type</span></code>,
+<code class="docutils literal notranslate"><span class="pre">enable_gb_as_trap</span></code>, <code class="docutils literal notranslate"><span class="pre">lattice_density</span></code>, and <code class="docutils literal notranslate"><span class="pre">trap_list</span></code> — a <em>list</em> of
+<code class="docutils literal notranslate"><span class="pre">{name,</span> <span class="pre">binding_energy,</span> <span class="pre">density}</span></code> dicts, one per trap population, with binding
+energies written as <code class="docutils literal notranslate"><span class="pre">0.27</span> <span class="pre">*</span> <span class="pre">F</span></code> so the eV value from the source paper stays
+readable.</p>
+<p>Two consequences of it being a list rather than a dict: order does not matter,
+and the flattening step looks traps up by name (case-insensitively, since the
+carbide population is capitalised in some studies). A renamed trap raises a
+<code class="docutils literal notranslate"><span class="pre">KeyError</span></code> naming the populations that do exist.</p>
+<p>Immediately after the block, <code class="docutils literal notranslate"><span class="pre">MICROSTRUCTURE['N_L']</span></code> is aliased to
+<code class="docutils literal notranslate"><span class="pre">lattice_density</span></code> — the same quantity under the symbol the derivations and
+notebooks use, aliased rather than written twice so the two cannot drift.</p>
+</section>
+<section id="oxide-defects">
+<h3><code class="docutils literal notranslate"><span class="pre">OXIDE_DEFECTS</span></code><a class="headerlink" href="#oxide-defects" title="Link to this heading">¶</a></h3>
+<p>The Level 3 bypass paths. <code class="docutils literal notranslate"><span class="pre">components</span></code> holds the three area fractions
+(<code class="docutils literal notranslate"><span class="pre">pinholes</span></code>, <code class="docutils literal notranslate"><span class="pre">cracks</span></code>, <code class="docutils literal notranslate"><span class="pre">grain_boundaries</span></code>); <code class="docutils literal notranslate"><span class="pre">thickness_factor</span></code> sets the crack
+short-circuit, <span class="math notranslate nohighlight">\(L_{\text{crack}} = \gamma L_{\text{oxide}}\)</span>; and
+<code class="docutils literal notranslate"><span class="pre">diffusivity_factor</span></code> sets the grain-boundary enhancement,
+<span class="math notranslate nohighlight">\(D_{\text{gb}} = \delta D_{\text{oxide}}\)</span>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">use_sieverts_pinhole</span></code> is a model <em>switch</em>, not data: it chooses whether a
+pinhole assumes fast metal kinetics or uses the metal’s own surface-kinetics
+block. The entry here is a <strong>reference</strong> to <code class="docutils literal notranslate"><span class="pre">MODEL_OPTIONS</span></code>, not a second value —
+the solvers read a defect dict and look inside it, so the key has to be present,
+but it is authored in one place only.</p>
+</section>
+<section id="model-options">
+<h3><code class="docutils literal notranslate"><span class="pre">MODEL_OPTIONS</span></code><a class="headerlink" href="#model-options" title="Link to this heading">¶</a></h3>
+<p>The five switches that say how the model is run, rather than describing anything
+physical: <code class="docutils literal notranslate"><span class="pre">enable_gb_as_trap</span></code>, <code class="docutils literal notranslate"><span class="pre">use_sieverts_pinhole</span></code>, <code class="docutils literal notranslate"><span class="pre">enable_gb_enhancement</span></code>,
+<code class="docutils literal notranslate"><span class="pre">enable_trapping</span></code> and <code class="docutils literal notranslate"><span class="pre">D_eff_method</span></code>.</p>
+<p>They were previously scattered — one inside <code class="docutils literal notranslate"><span class="pre">MICROSTRUCTURE</span></code>, one inside
+<code class="docutils literal notranslate"><span class="pre">OXIDE_DEFECTS</span></code>, three inside <code class="docutils literal notranslate"><span class="pre">DEFAULT_PARAMS_LEVEL5</span></code> — so answering “what does
+this study switch on?” meant knowing all three places. The consuming dicts still
+carry the keys their solvers look up, but each is a reference to this block.</p>
+</section>
+<section id="conditions">
+<h3><code class="docutils literal notranslate"><span class="pre">CONDITIONS</span></code><a class="headerlink" href="#conditions" title="Link to this heading">¶</a></h3>
+<p><strong>The authority for the operating point.</strong> Nothing below it may restate a value it
+owns; where a material entry and <code class="docutils literal notranslate"><span class="pre">CONDITIONS</span></code> disagree about the wall,
+<code class="docutils literal notranslate"><span class="pre">CONDITIONS</span></code> wins by construction, because the derived blocks read it rather than
+retyping it.</p>
+<p>It holds the operating point (<code class="docutils literal notranslate"><span class="pre">T_operating</span></code>, <code class="docutils literal notranslate"><span class="pre">P_upstream</span></code>, <code class="docutils literal notranslate"><span class="pre">P_downstream</span></code>,
+<code class="docutils literal notranslate"><span class="pre">L_metal</span></code>, <code class="docutils literal notranslate"><span class="pre">L_oxide</span></code>), the sweep ranges the notebooks plot over (<code class="docutils literal notranslate"><span class="pre">T_range</span></code>,
+<code class="docutils literal notranslate"><span class="pre">P_range</span></code>, <code class="docutils literal notranslate"><span class="pre">L_metal_range</span></code>, <code class="docutils literal notranslate"><span class="pre">L_oxide_range</span></code>, <code class="docutils literal notranslate"><span class="pre">defect_fraction_range</span></code>,
+<code class="docutils literal notranslate"><span class="pre">k_diss_sweep_range</span></code>), the comparison and limit values the level notebooks need
+(<code class="docutils literal notranslate"><span class="pre">defect_fractions_compare</span></code>, <code class="docutils literal notranslate"><span class="pre">defect_limit_check</span></code>, <code class="docutils literal notranslate"><span class="pre">f_gb_max</span></code>), and a <strong>single</strong>
+<code class="docutils literal notranslate"><span class="pre">n_points</span></code> count shared by every sweep. Single values and sweep bounds sit in one
+block, distinguished only by the <code class="docutils literal notranslate"><span class="pre">_range</span></code> suffix.</p>
+<p>Sweep bounds live here, not with the materials, because a sweep is part of the
+question being asked rather than a property of the substance. Grids are built at
+the point of use from a range and <code class="docutils literal notranslate"><span class="pre">n_points</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">C</span> <span class="o">=</span> <span class="n">CONDITIONS</span>
+<span class="n">temps</span>     <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">*</span><span class="n">C</span><span class="p">[</span><span class="s1">&#39;T_range&#39;</span><span class="p">],</span> <span class="n">C</span><span class="p">[</span><span class="s1">&#39;n_points&#39;</span><span class="p">])</span>
+<span class="n">pressures</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">C</span><span class="p">[</span><span class="s1">&#39;P_range&#39;</span><span class="p">]),</span> <span class="n">C</span><span class="p">[</span><span class="s1">&#39;n_points&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</section>
+<section id="the-active-material-shorthand">
+<h3>The active-material shorthand<a class="headerlink" href="#the-active-material-shorthand" title="Link to this heading">¶</a></h3>
+<p><em>Defined in <code class="docutils literal notranslate"><span class="pre">calculations/config/model_config.py</span></code>, not in the study file — shared by every study. Imported from <code class="docutils literal notranslate"><span class="pre">model_config</span></code> exactly as before.</em></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ACTIVE_METAL</span> <span class="o">=</span> <span class="n">_first_key</span><span class="p">(</span><span class="n">METALS</span><span class="p">,</span> <span class="s1">&#39;METALS&#39;</span><span class="p">)</span>
+<span class="n">ACTIVE_OXIDE</span> <span class="o">=</span> <span class="n">_first_key</span><span class="p">(</span><span class="n">OXIDES</span><span class="p">,</span> <span class="s1">&#39;OXIDES&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Everything below this line refers to the material <strong>positionally</strong> — the first
+entry of each registry — so adding or renaming a material needs no edit further
+down, and a key name cannot fall out of sync with the dict it indexes.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p><strong>The first entry wins, so add new materials at the bottom.</strong> Dicts preserve
+insertion order, so <code class="docutils literal notranslate"><span class="pre">ACTIVE_METAL</span></code> is the first literal in the <code class="docutils literal notranslate"><span class="pre">METALS</span></code> block.
+Inserting a second alloy <em>above</em> the current one silently re-points every
+derived default, every sweep range and every model call at the new entry while
+the rest of the file looks unchanged.</p>
+</div>
+</section>
+<section id="default-params-level5-and-default-params-level5l6">
+<h3><code class="docutils literal notranslate"><span class="pre">DEFAULT_PARAMS_LEVEL5</span></code> and <code class="docutils literal notranslate"><span class="pre">DEFAULT_PARAMS_LEVEL5L6</span></code><a class="headerlink" href="#default-params-level5-and-default-params-level5l6" title="Link to this heading">¶</a></h3>
+<p><em>Defined in <code class="docutils literal notranslate"><span class="pre">calculations/config/model_config.py</span></code>, not in the study file — shared by every study. Imported from <code class="docutils literal notranslate"><span class="pre">model_config</span></code> exactly as before.</em></p>
+<p>The flattening step. The nested, physically-organised blocks above become one
+flat <code class="docutils literal notranslate"><span class="pre">name</span> <span class="pre">→</span> <span class="pre">scalar</span></code> dict, because that is what the model wrappers and the
+sensitivity sampler consume. Every value is a <em>reference</em> to a block above —
+<code class="docutils literal notranslate"><span class="pre">_SA_M['D_ref']</span></code>, <code class="docutils literal notranslate"><span class="pre">_SA_DC['pinholes']</span></code>, <code class="docutils literal notranslate"><span class="pre">CONDITIONS['L_metal']</span></code> — so the flat
+view cannot disagree with the structured one.</p>
+<p><code class="docutils literal notranslate"><span class="pre">DEFAULT_PARAMS_LEVEL5L6</span></code> starts with <code class="docutils literal notranslate"><span class="pre">**DEFAULT_PARAMS_LEVEL5</span></code> and adds the ten
+surface-kinetics entries, which is what keeps the two models sharing one value
+for everything they have in common. The split mirrors the model fork described
+in <a class="reference internal" href="theory/two-models.html"><span class="doc">Two models, not six levels</span></a>.</p>
+<p>A few entries are not physics: the flags <code class="docutils literal notranslate"><span class="pre">enable_gb_enhancement</span></code>,
+<code class="docutils literal notranslate"><span class="pre">enable_trapping</span></code> and <code class="docutils literal notranslate"><span class="pre">D_eff_method</span></code> say how to run the model. They are read from
+<code class="docutils literal notranslate"><span class="pre">MODEL_OPTIONS</span></code> like everything else, so even these are references rather than
+literals.</p>
+</section>
+<section id="suggested-ranges-level5-level5l6">
+<h3><code class="docutils literal notranslate"><span class="pre">SUGGESTED_RANGES_LEVEL5</span></code> / <code class="docutils literal notranslate"><span class="pre">..._LEVEL5L6</span></code><a class="headerlink" href="#suggested-ranges-level5-level5l6" title="Link to this heading">¶</a></h3>
+<p>One <code class="docutils literal notranslate"><span class="pre">[lo,</span> <span class="pre">hi]</span></code> per sampled parameter. The convention is roughly ±2 decades
+around the reference value for prefactors, and physically motivated bounds for
+activation energies. <code class="docutils literal notranslate"><span class="pre">SUGGESTED_RANGES_LEVEL5L6</span></code> inherits all of the Level 5
+ranges and adds the surface block.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">T_ref_*</span></code> entries are deliberately <strong>not</strong> sampled: they are measurement
+metadata, redundant with the <code class="docutils literal notranslate"><span class="pre">*_ref</span></code> prefactors they accompany, and varying them
+injects an artificial prefactor sweep of several decades.</p>
+</section>
+<section id="regime-presets-and-regime-presets-l5">
+<h3><code class="docutils literal notranslate"><span class="pre">REGIME_PRESETS</span></code> and <code class="docutils literal notranslate"><span class="pre">REGIME_PRESETS_L5</span></code><a class="headerlink" href="#regime-presets-and-regime-presets-l5" title="Link to this heading">¶</a></h3>
+<p>Each preset is the base ranges with only the regime-controlling parameters
+overridden, composed from named building blocks (<code class="docutils literal notranslate"><span class="pre">_SA_SLOW_OXIDE</span></code>,
+<code class="docutils literal notranslate"><span class="pre">_SA_FAST_METAL</span></code>, <code class="docutils literal notranslate"><span class="pre">_SA_DEFECTS_OFF</span></code>, <code class="docutils literal notranslate"><span class="pre">_SA_DEFECTS_LARGE</span></code>, <code class="docutils literal notranslate"><span class="pre">_SA_FAST_SURFACE</span></code>,
+<code class="docutils literal notranslate"><span class="pre">_SA_SLOW_SURFACE</span></code>) so that the parts both models share are defined exactly
+once and cannot drift apart.</p>
+<p>Targeting is not a convenience. Over the default ranges the full model yields
+essentially no surface-limited samples and is overwhelmingly metal-limited —
+one regime, nothing to stratify. The presets are what create the study. See
+<a class="reference internal" href="how-to/sensitivity-analysis.html"><span class="doc">How to run a regime-stratified sensitivity analysis</span></a>.</p>
+</section>
+<section id="default-sweep-temperatures">
+<h3><code class="docutils literal notranslate"><span class="pre">DEFAULT_SWEEP_TEMPERATURES</span></code><a class="headerlink" href="#default-sweep-temperatures" title="Link to this heading">¶</a></h3>
+<p>The temperatures of the isothermal sweep. Temperature is pinned rather than
+sampled because, allowed to vary, it monopolises the variance of the log flux
+and pushes every other parameter to the noise floor.</p>
+</section>
+<section id="plot-style-colors-curve-styles">
+<h3><code class="docutils literal notranslate"><span class="pre">PLOT_STYLE</span></code>, <code class="docutils literal notranslate"><span class="pre">COLORS</span></code>, <code class="docutils literal notranslate"><span class="pre">CURVE_STYLES</span></code><a class="headerlink" href="#plot-style-colors-curve-styles" title="Link to this heading">¶</a></h3>
+<p><em>Defined in <code class="docutils literal notranslate"><span class="pre">calculations/config/model_config.py</span></code>, not in the study file — shared by every study. Imported from <code class="docutils literal notranslate"><span class="pre">model_config</span></code> exactly as before.</em></p>
+<p>Presentation only, but part of the export contract, so a study file must define
+all three. <code class="docutils literal notranslate"><span class="pre">CURVE_STYLES</span></code> gives every level and mode a combination of colour,
+linestyle and marker that is distinguishable by any one of the three alone;
+<code class="docutils literal notranslate"><span class="pre">apply_style</span></code> applies one by name.</p>
+</section>
+<section id="helper-functions">
+<h3>Helper functions<a class="headerlink" href="#helper-functions" title="Link to this heading">¶</a></h3>
+<p><em>Defined in <code class="docutils literal notranslate"><span class="pre">calculations/config/model_config.py</span></code>, not in the study file — shared by every study. Imported from <code class="docutils literal notranslate"><span class="pre">model_config</span></code> exactly as before.</em></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">get_surface_kinetics_from_config</span></code> — evaluates either surface block at a
+temperature and returns <code class="docutils literal notranslate"><span class="pre">k_diss</span></code>, <code class="docutils literal notranslate"><span class="pre">k_recomb</span></code>, <code class="docutils literal notranslate"><span class="pre">K_eq</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">build_simulation_config</span></code> — assembles one solver-ready dict for a metal/oxide
+pair, merging the material entries with <code class="docutils literal notranslate"><span class="pre">CONDITIONS</span></code> and translating the
+<code class="docutils literal notranslate"><span class="pre">OXIDE_DEFECTS</span></code> fractions into the per-path <code class="docutils literal notranslate"><span class="pre">defect_config</span></code> the Level 3
+solvers expect. A path with a zero area fraction is <em>omitted</em>, not
+zero-weighted, so setting a fraction to zero removes that transport path.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">apply_style</span></code> — plots a curve with a named entry from <code class="docutils literal notranslate"><span class="pre">CURVE_STYLES</span></code>.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">build_simulation_config</span></code> applies its overrides with <code class="docutils literal notranslate"><span class="pre">or</span></code>, so a falsy <code class="docutils literal notranslate"><span class="pre">0</span></code> takes
+the default instead. Pass a small positive number rather than zero.</p>
+</div>
+</section>
+</section>
+<section id="the-export-contract">
+<h2>The export contract<a class="headerlink" href="#the-export-contract" title="Link to this heading">¶</a></h2>
+<p>A study file is valid only if it defines all thirteen names in <code class="docutils literal notranslate"><span class="pre">REQUIRED_EXPORTS</span></code>:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>CONDITIONS   METALS   MICROSTRUCTURE   MODEL_OPTIONS   OXIDES   OXIDE_DEFECTS   R
+SUGGESTED_RANGES_LEVEL5   SUGGESTED_RANGES_LEVEL5L6
+REGIME_PRESETS            REGIME_PRESETS_L5
+F   DEFAULT_SWEEP_TEMPERATURES
+</pre></div>
+</div>
+<p>A name is on that list for one of two reasons, and the difference matters:</p>
+<ul class="simple">
+<li><p><strong>The first seven are read by the derived block in <code class="docutils literal notranslate"><span class="pre">model_config</span></code> itself.</strong> A study
+missing one of these does not merely disappoint a later import — it breaks the
+derivation, so without the check you would get a bare <code class="docutils literal notranslate"><span class="pre">NameError</span></code> raised from
+inside the loader.</p></li>
+<li><p><strong>The rest are imported by something.</strong> Four are pulled at module level by
+<code class="docutils literal notranslate"><span class="pre">calculations.sensitivity</span></code>, so a study missing one would otherwise fail at
+<code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">calculations.sensitivity</span></code>, before any error message could help.</p></li>
+</ul>
+<p>The list is derived from what the codebase actually imports and what the derived
+block actually reads, not from what one study happens to define — it is recomputed
+by an AST scan rather than maintained by hand. It grew from fifteen names to twenty
+when the scan first ran, then fell to thirteen when the derived and presentation
+sections moved into <code class="docutils literal notranslate"><span class="pre">model_config</span></code>: eight names stopped being a study’s
+responsibility, and <code class="docutils literal notranslate"><span class="pre">MODEL_OPTIONS</span></code> became one, since the derivation reads it
+although nothing imports it.</p>
+<p>The loader checks the set at import and raises a <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> naming both the study
+and the gap.</p>
+<p>There is no <code class="docutils literal notranslate"><span class="pre">VALIDATION</span></code> block. Earlier revisions carried one — per-level test
+grids for the level notebooks — but it was a second copy of the operating point,
+level-prefixed, and it drifted from <code class="docutils literal notranslate"><span class="pre">CONDITIONS</span></code>. Its live entries moved into
+<code class="docutils literal notranslate"><span class="pre">CONDITIONS</span></code>, its grids are now built at the point of use, and its dead keys were
+deleted.</p>
+</section>
+<section id="after-editing-a-study-file">
+<h2>After editing a study file<a class="headerlink" href="#after-editing-a-study-file" title="Link to this heading">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">calculations.sensitivity</span><span class="w"> </span><span class="kn">import</span> <span class="n">check_against_config</span>
+<span class="n">check_against_config</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Derivation guarantees that the flat defaults match the material blocks. This
+checks the four things it does not: that every derived value is a finite scalar
+(catching an entry that has quietly become a list or a range), that every
+sampled parameter has a default, that every default lies strictly <em>inside</em> its
+own sweep range — a default sitting exactly on a bound is only half-sampled —
+and that the two models still agree wherever their defaults, ranges and presets
+overlap.</p>
+<p>Restart the kernel afterwards. The study is bound into <code class="docutils literal notranslate"><span class="pre">model_config</span></code> at import
+time, so a reload of a notebook module is not enough.</p>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="PARAMETERS.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Complete Parameter Reference</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="appendices.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Appendices</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2026, Azeez Akinyemi
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">The study configuration file</a><ul>
+<li><a class="reference internal" href="#one-study-one-file">One study, one file</a></li>
+<li><a class="reference internal" href="#the-three-sections">The three sections</a></li>
+<li><a class="reference internal" href="#three-kinds-of-entry">Three kinds of entry</a></li>
+<li><a class="reference internal" href="#the-blocks-in-file-order">The blocks, in file order</a><ul>
+<li><a class="reference internal" href="#metals"><code class="docutils literal notranslate"><span class="pre">METALS</span></code></a></li>
+<li><a class="reference internal" href="#oxides"><code class="docutils literal notranslate"><span class="pre">OXIDES</span></code></a></li>
+<li><a class="reference internal" href="#surface-kinetics-nested-in-both"><code class="docutils literal notranslate"><span class="pre">surface_kinetics</span></code> (nested in both)</a></li>
+<li><a class="reference internal" href="#microstructure"><code class="docutils literal notranslate"><span class="pre">MICROSTRUCTURE</span></code></a></li>
+<li><a class="reference internal" href="#oxide-defects"><code class="docutils literal notranslate"><span class="pre">OXIDE_DEFECTS</span></code></a></li>
+<li><a class="reference internal" href="#model-options"><code class="docutils literal notranslate"><span class="pre">MODEL_OPTIONS</span></code></a></li>
+<li><a class="reference internal" href="#conditions"><code class="docutils literal notranslate"><span class="pre">CONDITIONS</span></code></a></li>
+<li><a class="reference internal" href="#the-active-material-shorthand">The active-material shorthand</a></li>
+<li><a class="reference internal" href="#default-params-level5-and-default-params-level5l6"><code class="docutils literal notranslate"><span class="pre">DEFAULT_PARAMS_LEVEL5</span></code> and <code class="docutils literal notranslate"><span class="pre">DEFAULT_PARAMS_LEVEL5L6</span></code></a></li>
+<li><a class="reference internal" href="#suggested-ranges-level5-level5l6"><code class="docutils literal notranslate"><span class="pre">SUGGESTED_RANGES_LEVEL5</span></code> / <code class="docutils literal notranslate"><span class="pre">..._LEVEL5L6</span></code></a></li>
+<li><a class="reference internal" href="#regime-presets-and-regime-presets-l5"><code class="docutils literal notranslate"><span class="pre">REGIME_PRESETS</span></code> and <code class="docutils literal notranslate"><span class="pre">REGIME_PRESETS_L5</span></code></a></li>
+<li><a class="reference internal" href="#default-sweep-temperatures"><code class="docutils literal notranslate"><span class="pre">DEFAULT_SWEEP_TEMPERATURES</span></code></a></li>
+<li><a class="reference internal" href="#plot-style-colors-curve-styles"><code class="docutils literal notranslate"><span class="pre">PLOT_STYLE</span></code>, <code class="docutils literal notranslate"><span class="pre">COLORS</span></code>, <code class="docutils literal notranslate"><span class="pre">CURVE_STYLES</span></code></a></li>
+<li><a class="reference internal" href="#helper-functions">Helper functions</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#the-export-contract">The export contract</a></li>
+<li><a class="reference internal" href="#after-editing-a-study-file">After editing a study file</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="_static/documentation_options.js?v=fc837d61"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/scripts/furo.js?v=46bd48cc"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    </body>
+</html>

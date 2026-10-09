@@ -190,8 +190,9 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-  <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+  <p class="caption" role="heading"><span class="caption-text">Overview</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Part I — Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting started</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">How-to</span></p>
@@ -200,26 +201,51 @@
 <li class="toctree-l1"><a class="reference internal" href="how-to/sensitivity-analysis.html">How to run a regime-stratified sensitivity analysis</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CONTAINER.html">Hydrogen Permeation Model — Offline Analysis Environment</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Theory</span></p>
+<p class="caption" role="heading"><span class="caption-text">Part II — Theory</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="theory/two-models.html">Two models, not six levels</a></li>
 <li class="toctree-l1"><a class="reference internal" href="theory/foundations.html">Foundations: chemical potential and the driving force</a></li>
 <li class="toctree-l1"><a class="reference internal" href="theory/equilibrium-models.html">Equilibrium models: Sieverts, Henry and Langmuir</a></li>
 <li class="toctree-l1"><a class="reference internal" href="STEADY_STATE.html">Steady State, Transients, and the Accumulation Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory/equations.html">Equation catalogue</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Part III — The levels</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="theory/level1-metal.html">Level 1 — the perfect metal</a></li>
 <li class="toctree-l1"><a class="reference internal" href="theory/level2-oxide.html">Level 2 — the oxide layer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="theory/level3-defective-oxide.html">Level 3 — the defective oxide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="theory/level4-microstructure.html">Level 4 — metal microstructure</a></li>
 <li class="toctree-l1"><a class="reference internal" href="theory/level5-full-system.html">Level 5 — the full system</a></li>
 <li class="toctree-l1"><a class="reference internal" href="theory/level6-surface-kinetics.html">Level 6 — surface kinetics</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Cross-cutting</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="theory/permeability.html">Permeability — two models, four tiers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="theory/equations.html">Equation catalogue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory/parameter-map.html">Parameter map</a></li>
+<li class="toctree-l1"><a class="reference internal" href="caveats.html">Warnings and caveats</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Part IV — Sensitivity</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="sensitivity/index.html">Part IV — The sensitivity workflow</a><input aria-label="Toggle navigation of Part IV — The sensitivity workflow" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="sensitivity/01-validate.html">Stage 1 — Validate the configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sensitivity/02-scan.html">Stage 2 — The global scan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sensitivity/03-partition.html">Stage 3 — Partition by regime</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sensitivity/04-target.html">Stage 4 — Aim the sampling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sensitivity/05-indices.html">Stage 5 — Indices, and reading them</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Part V — Practical</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="practical.html">Practical</a></li>
+<li class="toctree-l1"><a class="reference internal" href="appendices.html">Appendices</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="config-file.html">The study configuration file</a></li>
 <li class="toctree-l1"><a class="reference internal" href="PARAMETERS.html">Complete Parameter Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="OUTPUTS.html">Complete Output Reference</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="api/index.html">API Reference</a><input aria-label="Toggle navigation of API Reference" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="api/index.html">API Reference</a><input aria-label="Toggle navigation of API Reference" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="api/utils.html"><code class="docutils literal notranslate"><span class="pre">utils</span></code> — shared Arrhenius helpers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/permeation_calc.html"><code class="docutils literal notranslate"><span class="pre">permeation_calc</span></code> — Levels 1-2: Sieverts solubility and bulk diffusion</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/oxide_permeation.html"><code class="docutils literal notranslate"><span class="pre">oxide_permeation</span></code> — Levels 2-3: molecular transport through the oxide</a></li>
@@ -229,6 +255,7 @@
 <li class="toctree-l2"><a class="reference internal" href="api/surface_kinetics.html"><code class="docutils literal notranslate"><span class="pre">surface_kinetics</span></code> — Level 6: dissociation kinetics and Langmuir coverage</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/classify_regime.html"><code class="docutils literal notranslate"><span class="pre">classify_regime</span></code> — hierarchical regime classification</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/sensitivity.html"><code class="docutils literal notranslate"><span class="pre">sensitivity</span></code> — regime-stratified sensitivity analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/figures.html"><code class="docutils literal notranslate"><span class="pre">figures</span></code> — where a notebook’s figures go</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/config.html"><code class="docutils literal notranslate"><span class="pre">config</span></code> — study selection</a></li>
 </ul>
 </li>
@@ -241,10 +268,6 @@
 <li class="toctree-l1"><a class="reference internal" href="TRAPPING_VALIDATION.html#appendix-c-where-each-quantity-lives">Appendix C — Where each quantity lives</a></li>
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Packaging decisions — <code class="docutils literal notranslate"><span class="pre">hydrogen-model:1.0.0</span></code> offline container</a></li>
 <li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Warnings and caveats</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="caveats.html">Warnings and caveats</a></li>
 </ul>
 
 </div>
@@ -493,6 +516,15 @@ matplotlib APIs removed in 3.10/3.11 (<code class="docutils literal notranslate"
 regeneration requires the expensive scans in <code class="docutils literal notranslate"><span class="pre">sensitivity_regime_L5*.ipynb</span></code>. They
 must travel with the workspace. This is why scanning <code class="docutils literal notranslate"><span class="pre">import</span></code> statements is not
 sufficient to establish an offline package: file dependencies matter too.</p>
+<blockquote>
+<div><p><strong>Superseded 2026-09-28 — this section records what 1.0.0 shipped.</strong> <code class="docutils literal notranslate"><span class="pre">Application/</span></code>
+is withdrawn from 1.2.0 onwards (a delivery copy of <code class="docutils literal notranslate"><span class="pre">Guo_etal_2025/</span></code>: identical
+<code class="docutils literal notranslate"><span class="pre">study_config.py</span></code> bar the docstring, same <code class="docutils literal notranslate"><span class="pre">STUDY_NAME</span></code>). The workspace now ships
+three study folders — <code class="docutils literal notranslate"><span class="pre">Guo_etal_2025/</span></code>, <code class="docutils literal notranslate"><span class="pre">Fuerst_et_al_2024/</span></code>, <code class="docutils literal notranslate"><span class="pre">incoloy802_cr2o3/</span></code>.
+The <code class="docutils literal notranslate"><span class="pre">sa_results/*.csv</span></code> argument above still holds for whichever study is shipped
+with them, but as of 1.2.0 <strong>no SA CSVs ship at all</strong>: every <code class="docutils literal notranslate"><span class="pre">sa_results/</span></code> in the
+release carries only <code class="docutils literal notranslate"><span class="pre">.gitkeep</span></code>, and the smoke test’s SA block is expected to SKIP.</p>
+</div></blockquote>
 <p>Preserve <code class="docutils literal notranslate"><span class="pre">calculations/config/</span></code> <strong>without</strong> an <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code>. It is a working
 implicit namespace package; adding one during packaging would be a gratuitous
 change to a validated tree.</p>
@@ -926,6 +958,218 @@ before import, and whether containers must run as a specific UID.</p></li>
 </ul>
 </section>
 </section>
+<section id="release-record-2026-09-26">
+<h2>1.2.0 release record — 2026-09-26<a class="headerlink" href="#release-record-2026-09-26" title="Link to this heading">¶</a></h2>
+<p>There is no 1.1.0 record in this file; it was released without one. This entry is
+written to the shape of the 1.0.1 record above.</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p></p></th>
+<th class="head"><p></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>image id</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sha256:9b613b26d005ef48da48d8bd96a57bb5e2ac1e64c805fc47036ca341ed8d01b0</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>arch / user</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">amd64/linux</span></code>, <code class="docutils literal notranslate"><span class="pre">User=1000:0</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>archive</p></td>
+<td><p>228M tar, sha256 <code class="docutils literal notranslate"><span class="pre">8733641cd2c03c96…</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>package manifest</p></td>
+<td><p>68 files, all verify with <code class="docutils literal notranslate"><span class="pre">shasum</span> <span class="pre">-a</span> <span class="pre">256</span> <span class="pre">-c</span> <span class="pre">SHA256SUMS.txt</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>round-trip</p></td>
+<td><p>image removed (<code class="docutils literal notranslate"><span class="pre">Deleted:</span> <span class="pre">sha256:9b613b26…</span></code>), reloaded from the tar, <strong>identical id</strong></p></td>
+</tr>
+<tr class="row-odd"><td><p>gates from the package</p></td>
+<td><p>both PASSED offline, on the reloaded image</p></td>
+</tr>
+<tr class="row-even"><td><p>second study</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">MHI_STUDY=incoloy802_cr2o3/study_config.py</span></code> gated deliberately — PASSED</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<section id="the-environment-did-not-change-the-model-did">
+<h3>The environment did not change; the model did<a class="headerlink" href="#the-environment-did-not-change-the-model-did" title="Link to this heading">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">requirements.lock.txt</span></code>, the <code class="docutils literal notranslate"><span class="pre">Dockerfile</span></code> and both scripts are unchanged from
+1.1.0 — the <code class="docutils literal notranslate"><span class="pre">Dockerfile</span></code> hash <code class="docutils literal notranslate"><span class="pre">d0c34b13…</span></code> is the same entry in both SHA256SUMS
+files, the pip layer was a cache hit during the build, and <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">freeze</span></code> inside the
+image returns the same 106 packages byte for byte.</p>
+<p>The image still had to be rebuilt, because <code class="docutils literal notranslate"><span class="pre">model_smoke_test.py</span></code> is <code class="docutils literal notranslate"><span class="pre">COPY</span></code>d into
+it and changed in five commits: the gate became study-aware, gained <code class="docutils literal notranslate"><span class="pre">--emit</span></code> for
+regenerating its own reference values, and had its operating point and 13 pinned
+values re-measured after <code class="docutils literal notranslate"><span class="pre">CONDITIONS</span></code> took over the oxide geometry.</p>
+</section>
+<section id="respun-in-place-2026-09-28">
+<h3>1.2.0 respun in place — 2026-09-28<a class="headerlink" href="#respun-in-place-2026-09-28" title="Link to this heading">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">Application/</span></code> was withdrawn from the deliverable (a delivery copy of
+<code class="docutils literal notranslate"><span class="pre">Guo_etal_2025/</span></code>: identical <code class="docutils literal notranslate"><span class="pre">study_config.py</span></code> bar the docstring, same <code class="docutils literal notranslate"><span class="pre">STUDY_NAME</span></code>).
+That broke gate 2 outright, because <code class="docutils literal notranslate"><span class="pre">model_smoke_test.py</span></code> <code class="docutils literal notranslate"><span class="pre">setdefault</span></code>s <code class="docutils literal notranslate"><span class="pre">$MHI_STUDY</span></code>
+to <code class="docutils literal notranslate"><span class="pre">GATE_STUDY</span></code>, which named <code class="docutils literal notranslate"><span class="pre">Application/study_config.py</span></code> — with the folder gone the
+study loader raised <code class="docutils literal notranslate"><span class="pre">ValueError:</span> <span class="pre">study</span> <span class="pre">file</span> <span class="pre">'/workspace/Application/study_config.py'</span> <span class="pre">does</span> <span class="pre">not</span> <span class="pre">exist</span></code> before a single check ran. <code class="docutils literal notranslate"><span class="pre">scripts/verify.sh</span></code> reported
+<code class="docutils literal notranslate"><span class="pre">Gate</span> <span class="pre">1/2</span> <span class="pre">PASSED</span></code>, <code class="docutils literal notranslate"><span class="pre">Gate</span> <span class="pre">2/2</span> <span class="pre">FAILED</span></code>. <code class="docutils literal notranslate"><span class="pre">GATE_STUDY</span></code> is now
+<code class="docutils literal notranslate"><span class="pre">Guo_etal_2025/study_config.py</span></code>, and the SA-artefacts block follows the active study
+(<code class="docutils literal notranslate"><span class="pre">os.path.dirname(ACTIVE_STUDY_PATH)</span></code>) instead of naming a folder.</p>
+<p>The 1.2.0 tag and its tar were <strong>overwritten rather than superseded by a 1.2.1</strong>, a
+deliberate exception to the rule that a released archive is never replaced. What
+makes it defensible here is that the environment is provably unchanged: the pip layer
+was a cache hit, and the regenerated <code class="docutils literal notranslate"><span class="pre">installed-packages.txt</span></code> hashes to
+<code class="docutils literal notranslate"><span class="pre">4e3a3d955b80…</span></code>, the same value the superseded <code class="docutils literal notranslate"><span class="pre">SHA256SUMS.txt</span></code> recorded for it.
+Only the <code class="docutils literal notranslate"><span class="pre">COPY</span></code> layer moved.</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p></p></th>
+<th class="head"><p></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>image id</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sha256:a826175534f4b31546ca25f1cfc4b592c34759c38d78bb455f83f4411aa4d6c1</span></code> (was <code class="docutils literal notranslate"><span class="pre">sha256:9b613b26d005…</span></code>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>arch / user</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">amd64/linux</span></code>, <code class="docutils literal notranslate"><span class="pre">User=1000:0</span></code> — unchanged</p></td>
+</tr>
+<tr class="row-even"><td><p>archive</p></td>
+<td><p>228M tar, sha256 <code class="docutils literal notranslate"><span class="pre">f583dc97856f4f34…</span></code> (was <code class="docutils literal notranslate"><span class="pre">8733641cd2c03c96…</span></code>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>package manifest</p></td>
+<td><p><strong>57</strong> files (was 68; 11 <code class="docutils literal notranslate"><span class="pre">Application/</span></code> entries removed), all verify</p></td>
+</tr>
+<tr class="row-even"><td><p>environment</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">freeze</span></code> identical, 106 packages, <code class="docutils literal notranslate"><span class="pre">installed-packages.txt</span></code> hash unchanged</p></td>
+</tr>
+<tr class="row-odd"><td><p>gates from the package</p></td>
+<td><p>both PASSED offline, <code class="docutils literal notranslate"><span class="pre">VERIFICATION</span> <span class="pre">PASSED</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>pinned values</p></td>
+<td><p>all 13 reproduce; PAWN and delta unchanged to the last digit</p></td>
+</tr>
+<tr class="row-odd"><td><p>round-trip</p></td>
+<td><p><strong>not re-run</strong> — the tar is well-formed (20 members, 16 blobs) but <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">rmi</span></code> + <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">load</span></code> was not repeated for this respin</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Manifest entries that changed, and nothing else: <code class="docutils literal notranslate"><span class="pre">README.md</span></code>,
+<code class="docutils literal notranslate"><span class="pre">docker-image-inspect.json</span></code>, the two <code class="docutils literal notranslate"><span class="pre">image/</span></code> files, <code class="docutils literal notranslate"><span class="pre">calculations/config/__init__.py</span></code>,
+and the three <code class="docutils literal notranslate"><span class="pre">study_config.py</span></code> (comment-only — AST-identical to the 1.2.0 originals).
+The <code class="docutils literal notranslate"><span class="pre">Dockerfile</span></code>, <code class="docutils literal notranslate"><span class="pre">requirements.lock.txt</span></code>, <code class="docutils literal notranslate"><span class="pre">requirements.in</span></code>, both scripts,
+<code class="docutils literal notranslate"><span class="pre">installed-packages.txt</span></code> and all 18 notebooks are byte-identical.</p>
+</section>
+</section>
+<section id="release-record-2026-10-08">
+<h2>1.3.0 release record — 2026-10-08<a class="headerlink" href="#release-record-2026-10-08" title="Link to this heading">¶</a></h2>
+<p>Built from <code class="docutils literal notranslate"><span class="pre">0d3a12e</span></code>, the merge of PR #7, which is the last commit before the parameter
+renames began. That cut point was chosen deliberately: this release carries the
+grain-boundary change and the figure work, and NOT the renames or the preset guard that
+followed them in PRs #8 and #9.</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p></p></th>
+<th class="head"><p></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>image id</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sha256:847e1d07565c6502794b6af55971cb20f1dbc2383d4979e4c74a1ec9e797cfd6</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>arch / user</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">amd64/linux</span></code>, <code class="docutils literal notranslate"><span class="pre">User=1000:0</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>archive</p></td>
+<td><p>228M tar, sha256 <code class="docutils literal notranslate"><span class="pre">bdb177bb6e46fa64…</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>package manifest</p></td>
+<td><p>56 files, all verify with <code class="docutils literal notranslate"><span class="pre">shasum</span> <span class="pre">-a</span> <span class="pre">256</span> <span class="pre">-c</span> <span class="pre">SHA256SUMS.txt</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>environment</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">freeze</span></code> <strong>identical to 1.2.0’s</strong> — same 106 packages, pip layer a cache hit</p></td>
+</tr>
+<tr class="row-odd"><td><p>gates from the package</p></td>
+<td><p>both PASSED offline, <code class="docutils literal notranslate"><span class="pre">VERIFICATION</span> <span class="pre">PASSED</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>studies shipped</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Guo_etal_2025</span></code>, <code class="docutils literal notranslate"><span class="pre">Fuerst_et_al_2024</span></code>, <code class="docutils literal notranslate"><span class="pre">incoloy802_cr2o3</span></code> — <code class="docutils literal notranslate"><span class="pre">Application/</span></code> stays withdrawn</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<section id="the-environment-did-not-change-the-model-and-the-figures-did">
+<h3>The environment did not change; the model and the figures did<a class="headerlink" href="#the-environment-did-not-change-the-model-and-the-figures-did" title="Link to this heading">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">requirements.lock.txt</span></code>, the <code class="docutils literal notranslate"><span class="pre">Dockerfile</span></code> and both scripts are unchanged from 1.2.0, and
+the regenerated <code class="docutils literal notranslate"><span class="pre">installed-packages.txt</span></code> is byte-identical to 1.2.0’s. That equality is
+the evidence: only the <code class="docutils literal notranslate"><span class="pre">COPY</span></code> layer and the bind-mounted workspace moved.</p>
+<p>The image still had to be rebuilt, because <code class="docutils literal notranslate"><span class="pre">model_smoke_test.py</span></code> is <code class="docutils literal notranslate"><span class="pre">COPY</span></code>d into it and
+its pinned reference values were re-measured when the grain-boundary model changed.</p>
+</section>
+<section id="one-file-is-not-from-the-cut-point">
+<h3>One file is not from the cut point<a class="headerlink" href="#one-file-is-not-from-the-cut-point" title="Link to this heading">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">container/model_smoke_test.py</span></code> is taken from <code class="docutils literal notranslate"><span class="pre">main</span></code> rather than from <code class="docutils literal notranslate"><span class="pre">0d3a12e</span></code>. At the
+cut point it still read <code class="docutils literal notranslate"><span class="pre">GATE_STUDY</span> <span class="pre">=</span> <span class="pre">&quot;Application/study_config.py&quot;</span></code>, the defect fixed in
+PR #9 — building it verbatim would have pointed the release at a study it does not ship,
+and gate 2 would have died with a <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> before running a check.</p>
+<p>Two facts made the substitution safe, and both were checked rather than assumed: the
+pinned reference values are byte-identical between <code class="docutils literal notranslate"><span class="pre">0d3a12e</span></code> and <code class="docutils literal notranslate"><span class="pre">main</span></code>, because the
+renames moved no number; and <code class="docutils literal notranslate"><span class="pre">main</span></code>’s gate uses none of the renamed names. The newer
+gate therefore runs correctly against the older workspace, which was confirmed before
+the build and again by <code class="docutils literal notranslate"><span class="pre">scripts/verify.sh</span></code> after it.</p>
+</section>
+<section id="what-this-release-deliberately-omits">
+<h3>What this release deliberately omits<a class="headerlink" href="#what-this-release-deliberately-omits" title="Link to this heading">¶</a></h3>
+<p>The parameter renames from PR #8 are <strong>not</strong> here. Inside this container the model
+switches are <code class="docutils literal notranslate"><span class="pre">include_gb_enhancement</span></code> and <code class="docutils literal notranslate"><span class="pre">include_gb_trapping</span></code>, wall thicknesses are
+passed as <code class="docutils literal notranslate"><span class="pre">thickness=</span></code>, and the profile count is <code class="docutils literal notranslate"><span class="pre">n_points=</span></code>. On <code class="docutils literal notranslate"><span class="pre">main</span></code> those are
+<code class="docutils literal notranslate"><span class="pre">enable_gb_enhancement</span></code>, <code class="docutils literal notranslate"><span class="pre">enable_gb_as_trap</span></code>, <code class="docutils literal notranslate"><span class="pre">metal_thickness=</span></code> and
+<code class="docutils literal notranslate"><span class="pre">n_profile_points=</span></code>.</p>
+<p><strong>The container’s API therefore differs from the repository’s.</strong> Code moved between the
+two will raise <code class="docutils literal notranslate"><span class="pre">TypeError</span></code> on the keyword names. The preset-key guard is also absent, so
+a stale key in <code class="docutils literal notranslate"><span class="pre">REGIME_PRESETS</span></code> is silently ignored here rather than reported.</p>
+</section>
+<section id="is-untouched">
+<h3>1.2.0 is untouched<a class="headerlink" href="#is-untouched" title="Link to this heading">¶</a></h3>
+<p>Its directory, its tar and its image tag are all left as they were. The grain-boundary
+change moves <code class="docutils literal notranslate"><span class="pre">micro_D_eff</span></code> and <code class="docutils literal notranslate"><span class="pre">micro_overall_factor</span></code>, so results computed under 1.2.0
+are not identical to results computed here, and 1.2.0 remains the artifact its own
+results were produced in.</p>
+</section>
+<section id="what-ships-that-did-not-before">
+<h3>What ships that did not before<a class="headerlink" href="#what-ships-that-did-not-before" title="Link to this heading">¶</a></h3>
+<p>Four studies rather than three, each a self-contained folder holding its own
+<code class="docutils literal notranslate"><span class="pre">study_config.py</span></code> — there is no <code class="docutils literal notranslate"><span class="pre">ACTIVE_STUDY</span></code> switch and no
+<code class="docutils literal notranslate"><span class="pre">calculations/config/studies/</span></code> any more. <code class="docutils literal notranslate"><span class="pre">calculations/</span></code> gains <code class="docutils literal notranslate"><span class="pre">permeability.py</span></code>
+and <code class="docutils literal notranslate"><span class="pre">figures.py</span></code>.</p>
+<p><strong>1.1.0 results do not reproduce under 1.2.0</strong>, and that is intended rather than a
+regression. <code class="docutils literal notranslate"><span class="pre">CONDITIONS</span></code> is now the authority for the wall, so the oxide is its
+1 µm <code class="docutils literal notranslate"><span class="pre">L_oxide</span></code> and not the 48 nm coupon thickness recorded on the material, which
+drops Level 5L6 flux threefold and flips that level from metal- to oxide-limited;
+and <code class="docutils literal notranslate"><span class="pre">permeability</span></code> is an apparent permeability derived from each level’s own
+solved flux rather than a harmonic mean of bulk constants, a factor of 775 at the
+default point.</p>
+</section>
+<section id="two-things-found-while-packaging">
+<h3>Two things found while packaging<a class="headerlink" href="#two-things-found-while-packaging" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">image/*.sha256</span></code> must hold a package-root-relative path.</strong> Generated from
+inside <code class="docutils literal notranslate"><span class="pre">image/</span></code> it records a bare filename, and the README’s own first
+instruction — <code class="docutils literal notranslate"><span class="pre">shasum</span> <span class="pre">-a</span> <span class="pre">256</span> <span class="pre">-c</span> <span class="pre">image/hydrogen-model-1.2.0.sha256</span></code>, run from the
+package root — then fails to find the file. Caught before shipping; 1.1.0 has the
+correct form and was the reference.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">sa_results/</span></code> ships empty again.</strong> The “What ships” section above says the scan
+CSVs must travel because <code class="docutils literal notranslate"><span class="pre">regime_parallel_coords*</span></code> cannot regenerate them, and
+1.1.0 already shipped only <code class="docutils literal notranslate"><span class="pre">.gitkeep</span></code>. The only scans on disk were
+<code class="docutils literal notranslate"><span class="pre">Application/sa_results_L5</span></code>, computed before the geometry re-baseline, so
+shipping them would have shipped wrong numbers. Empty is the lesser evil, and the
+README’s “Run order matters” says to run the scans first.</p></li>
+</ul>
+</section>
+</section>
 </section>
 
         </article>
@@ -1008,6 +1252,20 @@ before import, and whether containers must run as a specific UID.</p></li>
 <li><a class="reference internal" href="#what-this-found">What this found</a></li>
 <li><a class="reference internal" href="#release-record">1.0.1 release record</a></li>
 <li><a class="reference internal" href="#still-open">Still open</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#release-record-2026-09-26">1.2.0 release record — 2026-09-26</a><ul>
+<li><a class="reference internal" href="#the-environment-did-not-change-the-model-did">The environment did not change; the model did</a></li>
+<li><a class="reference internal" href="#respun-in-place-2026-09-28">1.2.0 respun in place — 2026-09-28</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#release-record-2026-10-08">1.3.0 release record — 2026-10-08</a><ul>
+<li><a class="reference internal" href="#the-environment-did-not-change-the-model-and-the-figures-did">The environment did not change; the model and the figures did</a></li>
+<li><a class="reference internal" href="#one-file-is-not-from-the-cut-point">One file is not from the cut point</a></li>
+<li><a class="reference internal" href="#what-this-release-deliberately-omits">What this release deliberately omits</a></li>
+<li><a class="reference internal" href="#is-untouched">1.2.0 is untouched</a></li>
+<li><a class="reference internal" href="#what-ships-that-did-not-before">What ships that did not before</a></li>
+<li><a class="reference internal" href="#two-things-found-while-packaging">Two things found while packaging</a></li>
 </ul>
 </li>
 </ul>
