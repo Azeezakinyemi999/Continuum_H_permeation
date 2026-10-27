@@ -35,6 +35,26 @@ R = 8.314  # J/(mol·K)
 # Used by all model levels
 # =============================================================================
 
+#: Floor of the coverage bracket. When dissociation cannot keep up with transport
+#: (ultra-low P_up, high T, weak adsorption) the steady coverage sits far below the
+#: old 1e-10 floor -- 9e-11 at 923 K and 1e-7 Pa on the Fuerst wall, 2e-13 at 1273 K
+#: -- and the bracket then held no root at all.
+THETA_FLOOR = 1e-300
+
+
+def solve_coverage(residual, args=(), theta_max=1.0 - 1e-10):
+    r"""Steady-state surface coverage :math:`\theta`: the root of ``residual``.
+
+    The bracket runs from :data:`THETA_FLOOR` to ``theta_max``. Every residual here is
+    net dissociation minus the flux drained into the solid, which is positive as
+    :math:`\theta \to 0` (the surface fills) and negative as :math:`\theta \to 1`, so
+    the bracket always holds the root. The tolerance is relative, because brentq's
+    default absolute ``xtol`` of 2e-12 exceeds a coverage of 1e-13 and would return it
+    with no correct digits.
+    """
+    return brentq(residual, THETA_FLOOR, theta_max, args=args, xtol=THETA_FLOOR)
+
+
 def get_all_properties(oxide_name, metal_name, temperature_K,
                        oxides=None, metals=None):
     """
@@ -190,11 +210,7 @@ def solve_steady_state_flux_L1L6(P_up, P_down, L_m, k_diss, K_eq, D_m, K_s_m):
     """
     beta = D_m * K_s_m / L_m
 
-    theta_ss = brentq(
-        surface_flux_residual_L1,
-        1e-10, 1.0 - 1e-10,
-        args=(P_up, beta, P_down, k_diss, K_eq)
-    )
+    theta_ss = solve_coverage(surface_flux_residual_L1, args=(P_up, beta, P_down, k_diss, K_eq))
 
     sqrt_P_int = g_theta(theta_ss, K_eq)
     J_ss       = metal_flux_L1(theta_ss, beta, K_eq, P_down)
@@ -272,11 +288,7 @@ def solve_steady_state_flux_L2aL6(P_up, P_down, k_diss, K_eq, D_ox, K_ox, L_ox):
     """
     alpha = D_ox * K_ox / L_ox
 
-    theta_ss = brentq(
-        surface_flux_residual_L2a,
-        1e-10, 1.0 - 1e-10,
-        args=(P_up, alpha, P_down, k_diss, K_eq)
-    )
+    theta_ss = solve_coverage(surface_flux_residual_L2a, args=(P_up, alpha, P_down, k_diss, K_eq))
 
     sqrt_P_surf = g_theta(theta_ss, K_eq)
     J_ss        = oxide_flux_L2a(theta_ss, alpha, K_eq, P_down)
@@ -346,11 +358,7 @@ def solve_steady_state_flux(P_up, P_down, L_m, oxide_name, metal_name, temperatu
     k_diss  = props['k_diss']
     K_eq    = props['K_eq']
 
-    theta_ss = brentq(
-        surface_flux_residual,
-        1e-10, 1.0 - 1e-10,
-        args=(P_up, alpha, beta, P_down, k_diss, K_eq)
-    )
+    theta_ss = solve_coverage(surface_flux_residual, args=(P_up, alpha, beta, P_down, k_diss, K_eq))
 
     sqrt_P_int = sqrt_P_int_from_theta(theta_ss, alpha, beta, K_eq, P_down)
     P_int      = sqrt_P_int**2
@@ -433,11 +441,7 @@ def solve_steady_state_flux_direct(P_up, P_down, L_m, k_diss, K_eq,
     alpha = D_ox * K_ox / L_ox
     beta  = D_m  * K_s_m / L_m
 
-    theta_ss = brentq(
-        surface_flux_residual,
-        1e-10, 1.0 - 1e-10,
-        args=(P_up, alpha, beta, P_down, k_diss, K_eq)
-    )
+    theta_ss = solve_coverage(surface_flux_residual, args=(P_up, alpha, beta, P_down, k_diss, K_eq))
 
     sqrt_P_int = sqrt_P_int_from_theta(theta_ss, alpha, beta, K_eq, P_down)
     P_int      = sqrt_P_int**2
@@ -560,11 +564,8 @@ def calculate_defective_metal_flux_L6(
         beta = D_eff * K_s_m / metal_thickness
 
         try:
-            theta_ss = brentq(
-                surface_flux_residual,
-                1e-10, 1.0 - 1e-10,
-                args=(P_up, alpha, beta, P_down, k_diss, K_eq)
-            )
+            theta_ss = solve_coverage(surface_flux_residual,
+                                      args=(P_up, alpha, beta, P_down, k_diss, K_eq))
         except ValueError as e:
             return {
                 'flux': np.nan,
@@ -805,7 +806,7 @@ def calculate_path_flux_L6(
                 return J_surf_loc - J_metal_loc
 
             try:
-                theta_ss = brentq(residual, 1e-10, 1.0 - 1e-10)
+                theta_ss = solve_coverage(residual)
             except ValueError as e:
                 return {
                     'flux': np.nan, 'theta': np.nan, 'P_int': np.nan,
@@ -857,7 +858,7 @@ def calculate_path_flux_L6(
         return J_surf_loc - J_metal_loc
 
     try:
-        theta_ss = brentq(residual, 1e-10, 1.0 - 1e-10)
+        theta_ss = solve_coverage(residual)
     except ValueError as e:
         return {
             'flux': np.nan, 'theta': np.nan, 'P_int': np.nan,
@@ -1262,7 +1263,7 @@ def calculate_path_flux_L346_v2(
                 return J_surf_loc - J_metal_loc
 
             try:
-                theta_ss = brentq(residual, 1e-12, 1.0 - 1e-12)
+                theta_ss = solve_coverage(residual, theta_max=1.0 - 1e-12)
             except ValueError as e:
                 _nan_resistances = {
                     'R_surface': np.nan, 'R_oxide': np.nan, 'R_metal': np.nan,
