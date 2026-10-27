@@ -1,6 +1,6 @@
 # API Reference
 
-Eleven modules, no classes. Ordered by model Level rather than alphabetically, to
+Twelve modules, no classes. Ordered by model Level rather than alphabetically, to
 match the hierarchy described in {doc}`../getting-started`.
 
 ```{toctree}
@@ -14,6 +14,7 @@ parallel_oxide_defect_paths
 defective_metal
 surface_kinetics
 classify_regime
+wall_labels
 sensitivity
 figures
 config

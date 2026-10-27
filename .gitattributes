@@ -1,0 +1,12 @@
+# The effect-of sweep notebooks and the study comparison are committed WITHOUT their outputs.
+# Their figures are regenerable (the *-results/ folders are already gitignored for that reason),
+# and a full re-run rewrites ~190 MB of embedded images, which would land in the history again on
+# every commit. The working copy keeps its outputs; only the committed blob is stripped.
+#
+# The filter is defined per clone, in .git/config. Without it this line does nothing and the
+# notebooks are committed as they are, so set it up once in any clone you commit from:
+#
+#   git config filter.strip-outputs.clean "jupyter nbconvert --ClearOutputPreprocessor.enabled=True --to=notebook --stdin --stdout --log-level=ERROR"
+#   git config filter.strip-outputs.required true
+*/effect-of-*.ipynb                 filter=strip-outputs
+Comparisons/study-comparison.ipynb  filter=strip-outputs
