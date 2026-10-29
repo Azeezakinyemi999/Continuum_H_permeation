@@ -36,8 +36,8 @@ L_metal/L_oxide  0.001 / 1e-06 m
 [L4 microstructure] defective_metal.combined_microstructure_model
   (lattice_concentration=10.0, as in container/model_smoke_test.py)
   D_lattice                  2.363871e-10
-  D_eff                      1.746573e-10
-  overall_factor             7.388612e-01
+  D_eff                      1.745310e-10
+  overall_factor             7.383270e-01
   trapping.theta_total       2.637084e-02
   dominant_effect            balanced
   regime                     competitive
@@ -47,16 +47,16 @@ L_metal/L_oxide  0.001 / 1e-06 m
   J_ss                       4.722188e-07
   P_int                      1.190674e+03
   theta                      5.736148e-01
-  beta                       1.368507e-08
+  gb_diffusivity_ratio       None
   rate_limiting              metal
 
 [permeability tiers] calculations.permeability
   tier 1 Phi_oxide           4.001663e-15  mol/m/s/Pa
   tier 1 Phi_metal           1.368507e-11  mol/m/s/Pa^0.5
   Model 1 has no tier 3: the two units above are not commensurable.
-  tier 2 Phi_ox_eff/Phi_ox   1.009000   (f_crack=0.001, f_gb=0)
-  tier 2 Phi_ox_eff/Phi_ox   1.009000   (f_crack=0, f_gb=0.001)
-  tier 2 Phi_ox_eff/Phi_ox   1.180000   (f_crack=0.01, f_gb=0.01)
+  tier 2 Phi_ox_eff/Phi_ox   1.009000   (f_crack=0.001, f_gb_defect=0)
+  tier 2 Phi_ox_eff/Phi_ox   1.009000   (f_crack=0, f_gb_defect=0.001)
+  tier 2 Phi_ox_eff/Phi_ox   1.180000   (f_crack=0.01, f_gb_defect=0.01)
   Model 1 bilayer closed form 4.304261e-06  mol/m2/s
   Model 1 bilayer brentq      4.304261e-06  mol/m2/s
   relative difference         5.285e-14
@@ -68,51 +68,51 @@ L_metal/L_oxide  0.001 / 1e-06 m
   understated by             775x
 
 [L5 canonical wrapper] sensitivity.level5_model_wrapper on its DEFAULT_PARAMS
-  D_eff                      1.746573e-10
+  D_eff                      1.745310e-10
   D_metal                    2.363871e-10
-  D_modification             7.388612e-01
+  D_modification             7.383270e-01
   D_ox                       1.394877e-17
   K_ox                       2.868829e+02
   K_s_metal                  5.789261e-02
-  PRF                        1.003927e+00
-  P_interface                9.920414e+04
+  PRF                        1.003924e+00
+  P_interface                9.920472e+04
   defect_enhancement         1.000076e+00
-  flux                       3.184987e-06
-  flux_bare_metal            3.197494e-06
-  flux_defect                6.393712e-08
-  flux_intact                3.121050e-06
-  frac_defect                2.007453e-02
-  frac_metal                 9.721267e-01
-  frac_oxide                 7.798791e-03
-  modification_factor        7.388612e-01
-  permeability               1.008189e-11
-  permeance                  1.007181e-08
+  flux                       3.182694e-06
+  flux_bare_metal            3.195183e-06
+  flux_defect                6.389090e-08
+  flux_intact                3.118803e-06
+  frac_defect                2.007447e-02
+  frac_metal                 9.721324e-01
+  frac_oxide                 7.793176e-03
+  modification_factor        7.383270e-01
+  permeability               1.007463e-11
+  permeance                  1.006456e-08
   regime                     metal
   temperature                8.730000e+02
 
 [L5+L6 canonical wrapper] sensitivity.level5L6_model_wrapper on its DEFAULT_PARAMS
-  D_eff                      1.746573e-10
+  D_eff                      1.745310e-10
   D_metal                    2.363871e-10
-  D_modification             7.388612e-01
+  D_modification             7.383270e-01
   D_ox                       1.394877e-17
   K_eq                       2.798918e-05
   K_eq_metal                 3.349488e-03
   K_ox                       2.868829e+02
   K_s_metal                  5.789261e-02
   PRF                        nan
-  P_interface                7.826525e+03
-  Phi_transport              2.869883e-12
-  eta_surf                   9.866525e-01
-  flux                       9.090674e-07
-  flux_defect                3.242923e-08
-  flux_intact                8.766381e-07
-  frac_metal                 3.035111e-01
-  frac_oxide                 6.962973e-01
-  frac_surface               1.915509e-04
+  P_interface                7.834682e+03
+  Phi_transport              2.869294e-12
+  eta_surf                   9.866552e-01
+  flux                       9.088726e-07
+  flux_defect                3.241191e-08
+  flux_intact                8.764607e-07
+  frac_metal                 3.036497e-01
+  frac_oxide                 6.961588e-01
+  frac_surface               1.914741e-04
   k_diss                     2.370190e-09
   k_diss_metal               2.498430e-10
-  permeability               2.877598e-12
-  permeance                  2.874723e-09
+  permeability               2.876982e-12
+  permeance                  2.874108e-09
   regime                     oxide
   temperature                8.730000e+02
-  theta                      6.227364e-01
+  theta                      6.227370e-01

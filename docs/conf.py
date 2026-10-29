@@ -70,6 +70,14 @@ exclude_patterns = [
     "_build", "Thumbs.db", ".DS_Store",
     # Tooling, not content: the doc verifier and the worked-values generator.
     "_tools",
+    # Figure SOURCES, not pages. The .svg files here are still copied into the build
+    # wherever a page references them -- exclude_patterns governs which documents are
+    # PARSED, not which images are collected -- but captions.md is generated output
+    # that belongs to no toctree, and with -W an orphan page fails the build.
+    "figures",
+    # Working state for whoever resumes the documentation rebuild. Read on GitHub,
+    # not part of the reference site.
+    "CHECKPOINT.md",
 ]
 templates_path = ["_templates"]
 

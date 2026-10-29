@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="460.8pt" height="272.694281pt" viewBox="0 0 460.8 272.694281" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:date>2026-10-09T12:17:14.352487</dc:date>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.9.4, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 272.694281 
+L 460.8 272.694281 
+L 460.8 0 
+L 0 0 
+z
+" style="fill: #ffffff"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 28.6272 195.240713 
+L 191.1168 195.240713 
+Q 200.0448 195.240713 200.0448 190.361993 
+L 200.0448 67.418249 
+Q 200.0448 62.539529 191.1168 62.539529 
+L 28.6272 62.539529 
+Q 19.6992 62.539529 19.6992 67.418249 
+L 19.6992 190.361993 
+Q 19.6992 195.240713 28.6272 195.240713 
+z
+" clip-path="url(#p3eae13ef4e)" style="fill: #fdf6f0; stroke: #eb6834; stroke-width: 1.6; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_3">
+    <path d="M 269.6832 195.240713 
+L 432.1728 195.240713 
+Q 441.1008 195.240713 441.1008 190.361993 
+L 441.1008 67.418249 
+Q 441.1008 62.539529 432.1728 62.539529 
+L 269.6832 62.539529 
+Q 260.7552 62.539529 260.7552 67.418249 
+L 260.7552 190.361993 
+Q 260.7552 195.240713 269.6832 195.240713 
+z
+" clip-path="url(#p3eae13ef4e)" style="fill: #f0f4fd; stroke: #4a3aa7; stroke-width: 1.6; stroke-linejoin: miter"/>
+   </g>
+   <g id="line2d_1">
+    <path d="M 212.544 138.647561 
+L 248.256 119.132681 
+" clip-path="url(#p3eae13ef4e)" style="fill: none; stroke: #b3261e; stroke-width: 3; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_2">
+    <path d="M 212.544 119.132681 
+L 248.256 138.647561 
+" clip-path="url(#p3eae13ef4e)" style="fill: none; stroke: #b3261e; stroke-width: 3; stroke-linecap: round"/>
+   </g>
+   <g id="text_1">
+    <text style="fill: #eb6834; font: 700 10.5px 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: middle" x="109.872" y="80.102921" transform="rotate(-0 109.872 80.102921)">Model 1  (L1–L5)</text>
+   </g>
+   <g id="text_2">
+    <text style="fill: #4a3aa7; font: 700 10.5px 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: middle" x="350.928" y="80.102921" transform="rotate(-0 350.928 80.102921)">Model 2  (L6 family)</text>
+   </g>
+   <g id="text_3">
+    <text style="fill: #222222; font: 8.6px 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: middle" x="109.872" y="99.617801" transform="rotate(-0 109.872 99.617801)">dissociation at the oxide/metal interface</text>
+   </g>
+   <g id="text_4">
+    <text style="fill: #222222; font: 8.6px 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: middle" x="350.928" y="99.617801" transform="rotate(-0 350.928 99.617801)">dissociation at the gas/oxide surface</text>
+   </g>
+   <g id="text_5">
+    <!-- intact H$_2$ crosses the oxide -->
+    <g style="fill: #222222" transform="translate(51.693 119.620553)">
+     <text>
+      <tspan style="font: 8.6px 'DejaVu Sans'" x="0 2.396301 7.862732 11.244507 16.529846 21.271912 24.653687 27.395325 38.414044 41.155682 45.897748 49.443768 54.720685 59.214276 63.707867 69.014264 73.507855 76.249493 79.631268 85.097699 90.404095 93.145734 98.42265 103.526898 105.923199 111.398053" y="-0.15625">intact H crosses the oxide</tspan>
+      <tspan style="font: 700 6.02px 'DejaVu Sans'" x="33.967053" y="1.3203125">2</tspan>
+     </text>
+    </g>
+   </g>
+   <g id="text_6">
+    <text style="fill: #222222; font: 8.6px 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: middle" x="350.928" y="119.620553" transform="rotate(-0 350.928 119.620553)">atomic H crosses the oxide</text>
+   </g>
+   <g id="text_7">
+    <!-- $C = K_{ox}\,P$    (Henry) -->
+    <g style="fill: #222222" transform="translate(65.539 139.623305)">
+     <text>
+      <tspan style="font: oblique 700 8.6px 'DejaVu Sans'" x="0 17.151453 33.621112" y="-0.171875">CKP</tspan>
+      <tspan style="font: 700 8.6px 'DejaVu Sans'" x="8.127209 39.942462 42.945208 45.947955 48.950701 51.953448 55.895342 63.113726 68.963397 75.103655 79.357195 84.979449" y="-0.171875">=    (Henry)</tspan>
+      <tspan style="font: oblique 700 6.02px 'DejaVu Sans'" x="23.834985 27.982819" y="1.3046875">ox</tspan>
+     </text>
+    </g>
+   </g>
+   <g id="text_8">
+    <!-- $C = K_{ox}\sqrt{P}$    (Sieverts) -->
+    <g style="fill: #222222" transform="translate(298.21 139.623305)">
+     <text>
+      <tspan style="font: oblique 700 8.6px 'DejaVu Sans'" x="0 17.151453 38.370596" y="-0.343375 -0.343375 0.09999999999999964">CKP</tspan>
+      <tspan style="font: 700 8.6px 'DejaVu Sans'" x="8.127209 45.766946 48.769693 51.77244 54.775186 57.777933 61.719827 67.93168 70.888101 76.737772 82.360025 88.209695 92.463235 96.586221 101.719949" y="-0.343375">=    (Sieverts)</tspan>
+      <tspan style="font: oblique 700 6.02px 'DejaVu Sans'" x="23.834985 27.982819" y="1.1331875">ox</tspan>
+      <tspan style="font: 700 4.830361px 'STIXSizeOneSym'" x="32.123218" y="-1.5465">√</tspan>
+     </text>
+     <rect x="37.295596" y="-9.925" width="8.47135" height="0.5375"/>
+    </g>
+   </g>
+   <g id="text_9">
+    <!-- $[K_{ox}]$ = mol m$^{-3}$ Pa$^{-1}$ -->
+    <g style="fill: #222222" transform="translate(59.863 159.626057)">
+     <text>
+      <tspan style="font: 700 8.6px 'DejaVu Sans'" x="0 18.91366 22.855554 25.858301 33.085107 36.087854 45.075037 51.000513 53.956934 56.95968 75.538751 78.541498 84.862848" y="-0.8734375000000014">[] = mol m Pa</tspan>
+      <tspan style="font: oblique 700 8.6px 'DejaVu Sans'" x="3.941895" y="-0.8734375000000014">K</tspan>
+      <tspan style="font: oblique 700 6.02px 'DejaVu Sans'" x="10.625427 14.77326" y="0.6031249999999986">ox</tspan>
+      <tspan style="font: 700 6.02px 'DejaVu Sans'" x="66.032996 71.09176 90.769171 95.827936" y="-4.318750000000001">−3−1</tspan>
+     </text>
+    </g>
+   </g>
+   <g id="text_10">
+    <!-- $[K_{ox}]$ = mol m$^{-3}$ Pa$^{-1/2}$ -->
+    <g style="fill: #222222" transform="translate(297.866 159.626057)">
+     <text>
+      <tspan style="font: 700 8.6px 'DejaVu Sans'" x="0 18.91366 22.855554 25.858301 33.085107 36.087854 45.075037 51.000513 53.956934 56.95968 75.538751 78.541498 84.862848" y="-0.8734375000000014">[] = mol m Pa</tspan>
+      <tspan style="font: oblique 700 8.6px 'DejaVu Sans'" x="3.941895" y="-0.8734375000000014">K</tspan>
+      <tspan style="font: oblique 700 6.02px 'DejaVu Sans'" x="10.625427 14.77326" y="0.6031249999999986">ox</tspan>
+      <tspan style="font: 700 6.02px 'DejaVu Sans'" x="66.032996 71.09176 90.769171 95.827936 100.028833 102.058936" y="-4.318750000000001">−3−1/2</tspan>
+     </text>
+    </g>
+   </g>
+   <g id="text_11">
+    <!-- $[\Phi_{ox}]$ = mol m$^{-1}$ s$^{-1}$ Pa$^{-1}$ -->
+    <g style="fill: #222222" transform="translate(50.661 179.628809)">
+     <text>
+      <tspan style="font: 700 8.6px 'DejaVu Sans'" x="0 3.941895 19.648352 23.590247 26.592993 33.8198 36.822546 45.809729 51.735205 54.691626 57.694373 76.273444 79.27619 94.001807 97.004553 103.325903" y="-0.9609375">[Φ] = mol m s Pa</tspan>
+      <tspan style="font: oblique 700 6.02px 'DejaVu Sans'" x="11.36012 15.507953" y="0.515625">ox</tspan>
+      <tspan style="font: 700 6.02px 'DejaVu Sans'" x="66.767688 71.826453 84.496051 89.554816 109.232227 114.290991" y="-4.40625">−1−1−1</tspan>
+     </text>
+    </g>
+   </g>
+   <g id="text_12">
+    <!-- $[\Phi_{ox}]$ = mol m$^{-1}$ s$^{-1}$ Pa$^{-1/2}$ -->
+    <g style="fill: #222222" transform="translate(288.664 179.628809)">
+     <text>
+      <tspan style="font: 700 8.6px 'DejaVu Sans'" x="0 3.941895 19.648352 23.590247 26.592993 33.8198 36.822546 45.809729 51.735205 54.691626 57.694373 76.273444 79.27619 94.001807 97.004553 103.325903" y="-0.8734375000000014">[Φ] = mol m s Pa</tspan>
+      <tspan style="font: oblique 700 6.02px 'DejaVu Sans'" x="11.36012 15.507953" y="0.6031249999999986">ox</tspan>
+      <tspan style="font: 700 6.02px 'DejaVu Sans'" x="66.767688 71.826453 84.496051 89.554816 109.232227 114.290991 118.491888 120.521991" y="-4.318750000000001">−1−1−1/2</tspan>
+     </text>
+    </g>
+   </g>
+   <g id="patch_4">
+    <path d="M 207.402538 128.890121 
+Q 230.399478 128.890121 253.396418 128.890121 
+" style="fill: none; stroke: #999999; stroke-width: 1.6; stroke-linecap: round"/>
+    <path d="M 211.402538 130.890121 
+L 207.402538 128.890121 
+L 211.402538 126.890121 
+z
+" style="fill: #999999; stroke: #999999; stroke-width: 1.6; stroke-linecap: round"/>
+    <path d="M 249.396418 126.890121 
+L 253.396418 128.890121 
+L 249.396418 130.890121 
+z
+" style="fill: #999999; stroke: #999999; stroke-width: 1.6; stroke-linecap: round"/>
+   </g>
+   <g id="text_13">
+    <text style="fill: #b3261e; font: 700 8.8px 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif" transform="translate(195.644812 148.308366)">no conversion</text>
+    <text style="fill: #b3261e; font: 700 8.8px 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif" transform="translate(215.72875 158.162441)">exists</text>
+   </g>
+   <g id="text_14">
+    <g id="patch_5">
+     <path d="M 94.986781 230.334349 
+L 365.813219 230.334349 
+Q 369.953219 230.334349 369.953219 226.194349 
+L 369.953219 217.034599 
+Q 369.953219 212.894599 365.813219 212.894599 
+L 94.986781 212.894599 
+Q 90.846781 212.894599 90.846781 217.034599 
+L 90.846781 226.194349 
+Q 90.846781 230.334349 94.986781 230.334349 
+z
+" style="fill: #fff3cd; stroke: #b3261e; stroke-width: 1.2; stroke-linejoin: miter"/>
+    </g>
+    <text style="fill: #b3261e; font: 700 9.2px 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: middle" x="230.4" y="224.025161" transform="rotate(-0 230.4 224.025161)">combine_series(metal, oxide)  →  UnitMismatchError</text>
+   </g>
+   <g id="text_15">
+    <text style="fill: #6b6b6b; font: italic 700 8.4px 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: middle" x="230.4" y="252.077801" transform="rotate(-0 230.4 252.077801)">which is why Model 1 has no single system permeability — only the four tiers</text>
+   </g>
+   <g id="text_16">
+    <text style="font: 700 11px 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: middle" x="230.4" y="15.558281" transform="rotate(-0 230.4 15.558281)">Figure 5 — one symbol, two quantities</text>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="p3eae13ef4e">
+   <rect x="7.2" y="21.558281" width="446.4" height="243.936"/>
+  </clipPath>
+ </defs>
+</svg>
