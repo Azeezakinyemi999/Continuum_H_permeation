@@ -1,0 +1,11 @@
+# Release archives carry the code only: the calculations/ package and the LICENSE.
+# GitHub builds a release's "Source code" zip with `git archive`, which honours export-ignore,
+# and Zenodo deposits that zip. Docs, Markdown, studies, notebooks, tests and the container stay
+# in the repository and in every clone; they are left out of the archive, not out of git.
+#
+# Everything is ignored first and the code is let back in. The directory line is needed as
+# well as the /** line: an ignored directory is skipped whole, whatever its contents say.
+* export-ignore
+/calculations -export-ignore
+/calculations/** -export-ignore
+/LICENSE -export-ignore
