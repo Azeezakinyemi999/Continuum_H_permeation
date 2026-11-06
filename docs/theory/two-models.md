@@ -15,6 +15,16 @@ and what that costs you; the physics is derived in
 Dissociation is the branch point, because hydrogen crosses the oxide as whatever
 species the model leaves it as.
 
+```{figure} ../figures/fig-04-henry-vs-sieverts.svg
+:alt: Flux against pressure on log-log axes, a Henry layer with slope one and a Sieverts layer with slope one half.
+:width: 90%
+
+**Figure 4.** Look at the two slopes. A Henry (molecular) layer gives flux linear in
+pressure, slope 1; a Sieverts (atomic) layer gives flux in the square root, slope ½.
+The slope is therefore a measurement, not a convention — it tells you which law governs
+the step that controls the wall.
+```
+
 ```{list-table}
 :header-rows: 1
 :widths: 22 39 39
@@ -105,6 +115,17 @@ This is the practical consequence, and the easiest thing to get wrong.
 The two models give the oxide's constants different dimensions. Nothing may be
 combined across that boundary — it is what makes a single "system permeability"
 impossible in Model 1, as {doc}`permeability` sets out.
+
+```{figure} ../figures/fig-05-kox-units-trap.svg
+:alt: The symbol K_ox carrying different units under each model, with no conversion between them.
+:width: 100%
+
+**Figure 5.** Look at the crossed-out arrow in the middle. The same symbol $K_{ox}$
+carries different units in the two models because it describes the dissolution of
+different species. There is **no conversion factor** between the columns: these are not
+one quantity in two unit systems, they are two quantities.
+`calculations.permeability` refuses to combine them, and that refusal is the physics.
+```
 
 | Quantity | Symbol | Model 1 | Model 2 |
 |---|---|---|---|

@@ -546,3 +546,61 @@ default point.
   `Application/sa_results_L5`, computed before the geometry re-baseline, so
   shipping them would have shipped wrong numbers. Empty is the lesser evil, and the
   README's "Run order matters" says to run the scans first.
+
+## 1.3.0 release record — 2026-10-08
+
+Built from `0d3a12e`, the merge of PR #7, which is the last commit before the parameter
+renames began. That cut point was chosen deliberately: this release carries the
+grain-boundary change and the figure work, and NOT the renames or the preset guard that
+followed them in PRs #8 and #9.
+
+| | |
+|---|---|
+| image id | `sha256:847e1d07565c6502794b6af55971cb20f1dbc2383d4979e4c74a1ec9e797cfd6` |
+| arch / user | `amd64/linux`, `User=1000:0` |
+| archive | 228M tar, sha256 `bdb177bb6e46fa64…` |
+| package manifest | 56 files, all verify with `shasum -a 256 -c SHA256SUMS.txt` |
+| environment | `pip freeze` **identical to 1.2.0's** — same 106 packages, pip layer a cache hit |
+| gates from the package | both PASSED offline, `VERIFICATION PASSED` |
+| studies shipped | `Guo_etal_2025`, `Fuerst_et_al_2024`, `incoloy802_cr2o3` — `Application/` stays withdrawn |
+
+### The environment did not change; the model and the figures did
+
+`requirements.lock.txt`, the `Dockerfile` and both scripts are unchanged from 1.2.0, and
+the regenerated `installed-packages.txt` is byte-identical to 1.2.0's. That equality is
+the evidence: only the `COPY` layer and the bind-mounted workspace moved.
+
+The image still had to be rebuilt, because `model_smoke_test.py` is `COPY`d into it and
+its pinned reference values were re-measured when the grain-boundary model changed.
+
+### One file is not from the cut point
+
+`container/model_smoke_test.py` is taken from `main` rather than from `0d3a12e`. At the
+cut point it still read `GATE_STUDY = "Application/study_config.py"`, the defect fixed in
+PR #9 — building it verbatim would have pointed the release at a study it does not ship,
+and gate 2 would have died with a `ValueError` before running a check.
+
+Two facts made the substitution safe, and both were checked rather than assumed: the
+pinned reference values are byte-identical between `0d3a12e` and `main`, because the
+renames moved no number; and `main`'s gate uses none of the renamed names. The newer
+gate therefore runs correctly against the older workspace, which was confirmed before
+the build and again by `scripts/verify.sh` after it.
+
+### What this release deliberately omits
+
+The parameter renames from PR #8 are **not** here. Inside this container the model
+switches are `include_gb_enhancement` and `include_gb_trapping`, wall thicknesses are
+passed as `thickness=`, and the profile count is `n_points=`. On `main` those are
+`enable_gb_enhancement`, `enable_gb_as_trap`, `metal_thickness=` and
+`n_profile_points=`.
+
+**The container's API therefore differs from the repository's.** Code moved between the
+two will raise `TypeError` on the keyword names. The preset-key guard is also absent, so
+a stale key in `REGIME_PRESETS` is silently ignored here rather than reported.
+
+### 1.2.0 is untouched
+
+Its directory, its tar and its image tag are all left as they were. The grain-boundary
+change moves `micro_D_eff` and `micro_overall_factor`, so results computed under 1.2.0
+are not identical to results computed here, and 1.2.0 remains the artifact its own
+results were produced in.

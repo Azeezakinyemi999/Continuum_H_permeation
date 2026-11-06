@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="483.12pt" height="244.974281pt" viewBox="0 0 483.12 244.974281" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:date>2026-10-09T12:17:20.043230</dc:date>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.9.4, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 244.974281 
+L 483.12 244.974281 
+L 483.12 0 
+L 0 0 
+z
+" style="fill: #ffffff"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 16.5744 96.152801 
+L 466.5456 96.152801 
+L 466.5456 69.125801 
+L 16.5744 69.125801 
+z
+" clip-path="url(#p683478e5c5)" style="opacity: 0.08"/>
+   </g>
+   <g id="patch_3">
+    <path d="M 16.5744 131.828441 
+L 466.5456 131.828441 
+L 466.5456 104.801441 
+L 16.5744 104.801441 
+z
+" clip-path="url(#p683478e5c5)" style="fill: #2a78d6; opacity: 0.08"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 16.5744 167.504081 
+L 466.5456 167.504081 
+L 466.5456 140.477081 
+L 16.5744 140.477081 
+z
+" clip-path="url(#p683478e5c5)" style="fill: #4a3aa7; opacity: 0.08"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 16.5744 203.179721 
+L 466.5456 203.179721 
+L 466.5456 176.152721 
+L 16.5744 176.152721 
+z
+" clip-path="url(#p683478e5c5)" style="fill: #e34948; opacity: 0.08"/>
+   </g>
+   <g id="line2d_1">
+    <path d="M 16.5744 53.990681 
+L 466.5456 53.990681 
+" clip-path="url(#p683478e5c5)" style="fill: none; stroke: #222222; stroke-width: 1.3; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_2">
+    <path d="M 16.5744 149.666261 
+L 466.5456 149.666261 
+" clip-path="url(#p683478e5c5)" style="fill: none; stroke-dasharray: 4.07,1.76; stroke-dashoffset: 0; stroke: #999999; stroke-width: 1.1"/>
+   </g>
+   <g id="text_1">
+    <text style="fill: #222222; font: 700 9.5px 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: start" x="21.2616" y="47.504201" transform="rotate(-0 21.2616 47.504201)">tier</text>
+   </g>
+   <g id="text_2">
+    <text style="fill: #222222; font: 700 9.5px 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: start" x="147.816" y="47.504201" transform="rotate(-0 147.816 47.504201)">depends on</text>
+   </g>
+   <g id="text_3">
+    <text style="fill: #222222; font: 700 9.5px 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: start" x="264.996" y="47.504201" transform="rotate(-0 264.996 47.504201)">quantity</text>
+   </g>
+   <g id="text_4">
+    <text style="font: 700 9.2px 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: start" x="21.2616" y="86.423081" transform="rotate(-0 21.2616 86.423081)">1  intrinsic</text>
+   </g>
+   <g id="text_5">
+    <text style="fill: #222222; font: 700 9px 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: start" x="147.816" y="86.423081" transform="rotate(-0 147.816 86.423081)">nothing</text>
+   </g>
+   <g id="text_6">
+    <!-- $D_m K_s$,  $D_{ox}K_{ox}$ -->
+    <g style="fill: #222222" transform="translate(264.996 86.423081)">
+     <text>
+      <tspan style="font: oblique 700 9px 'DejaVu Sans'" x="0 14.281348 34.936963 51.045557" y="-0.4375">DKDK</tspan>
+      <tspan style="font: oblique 700 6.3px 'DejaVu Sans'" x="7.470703 21.255469 42.407666 46.73584 58.019678 62.347852" y="1.0390625">msoxox</tspan>
+      <tspan style="font: 700 9px 'DejaVu Sans'" x="25.251416 28.670361 31.803662" y="-0.4375">,  </tspan>
+     </text>
+    </g>
+   </g>
+   <g id="text_7">
+    <text style="fill: #6b6b6b; font: italic 700 7.6px 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: end" x="452.484" y="86.423081" transform="rotate(-0 452.484 86.423081)">reproducible</text>
+   </g>
+   <g id="text_8">
+    <text style="fill: #2a78d6; font: 700 9.2px 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: start" x="21.2616" y="122.098721" transform="rotate(-0 21.2616 122.098721)">2  effective layer</text>
+   </g>
+   <g id="text_9">
+    <text style="fill: #222222; font: 700 9px 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: start" x="147.816" y="122.098721" transform="rotate(-0 147.816 122.098721)">nothing</text>
+   </g>
+   <g id="text_10">
+    <!-- $D_{eff}K_s$,  $\Phi_{ox,eff}$ -->
+    <g style="fill: #222222" transform="translate(264.996 122.098721)">
+     <text>
+      <tspan style="font: oblique 700 9px 'DejaVu Sans'" x="0 17.471338" y="-0.4375">DK</tspan>
+      <tspan style="font: oblique 700 6.3px 'DejaVu Sans'" x="7.470703 11.743506 14.484375 24.445459 45.863965 50.192139 57.961934 62.234736 64.975605" y="1.0390625">effsoxeff</tspan>
+      <tspan style="font: 700 9px 'DejaVu Sans'" x="28.441406 31.860352 34.993652 38.126953" y="-0.4375">,  Φ</tspan>
+      <tspan style="font: 700 6.3px 'DejaVu Sans'" x="54.255762" y="1.0390625">,</tspan>
+     </text>
+    </g>
+   </g>
+   <g id="text_11">
+    <text style="fill: #6b6b6b; font: italic 700 7.6px 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: end" x="452.484" y="122.098721" transform="rotate(-0 452.484 122.098721)">reproducible</text>
+   </g>
+   <g id="text_12">
+    <text style="fill: #4a3aa7; font: 700 9.2px 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: start" x="21.2616" y="157.774361" transform="rotate(-0 21.2616 157.774361)">3  stack</text>
+   </g>
+   <g id="text_13">
+    <!-- $L$ -->
+    <g style="fill: #222222" transform="translate(147.816 157.774361)">
+     <text>
+      <tspan style="font: oblique 700 9px 'DejaVu Sans'" x="0" y="-0.4375">L</tspan>
+     </text>
+    </g>
+   </g>
+   <g id="text_14">
+    <!-- $\Phi_{transport}$ — Model 2 only -->
+    <g style="fill: #222222" transform="translate(264.996 157.774361)">
+     <text>
+      <tspan style="font: 700 9px 'DejaVu Sans'" x="0 41.544141 53.677441 56.810742 65.766797 71.949902 78.392285 84.496289 87.58125 90.714551 96.976758 100.110059 106.293164 112.700391 115.785352" y="-0.15625">Φ  Model 2 only</tspan>
+      <tspan style="font: oblique 700 6.3px 'DejaVu Sans'" x="7.737012 10.748584 13.855518 18.106787 22.591846 26.341699 30.851367 35.179541 38.286475" y="1.3203125">transport</tspan>
+      <tspan style="font: 9px 'DejaVu Sans Display'" x="44.677441" y="-0.15625">—</tspan>
+     </text>
+    </g>
+   </g>
+   <g id="text_15">
+    <text style="fill: #6b6b6b; font: italic 700 7.6px 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: end" x="452.484" y="157.774361" transform="rotate(-0 452.484 157.774361)">needs its operating point</text>
+   </g>
+   <g id="text_16">
+    <text style="fill: #e34948; font: 700 9.2px 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: start" x="21.2616" y="193.450001" transform="rotate(-0 21.2616 193.450001)">4  apparent</text>
+   </g>
+   <g id="text_17">
+    <!-- $L$ and $P$ -->
+    <g style="fill: #222222" transform="translate(147.816 193.450001)">
+     <text>
+      <tspan style="font: oblique 700 9px 'DejaVu Sans'" x="0 30.924316" y="-0.15625">LP</tspan>
+      <tspan style="font: 700 9px 'DejaVu Sans'" x="5.734863 8.868164 14.941406 21.348633 27.791016" y="-0.15625"> and </tspan>
+     </text>
+    </g>
+   </g>
+   <g id="text_18">
+    <!-- $\Phi_{app}$ from the solved flux -->
+    <g style="fill: #222222" transform="translate(264.996 193.450001)">
+     <text>
+      <tspan style="font: 700 9px 'DejaVu Sans'" x="0 21.253711 24.387012 28.302539 32.741016 38.924121 48.302051 51.435352 55.737598 62.144824 68.248828 71.382129 76.739063 82.922168 86.007129 91.873828 97.977832 104.420215 107.553516 111.469043 114.554004 120.96123" y="-0.15625">Φ from the solved flux</tspan>
+      <tspan style="font: oblique 700 6.3px 'DejaVu Sans'" x="7.737012 11.988281 16.497949" y="1.3203125">app</tspan>
+     </text>
+    </g>
+   </g>
+   <g id="text_19">
+    <text style="fill: #6b6b6b; font: italic 700 7.6px 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: end" x="452.484" y="193.450001" transform="rotate(-0 452.484 193.450001)">needs its operating point</text>
+   </g>
+   <g id="text_20">
+    <text style="fill: #6b6b6b; font: 700 8.2px 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: middle" x="241.56" y="230.206721" transform="rotate(-0 241.56 230.206721)">above the dashed line: parameters alone.   below: wall + experiment.</text>
+   </g>
+   <g id="text_21">
+    <text style="font: 700 11px 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: middle" x="241.56" y="15.558281" transform="rotate(-0 241.56 15.558281)">Figure 15 — four tiers, not one number</text>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="p683478e5c5">
+   <rect x="7.2" y="21.558281" width="468.72" height="216.216"/>
+  </clipPath>
+ </defs>
+</svg>
