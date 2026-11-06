@@ -60,6 +60,7 @@ theory/level6-surface-kinetics
 theory/permeability
 theory/parameter-map
 theory/equations
+Surface, subsurface and bulk hydrogen <surface_subsurface/THEORY>
 ```
 
 ```{toctree}
