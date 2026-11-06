@@ -59,6 +59,28 @@ The sensitivity notebooks additionally write scan CSVs into `sa_results*/`, whic
 also gitignored — the parallel-coordinates notebooks read those files and cannot
 regenerate them, so run the SA notebooks first.
 
+### The study report
+
+One PDF per study, built from those folders — no notebook is run to make it:
+
+```bash
+python -m calculations.report Guo_etal_2025                  # -> Guo_etal_2025/report/Guo_etal_2025_report.pdf
+python -m calculations.report Guo_etal_2025 --tex-only       # no LaTeX on this machine: keep the .tex
+python -m calculations.report Guo_etal_2025 --run-notebooks  # run every notebook first, in dependency order
+```
+
+It opens with a run summary: the operating point, every level evaluated there
+(`calculations.report_data`, run first in its own process because the model binds
+one study per process), what `check_against_config()` and the model warned about,
+and which results folders are older than `study_config.py` or the last commit to
+`calculations/`. Then one section per notebook in the order of the hierarchy — goal,
+**where in `docs/` to read more**, key numbers, tables, figures and how to read them —
+and appendices with the results folders, the study's `study_config.py`, and a map of
+the documentation pages used. `--run-notebooks` writes the executed copies to
+`report/executed/`, so the committed notebooks are not rewritten. The wording is in
+`calculations/report_text.py`; a renamed docs page or heading fails
+`tests/test_report.py`. Needs LaTeX (`latexmk`, `pdflatex`).
+
 ---
 
 ## Repository Structure
@@ -73,6 +95,10 @@ calculations/           Physics modules
   surface_kinetics.py     Dissociation kinetics (Level 6)
   classify_regime.py      Hierarchical regime labels (Levels 1–4)
   sensitivity.py          Regime-stratified given-data SA (PAWN + Borgonovo delta)
+  report.py               The study report: its sections and the build
+  report_text.py            its wording and documentation pointers
+  report_latex.py           its LaTeX building blocks
+  report_data.py            the model at the operating point, level by level
   config/
     model_config.py       Loads the one active study — see Configuration below
     __init__.py           Where studies live, and the add-a-study recipe
