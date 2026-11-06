@@ -50,6 +50,19 @@ Entry points are the six notebooks each study folder carries; `Guo_etal_2025/` i
 outputs committed. Each of the four also holds the `study_config.py` its notebooks
 run on.
 
+Those three study folders also carry four **parameter sweeps**, which run every level
+of both models over one parameter and fit the result per regime:
+
+| Notebook | What it does |
+|---|---|
+| `effect-of-temperature.ipynb` | $T$ over `T_range`: Arrhenius $E_a$ per regime; the single fit over every temperature in the table only |
+| `effect-of-pressure.ipynb` | $P_{up}$ over `P_range`: $J \propto P^n$ per regime, and the **net $n$** of the whole range, $\Delta\ln J/\Delta\ln P$ between its ends (the average local exponent, not a fitted line), in the table only |
+| `effect-of-thickness.ipynb` | oxide, metal and whole-wall thickness, one figure per swept layer: $J \propto L^m$ per regime |
+| `effect-of-pinholes.ipynb` | pinhole area fraction: $J \propto f^n$ per regime, the PRF and the fraction $f_{1/2}$ at which pinholes carry half the flux |
+
+How to read them, and how a regime $n$ differs from the net $n$:
+[`docs/how-to/parameter-sweeps.md`](docs/how-to/parameter-sweeps.md).
+
 Every notebook writes its figures into one folder beside it, named after it —
 `Proposal.ipynb` → `Proposal-results/`, and so on — created by
 `calculations.figures.results_dir()` relative to the working directory. Both the
