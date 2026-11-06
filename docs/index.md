@@ -20,6 +20,9 @@ invalidate it.
 - **Running an analysis** — {doc}`how-to/sensitivity-analysis` for the
   regime-stratified sensitivity workflow, {doc}`how-to/switch-study` to change
   material system.
+- **Reading a temperature, pressure, thickness or pinhole sweep** —
+  {doc}`how-to/parameter-sweeps`: what each sweep fits, the regime $n$ against the
+  net $n$ of the pressure tables, and how to read the figures.
 - **Reading the code** — {doc}`api/index`, generated from the
   docstrings.
 
@@ -36,6 +39,7 @@ getting-started
 
 how-to/switch-study
 how-to/sensitivity-analysis
+how-to/parameter-sweeps
 CONTAINER
 ```
 
@@ -56,6 +60,7 @@ theory/level6-surface-kinetics
 theory/permeability
 theory/parameter-map
 theory/equations
+Surface, subsurface and bulk hydrogen <surface_subsurface/THEORY>
 ```
 
 ```{toctree}

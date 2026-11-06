@@ -29,6 +29,10 @@ structure_generation/
 sa_results*/
 *.html
 
+# Study reports: <study>/report/, written by `python -m calculations.report <study>`.
+# Regenerable from the notebook outputs; the PDF embeds every figure (~20 MB).
+/*/report/
+
 # Per-notebook figure folders: <Notebook>-results/, written by
 # calculations.figures.results_dir(). Regenerable by re-running the notebook. The
 # *.png and *.html rules already cover the contents; this ignores the folders by name
