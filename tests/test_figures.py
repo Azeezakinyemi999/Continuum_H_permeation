@@ -192,8 +192,13 @@ def _save_sites(nb_path):
             loops = {n.target.id for n in ast.walk(tree)
                      if isinstance(n, ast.For) and isinstance(n.target, ast.Name)
                      and n.lineno <= ln <= (n.end_lineno or n.lineno)}
+            # a save inside a function may name that function's parameters: they are bound when it runs
+            params = {a.arg for n in ast.walk(tree)
+                      if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))
+                      and n.lineno <= ln <= (n.end_lineno or n.lineno)
+                      for a in (*n.args.posonlyargs, *n.args.args, *n.args.kwonlyargs)}
             out.append((ci, ln, m.group(1),
-                        set(re.findall(r"\{(\w+)", m.group(1))), loops | assigned))
+                        set(re.findall(r"\{(\w+)", m.group(1))), loops | assigned | params))
     return out
 
 
@@ -209,7 +214,8 @@ def test_figure_names_only_use_variables_in_scope(nb_path):
         missing = needed - scope
         assert not missing, (
             f"cell {ci} line {ln}: figure name {name!r} interpolates {sorted(missing)}, "
-            f"which is not bound by an enclosing loop or an assignment in that cell")
+            f"which is not bound by an enclosing loop, an assignment in that cell, or a "
+            f"parameter of the enclosing function")
 
 
 @pytest.mark.parametrize("nb_path", NOTEBOOKS, ids=lambda p: f"{p.parent.name}/{p.name}")
