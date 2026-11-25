@@ -17,7 +17,7 @@ ratio of a later flux to the Level 1 flux is the standard way this project measu
 much a coating or a microstructure actually did.
 
 **What it cannot tell you.** By construction it has no oxide, so it cannot describe a
-coating; no defects, so it cannot describe a breached one; no traps, so it predicts a
+coating; no defects, so it cannot describe a breached one; no grain boundaries, so it predicts a
 diffusivity that is a pure lattice property; and no surface resistance, so it assumes
 dissociation is infinitely fast. Each of those becomes a later level.
 

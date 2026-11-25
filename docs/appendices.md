@@ -68,10 +68,6 @@ Figure 6 and Figure 14.
 
 | Symbol | Meaning | Units |
 |---|---|---|
-| $N_T$ | trap density | m⁻³ |
-| $N_L$ | interstitial lattice site density | m⁻³ |
-| $E_b$ | trap binding energy | J mol⁻¹ |
-| $K_i = \exp(E_b/RT)$ | trap equilibrium constant | — |
 | $d$ | grain size | m |
 | $\delta_{gb}$ | grain-boundary thickness | m |
 | $f_{gb}$ | grain-boundary volume fraction | — |
@@ -261,8 +257,8 @@ python docs/figures/check_equations.py
 | Level 2b limit | $L_{ox}\to0$ recovers Level 1 |
 | Level 3 | the area-weighted **sum**, and that contributions sum to the total |
 | Level 3 limit | $f_d\to0$ recovers Level 2b |
-| Level 4 | $K=\exp(E_b/RT)$, the trapping term, $D_{eff}$, and that trapping retards |
-| Level 4 limit | an empty trap list recovers $D_{lattice}$ exactly |
+| Level 4 | a fine grain raises $D_{metal}$ above $D_{lattice}$, and the flux is $D_{metal}K_s\Delta\sqrt{P}/L$ |
+| Level 4 limit | grain-boundary enhancement off recovers Level 1 exactly |
 | Arrhenius | the reference-temperature form, and $k(T_{ref})=k_{ref}$ |
 | Level 6 | $g(\theta)$, the closed-form $\sqrt{P_{int}}$, the rate law, flux balance at the solution, $0<\theta<1$, and that a finite surface rate costs flux |
 | permeability tiers | tier-1 values, the units each model assigns, that Model 1 **refuses** to combine, and the Model 2 series value |
@@ -278,7 +274,7 @@ collapse to the level below.
 The last line is the one to read:
 
 ```text
-44 / 44 checks passed
+42 / 42 checks passed
 ```
 
 Exit code is 0 when every check passes and 1 otherwise. A `FAIL` line names the check,
@@ -315,10 +311,6 @@ Levels 1–5.
 
 **Model 2** — dissociation at the gas/oxide surface. Sieverts oxide, Sieverts metal.
 The L6 family.
-
-**Oriani model** — local-equilibrium trapping, in which trapped and lattice hydrogen
-are in equilibrium at every point. Valid while trap occupancy stays low; the
-alternative when it does not is McNabb–Foster.
 
 **PAWN** — a density-based global sensitivity index, computed from the distance between
 conditional and unconditional output distributions. Needs no variance decomposition.

@@ -84,7 +84,7 @@ obeys. A result does not carry across that fork.
 | 2a | A perfect oxide, molecular (Henry) transport | $D_{ox}, K_{ox}, L_{ox}$ | `flux`, `R_oxide` | [`oxide_permeation`](api/oxide_permeation) |
 | 2b | Oxide and metal in series | both layers | `flux`, `P_interface`, `regime` | [`interface_solver`](api/interface_solver) |
 | 3 | Defects short-circuiting the oxide | $f_d$, defect type | `flux_total`, `PRF`, `dominant_path` | [`parallel_oxide_defect_paths`](api/parallel_oxide_defect_paths) |
-| 4 | Metal microstructure: traps and grain boundaries | $N_T, E_b, d$ | `D_eff`, `reduction_factor` | [`defective_metal`](api/defective_metal) |
+| 4 | Metal microstructure: grain-boundary fast paths | $d$, $\delta$, boundary type | `D_eff`, `enhancement_ratio` | [`defective_metal`](api/defective_metal) |
 | 5 | The full wall — defective oxide over defective metal | all of the above | `flux`, `frac_*`, `regime` | all of the above |
 | 6 | Finite-rate dissociation, Langmuir coverage | $k_{diss}, K_{eq}$ | `theta`, `P_int`, `J_ss` | [`surface_kinetics`](api/surface_kinetics) |
 
@@ -116,7 +116,7 @@ result will mislead if the assumption does not hold.
 | Steady state | The operating point has been constant for longer than the wall's diffusion time | Cycling, start-up, or a thick wall at low temperature |
 | One-dimensional transport | The wall is thin against its lateral extent | Edges, welds, a defect comparable to the thickness |
 | Local equilibrium at each interface | Transport is slower than interfacial reaction | Level 6 exists precisely because this fails at the gas surface |
-| Dilute hydrogen | Lattice occupancy stays low | Trap occupancy θ > 0.9, where Oriani's model is warned against |
+| Dilute hydrogen | Lattice occupancy stays low | Very high pressure or solubility, where Sieverts' law itself fails |
 | Sorption laws fixed per layer | H₂ stays molecular in the oxide (Model 1), or atomic (Model 2) | The fork itself — the two cannot be mixed within one calculation |
 | Properties constant across the layer | Composition and microstructure are uniform | A graded oxide, a decarburised layer |
 | Defects are parallel and non-interacting | Defect spacing is large against their size | High defect fractions, percolation |
@@ -159,7 +159,7 @@ are machine-checked rather than trusted:
 
 | Tool | Fails when |
 |---|---|
-| `docs/figures/check_equations.py` | An equation in Part II disagrees with the code — 44 checks |
+| `docs/figures/check_equations.py` | An equation in Part II disagrees with the code — 42 checks |
 | `docs/figures/make_figures.py` | A figure cannot be regenerated — 20 figures |
 | `docs/_tools/verify_docs.py` | A page names a function, module or parameter that does not exist |
 | `docs/_tools/worked_values.py --check` | A quoted real number has drifted from what the model now returns |

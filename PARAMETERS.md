@@ -2,9 +2,11 @@
 
 Every input required to run the model, extracted from [`calculations/`](https://github.com/Azeezakinyemi999/Continuum_H_permeation/tree/main/calculations/) and the active study config. Generated against `ACTIVE_STUDY = 'Guo_etal_2025_316L'`; values change per study, names and units do not.
 
-**The authoritative flat set is `DEFAULT_PARAMS_LEVEL5L6` — 46 parameters.** `DEFAULT_PARAMS_LEVEL5` is the same set minus the 10 surface-kinetics entries (36 parameters).
+**The authoritative flat set is `DEFAULT_PARAMS_LEVEL5L6` — 35 parameters.** `DEFAULT_PARAMS_LEVEL5` is the same set minus the 10 surface-kinetics entries (25 parameters).
 
-Counts: **46 total** = 36 sampled in the L5L6 SA + 10 never sampled.
+Counts: **35 total** = 27 with a range in the L5L6 SA + 8 never sampled.
+
+There are no trap or lattice-site-density parameters: hydrogen trapping does not change the steady-state flux and was removed from the model (see [STEADY_STATE.md](STEADY_STATE.md)).
 
 ---
 
@@ -55,7 +57,7 @@ Counts: **46 total** = 36 sampled in the L5L6 SA + 10 never sampled.
 | `crack_thickness_factor` | 0.1 | – | $L_{crack} = f \times L_{oxide}$ |
 | `gb_diffusivity_factor` | 10 | – | $D_{gb} = f \times D_{oxide}$ |
 
-## F. Metal grain structure (Level 4) — 5
+## F. Metal grain structure (Level 4) — 4
 
 | Parameter | Value | Units | Meaning |
 |---|---|---|---|
@@ -63,36 +65,16 @@ Counts: **46 total** = 36 sampled in the L5L6 SA + 10 never sampled.
 | `gb_thickness` | 5e-10 | m | grain-boundary width |
 | `grain_shape` | `'equiaxed'` | – | stereology model — **fixed** |
 | `gb_type` | `'LAGB'` | – | selects GB enhancement data — **fixed** |
-| `lattice_density` | 8.774e28 | m⁻³ | interstitial site density $N_L$ |
 
-## G. Traps (Level 4) — 8
+## G. Model options — 1
 
-Four populations × (binding energy, density).
-
-| Parameter | Value | Units | Source |
-|---|---|---|---|
-| `trap_vacancy_E_b` | 41489 | J/mol | Ni estimate (0.43 eV) — **no alloy data** |
-| `trap_vacancy_N_T` | 1e26 | m⁻³ | model default — **no measurement** |
-| `trap_dislocation_E_b` | 19297 | J/mol | Lu 2022 TDS Peak 1 (0.20 eV) |
-| `trap_dislocation_N_T` | 8.16e12 | m⁻³ | Zhu 2021 GND — **see units warning** |
-| `trap_gb_E_b` | 26051 | J/mol | Lu 2022 TDS Peak 2 (0.27 eV) |
-| `trap_gb_N_T` | 6e14 | m⁻³ | geometric estimate — **see units warning** |
-| `trap_carbide_E_b` | 26051 | J/mol | Lu 2022 M6C TDS (0.27 eV) |
-| `trap_carbide_N_T` | 2e25 | m⁻³ | Young 1997 upper bound |
-
-> ⚠️ **Two densities look dimensionally inconsistent.** `grain_boundary_density(grain_size=1e-4)` in [`defective_metal.py`](https://github.com/Azeezakinyemi999/Continuum_H_permeation/blob/main/calculations/defective_metal.py) returns **3.0e23 m⁻³**, while the config hardcodes 6e14 — a factor of 5e8. And EBSD GND density is reported in m⁻² (line length per volume); converting to trap sites needs $\rho/b \approx 3.3\times10^{22}\,\mathrm{m^{-3}}$, not the raw 8.16e12 used as m⁻³. Consequence: `vacancies` carries 97–99 % of the trapping term at every temperature, so the two TDS-derived traps currently contribute nothing.
-
-## H. Model options — 3
-
-Switches, not physical quantities. All **fixed** (never sampled).
+A switch, not a physical quantity. **Fixed** (never sampled).
 
 | Parameter | Value | Meaning |
 |---|---|---|
 | `enable_gb_enhancement` | `True` | enable GB short-circuit diffusion path |
-| `enable_trapping` | `True` | enable Oriani trapping reduction |
-| `D_eff_method` | `'average'` | how $D_{eff}(x)$ is collapsed to a scalar |
 
-## I. Oxide surface kinetics (Level 6) — 5
+## H. Oxide surface kinetics (Level 6) — 5
 
 | Parameter | Value | Units | Meaning |
 |---|---|---|---|
@@ -102,7 +84,7 @@ Switches, not physical quantities. All **fixed** (never sampled).
 | `H_eq` | 20000 | J/mol | adsorption enthalpy |
 | `T_ref_surface` | 1623 | K | reference temperature — **fixed** |
 
-## J. Metal surface kinetics (Level 6) — 5
+## I. Metal surface kinetics (Level 6) — 5
 
 | Parameter | Value | Units | Meaning |
 |---|---|---|---|
@@ -114,17 +96,17 @@ Switches, not physical quantities. All **fixed** (never sampled).
 
 ---
 
-## K. Never sampled in the SA — 10
+## J. Never sampled in the SA — 8
 
-`T_ref_metal`, `T_ref_oxide`, `P_downstream`, `grain_shape`, `gb_type`, `enable_gb_enhancement`, `enable_trapping`, `D_eff_method`, `T_ref_surface`, `T_ref_surface_metal`
+`T_ref_metal`, `T_ref_oxide`, `P_downstream`, `grain_shape`, `gb_type`, `enable_gb_enhancement`, `T_ref_surface`, `T_ref_surface_metal`
 
 Reference temperatures are measurement anchors (varying them is meaningless), `P_downstream` is 0 by construction, and the rest are switches or categorical choices.
 
-`temperature` **is** in `SUGGESTED_RANGES_*` but is removed before sampling by `presets_without(REGIME_PRESETS, 'temperature')` and pinned via `fixed_params` — see [`sensitivity.py`](https://github.com/Azeezakinyemi999/Continuum_H_permeation/blob/main/calculations/sensitivity.py). So the SA samples **35** parameters, not 36.
+`temperature` **is** in `SUGGESTED_RANGES_*` but is removed before sampling by `presets_without(REGIME_PRESETS, 'temperature')` and pinned via `fixed_params` — see [`sensitivity.py`](https://github.com/Azeezakinyemi999/Continuum_H_permeation/blob/main/calculations/sensitivity.py). So the L5L6 SA samples **26** parameters, not 27 (and the L5 SA 18, not 19).
 
 ---
 
-## L. Additional inputs not in the flat dict
+## K. Additional inputs not in the flat dict
 
 These live in structured config dicts or as function defaults, and never appear in `DEFAULT_PARAMS_*`.
 
@@ -133,24 +115,17 @@ These live in structured config dicts or as function defaults, and never appear 
 | Parameter | Value | Location | Meaning |
 |---|---|---|---|
 | `use_sieverts_pinhole` | `False` | `OXIDE_DEFECTS` | pinhole boundary-condition mode |
-| `enable_gb_as_trap` | `False` | `MICROSTRUCTURE` | adds grain boundaries as a **trap** population (slows diffusion). Renamed from `include_gb_trapping`, which sat one word away from `include_gb_enhancement` while doing the opposite: enhancement is a fast path that speeds diffusion up. |
 | `area_fraction` | 0.02 | `OXIDE_DEFECTS` | total defect fraction (= sum of components) |
 | `type` | `'mixed'` | `OXIDE_DEFECTS` | defect-population label |
-| `N_L` | 8.774e28 | `MICROSTRUCTURE` | alias of `lattice_density` |
 
 ### Function defaults
 
 | Parameter | Default | Function |
 |---|---|---|
-| `sites_per_area` | 1e19 m⁻² | [`grain_boundary_density`](https://github.com/Azeezakinyemi999/Continuum_H_permeation/blob/main/calculations/defective_metal.py) |
-| `n_points` | 100 | [`calculate_concentration_profile`](https://github.com/Azeezakinyemi999/Continuum_H_permeation/blob/main/calculations/interface_solver.py) |
-| `threshold_traps` | 0.5 | [`classify_regime_level4_metal`](https://github.com/Azeezakinyemi999/Continuum_H_permeation/blob/main/calculations/classify_regime.py) |
+| `n_profile_points` | 100 | [`calculate_concentration_profile`](https://github.com/Azeezakinyemi999/Continuum_H_permeation/blob/main/calculations/interface_solver.py) |
 | `rule`, `threshold` | `'argmax'`, 0.5 | [`assign_regime`](https://github.com/Azeezakinyemi999/Continuum_H_permeation/blob/main/calculations/sensitivity.py) |
 | `temperature_unit` | `'K'` | [`gb_enhancement_factor`](https://github.com/Azeezakinyemi999/Continuum_H_permeation/blob/main/calculations/defective_metal.py) |
 | `data_source` | `'default'` | [`gb_enhancement_factor`](https://github.com/Azeezakinyemi999/Continuum_H_permeation/blob/main/calculations/defective_metal.py) |
-| `material` | `'Incoloy800'` | [`vacancy_concentration`](https://github.com/Azeezakinyemi999/Continuum_H_permeation/blob/main/calculations/defective_metal.py) |
-| `condition` | `'equilibrium'` | [`vacancy_concentration`](https://github.com/Azeezakinyemi999/Continuum_H_permeation/blob/main/calculations/defective_metal.py) |
-| `quench_temperature` | `None` | [`vacancy_concentration`](https://github.com/Azeezakinyemi999/Continuum_H_permeation/blob/main/calculations/defective_metal.py) |
 | `method` | `'brentq'` | [`solve_interface_pressure`](https://github.com/Azeezakinyemi999/Continuum_H_permeation/blob/main/calculations/interface_solver.py) |
 
 ### Sweep and SA controls
@@ -167,17 +142,17 @@ These live in structured config dicts or as function defaults, and never appear 
 
 ---
 
-## M. Outputs — not inputs
+## L. Outputs — not inputs
 
 Do not supply these; the model computes them.
 
-$D_{eff}$, `reduction_factor`, `mobile_fraction`, `trapping_term`, $\theta_i$ (trap occupancy), `dominant_trap`, $\Phi$, `PRF`, `flux`, `permeability`, `C_up`/`C_down`/`C_array`, `P_interface`, `regime` / `regime_hierarchy`, `frac_surface`/`frac_oxide`/`frac_metal`/`frac_defect`.
+$D_{eff}$ (the grain-boundary-enhanced metal diffusivity), `enhancement_ratio`, $\theta$ (surface coverage), $\Phi$, `PRF`, `flux`, `permeability`, `C_up`/`C_down`/`C_array`, `P_interface`, `regime` / `regime_hierarchy`, `frac_surface`/`frac_oxide`/`frac_metal`/`frac_defect`.
 
 Also derived, not independent: `D_0`, `K_s0`, `Phi_0`, `Phi_ref`, `Q_p` in `METALS`, and `D_ox_0`, `K_ox_0`, `Phi_ox_ref`, `Q_p_ox_J_per_mol` in `OXIDES`. These are alternate Arrhenius parameterisations of the same transport data — the model reads the `*_ref` + `E_*`/`H_*` form.
 
 ---
 
-## N. Minimum set per level
+## M. Minimum set per level
 
 | Level | Needs | Count |
 |---|---|---|
@@ -185,6 +160,6 @@ Also derived, not independent: `D_0`, `K_s0`, `Phi_0`, `Phi_ref`, `Q_p` in `META
 | L2a — perfect oxide | B + C(oxide) + D | 9 |
 | L2b — oxide + metal series | A + B + C + D | 15 |
 | L3 — defective oxide | + E | 20 |
-| L4 — defective metal | A + C(metal) + D + F + G + H | 25 |
-| L5 — full system | A–H | 36 |
-| L5L6 — + surface kinetics | A–J | 46 |
+| L4 — defective metal | A + C(metal) + D + F + G | 14 |
+| L5 — full system | A–G | 25 |
+| L5L6 — + surface kinetics | A–I | 35 |

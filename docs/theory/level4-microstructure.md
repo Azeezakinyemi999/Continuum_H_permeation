@@ -9,68 +9,57 @@ oxide, so the Henry/Sieverts fork of {doc}`two-models` does not bite.
 
 Levels 1 to 3 treat the metal as a perfect lattice with a single diffusivity.
 Real alloys have grain boundaries, which conduct hydrogen *faster* than the
-lattice, and traps — vacancies, dislocations, carbides — which hold it and slow
-its net advance. Level 4 puts both in, and they pull in opposite directions.
+lattice. Level 4 puts that fast path in: it replaces the lattice diffusivity
+$D_L$ with a grain-boundary-enhanced metal diffusivity $D_{metal} \ge D_L$, and
+then runs Level 1 with it.
 
-For the active study this is the most consequential level, because the wall is
-metal-limited: the layer that Levels 1–3 model most crudely is the one carrying
-97% of the resistance.
+For the active study this matters more than any other level in principle, because
+the wall is metal-limited: the layer that Levels 1–3 model most crudely is the one
+carrying 97% of the resistance. In practice, as the worked values below show, the
+correction on this alloy is a thousandth of a per cent.
 
 **What it cannot tell you.** See the closing section — in short, it is a
-local-equilibrium model with no concentration dependence in $D_{\text{eff}}$, and it
+parallel-path model with no concentration dependence, it has no trapping, and it
 says nothing about the oxide or the surface.
 
 ## At a glance
 
 | | |
 |---|---|
-| **Inputs** | $D_L$, $T$, `MICROSTRUCTURE` (grain size, GB thickness, trap list), `lattice_concentration`, `lattice_density` |
-| **Outputs** | `D_eff`, `overall_factor`, `gb_enhancement`, `trapping`, `dominant_effect`, `regime` |
-| **Code** | [`defective_metal`](../api/defective_metal) — `combined_microstructure_model`, `trap_occupancy`, `calculate_effective_diffusivity_trapping`, `calculate_gb_enhanced_diffusivity` |
+| **Inputs** | $D_L$, $T$, `MICROSTRUCTURE` (`grain_size`, `gb_thickness`, `gb_type`), `MODEL_OPTIONS['enable_gb_enhancement']` |
+| **Outputs** | `D_eff`, `enhancement_ratio`, `gb_enhancement_factor`, `f_gb`, `regime` |
+| **Code** | [`defective_metal`](../api/defective_metal) — `metal_diffusivity`, `calculate_gb_enhanced_diffusivity`, `gb_enhancement_factor`; the flux is `permeation_calc.calculate_defective_metal_flux` |
 | **Solver** | None. Closed form. |
 
 ## Concepts
 
-### Two effects, applied in sequence
+### One effect: grain boundaries as fast paths
 
-```{figure} ../figures/fig-12-level4-competition.svg
-:alt: Grain-boundary enhancement near one across realistic grain sizes, against trapping spanning orders of magnitude.
+```{figure} ../figures/fig-12-level4-grain-boundaries.svg
+:alt: Grain-boundary enhancement of the metal diffusivity against grain size, near one for realistic grains.
 :width: 100%
 
-**Figure 12.** Look at the vertical scales. Grain-boundary enhancement stays within a
-few per cent of 1 for any grain size a structural alloy actually has — 1.0016× at
-20 µm, and only 1.66× even at 50 nm — while trapping changes the diffusivity by orders
-of magnitude over the same window. For an engineering wall, **Level 4 is a trapping
-model with a grain-boundary term that rounds away.** Worth knowing before spending
-effort measuring grain size.
+**Figure 12.** Level 4 replaces the lattice diffusivity with a grain-boundary-enhanced
+one. The enhancement stays within a few per cent of 1 for any grain size a structural
+alloy actually has, and only becomes a real multiplier in the ultrafine range. Trapping
+is not drawn because it is not in the model: at steady state traps exchange no net
+hydrogen, so they do not change the flux.
 ```
 
-```{important}
-The two effects are often described as competing. At realistic grain sizes they do not
-compete: in panel (B) the combined curve and the trapping-only curve are
-indistinguishable. Grain-boundary enhancement becomes a real multiplier only in the
-ultrafine range, which is a different material problem.
-```
-
-$$D_{\text{eff}} = \underbrace{\left[(1-f_{gb})D_L + f_{gb}\alpha D_L\right]}_{\text{grain-boundary enhancement}}
-\times \underbrace{\frac{1}{1 + \sum_i N_{T,i}K_i/N_L}}_{\text{trapping reduction}}$$
+$$D_{metal} = (1-f_{gb})D_L + f_{gb}\alpha D_L$$
 
 and the headline output is the ratio
 
-$$\eta = \frac{D_{\text{eff}}}{D_L}$$
+$$\eta = \frac{D_{metal}}{D_L} = 1 + f_{gb}(\alpha - 1) \;\ge\; 1$$
 
-which is above 1 when grain boundaries win and below 1 when trapping wins. In
-the code this is `overall_factor`, and it factorises exactly:
+In the code $D_{metal}$ is `D_eff` and $\eta$ is `enhancement_ratio` (the Level 4
+and Level 5 wrappers report it as `modification_factor` or `D_modification`).
+Because it depends on temperature, grain size and boundary type but not on the
+hydrogen concentration, a wall has **one** metal diffusivity, and every Level 4
+or Level 5 solver is its Level 1–3 counterpart run with $D_{metal}$ in place of
+$D_L$.
 
-$$\eta = \underbrace{f_{\text{gb}}^{\text{factor}}}_{\texttt{gb\_enhancement['factor']}}
-\times \underbrace{f_{\text{red}}}_{\texttt{trapping['reduction\_factor']}}$$
-
-Verified for the active study: $1.000011492 \times 0.738318563 = 0.738327048$,
-matching `overall_factor` to machine precision.
-
-### Grain-boundary enhancement
-
-#### How much boundary is there?
+### How much boundary is there?
 
 Grain boundaries are treated as a parallel fast path occupying a volume
 fraction set by stereology. For equiaxed grains the boundary area per unit
@@ -81,9 +70,9 @@ $$f_{gb} = \frac{3\delta}{d}$$
 With the configured $\delta = 5\times10^{-10}$ m and $d = 10^{-4}$ m this gives
 $f_{gb} = 1.5\times10^{-5}$ — verified exactly against the formula.
 
-#### The parallel-path diffusivity
+### How fast is a boundary?
 
-$$D_{gb\text{-enh}} = (1-f_{gb})D_L + f_{gb}D_{gb}, \qquad D_{gb} = \alpha D_L$$
+$$D_{gb} = \alpha D_L$$
 
 The enhancement factor $\alpha$ is itself Arrhenius, and it *decreases* with
 temperature: boundary diffusion has a lower activation energy than lattice
@@ -109,168 +98,79 @@ boundaries cannot matter at any grain size.**
 $\alpha$ used to be 50, read from a table of austenitic steel, and the enhancement was
 correspondingly 0.07% rather than 0.001%. Commit `366b70d` made it come from the
 metal's own data instead, and the measured ratio is 1.77. Any note quoting
-$\alpha = 50$, an enhancement of 1.000735, or an `overall_factor` of 0.738861227
-predates that change. Figure 12 is drawn on the Example Wall, whose generic
-grain-boundary correlation is more optimistic than this alloy's own data — which is why
-its panel (A) still rises at ultrafine grain sizes while the paragraph above says this
-alloy's cannot.
+$\alpha = 50$ or an enhancement of 1.000735 predates that change. Figure 12 is drawn on
+the Example Wall, whose generic grain-boundary correlation is more optimistic than this
+alloy's own data — which is why it still rises at ultrafine grain sizes while the
+paragraph above says this alloy's cannot.
 ```
 
-### Trapping — the Oriani model
+### Why there is no trapping
 
-#### Local equilibrium between traps and lattice
-
-Oriani's assumption is that hydrogen redistributes between lattice sites and
-trap sites *fast* compared with the time it takes to cross the wall, so the two
-populations are in local equilibrium everywhere. Each trap type has an
-equilibrium constant set by its binding energy:
-
-$$K_i = \exp\!\left(\frac{E_{b,i}}{RT}\right)$$
-
-Only lattice hydrogen is mobile — trapped atoms contribute concentration but not
-flux. The effective diffusivity is therefore the lattice diffusivity scaled by
-the mobile fraction:
-
-$$D_{\text{eff}} = D_L\frac{C_{\text{mobile}}}{C_{\text{total}}}
-= \frac{D_L}{1 + \sum_i N_{T,i}K_i/N_L}$$
-
-#### Where the trapping actually comes from
-
-The configured trap population, with each type's contribution to
-`trapping_term`:
-
-| Trap | $N_T$ [m⁻³] | $E_b$ [J/mol] | $K_i$ | $\theta_i$ | contribution |
-|---|---|---|---|---|---|
-| vacancies | 1.000e+26 | 41489 | 303.73 | 0.020421 | **0.346176** |
-| Carbides | 2.000e+25 | 26051 | 36.21 | 0.002485 | 0.008253 |
-| grain_boundaries | 6.000e+14 | 26051 | 36.21 | 0.002485 | 0.000000 |
-| dislocations | 8.160e+12 | 19297 | 14.28 | 0.000980 | 0.000000 |
-
-The contributions sum to 0.354429, matching `trapping_term` exactly.
-
-Two things are worth noticing. **Vacancies supply 97.7% of the entire trapping
-effect** — the model's trapping behaviour is, for practical purposes, a
-one-parameter story in the vacancy density. And **two of the four trap types
-contribute exactly nothing**: their densities are 10–12 orders of magnitude below
-the vacancy density, so their $N_T K/N_L$ terms vanish at the printed precision
-regardless of their binding energies. A sensitivity analysis will correctly find
-`trap_dislocation_N_T` and `trap_gb_N_T` to be irrelevant, and that is a
-consequence of the configured densities, not of the physics being wrong.
-
-Note also that the grain-boundary trap and the carbide trap share a binding
-energy of 26051 J/mol, so their $K$ and $\theta$ are identical and only their
-densities separate them.
+Grain boundaries, vacancies, dislocations and carbides also *trap* hydrogen, and
+earlier versions of the model folded an Oriani trap-reduced diffusivity into this
+level. That was removed. At steady state the traps are full to their equilibrium
+occupancy and exchange no net hydrogen, so only lattice hydrogen carries flux and
+$J = D\,\Delta C_L/L$ whatever the trap density, binding energy or saturation.
+Trapping sets the time lag and the hydrogen inventory, which a steady-state
+permeation model does not predict. The argument, and what the old double-counting
+did to the numbers, is in {doc}`../STEADY_STATE`.
 
 ## Procedure
 
-### Composing the two
+1. Compute $f_{gb} = 3\delta/d$ (capped at 0.5, with a warning above 0.1).
+2. Compute $\alpha = D_{gb}/D_L$ for the configured `gb_type` at $T$
+   (`gb_enhancement_factor`).
+3. Combine them by the parallel-path rule (or the Hart equation, if `model='hart'`)
+   into $D_{metal}$ (`calculate_gb_enhanced_diffusivity`).
+4. Hand $D_{metal}$ to the Level 1 flux (`calculate_defective_metal_flux`) or, at
+   Level 5, to the Level 2b/3 solvers. `metal_diffusivity` does steps 1–3 and returns
+   $D_L$ unchanged when `enable_gb_enhancement` is false.
+
+**Worked values** (active study, 873 K):
 
 ```text
-D_lattice            2.363871e-10  m²/s
-D_gb_enhanced        2.363898e-10  m²/s   (+0.001%)
-D_eff                1.745310e-10  m²/s   (−26%)
-overall_factor       0.738327048
-trapping_term        0.354428901
-reduction_factor     0.738318563
-theta_total          0.026370842
-f_gb                 1.500000e-05
-D_gb/D_L             1.766
-dominant_trap        vacancies
-dominant_effect      balanced
-regime               competitive
+D_bulk                   2.363871e-10  m²/s
+D_eff                    2.363898e-10  m²/s   (+0.001%)
+enhancement_ratio        1.000011
+gb_enhancement_factor    1.766131
+f_gb                     1.500000e-05
+regime                   bulk_dominated
 ```
 
-Trapping reduces the diffusivity by 26%; grain boundaries add back 0.001%. The net
-is a 26% reduction.
-
-:::{warning}
-**`dominant_effect = 'balanced'` does not mean the two effects are comparable.**
-It is the fallthrough branch of
-
-```python
-if   gb_factor > 2.0 and reduction_factor > 0.5:  'gb_enhancement'
-elif gb_factor < 2.0 and reduction_factor < 0.5:  'trapping'
-else:                                             'balanced'
-```
-
-Here `gb_factor = 1.0000115` fails the first test and `reduction_factor = 0.7383`
-fails the second, so the label falls through — even though trapping outweighs
-grain-boundary enhancement by a factor of roughly **23,000**. Read `overall_factor`,
-`reduction_factor` and `gb_enhancement['factor']` to find out what actually
-happened; `dominant_effect` only tells you which threshold pair fired.
-
-A separate warning does fire when the effects genuinely near-cancel, at
-$0.8 < \eta < 1.25$. With $\eta = 0.7383$ this study sits just outside it.
-:::
-
-### Modes
-
-`combined_microstructure_model` takes a `mode` argument that isolates the
-effects, which is the cleanest way to check either one:
-
-| `mode` | $D_{\text{eff}}$ [m²/s] | $\eta$ | `dominant_effect` | `regime` |
-|---|---|---|---|---|
-| `'both'` | 1.745310e-10 | 0.738327048 | `balanced` | `competitive` |
-| `'gb_only'` | 2.363898e-10 | 1.000011492 | `gb_enhancement` | `bulk_dominated` |
-| `'trapping_only'` | 1.745290e-10 | 0.738318563 | `trapping` | `weak_trapping` |
-| `'none'` | 2.363871e-10 | 1.000000000 | `none` | `perfect_lattice` |
-
-```{important}
-Compare the `'both'` and `'trapping_only'` rows: they agree to five significant
-figures. Grain-boundary enhancement contributes **+0.001%** here, so at this grain size
-Level 4 is a trapping model and nothing else — see Figure 12.
-
-These numbers changed when the grain-boundary enhancement stopped being read from a
-generic austenitic-steel table and started coming from the metal's own data. The ratio
-$D_{gb}/D_L$ went from a tabulated 50 to the metal's 1.77, which is what collapsed the
-grain-boundary contribution from +0.07% to +0.001%. Any note quoting the older figures
-predates that change.
-```
-
-All four measured. Note `'both'` is the product of the two single-effect factors,
-not the product of their diffusivities, so $D_{\text{eff}}(\text{both})$ exceeds
-$D_{\text{eff}}(\text{trapping\_only})$ by exactly the grain-boundary factor.
-
-`'none'` is the Level 4 → Level 1 limit and should reproduce `D_lattice`
-exactly; it is the first thing to check after touching this module.
+`regime` is `bulk_dominated` when $f_{gb}\alpha < 0.1$, `gb_dominated` above 10, and
+`mixed` between.
 
 ## Design choices
 
-### Concentration dependence, and a caveat
+### Parallel path, not Hart, by default
 
-`combined_microstructure_model` takes a `lattice_concentration` argument, and the
-values above use `10.0` mol/m³ — the same value the container smoke test pins, so
-they are directly comparable against it.
+The parallel-path rule treats bulk and boundary as independent conductors in
+proportion to their volume. The Hart equation accounts for boundary connectivity and
+is the better choice once boundaries percolate ($f_{gb} > 0.1$), which is where the
+code warns. At structural grain sizes $f_{gb}$ is of order $10^{-5}$ and the two give
+the same answer.
 
-```{note}
-The Oriani form as implemented has **no $C_L$ dependence** in $D_{\text{eff}}$:
-the denominator $1 + \sum N_{T,i}K_i/N_L$ contains only trap densities, binding
-energies, the lattice site density and temperature. The occupancies $\theta_i$
-do depend on concentration, and they are reported, but they do not feed back
-into the diffusivity.
+### $\alpha$ from the metal's own data
 
-The practical consequence is that a concentration profile computed across the
-wall comes out with a *flat* $D_{\text{eff}}$ while $\theta$ varies — which is
-correct behaviour in the dilute-trap limit, and is the discrepancy recorded in
-`STEADY_STATE.md` between the implementation and a docstring that claims
-concentration dependence.
-```
+$\alpha$ is computed from the active metal's lattice activation energy, with the
+boundary activation energy taken as a fraction of it, rather than from a generic
+table. See the note above for what that changed.
 
-Oriani also assumes low occupancy. The code warns above $\theta > 0.9$, where
-local equilibrium stops being a good approximation and a kinetic trapping model
-such as McNabb–Foster would be needed instead. At $\theta_{\max} = 0.0204$ here
-there is plenty of margin.
+### Trapping removed, not switched off
+
+There is no trapping switch to turn back on. Keeping one would invite comparing
+"with" and "without" fluxes that differ only by an error. The removal and its reasons
+are recorded in {doc}`../STEADY_STATE`.
 
 ## Checks and failure modes
 
-### Where the validation evidence lives
-
-The trapping block is the one part of the model validated against independent
-experiment without fitting: `TRAPPING_VALIDATION.md` works through a
-zero-free-parameter comparison against thermal desorption spectroscopy, using
-trap densities and binding energies measured elsewhere. That document is the
-reason to trust the numbers in this chapter, and it is worth reading alongside
-it.
+| Symptom | Meaning |
+|---|---|
+| `enable_gb_enhancement=False` does not reproduce `D_lattice` exactly | Level 4 → Level 1 limit broken; the first thing to check after touching this module |
+| Level 4 flux differs from Level 1 run with `D_eff` | the wrapper is doing something other than substituting the diffusivity |
+| `enhancement_ratio < 1` | impossible by construction; an input is wrong |
+| warning: GB volume fraction > 10% | ultrafine grains; consider `model='hart'` |
+| warning: enhancement > 100× | check grain size, boundary type and temperature |
 
 ## What Level 4 cannot tell you
 
@@ -278,5 +178,8 @@ It still assumes a perfect oxide. Combining a defective oxide with a defective
 metal is Level 5, and it is not a matter of multiplying the two corrections —
 each defect path through the oxide sits above its own patch of metal and must be
 solved with the microstructural diffusivity in place.
+
+It says nothing about how much hydrogen the metal holds, or how long it takes to
+get there. Those need trapping and a time axis; see {doc}`../STEADY_STATE`.
 
 Dissociation remains infinitely fast, which {doc}`level6-surface-kinetics` addresses.

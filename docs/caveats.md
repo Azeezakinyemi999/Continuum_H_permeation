@@ -20,9 +20,9 @@ Source: {doc}`getting-started`
 
 ```{warning}
 **Level 5 is metal-limited, so the oxide barely matters — but Level 5L6 is not.**
-With the 1 µm Cr₂O₃ layer on 316L at 873 K, Level 5 gives `frac_oxide = 7.8e-3` and
-`PRF ≈ 1.004`: the coating is almost invisible. Under the Level 6 family the same wall
-is **oxide-limited** (`frac_oxide = 0.70`), because dissociation at the gas/oxide
+With the 1 µm Cr₂O₃ layer on 316L at 873 K, Level 5 gives `frac_oxide = 1.05e-2` and
+`PRF ≈ 1.005`: the coating is almost invisible. Under the Level 6 family the same wall
+is **oxide-limited** (`frac_oxide = 0.75`), because dissociation at the gas/oxide
 surface sends atomic H through the oxide under Sieverts rather than intact H₂ under
 Henry, and thickness then bites.
 
@@ -137,7 +137,7 @@ At the default operating point:
 | Sieverts form, same constant | 1.265437e-06 |
 
 For the active study this does not change the Level 5 conclusion — the 1 µm oxide is
-non-limiting under Henry, so `regime` is `metal` and `PRF ≈ 1.004`. Under the Level 6
+non-limiting under Henry, so `regime` is `metal` and `PRF ≈ 1.005`. Under the Level 6
 family the same wall is oxide-limited, which is the clearest demonstration that the
 two models are not refinements of each other. It *would* matter for a thicker or less
 permeable oxide, and it means a Level 3 defect result is not directly comparable
@@ -198,31 +198,6 @@ Each returns `'converged': False`, and the returned `flux` is computed from that
 unsolved interface pressure. Nothing raises. A caller that ignores the flag can
 silently use a fabricated answer, so treat `converged` as part of the result, not
 as diagnostics.
-```
-
-## Level 4 — metal microstructure
-
-Source: {doc}`theory/level4-microstructure`
-
-### Two similar-sounding diffusivities differ by 32%
-
-```{warning}
-**Two similar-sounding quantities are not the same, and confusing them is a 32%
-error.** The code distinguishes:
-
-| Key | Meaning | Value here |
-|---|---|---|
-| `trapping_term` | $\sum_i N_{T,i}K_i/N_L$ — the denominator | 0.354429 |
-| `theta_total` | $\sum_i \theta_i$, sum of trap *occupancies* | 0.026371 |
-
-`reduction_factor` $= 1/(1 + \texttt{trapping\_term})$, verified exact. The
-occupancy sum is carried "for info" and appears in **no** formula.
-
-The project's earlier design note wrote the denominator as $1 + \theta_{\text{total}}$,
-using the name the code gives the occupancy sum. Substituting the occupancy sum
-into the formula gives $D_{\text{eff}} = 2.303157\times10^{-10}$ instead of the
-correct $1.745310\times10^{-10}$ — **32% high**. If you have inherited that
-formula, check which quantity you fed it.
 ```
 
 ## Level 6 — surface kinetics

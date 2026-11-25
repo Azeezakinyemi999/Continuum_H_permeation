@@ -7,8 +7,8 @@
 | Sieverts (1929) | Square-root pressure dependence of dissolved hydrogen |
 | Richardson & Antill (1955) | Permeation through metals |
 | Langmuir (1918) | Surface adsorption isotherm |
-| Oriani (1970) | Local-equilibrium trapping model — {doc}`theory/level4-microstructure` |
-| McNabb & Foster (1963) | Kinetic trapping; the alternative when Oriani's low-occupancy assumption fails |
+| Oriani (1970) | Local-equilibrium trapping; why trapping leaves steady flux unchanged — {doc}`STEADY_STATE` |
+| McNabb & Foster (1963) | Kinetic trapping; the same steady-state result — {doc}`STEADY_STATE` |
 | Strehlow & Savage (1974) | Parallel-path transport through defective coatings — {doc}`theory/level3-defective-oxide` |
 | Hart (1957), Underwood (1970) | Grain-boundary diffusion and stereology |
 | Palumbo & Aust (1990) | Grain-boundary structure dependence |
@@ -23,9 +23,7 @@
 | Nemanic et al. (2023) | Cr₂O₃ transport properties |
 | Stover (1986) | Cr₂O₃ activation energies |
 | Grant et al. (1988) | Surface dissociation rate constants |
-| Lu et al. (2022) | Trap binding energies from thermal desorption spectroscopy |
-| Zhu et al. (2021) | Grain size and dislocation density from EBSD |
-| Young et al. (1997) | M₆C carbide trap density |
+| Zhu et al. (2021) | Grain size from EBSD |
 
 ## Sensitivity analysis methodology
 

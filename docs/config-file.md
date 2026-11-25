@@ -129,11 +129,11 @@ dict instead.
   - the study's own name, reported by the loader on import
   - `calculations.config`, the sensitivity stamps, the container gate
 * - `R`, `F`
-  - gas constant; Faraday constant, used to write trap energies in eV
+  - gas constant; Faraday constant, for writing energies in eV (exported, currently unused)
   - the file itself
 * - `MODEL_OPTIONS`
-  - how the model is run — five switches, not data about anything
-  - `MICROSTRUCTURE`, `OXIDE_DEFECTS` and `DEFAULT_PARAMS_LEVEL5`, by reference
+  - how the model is run — two switches, not data about anything
+  - `OXIDE_DEFECTS` and `DEFAULT_PARAMS_LEVEL5`, by reference
 * - `METALS`
   - bulk metal transport + metal-surface kinetics, per alloy
   - `calculations.oxide_permeation`, `calculations.surface_kinetics`
@@ -141,7 +141,7 @@ dict instead.
   - bulk oxide transport + gas/oxide-surface kinetics, per oxide
   - `calculations.oxide_permeation`, `calculations.surface_kinetics`
 * - `MICROSTRUCTURE`
-  - grains, grain boundaries and trap populations (Level 4)
+  - grains and grain boundaries (Level 4)
   - `calculations.sensitivity`, notebooks
 * - `OXIDE_DEFECTS`
   - pinhole / crack / grain-boundary bypass paths (Level 3)
@@ -249,20 +249,13 @@ study. They are order-of-magnitude stand-ins, not measurements.
 
 ### `MICROSTRUCTURE`
 
-Level 4 inputs: `grain_size`, `gb_thickness`, `grain_shape`, `gb_type`,
-`enable_gb_as_trap`, `lattice_density`, and `trap_list` — a *list* of
-`{name, binding_energy, density}` dicts, one per trap population, with binding
-energies written as `0.27 * F` so the eV value from the source paper stays
-readable.
+Level 4 inputs: `grain_size`, `gb_thickness`, `grain_shape` and `gb_type`. They set
+the grain-boundary enhancement of the metal diffusivity; see
+{doc}`theory/level4-microstructure`.
 
-Two consequences of it being a list rather than a dict: order does not matter,
-and the flattening step looks traps up by name (case-insensitively, since the
-carbide population is capitalised in some studies). A renamed trap raises a
-`KeyError` naming the populations that do exist.
-
-Immediately after the block, `MICROSTRUCTURE['N_L']` is aliased to
-`lattice_density` — the same quantity under the symbol the derivations and
-notebooks use, aliased rather than written twice so the two cannot drift.
+There are no trap populations, lattice site density or trapping switches: trapping
+does not change the steady-state flux and was removed from the model. See
+{doc}`STEADY_STATE`.
 
 ### `OXIDE_DEFECTS`
 
@@ -280,13 +273,12 @@ but it is authored in one place only.
 
 ### `MODEL_OPTIONS`
 
-The five switches that say how the model is run, rather than describing anything
-physical: `enable_gb_as_trap`, `use_sieverts_pinhole`, `enable_gb_enhancement`,
-`enable_trapping` and `D_eff_method`.
+The two switches that say how the model is run, rather than describing anything
+physical: `use_sieverts_pinhole` and `enable_gb_enhancement`.
 
-They were previously scattered — one inside `MICROSTRUCTURE`, one inside
-`OXIDE_DEFECTS`, three inside `DEFAULT_PARAMS_LEVEL5` — so answering "what does
-this study switch on?" meant knowing all three places. The consuming dicts still
+They were previously scattered — one inside `OXIDE_DEFECTS`, one inside
+`DEFAULT_PARAMS_LEVEL5`, alongside three trapping switches since removed — so
+answering "what does this study switch on?" meant knowing several places. The consuming dicts still
 carry the keys their solvers look up, but each is a reference to this block.
 
 ### `CONDITIONS`
@@ -350,10 +342,10 @@ surface-kinetics entries, which is what keeps the two models sharing one value
 for everything they have in common. The split mirrors the model fork described
 in {doc}`theory/two-models`.
 
-A few entries are not physics: the flags `enable_gb_enhancement`,
-`enable_trapping` and `D_eff_method` say how to run the model. They are read from
-`MODEL_OPTIONS` like everything else, so even these are references rather than
-literals.
+One entry is not physics: the flag `enable_gb_enhancement` says how to run the
+model. It is read from
+`MODEL_OPTIONS` like everything else, so even it is a reference rather than a
+literal.
 
 ### `SUGGESTED_RANGES_LEVEL5` / `..._LEVEL5L6`
 

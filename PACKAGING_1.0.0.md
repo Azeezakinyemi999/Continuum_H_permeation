@@ -604,3 +604,20 @@ Its directory, its tar and its image tag are all left as they were. The grain-bo
 change moves `micro_D_eff` and `micro_overall_factor`, so results computed under 1.2.0
 are not identical to results computed here, and 1.2.0 remains the artifact its own
 results were produced in.
+
+## Since 1.3.0
+
+Not a release, a warning for anyone comparing a 1.3.0 result against a current
+checkout: **the numbers moved, because hydrogen trapping was removed from the model**
+(`6c637f1`). Every release up to and including 1.3.0 computed the metal flux as
+$D_{eff}\,\Delta C_L/L$ with an Oriani trap-reduced $D_{eff}$, which counts trapping
+twice; at steady state the flux is $D\,\Delta C_L/L$ whatever the traps do. See
+`STEADY_STATE.md`.
+
+At the 316L default point the Level 5 flux rises from 3.183e-6 to 4.305e-6
+mol m⁻² s⁻¹ and Level 5L6 from 9.089e-7 to 9.860e-7; the regimes are unchanged.
+The container's API also differs again: the trap inputs, `lattice_density`,
+`enable_trapping`, `enable_gb_as_trap`, `D_eff_method` and the `mode` argument exist in
+1.3.0 and not on `main`, and the gate's `micro_*` and `classify_regime_level14` checks
+above refer to functions that are gone. The records above stay as they were: they are
+true of the images they describe.

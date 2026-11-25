@@ -364,7 +364,7 @@ both the module and the notebooks, as per-path solves that are then area-weighte
 
 | path | L3 | L5 | L3L6 | L5L6 |
 |---|---|---|---|---|
-| intact | oxide+metal | oxide + `D_eff` metal | $\alpha_{int}=\Phi_{ox}/L_{ox}$ | + `D_eff` iteration |
+| intact | oxide+metal | oxide + `D_eff` metal | $\alpha_{int}=\Phi_{ox}/L_{ox}$ | + `D_eff` metal |
 | pinhole | bare metal | bare defective metal | $\alpha=\infty$, metal kinetics | same + `D_eff` |
 | crack | oxide $\times\gamma$ | $\times\gamma$ + `D_eff` metal | $\alpha_{int}/\gamma$ | same + `D_eff` |
 | oxide GB | $D_{ox}\times\beta$ | $\times\beta$ + `D_eff` metal | $\beta\,\alpha_{int}$ | same + `D_eff` |

@@ -44,9 +44,10 @@ then combine by area fraction as at Level 3:
 
 $$J_{\text{total}} = \sum_i j^{(i)}f^{(i)}, \qquad \sum_i f^{(i)} = 1$$
 
-The only change from Level 3 is the metal's diffusivity: $D_L$ becomes
-$D_{\text{eff}}$ from the microstructural model. The same `brentq` solve runs,
-with the microstructure threaded through to the metal flux function.
+The only change from Level 3 is the metal's diffusivity: $D_L$ becomes the
+grain-boundary-enhanced $D_{\text{eff}}$ of Level 4. It does not depend on hydrogen
+concentration, so it is computed once and the Level 3 calculation runs unchanged
+with it in place of $D_L$.
 
 <!-- verify-docs: allow calculate_full_system_flux -->
 
@@ -59,9 +60,8 @@ points are:
 |---|---|
 | `level5_model_wrapper` | canonical — takes a parameter dict, used by the SA |
 | `calculate_parallel_path_flux_defective_metal` | direct call with explicit props |
-| `calculate_PRF_defective_metal` | coating effectiveness with microstructure |
 
-The wrapper and the direct call agree exactly (`3.182694e-06` from both), so use
+The wrapper and the direct call agree exactly (`4.304753e-06` from both), so use
 whichever is convenient; the wrapper is preferable because it resolves every
 input from the active study rather than requiring you to assemble props dicts
 correctly.
@@ -74,43 +74,42 @@ correctly.
 :width: 90%
 
 **Figure 13.** Look at the last two bars. Having measured the oxide-defect correction
-and the metal-microstructure correction separately, it is natural to multiply them —
-the hatched bar. The true Level 5 result is the red one. On the Example Wall the
-product is off by **+8.2%**, because both corrections act through the interface
+and the effect of a slower metal (here $D/4$) separately, it is natural to multiply
+them — the hatched bar. The true result is the red one. On the Example Wall the
+product is off by **+9.7%**, because both changes act through the interface
 pressure and are therefore coupled, not independent.
 ```
 
-Level 3 gave `4.304704e-06`. Level 4 gave a diffusivity reduction factor
-$\eta = 0.738327048$. If the two were independent, Level 5 would be their
+Level 3 gave `4.304704e-06`. Level 4 gave a diffusivity enhancement factor
+$\eta = 1.000011492$. If the two were independent, Level 5 would be their
 product.
 
 | Quantity | Value |
 |---|---|
-| Level 5 flux / Level 3 flux | 0.739352578 |
-| Level 4 `overall_factor` | 0.738327048 |
-| ratio | 1.001388992 |
+| Level 5 flux / Level 3 flux | 1.000011431 |
+| Level 4 `enhancement_ratio` | 1.000011492 |
+| ratio | 0.999999939 |
 
-The 1.4e-3 discrepancy is small but it is not noise, and its origin is
-instructive: **reducing the metal's diffusivity changes where the interface
-pressure settles.** A slower metal backs hydrogen up, raising
-$P_{\text{int}}$ slightly, which shifts a little more of the driving force onto
-the oxide and slightly alters the split. Level 3's interface pressure was
-`9.892438e+04` Pa; Level 5's is `9.920472e+04` Pa.
+The 6e-8 discrepancy is tiny but it is not noise, and its origin is the one
+Figure 13 shows at full size: **changing the metal's diffusivity changes where the
+interface pressure settles.** A faster metal drains hydrogen away a little faster,
+lowering $P_{\text{int}}$ slightly, which shifts a little more of the driving force
+onto the oxide. Level 3's interface pressure was `9.892438e+04` Pa; Level 5's is
+`9.892437e+04` Pa.
 
 So the levels are genuinely coupled through the interface solve, not merely
-composed. For this study the coupling is worth 0.007% and you would be entitled
-to ignore it — but in an oxide-limited system, where $P_{\text{int}}$ has room to
-move, the same mechanism is much stronger. It is already twenty times larger here
-than it was at the older 48 nm coating, for exactly that reason.
+composed. For this study the coupling is invisible, because the grain-boundary
+correction it acts on is itself only 0.001% — but in an oxide-limited system, or with
+a metal correction of real size, the same mechanism is much stronger.
 
 ### Reading the resistance fractions
 
 Level 5 reports three fractions which sum to exactly 1:
 
 ```text
-frac_oxide    7.793176e-03
-frac_metal    0.972132
-frac_defect   0.020074
+frac_oxide    1.054009e-02
+frac_metal    0.969359
+frac_defect   0.020101
 sum           1.000000000
 ```
 
@@ -140,20 +139,19 @@ so `regime = metal`.
 
 ### PRF at Level 5 isolates the coating
 
-`flux_bare_metal` is `3.195183e-06`, which is exactly the Level 1 flux multiplied
+`flux_bare_metal` is `4.327648e-06`, which is exactly the Level 1 flux multiplied
 by $\eta$ — the bare-metal reference **carries the microstructure too**.
 
-$$4.327598\times10^{-6} \times 0.738327048 = 3.195183\times10^{-6}\;\checkmark$$
+$$4.327598\times10^{-6} \times 1.000011492 = 4.327648\times10^{-6}\;\checkmark$$
 
 This matters for interpretation. Because both sides of
 
 $$\mathrm{PRF} = \frac{J_{\text{bare, microstructured}}}{J_{\text{coated, microstructured}}}$$
 
-include trapping, the ratio measures **the coating alone**, not coating plus
-microstructure. A PRF of 1.003924 therefore says the oxide does almost nothing — it
-does not say the microstructure does nothing. The microstructure's effect is the 26%
-reduction hiding in both numerator and denominator, visible only in
-`modification_factor`.
+use the same metal diffusivity, the ratio measures **the coating alone**, not coating
+plus microstructure. A PRF of 1.005318 therefore says the oxide does almost nothing —
+it says nothing about the microstructure, whose effect (here +0.001%) sits in both
+numerator and denominator and is visible only in `modification_factor`.
 
 ## Checks and failure modes
 
@@ -164,9 +162,9 @@ physics is switched off. All three hold exactly:
 
 | Limit | Should recover | Result |
 |---|---|---|
-| `enable_trapping=False`, `enable_gb_enhancement=False` | Level 3 | `4.304704e-06` — exact |
+| `enable_gb_enhancement=False` | Level 3 | `4.304704e-06` — exact |
 | the above **and** defect fractions → 0 | Level 2b | `4.304261e-06` — exact |
-| defect fractions → 0, microstructure on | Level 2b + Level 4 | `3.182452e-06` |
+| defect fractions → 0, microstructure on | Level 2b + Level 4 | `4.304310e-06` |
 | `level5_model_wrapper` vs direct call | each other | agree to machine precision |
 
 These are the checks worth re-running after touching either parent module,
@@ -184,27 +182,27 @@ figures in this chapter use the Example Wall instead and are study-independent.
 ```
 
 ```text
-flux                  3.182694e-06  mol/m²/s
-flux_intact           3.118803e-06
-flux_defect           6.389090e-08     (intact + defect = flux, exact)
-flux_bare_metal       3.195183e-06
-PRF                   1.003924
-P_interface           9.920472e+04  Pa
+flux                  4.304753e-06  mol/m²/s
+flux_intact           4.218224e-06
+flux_defect           8.652956e-08     (intact + defect = flux, exact)
+flux_bare_metal       4.327648e-06
+PRF                   1.005318
+P_interface           9.892437e+04  Pa
 D_metal               2.363871e-10  m²/s
-D_eff                 1.745310e-10  m²/s
-modification_factor   0.738327048
-defect_enhancement    1.000076
-permeability          1.007463e-11
-permeance             1.006456e-08
+D_eff                 2.363898e-10  m²/s
+modification_factor   1.000011
+defect_enhancement    1.000103
+permeability          1.362644e-11
+permeance             1.361283e-08
 regime                metal
 ```
 
 `permeability` is the *apparent* permeability $J L_{\text{tot}}/\Delta\sqrt{P}$,
 backed out of the flux above, so it agrees with `flux` and `regime` instead of
-contradicting them. Note where it lands: $1.007463\times10^{-11}$ against a bare
-metal $\Phi_m = 1.368507\times10^{-11}$, a ratio of $0.736$ — close to
-`modification_factor` $= 0.738$, but not equal to it. The gap is the coating: at
-1 µm the oxide carries `frac_oxide` $= 7.8\times10^{-3}$ of the resistance, so the
+contradicting them. Note where it lands: $1.362644\times10^{-11}$ against a bare
+metal $\Phi_m = 1.368507\times10^{-11}$, a ratio of $0.996$ — close to
+`modification_factor` $= 1.000011$, but not equal to it. The gap is the coating: at
+1 µm the oxide carries `frac_oxide` $= 1.05\times10^{-2}$ of the resistance, so the
 wall does not quite reduce to $D_{\text{eff}}K_s$. The number still reads
 metal-controlled, just as `regime` does. It is not a material constant; see
 {doc}`permeability`.
@@ -214,6 +212,10 @@ An earlier version of this block was computed at a **48 nm** coating, where the 
 really was negligible and the ratio matched `modification_factor` to four digits. The
 configured thickness is now 1 µm. If you have inherited a PRF of 1.000188, it is from
 that older geometry.
+
+A later version still applied a trap-reduced diffusivity to the metal, which
+double-counted trapping (see {doc}`../STEADY_STATE`). A flux of `3.182694e-06`, a PRF
+of 1.003924 or a `modification_factor` of 0.738 is from before that was removed.
 ```
 
 `PRF` is finite here but becomes `nan` at Level 5L6, so prefer the Level 5 value

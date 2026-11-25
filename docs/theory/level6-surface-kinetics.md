@@ -140,11 +140,11 @@ Combining surface kinetics with the defective oxide and defective metal gives
 the most complete configuration available:
 
 ```text
-flux               9.088726e-07  mol/m²/s
-theta              0.622737
-frac_surface       1.914741e-04
-frac_oxide         6.961588e-01
-frac_metal         3.036497e-01
+flux               9.860237e-07  mol/m²/s
+theta              0.622488
+frac_surface       2.273203e-04
+frac_oxide         7.500306e-01
+frac_metal         2.497421e-01
 sum                1.000000000
 regime             oxide
 PRF                nan
@@ -154,15 +154,15 @@ K_eq    (oxide)    2.798918e-05
 K_eq_metal         3.349488e-03
 ```
 
-Against Level 5's `3.182694e-06`, surface kinetics cut the flux by **71%** here — a
-factor of 3.5. Note also that `regime` is now **`oxide`**, where Level 5 on the same
+Against Level 5's `4.304753e-06`, surface kinetics cut the flux by **77%** here — a
+factor of 4.4. Note also that `regime` is now **`oxide`**, where Level 5 on the same
 wall reported `metal`: the limiting step has changed, not merely weakened. Note the two
 separate kinetic pairs as well — the oxide surface and the bare metal exposed at
 pinholes have their own constants, as {doc}`equilibrium-models` describes.
 
 ```{important}
-**`frac_oxide` jumps by a factor of 89 between Level 5 and Level 5L6** — from
-`7.793176e-03` to `6.961588e-01` — even though the oxide's thickness and material
+**`frac_oxide` jumps by a factor of 71 between Level 5 and Level 5L6** — from
+`1.054009e-02` to `7.500306e-01` — even though the oxide's thickness and material
 properties are unchanged. That is enough to flip the wall from metal-limited to
 oxide-limited.
 

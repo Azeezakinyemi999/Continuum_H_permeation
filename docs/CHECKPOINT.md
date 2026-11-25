@@ -11,10 +11,18 @@ changes, not only at the start.
   Wall, 20 figures and 44 equation checks all build and pass. Prose parts not started.
 - **Environment:** `mace_env` (Python 3.9.23). Nothing is to be installed into it.
 
+> **2026-11-25 — trapping removed from the model** (`6c637f1`, docs `8e5981e`). Steady-state
+> flux does not depend on trapping, and the code had double-counted it; see
+> `STEADY_STATE.md`. Level 4 is now grain-boundary enhancement only. `TRAPPING_VALIDATION.md`
+> and its stub are deleted, Figure 12 is `fig-12-level4-grain-boundaries.svg`, Figure 13's
+> "slow metal" is $D/4$, and the equation checks are 42, not 44. Entries below that
+> describe trapping (D7's stub list, F1, F3, "What F6 confirmed") are history and are left
+> as written.
+
 Everything must stay green. From the repository root:
 
 ```bash
-python docs/figures/check_equations.py    # 44 / 44 checks passed
+python docs/figures/check_equations.py    # 42 / 42 checks passed
 python docs/figures/make_figures.py       # 20 / 20 figures written
 python docs/_tools/verify_docs.py         # clean
 python docs/_tools/worked_values.py --check

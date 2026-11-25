@@ -41,6 +41,8 @@ overrides the geometry.
       `enable_gb_enhancement`, `enable_trapping`, `D_eff_method` — which are scattered
       across three dicts and are not data. A pure move: verified by diffing the module
       namespace before and after, which must be identical.
+      (Two switches since trapping was removed: `use_sieverts_pinhole` and
+      `enable_gb_enhancement`. See "Trapping double-counted in the steady-state flux".)
 - [x] **Fix 4 — `CONDITIONS` owns the swept operating ranges.** The range of conditions
       being studied *is* an operating condition, but it is stated twice and the two
       disagree — and each set has a nonsense bound: `P_range` reaches 1e12 Pa (10 million
@@ -139,6 +141,28 @@ overrides the geometry.
       `get_oxide_properties_at_T` warns, but the level-5 wrappers — the ones the SA
       actually calls — compute the Arrhenius directly and never consult the range.
 
+- [x] **Trapping double-counted in the steady-state flux.** The metal flux was
+      $J = D_{eff}\,\Delta C_L/L$, pairing the Oriani trap-reduced diffusivity with the
+      *lattice* concentrations. Oriani's $D_{eff}$ belongs with the gradient of the
+      *total* concentration, and $J = -D_{eff}\,\partial C_{tot}/\partial x =
+      -D_L\,\partial C_L/\partial x$; at steady state traps exchange no net hydrogen, so
+      the flux does not depend on trap density, binding energy or occupancy. Trapping
+      sets the time lag and the inventory, which this model does not predict.
+      **Done:** trapping removed rather than switched off (`6c637f1`). Level 4 is
+      grain-boundary enhancement only, through `defective_metal.metal_diffusivity()`,
+      and every Level 4/5 solver is its Level 1–3 counterpart run with that one
+      diffusivity. Gone: trap lists, `lattice_density`, `enable_trapping`,
+      `enable_gb_as_trap`, `D_eff_method`, the `mode` argument, the
+      `traps_defect_limited`/`lattice_limited` regime tier, and nine SA inputs
+      (L5 28 -> 19, L5L6 36 -> 27). `tests/test_metal_diffusivity.py` pins the
+      Level 4/5 -> Level 1-3 reductions and guards against trapping code returning.
+      Numbers moved at the 316L default point: L5 flux 3.183e-6 -> 4.305e-6,
+      PRF 1.0039 -> 1.0053, `frac_oxide` 7.8e-3 -> 1.05e-2, `D_modification`
+      0.738 -> 1.000011; L5L6 flux 9.089e-7 -> 9.860e-7, `frac_oxide` 0.696 -> 0.750;
+      regimes unchanged (L5 metal, L5L6 oxide). The gate was re-baselined and the pinned
+      SA rankings, which named trap inputs, dropped until the next scan. The argument is
+      written up in `STEADY_STATE.md`, which replaces `TRAPPING_VALIDATION.md`.
+
 ## Test coverage
 
 - [x] **Physics test suite.** The model wrappers are pinned only by the 13 values in the
@@ -149,6 +173,8 @@ overrides the geometry.
       temperature; `frac_*` partitioning to 1; `regime` equal to the argmax of those
       fractions; `PRF >= 1`; sealing the defects never raising the flux; and Sieverts'
       half-power in pressure. Most apply to both wrappers, so they hold for any study.
+      Since joined by `tests/test_metal_diffusivity.py`, which pins the Level 4/5 ->
+      Level 1-3 reductions now that trapping is gone.
 
       Deliberately absent: any assertion that L5L6 collapses onto L5 as the surface
       becomes fast. They are different models, not refinements — Henry vs Sieverts in
