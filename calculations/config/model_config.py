@@ -113,7 +113,7 @@ def _available_folder_studies():
 # There are two reasons a name lands here, and they are not the same reason. Most are
 # required because something imports them from this module. The first group is required
 # because the DERIVED block at the bottom of THIS file reads them out of the study
-# namespace — nothing imports MODEL_OPTIONS anywhere, but a study without it would fail
+# namespace — a study without them would fail
 # as a bare NameError raised from inside the loader, which is precisely the failure this
 # check exists to replace.
 REQUIRED_EXPORTS = frozenset({
