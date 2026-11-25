@@ -21,15 +21,15 @@ r = solve_steady_state_flux_L1L6(P_up=1.0e5, P_down=1.0e2, L_m=1.0e-3,
 for k in ('J_ss', 'P_int', 'theta', 'beta', 'rate_limiting'):
     out[f'L1L6_{k}'] = r[k]
 
-# 2. defective metal / microstructure (numpy-heavy, many traps)
+# 2. defective metal / microstructure (grain-boundary enhancement)
 from calculations.config.model_config import MICROSTRUCTURE
-from calculations.defective_metal import combined_microstructure_model
-m = combined_microstructure_model(6.881385163348364e-11, 873.0, dict(MICROSTRUCTURE),
-                                  lattice_concentration=10.0,
-                                  lattice_density=MICROSTRUCTURE['lattice_density'])
+from calculations.defective_metal import calculate_gb_enhanced_diffusivity
+m = calculate_gb_enhanced_diffusivity(6.881385163348364e-11, 873.0,
+                                      MICROSTRUCTURE['grain_size'],
+                                      gb_thickness=MICROSTRUCTURE['gb_thickness'],
+                                      gb_type=MICROSTRUCTURE['gb_type'])
 out['micro_D_eff']          = m['D_eff']
-out['micro_overall_factor'] = m['overall_factor']
-out['micro_theta_total']    = m['trapping']['theta_total']
+out['micro_overall_factor'] = m['enhancement_ratio']
 
 # 3. SALib: seeded Latin hypercube -> PAWN + delta (the SA path)
 from SALib.sample import latin

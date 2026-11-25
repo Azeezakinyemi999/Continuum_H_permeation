@@ -357,13 +357,13 @@ def test_derived_block_comes_after_the_study_namespace_is_spliced_in():
 
 
 def test_model_switches_reference_model_options():
-    """The five switches had three homes. Now they have one, and the dicts that deliver
-    them to the solvers carry a reference rather than a second copy.
+    """The model switches had several homes. Now they have one, and the dicts that
+    deliver them to the solvers carry a reference rather than a second copy.
 
     MICROSTRUCTURE and OXIDE_DEFECTS are study data and keep their references in each
     study file; DEFAULT_PARAMS_LEVEL5 is derived and is checked once, in model_config.
     """
-    for key in ("enable_gb_enhancement", "enable_trapping", "D_eff_method"):
+    for key in ("enable_gb_enhancement",):
         value = derived_dict("DEFAULT_PARAMS_LEVEL5")[key]
         assert any(isinstance(n, ast.Name) and n.id == "MODEL_OPTIONS"
                    for n in ast.walk(value)), (
@@ -373,10 +373,9 @@ def test_model_switches_reference_model_options():
 
 @pytest.mark.parametrize("folder", STUDY_IDS)
 def test_study_dicts_reference_model_options(folder):
-    """The two switch-carrying dicts that are still study data."""
+    """The switch-carrying dict that is still study data."""
     tree = ast.parse((ROOT / folder / "study_config.py").read_text())
     wanted = {
-        "MICROSTRUCTURE": ["enable_gb_as_trap"],
         "OXIDE_DEFECTS":  ["use_sieverts_pinhole"],
     }
     seen = {}
@@ -460,7 +459,7 @@ def test_material_parameter_ranges_stay_literal(folder):
     """Only the operating ranges move. D_ref and friends describe materials, and a
     material has no counterpart in CONDITIONS to be read from."""
     entries = suggested_range_nodes(folder)
-    for param in ("D_ref", "E_D", "K_s_ref", "trap_gb_N_T"):
+    for param in ("D_ref", "E_D", "K_s_ref", "grain_size"):
         assert not any(isinstance(n, ast.Name) and n.id == "CONDITIONS"
                        for n in ast.walk(entries[param])), (
             f"{param} is a material range and must not derive from CONDITIONS")

@@ -163,7 +163,7 @@ def intrinsic_oxide_permeability(D_ox, K_ox, model):
 # -----------------------------------------------------------------------------
 
 def effective_metal_permeability(D_eff, K_s):
-    r"""Tier 2: :math:`D_{eff}K_s`, metal GB enhancement and trapping folded in.
+    r"""Tier 2: :math:`D_{eff}K_s`, metal grain-boundary enhancement folded in.
 
     The sorption law is untouched, so this stays thickness- and
     pressure-independent.
@@ -463,14 +463,13 @@ def level2a(D_ox, K_ox, L_ox, P_up, P_down=0.0, temperature=None):
 
 
 def level4(D_lattice, K_s, L_m, P_up, P_down, temperature,
-           microstructure_params, lattice_density=1.06e29,
-           method='average', mode='both'):
+           microstructure_params, enable_gb_enhancement=True):
     """L4 -- bare defective metal. Tier 2: apparent value equals ``D_eff*K_s``."""
     from calculations.permeation_calc import calculate_defective_metal_flux
     r = calculate_defective_metal_flux(
         D_lattice=D_lattice, K_s=K_s, metal_thickness=L_m, P_up=P_up, P_down=P_down,
         temperature=temperature, microstructure_params=microstructure_params,
-        lattice_density=lattice_density, method=method, mode=mode)
+        enable_gb_enhancement=enable_gb_enhancement)
     return _row('L4', MODEL_1, 2, r['flux'], P_up, P_down, L_m, UNITS_SIEVERTS,
                 temperature, closed_form=r['D_eff'] * K_s, D_eff=r['D_eff'])
 
@@ -506,15 +505,14 @@ def level3(oxide_props, metal_props, defect_params, P_up, P_down=0.0, temperatur
 
 
 def level5(oxide_props, metal_props, defect_params, P_up, P_down, temperature,
-           microstructure_params, lattice_density=1.06e29,
-           method='average', mode='both'):
+           microstructure_params, enable_gb_enhancement=True):
     """L5 -- defective oxide + defective metal. Tier 4."""
     from calculations.parallel_oxide_defect_paths import (
         calculate_parallel_path_flux_defective_metal as solve)
     kw = dict(oxide_props=oxide_props, metal_props=metal_props,
               defect_params=defect_params, temperature=temperature,
               microstructure_params=microstructure_params,
-              lattice_density=lattice_density, method=method, n_profile_points=10, mode=mode)
+              enable_gb_enhancement=enable_gb_enhancement)
     r = solve(P_upstream=P_up, P_downstream=P_down, **kw)
     L_tot = oxide_props['thickness'] + metal_props['thickness']
     n = pressure_exponent(
@@ -606,8 +604,7 @@ def level3_L6(P_up, P_down, L_m, k_diss, K_eq, D_ox, K_ox, L_ox, D_m, K_s_m,
 
 
 def level4_L6(P_up, P_down, L_m, temperature, k_diss, K_eq, D_ox, K_ox, L_ox,
-              D_lattice, K_s_m, microstructure_params,
-              lattice_density=1.06e29, method='average', mode='both'):
+              D_lattice, K_s_m, microstructure_params, enable_gb_enhancement=True):
     """L4+L6 -- pristine oxide + defective metal + surface. Tier 3 x eta_surf."""
     from calculations.surface_kinetics import calculate_defective_metal_flux_L6
     r = calculate_defective_metal_flux_L6(
@@ -615,7 +612,7 @@ def level4_L6(P_up, P_down, L_m, temperature, k_diss, K_eq, D_ox, K_ox, L_ox,
         k_diss=k_diss, K_eq=K_eq, D_ox=D_ox, K_ox=K_ox, L_ox=L_ox,
         D_lattice=D_lattice, K_s_m=K_s_m,
         microstructure_params=microstructure_params,
-        lattice_density=lattice_density, method=method, mode=mode)
+        enable_gb_enhancement=enable_gb_enhancement)
     row = _m2_row('L4L6', r, P_up, P_down, L_ox + L_m, temperature, K_eq,
                   Phi_ox=D_ox * K_ox, L_ox=L_ox,
                   Phi_m=r['D_eff'] * K_s_m, L_m=L_m, flux_key='flux',
@@ -625,8 +622,7 @@ def level4_L6(P_up, P_down, L_m, temperature, k_diss, K_eq, D_ox, K_ox, L_ox,
 
 def level5_L6(P_up, P_down, L_m, temperature, k_diss, K_eq, D_ox, K_ox, L_ox,
               D_lattice, K_s_m, microstructure_params, defect_config,
-              lattice_density=1.06e29, method='average', mode='both',
-              k_diss_metal=None, K_eq_metal=None):
+              enable_gb_enhancement=True, k_diss_metal=None, K_eq_metal=None):
     """L5+L6 -- the full model. Tier 4."""
     from calculations.surface_kinetics import calculate_full_model_flux_L346_v2
     r = calculate_full_model_flux_L346_v2(
@@ -634,7 +630,7 @@ def level5_L6(P_up, P_down, L_m, temperature, k_diss, K_eq, D_ox, K_ox, L_ox,
         k_diss=k_diss, K_eq=K_eq, D_ox=D_ox, K_ox=K_ox, L_ox=L_ox,
         D_lattice=D_lattice, K_s_m=K_s_m,
         microstructure_params=microstructure_params, defect_config=defect_config,
-        lattice_density=lattice_density, method=method, mode=mode,
+        enable_gb_enhancement=enable_gb_enhancement,
         k_diss_metal=k_diss_metal, K_eq_metal=K_eq_metal)
     theta_intact = r.get('intact_path', {}).get('theta')
     eta = surface_efficiency(theta_intact, K_eq, P_up, P_down) if theta_intact is not None else None

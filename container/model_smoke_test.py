@@ -78,9 +78,8 @@ REFERENCE = {
         'L1L6_P_int':           99981.8550496419,
         'L1L6_theta':           0.9090834102188711,
         'L1L6_rate_limiting':   'metal',
-        'micro_D_eff':          8.71553351849259e-12,
-        'micro_overall_factor': 0.40961520935387163,
-        'micro_theta_total':    0.09282336531113745,
+        'micro_D_eff':          2.1281610596883615e-11,
+        'micro_overall_factor': 1.0001993981818529,
     },
     'fuerst_etal_2024_model_config': {
         'metal_name':           'Hastelloy_N_fuerst_2024',
@@ -93,9 +92,8 @@ REFERENCE = {
         'L1L6_P_int':           99807.90216861428,
         'L1L6_theta':           0.9090114222245518,
         'L1L6_rate_limiting':   'metal',
-        'micro_D_eff':          8.002988640056678e-11,
-        'micro_overall_factor': 0.4095560455539921,
-        'micro_theta_total':    0.09282336531113745,
+        'micro_D_eff':          1.9541716807994877e-10,
+        'micro_overall_factor': 1.0000549318737608,
     },
     'Guo_etal_2025_316L': {
         'metal_name':           '316L_Guo_2025',
@@ -108,9 +106,8 @@ REFERENCE = {
         'L1L6_P_int':           6802.624161529068,
         'L1L6_theta':           0.7627850150386251,
         'L1L6_rate_limiting':   'metal',
-        'micro_D_eff':          1.6422835428360962e-11,
-        'micro_overall_factor': 0.4095494656460746,
-        'micro_theta_total':    0.09282336531113745,
+        'micro_D_eff':          4.010131883969066e-11,
+        'micro_overall_factor': 1.0000388650388659,
     },
 }
 
@@ -184,12 +181,11 @@ print("HYDROGEN MODEL — SCIENTIFIC SMOKE TEST (gate 2 of 2)")
 print("=" * 78)
 
 try:
-    from calculations.classify_regime import classify_regime_level14
     from calculations.config.model_config import (
         ACTIVE_STUDY_NAME, ACTIVE_STUDY_PATH, ACTIVE_STUDY_SOURCE,
         CONDITIONS, METALS, MICROSTRUCTURE, OXIDES, build_simulation_config,
     )
-    from calculations.defective_metal import combined_microstructure_model
+    from calculations.defective_metal import calculate_gb_enhanced_diffusivity
     from calculations.interface_solver import calculate_oxide_metal_system
     from calculations.oxide_permeation import (
         get_metal_properties_at_T, get_oxide_properties_at_T,
@@ -284,21 +280,13 @@ close("L1L6 P_int", r3["P_int"], REF["L1L6_P_int"])
 close("L1L6 theta", r3["theta"], REF["L1L6_theta"])
 equal("L1L6 rate_limiting", r3["rate_limiting"], REF["L1L6_rate_limiting"])
 
-# ------------------------------------------- microstructure (4 trap types)
-print("\nLevel 4 (microstructure, 4 traps):")
-m = combined_microstructure_model(
-    mp["D_metal"], T, dict(MICROSTRUCTURE),
-    lattice_concentration=10.0, lattice_density=MICROSTRUCTURE["lattice_density"])
+# ------------------------------- microstructure (grain-boundary enhancement)
+print("\nLevel 4 (microstructure, grain-boundary enhancement):")
+m = calculate_gb_enhanced_diffusivity(
+    mp["D_metal"], T, MICROSTRUCTURE["grain_size"],
+    gb_thickness=MICROSTRUCTURE["gb_thickness"], gb_type=MICROSTRUCTURE["gb_type"])
 close("micro D_eff", m["D_eff"], REF["micro_D_eff"])
-close("micro overall_factor", m["overall_factor"], REF["micro_overall_factor"])
-close("micro theta_total", m["trapping"]["theta_total"], REF["micro_theta_total"])
-
-# ------------------------------------------------- regime classification
-print("\nregime classification:")
-equal("classify(0.2)", classify_regime_level14(0.2)["regime_hierarchy"],
-      "metal_limited/traps_defect_limited")
-equal("classify(0.9)", classify_regime_level14(0.9)["regime_hierarchy"],
-      "metal_limited/lattice_limited")
+close("micro overall_factor", m["enhancement_ratio"], REF["micro_overall_factor"])
 
 # -------------------------------------------------- SALib (seeded, exact)
 print("\nSALib (seeded Latin hypercube -> PAWN + Borgonovo delta):")
@@ -350,14 +338,9 @@ else:
     rb = pd.read_csv(os.path.join(R, "routeB_givendata.csv"))
     mc = pd.read_csv(os.path.join(R, "master_clusters.csv"))
     cf = pd.read_csv(os.path.join(R, "compare_delta_flux.csv"))
-    equal("routeB shape", rb.shape, (324, 7))
-    equal("master_clusters shape", mc.shape, (4508, 51))
-    equal("top_drivers[metal]", list(top_drivers(rb, "metal", "flux", k=6)),
-          ["temperature", "P_upstream", "f_pinhole", "H_sol_ox",
-           "lattice_density", "trap_vacancy_N_T"])
-    equal("top_drivers[surface]", list(top_drivers(rb, "surface", "flux", k=6)),
-          ["temperature", "P_upstream", "k_diss_ref", "f_pinhole",
-           "K_s_ref", "D_ref"])
+    # The CSV shapes and driver rankings pinned here were measured on a scan that
+    # still sampled nine trapping inputs, which no longer exist. Re-measure them from
+    # the first scan made without trapping; until then only the figures are checked.
     # Figure HTML length is NOT asserted: it varies with the embedded plotly
     # version string. Only that a figure builds at all.
     n1 = len(parallel_coordinates_sensitivity(cf, title="C").to_html(

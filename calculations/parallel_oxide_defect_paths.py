@@ -19,9 +19,7 @@ from calculations.permeation_calc import calculate_simple_metal_flux
 from calculations.interface_solver import calculate_oxide_metal_system
 
 # Centralized regime classification utilities
-from calculations.classify_regime import (
-    classify_regime_level34,
-)
+from calculations.classify_regime import classify_regime_level3
 
 def calculate_defect_path_flux(P_upstream, P_downstream, oxide_props, metal_props, defect_props):
     r"""
@@ -309,18 +307,14 @@ def calculate_parallel_path_flux(P_upstream, P_downstream, oxide_props, metal_pr
     else:
         dominant = 'intact_oxide'
     
-    # # Calculate enhancement factor vs perfect oxide
-    # enhancement = flux_total / j_intact if j_intact > 0 else float('inf')
-    
-    # Enhancement factor vs perfect oxide with defective metal
+    # Enhancement factor vs perfect oxide
     enhancement = flux_total / j_intact if j_intact > 0 else float('inf')
     
-    # Level 3,4 hierarchical regime classification
-    regime_classification = classify_regime_level34(
+    # Level 3 hierarchical regime classification
+    regime_classification = classify_regime_level3(
         base_regime=intact_result.get('regime', 'unknown'),
         flux_intact_contribution=flux_intact_contribution,
         flux_defect_contribution=flux_defect_contribution,
-        modification_factor=intact_result.get('modification_factor', 1.0)
     )
     
     return {
@@ -332,24 +326,16 @@ def calculate_parallel_path_flux(P_upstream, P_downstream, oxide_props, metal_pr
         'dominant_path': dominant,
         'defect_enhancement_factor': enhancement,
         'area_fraction_defect': f_defect,
-        
-        # Level 4 details from intact path
-        'D_eff_metal': intact_result.get('D_eff'),
-        'modification_factor': intact_result.get('modification_factor'),
-        'level4_converged': intact_result.get('level4_converged'),
-        
+
         # Interface and regime info
         'P_interface_intact': intact_result.get('P_interface'),
         'regime_intact': intact_result.get('regime'),
         
-        # Level 3,4 hierarchical regime classification
+        # Level 3 hierarchical regime classification
         'regime_classification': regime_classification,
         'regime': regime_classification['regime_hierarchy'],
         'regime_base': regime_classification['base_regime'],
         'regime_detail': regime_classification['regime_detail'],
-        
-        # Microstructure details
-        'microstructure_details': intact_result.get('microstructure_details', {})
     }
 
 def calculate_PRF(P_test, oxide_props, metal_props, defect_params=None, P_downstream=0):
@@ -478,477 +464,53 @@ def calculate_PRF(P_test, oxide_props, metal_props, defect_params=None, P_downst
     }
 
 
-# =============================================================================
-# LEVEL 3 + LEVEL 4: Defective Oxide + Defective Metal
-# =============================================================================
-
-def calculate_defect_path_flux_defective_metal(P_upstream, P_downstream, oxide_props, 
-                                               metal_props, defect_props, temperature,
-                                               microstructure_params, lattice_density,
-                                               method='average', n_profile_points=10, mode='both'):
+def calculate_parallel_path_flux_defective_metal(P_upstream, P_downstream, oxide_props,
+                                                 metal_props, defect_params, temperature,
+                                                 microstructure_params,
+                                                 enable_gb_enhancement=True):
     """
-    Calculate hydrogen flux through a defect path with defective metal (Level 3+4).
-    
-    This extends calculate_defect_path_flux() to use Level 4 defective metal
-    instead of clean metal for the metal layer.
-    
-    Theory
-    ------
-    Same as calculate_defect_path_flux(), but the metal layer now includes:
-    - Grain boundary fast diffusion paths
-    - Hydrogen trapping effects
-    - Position-dependent effective diffusivity
-    
+    Defective oxide on a polycrystalline metal (Level 5 = Level 3 + 4).
+
+    :func:`calculate_parallel_path_flux` with the metal's lattice diffusivity
+    replaced, on every path, by the grain-boundary-enhanced one from
+    :func:`calculations.defective_metal.metal_diffusivity`. The enhancement does
+    not depend on hydrogen concentration, so the same diffusivity serves the intact
+    path and every defect path.
+
     Parameters
     ----------
-    P_upstream : float
-        Upstream hydrogen pressure [Pa]
-    P_downstream : float
-        Downstream hydrogen pressure [Pa]
+    P_upstream, P_downstream : float
+        Pressures [Pa]
     oxide_props : dict
         Oxide properties (D_ox, K_ox, thickness)
     metal_props : dict
-        Metal properties (D_metal as D_lattice, K_s_metal, thickness)
-    defect_props : dict
-        Defect properties:
-        - 'type': 'pinhole', 'crack', 'grain_boundary', or 'mixed'
-        - 'thickness_factor': fraction of oxide thickness (for cracks)
-        - 'diffusivity_factor': D multiplication factor (for GB)
-    temperature : float
-        Operating temperature [K] (all properties should be evaluated at this T)
-    microstructure_params : dict
-        Metal microstructure specification
-    lattice_density : float, optional
-        Lattice site density [m⁻³]
-    method : str, optional
-        D_eff averaging method
-    n_profile_points : int, optional
-        Points for integration
-    
-    Returns
-    -------
-    float
-        Hydrogen flux through defect path [mol/m²/s]
-    """
-    from calculations.permeation_calc import calculate_defective_metal_flux
-    from calculations.interface_solver import calculate_oxide_defective_metal_system
-    
-    defect_type = defect_props.get('type', 'pinhole')
-    
-    if defect_type == 'pinhole':
-        # Direct metal exposure - use Level 4 metal-only model
-        # No oxide barrier at all
-        result = calculate_defective_metal_flux(
-            D_lattice=metal_props['D_metal'],
-            K_s=metal_props['K_s_metal'],
-            metal_thickness=metal_props['thickness'],
-            P_up=P_upstream,
-            P_down=P_downstream,
-            temperature=temperature,
-            microstructure_params=microstructure_params,
-            lattice_density=lattice_density,
-            method=method,
-            n_profile_points=n_profile_points,
-            mode=mode
-        )
-        flux_defect = result['flux']
-        
-    elif defect_type == 'crack':
-        # Crack has thin oxide layer
-        alpha = defect_props.get('thickness_factor', 0.1)
-        
-        crack_oxide_props = oxide_props.copy()
-        crack_oxide_props['thickness'] *= alpha
-        
-        # Use Level 2+4: thin oxide + defective metal
-        result = calculate_oxide_defective_metal_system(
-            P_upstream, P_downstream,
-            crack_oxide_props, metal_props,
-            temperature, microstructure_params,
-            lattice_density=lattice_density,
-            method=method,
-            n_profile_points=n_profile_points,
-            mode=mode
-        )
-        flux_defect = result['flux']
-        
-    elif defect_type == 'grain_boundary':
-        # Enhanced diffusion through oxide grain boundaries
-        beta = defect_props.get('diffusivity_factor', 10)
-        
-        gb_oxide_props = oxide_props.copy()
-        gb_oxide_props['D_ox'] *= beta
-        
-        # Use Level 2+4: GB-enhanced oxide + defective metal
-        result = calculate_oxide_defective_metal_system(
-            P_upstream, P_downstream,
-            gb_oxide_props, metal_props,
-            temperature, microstructure_params,
-            lattice_density=lattice_density,
-            method=method,
-            n_profile_points=n_profile_points,
-            mode=mode
-        )
-        flux_defect = result['flux']
-        
-    elif defect_type == 'mixed':
-        # Mixed defects: combination weighted by component fractions
-        components = defect_props.get('components', {})
-        total_component_fraction = sum(components.values())
-        
-        if total_component_fraction == 0:
-            result = calculate_defective_metal_flux(
-                D_lattice=metal_props['D_metal'],
-                K_s=metal_props['K_s_metal'],
-                metal_thickness=metal_props['thickness'],
-                P_up=P_upstream,
-                P_down=P_downstream,
-                temperature=temperature,
-                microstructure_params=microstructure_params,
-                lattice_density=lattice_density,
-                method=method,
-                n_profile_points=n_profile_points,
-                mode=mode
-            )
-            flux_defect = result['flux']
-        else:
-            flux_defect = 0.0
-            
-            # Pinhole component
-            if 'pinholes' in components and components['pinholes'] > 0:
-                pinhole_result = calculate_defective_metal_flux(
-                    D_lattice=metal_props['D_metal'],
-                    K_s=metal_props['K_s_metal'],
-                    metal_thickness=metal_props['thickness'],
-                    P_up=P_upstream,
-                    P_down=P_downstream,
-                    temperature=temperature,
-                    microstructure_params=microstructure_params,
-                    lattice_density=lattice_density,
-                    method=method,
-                    n_profile_points=n_profile_points,
-                    mode=mode
-                )
-                weight = components['pinholes'] / total_component_fraction
-                flux_defect += pinhole_result['flux'] * weight
-            
-            # Crack component
-            if 'cracks' in components and components['cracks'] > 0:
-                alpha = defect_props.get('thickness_factor', 0.1)
-                crack_oxide_props = oxide_props.copy()
-                crack_oxide_props['thickness'] *= alpha
-                crack_result = calculate_oxide_defective_metal_system(
-                    P_upstream, P_downstream,
-                    crack_oxide_props, metal_props,
-                    temperature, microstructure_params,
-                    lattice_density=lattice_density,
-                    method=method,
-                    n_profile_points=n_profile_points,
-                    mode=mode
-                )
-                weight = components['cracks'] / total_component_fraction
-                flux_defect += crack_result['flux'] * weight
-            
-            # Grain boundary component
-            if 'grain_boundaries' in components and components['grain_boundaries'] > 0:
-                beta = defect_props.get('diffusivity_factor', 10)
-                gb_oxide_props = oxide_props.copy()
-                gb_oxide_props['D_ox'] *= beta
-                gb_result = calculate_oxide_defective_metal_system(
-                    P_upstream, P_downstream,
-                    gb_oxide_props, metal_props,
-                    temperature, microstructure_params,
-                    lattice_density=lattice_density,
-                    method=method,
-                    n_profile_points=n_profile_points,
-                    mode=mode
-                )
-                weight = components['grain_boundaries'] / total_component_fraction
-                flux_defect += gb_result['flux'] * weight
-    else:
-        raise ValueError(f"Unknown defect type: {defect_type}")
-    
-    return flux_defect
-
-
-def calculate_parallel_path_flux_defective_metal(P_upstream, P_downstream, oxide_props, 
-                                                  metal_props, defect_params, temperature,
-                                                  microstructure_params, lattice_density,
-                                                  method='average', n_profile_points=10,
-                                                  max_iterations=10, tolerance=1e-6, mode='both'):
-    r"""
-    Calculate total flux through defective oxide + defective metal (Level 3+4).
-    
-    This is the full Level 3+4 model combining:
-    - Strehlow & Savage parallel path model for defective oxide
-    - Level 4 microstructure effects in metal
-    
-    Theory
-    ------
-    Total flux = Intact path contribution + Defect path contribution
-    
-    .. math::
-
-        J_{total} = j_{intact} f_{intact} + j_{defect} f_{defect}
-    
-    Where both j_intact and j_defect now use Level 4 defective metal.
-    
-    Parameters
-    ----------
-    P_upstream : float
-        Upstream hydrogen pressure [Pa]
-    P_downstream : float
-        Downstream hydrogen pressure [Pa]
-    oxide_props : dict
-        Oxide properties (D_ox, K_ox, thickness)
-    metal_props : dict
-        Metal properties (D_metal as D_lattice, K_s_metal, thickness)
+        Metal properties, with ``D_metal`` the LATTICE diffusivity
     defect_params : dict
-        Defect parameters:
-        - 'area_fraction': fraction of surface with defects (0-1)
-        - 'type': defect type
-        - Additional parameters for specific defect types
+        As for :func:`calculate_parallel_path_flux`.
     temperature : float
-        Operating temperature [K] (all properties should be evaluated at this T)
+        Temperature [K]
     microstructure_params : dict
-        Metal microstructure specification
-    lattice_density : float, optional
-        Lattice site density [m⁻³]
-    method : str, optional
-        D_eff averaging method
-    n_profile_points : int, optional
-        Points for integration
-    max_iterations : int, optional
-        Max iterations for interface solver
-    tolerance : float, optional
-        Convergence tolerance
-    
+        ``grain_size`` and ``gb_type``; optionally ``gb_thickness`` and ``model``.
+    enable_gb_enhancement : bool, optional
+        False reduces this to Level 3. Default True.
+
     Returns
     -------
     dict
-        Comprehensive results:
-        - 'flux_total': Total hydrogen flux [mol/m²/s]
-        - 'flux_intact_contribution': Flux through intact oxide [mol/m²/s]
-        - 'flux_defect_contribution': Flux through defects [mol/m²/s]
-        - 'dominant_path': Which path carries more flux
-        - 'defect_enhancement_factor': J_total/J_perfect_oxide
-        - 'level4_details': Microstructure effect details
+        Everything :func:`calculate_parallel_path_flux` returns, plus
+        ``D_eff_metal`` (the metal diffusivity used) and ``modification_factor``
+        (D_eff_metal / D_lattice, ≥ 1).
     """
-    from calculations.interface_solver import calculate_oxide_defective_metal_system
-    
-    # Extract area fractions
-    f_defect = defect_params.get('area_fraction', 0.01)
-    f_intact = 1.0 - f_defect
-    
-    if not 0 <= f_defect <= 1:
-        raise ValueError(f"Defect area fraction must be 0-1, got {f_defect}")
-    
-    # Path 1: Through intact oxide + defective metal (Level 2+4)
-    intact_result = calculate_oxide_defective_metal_system(
-        P_upstream, P_downstream,
-        oxide_props, metal_props,
-        temperature, microstructure_params,
-        lattice_density=lattice_density,
-        method=method,
-        n_profile_points=n_profile_points,
-        max_iterations=max_iterations,
-        tolerance=tolerance,
-        mode=mode
-    )
-    j_intact = intact_result['flux']
-    
-    # Path 2: Through defects + defective metal (Level 3+4)
-    j_defect = calculate_defect_path_flux_defective_metal(
-        P_upstream, P_downstream,
-        oxide_props, metal_props,
-        defect_params, temperature,
-        microstructure_params,
-        lattice_density=lattice_density,
-        method=method,
-        n_profile_points=n_profile_points,
-        mode=mode
-    )
-    
-    # Calculate contributions (area-weighted)
-    flux_intact_contribution = j_intact * f_intact
-    flux_defect_contribution = j_defect * f_defect
-    
-    # Total flux
-    flux_total = flux_intact_contribution + flux_defect_contribution
-    
-    # Determine dominant path
-    if flux_defect_contribution > flux_intact_contribution:
-        dominant = 'defects'
-    else:
-        dominant = 'intact_oxide'
-    
-    # # Enhancement factor vs perfect oxide with defective metal
-    # enhancement = flux_total / j_intact if j_intact > 0 else float('inf')
-    
-    # Enhancement factor vs perfect oxide with defective metal
-    enhancement = flux_total / j_intact if j_intact > 0 else float('inf')
-    
-    # Level 3,4 hierarchical regime classification
-    regime_classification = classify_regime_level34(
-        base_regime=intact_result.get('regime', 'unknown'),
-        flux_intact_contribution=flux_intact_contribution,
-        flux_defect_contribution=flux_defect_contribution,
-        modification_factor=intact_result.get('modification_factor', 1.0)
-    )
-    
-    return {
-        'flux_total': flux_total,
-        'flux_intact_contribution': flux_intact_contribution,
-        'flux_defect_contribution': flux_defect_contribution,
-        'flux_intact_per_area': j_intact,
-        'flux_defect_per_area': j_defect,
-        'dominant_path': dominant,
-        'defect_enhancement_factor': enhancement,
-        'area_fraction_defect': f_defect,
-        
-        # Level 4 details from intact path
-        'D_eff_metal': intact_result.get('D_eff'),
-        'modification_factor': intact_result.get('modification_factor'),
-        'level4_converged': intact_result.get('level4_converged'),
-        
-        # Interface and regime info
-        'P_interface_intact': intact_result.get('P_interface'),
-        'regime_intact': intact_result.get('regime'),
-        
-        # Level 3,4 hierarchical regime classification
-        'regime_classification': regime_classification,
-        'regime': regime_classification['regime_hierarchy'],
-        'regime_base': regime_classification['base_regime'],
-        'regime_detail': regime_classification['regime_detail'],
-        
-        # Microstructure details
-        'microstructure_details': intact_result.get('microstructure_details', {})
-    }
+    from calculations.defective_metal import metal_diffusivity
 
-def calculate_PRF_defective_metal(P_test, oxide_props, metal_props, temperature,
-                                   microstructure_params, defect_params=None,
-                                   P_downstream=0, lattice_density=None,
-                                   method='average', n_profile_points=10, mode='both'):
-    """
-    Calculate Permeation Reduction Factor with Level 4 defective metal.
-    
-    This extends calculate_PRF() to use Level 4 metal model.
-    
-    Parameters
-    ----------
-    P_test : float
-        Test pressure [Pa]
-    oxide_props : dict
-        Oxide properties
-    metal_props : dict
-        Metal properties (D_metal as D_lattice)
-    temperature : float
-        Operating temperature [K] (all properties should be evaluated at this T)
-    microstructure_params : dict
-        Metal microstructure specification
-    defect_params : dict or None
-        Oxide defect parameters. If None, calculates PRF for perfect oxide
-    P_downstream : float
-        Downstream pressure [Pa]
-    lattice_density : float
-        Lattice site density [m⁻³]
-    method : str
-        D_eff averaging method
-    n_profile_points : int
-        Points for integration
-    
-    Returns
-    -------
-    dict
-        PRF results:
-        - 'PRF': Permeation reduction factor
-        - 'PRF_perfect': PRF for defect-free oxide
-        - 'efficiency': PRF/PRF_perfect
-        - 'regime': Operating regime
-        - 'flux_bare': Bare defective metal flux
-        - 'flux_with_oxide': Flux with oxide
-        - 'level4_details': Microstructure effect info
-    """
-    from calculations.permeation_calc import calculate_defective_metal_flux
-    from calculations.interface_solver import calculate_oxide_defective_metal_system
-    
-    # Calculate bare defective metal flux (Level 4 only)
-    bare_result = calculate_defective_metal_flux(
-        D_lattice=metal_props['D_metal'],
-        K_s=metal_props['K_s_metal'],
-        metal_thickness=metal_props['thickness'],
-        P_up=P_test,
-        P_down=P_downstream,
-        temperature=temperature,
-        microstructure_params=microstructure_params,
-        lattice_density=lattice_density,
-        method=method,
-        n_profile_points=n_profile_points,
-        mode=mode
-    )
-    flux_bare_metal = bare_result['flux']
-    
-    # Calculate flux with perfect oxide + defective metal (Level 2+4)
-    perfect_result = calculate_oxide_defective_metal_system(
-        P_test, P_downstream,
-        oxide_props, metal_props,
-        temperature, microstructure_params,
-        lattice_density=lattice_density,
-        method=method,
-        n_profile_points=n_profile_points,
-        mode=mode
-    )
-    flux_perfect_oxide = perfect_result['flux']
-    
-    PRF_perfect = flux_bare_metal / flux_perfect_oxide if flux_perfect_oxide > 0 else float('inf')
-    
-    # Calculate flux with defective oxide if parameters provided
-    if defect_params is not None:
-        # Level 3+4: defective oxide + defective metal
-        defect_result = calculate_parallel_path_flux_defective_metal(
-            P_test, P_downstream,
-            oxide_props, metal_props,
-            defect_params, temperature,
-            microstructure_params,
-            lattice_density=lattice_density,
-            method=method,
-            n_profile_points=n_profile_points,
-            mode=mode
-        )
-        flux_defective = defect_result['flux_total']
-        
-        PRF_actual = flux_bare_metal / flux_defective if flux_defective > 0 else float('inf')
-        efficiency = PRF_actual / PRF_perfect if PRF_perfect != float('inf') else 0
-        
-        if defect_result['dominant_path'] == 'defects':
-            regime = 'defect_limited'
-        else:
-            regime = perfect_result['regime']
-            
-        flux_with_oxide = flux_defective
-    else:
-        PRF_actual = PRF_perfect
-        efficiency = 1.0
-        regime = perfect_result['regime']
-        flux_with_oxide = flux_perfect_oxide
-    
-    return {
-        'PRF': PRF_actual,
-        'PRF_perfect': PRF_perfect,
-        'efficiency': efficiency,
-        'regime': regime,
-        'test_pressure': P_test,
-        'flux_bare_metal': flux_bare_metal,
-        'flux_with_oxide': flux_with_oxide,
-        'flux_reduction_factor': flux_bare_metal / flux_with_oxide if flux_with_oxide > 0 else float('inf'),
-        
-        # Level 4 details
-        'D_eff_bare_metal': bare_result['D_eff'],
-        'modification_factor_bare': bare_result['modification_factor'],
-        'D_eff_with_oxide': perfect_result.get('D_eff'),
-        'modification_factor_oxide': perfect_result.get('modification_factor'),
-        
-        # Microstructure info
-        'microstructure_details': bare_result['microstructure_details']
-    }
-
+    D_lattice = metal_props['D_metal']
+    D_eff = metal_diffusivity(D_lattice, temperature, microstructure_params,
+                              enable_gb_enhancement)
+    result = calculate_parallel_path_flux(
+        P_upstream, P_downstream, oxide_props,
+        {**metal_props, 'D_metal': D_eff}, defect_params)
+    result.update({
+        'D_eff_metal': D_eff,
+        'modification_factor': D_eff / D_lattice,
+    })
+    return result

@@ -59,8 +59,7 @@ def m2():
 @pytest.fixture(scope='module')
 def micro():
     return {'grain_size': P5['grain_size'], 'grain_shape': P5['grain_shape'],
-            'gb_type': P5['gb_type'], 'gb_thickness': P5['gb_thickness'],
-            'trap_list': []}
+            'gb_type': P5['gb_type'], 'gb_thickness': P5['gb_thickness']}
 
 
 # --- 1: intrinsic reproduces D*K ---------------------------------------------
@@ -204,7 +203,8 @@ def test_09_l5_no_defects_equals_l2b(m1, micro):
     dp = {'area_fraction': 0.0, 'type': 'mixed',
           'components': {'pinholes': 0.0, 'cracks': 0.0, 'grain_boundaries': 0.0},
           'thickness_factor': 0.1, 'diffusivity_factor': 10.0}
-    a = pm.level5(ox, me, dp, m1['P_up'], m1['P_down'], m1['T'], micro, mode='none')
+    a = pm.level5(ox, me, dp, m1['P_up'], m1['P_down'], m1['T'], micro,
+                  enable_gb_enhancement=False)
     b = pm.level2b(ox, me, m1['P_up'], m1['P_down'], m1['T'])
     assert abs(a['permeability'] / b['permeability'] - 1.0) < 1e-6
 
@@ -222,8 +222,7 @@ def test_10_prf_is_permeance_ratio(m1, micro):
     bare_flux = calculate_defective_metal_flux(
         D_lattice=m1['D_m'], K_s=m1['K_s'], metal_thickness=m1['L_m'],
         P_up=m1['P_up'], P_down=m1['P_down'], temperature=m1['T'],
-        microstructure_params=micro,
-        lattice_density=P5['lattice_density'])['flux']
+        microstructure_params=micro)['flux']
     PRF = bare_flux / coated['flux']
     ratio = pm.permeance(bare_flux, m1['P_up'], m1['P_down']) / coated['permeance']
     assert np.isclose(PRF, ratio, rtol=1e-12)
