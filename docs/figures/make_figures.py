@@ -43,10 +43,7 @@ from calculations import oxide_permeation as ox  # noqa: E402
 from calculations import permeability as perm  # noqa: E402
 from calculations import permeation_calc as pc  # noqa: E402
 from calculations import surface_kinetics as sk  # noqa: E402
-from calculations.defective_metal import (  # noqa: E402
-    calculate_effective_diffusivity_trapping,
-    calculate_gb_enhanced_diffusivity,
-)
+from calculations.defective_metal import calculate_gb_enhanced_diffusivity  # noqa: E402
 from calculations.interface_solver import calculate_oxide_metal_system  # noqa: E402
 from calculations.parallel_oxide_defect_paths import (  # noqa: E402
     calculate_parallel_path_flux,
@@ -226,7 +223,7 @@ def fig02():
         ("L1\nbulk metal", C["L1"]),
         ("L2\n+ oxide", C["L2a"]),
         ("L3\n+ oxide defects", C["L3"]),
-        ("L4\n+ microstructure", C["L4_both"]),
+        ("L4\n+ microstructure", C["L4_gb"]),
         ("L5\nfull wall", C["L5"]),
     ]
     w, h, gap = 0.165, 0.20, 0.035
@@ -240,7 +237,7 @@ def fig02():
     # The L6 branch
     x6 = 0.02 + 2 * (w + gap)
     for i, (label, color) in enumerate(
-        [("L3L6", C["L3"]), ("L4L6", C["L4_both"]), ("L5L6", C["L5"])]
+        [("L3L6", C["L3"]), ("L4L6", C["L4_gb"]), ("L5L6", C["L5"])]
     ):
         bx = x6 + i * (w + gap)
         _box(ax, bx, 0.14, w, h, label, edgecolor=color, ls="--", fontsize=9)
@@ -683,23 +680,16 @@ def fig11():
 
 
 def fig12():
-    """Level 4: two effects, only one of which matters at structural grain sizes."""
-    fig, axes = _fig(
-        12, "level4-competition",
-        "Level 4 adds two effects that pull opposite ways, but they are not of "
-        "comparable size. Left: grain-boundary enhancement stays within a few per "
-        "cent of 1 for any grain size a structural alloy actually has, and only "
-        "becomes a real multiplier in the ultrafine range. Right: trapping changes "
-        "the diffusivity by orders of magnitude over the same window. For an "
-        "engineering wall, Level 4 is a trapping model with a grain-boundary term "
-        "that rounds away — which is worth knowing before spending effort measuring "
-        "grain size.",
-        figsize=(8.6, 3.9), ncols=2,
+    """Level 4: grain-boundary enhancement, and how small it is at structural grain sizes."""
+    fig, ax = _fig(
+        12, "level4-grain-boundaries",
+        "Level 4 replaces the lattice diffusivity with a grain-boundary-enhanced one. "
+        "The enhancement stays within a few per cent of 1 for any grain size a "
+        "structural alloy actually has, and only becomes a real multiplier in the "
+        "ultrafine range. Trapping is not drawn because it is not in the model: at "
+        "steady state traps exchange no net hydrogen, so they do not change the flux.",
+        figsize=(7.0, 4.2),
     )
-    ax1, ax2 = axes
-    C_L = ex.K_S_M * math.sqrt(ex.P_UP)
-
-    # (A) enhancement against grain size
     d = np.logspace(-8, -4, 120)
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
@@ -710,75 +700,32 @@ def fig12():
             )["enhancement_ratio"]
             for dd in d
         ])
-    ax1.semilogx(d * 1e9, enh, color=C["L4_gb"], lw=S["linewidth"])
-    ax1.axhline(1.0, color=RULE, ls="--", lw=1.3)
-    ax1.axvspan(1e3, 1e5, color=C["L4_gb"], alpha=0.08)
-    ax1.text(6e3, enh.max() * 0.80, "grain sizes a structural\nalloy actually has",
-             fontsize=8.0, color=C["L4_gb"], fontweight="bold", ha="center")
-    ax1.axvline(ex.GRAIN_SIZE * 1e9, color=C["L4_both"], ls=":", lw=1.5)
+    ax.semilogx(d * 1e9, enh, color=C["L4_gb"], lw=S["linewidth"])
+    ax.axhline(1.0, color=RULE, ls="--", lw=1.3)
+    ax.axvspan(1e3, 1e5, color=C["L4_gb"], alpha=0.08)
+    ax.text(6e3, enh.max() * 0.80, "grain sizes a structural\nalloy actually has",
+            fontsize=8.0, color=C["L4_gb"], fontweight="bold", ha="center")
+    ax.axvline(ex.GRAIN_SIZE * 1e9, color=C["L5"], ls=":", lw=1.5)
     enh_ex = float(np.interp(ex.GRAIN_SIZE * 1e9, d * 1e9, enh))
-    ax1.annotate(f"Example Wall\n{ex.GRAIN_SIZE*1e6:g} µm → {enh_ex:.4f}×",
-                 xy=(ex.GRAIN_SIZE * 1e9, enh_ex),
-                 xytext=(3e2, 1.0 + (enh.max() - 1) * 0.55),
-                 fontsize=8.0, color=C["L4_both"], fontweight="bold",
-                 arrowprops=dict(arrowstyle="-|>", color=C["L4_both"], lw=1.2))
-    _style_axes(ax1, "grain size  [nm]", r"$D_{eff}/D_{lattice}$",
-                "(A) grain boundaries: almost nothing")
-
-    # (B) trapping against temperature, with the GB term drawn for scale
-    T = np.linspace(500, 820, 140)     # within the GB correlation's stated data range
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore")
-        trap_ratio = np.array([
-            calculate_effective_diffusivity_trapping(
-                D_lattice=ex.D_M, temperature=t, trap_list=ex.trap_list(),
-                lattice_concentration=C_L, lattice_density=ex.N_L,
-            )["D_eff"] / ex.D_M
-            for t in T
-        ])
-        gb_ratio = np.array([
-            calculate_gb_enhanced_diffusivity(
-                D_bulk=ex.D_M, temperature=t, grain_size=ex.GRAIN_SIZE,
-                gb_thickness=ex.GB_THICKNESS,
-            )["enhancement_ratio"]
-            for t in T
-        ])
-
-    ax2.semilogy(T, trap_ratio, color=C["L4_trap"], lw=S["linewidth"],
-                 label="traps alone  (slows down)")
-    ax2.semilogy(T, gb_ratio, color=C["L4_gb"], lw=S["linewidth"],
-                 label=f"grain boundaries at {ex.GRAIN_SIZE*1e6:g} µm")
-    ax2.semilogy(T, trap_ratio * gb_ratio, color=C["L4_both"],
-                 lw=S["linewidth"] + 0.6, ls="--",
-                 label="both, as the code composes them")
-    ax2.axhline(1.0, color=RULE, ls="--", lw=1.3)
-    ax2.set_ylim(top=3.0)
-    ax2.text(0.03, 0.93, "no net effect", transform=ax2.transAxes,
-             fontsize=8.0, color=MUTED, fontweight="bold")
-    ax2.annotate("the trapping curve and the combined curve\n"
-                 "are indistinguishable at this grain size",
-                 xy=(T[70], trap_ratio[70]), xytext=(T[18], 3e-3),
-                 fontsize=7.8, color=C["L4_both"], fontweight="bold",
-                 arrowprops=dict(arrowstyle="-|>", color=C["L4_both"], lw=1.2))
-    _style_axes(ax2, "temperature  [K]", r"$D_{eff}/D_{lattice}$",
-                "(B) trapping: orders of magnitude")
-    ax2.legend(fontsize=7.8, loc="lower right")
-
-    fig.suptitle("Figure 12 — two effects, one that matters",
-                 fontsize=S["fontsize_title"], y=1.03)
-    fig.tight_layout()
-    return _save(fig, 12, "level4-competition")
+    ax.annotate(f"Example Wall\n{ex.GRAIN_SIZE*1e6:g} µm → {enh_ex:.4f}×",
+                xy=(ex.GRAIN_SIZE * 1e9, enh_ex),
+                xytext=(3e2, 1.0 + (enh.max() - 1) * 0.55),
+                fontsize=8.0, color=C["L5"], fontweight="bold",
+                arrowprops=dict(arrowstyle="-|>", color=C["L5"], lw=1.2))
+    _style_axes(ax, "grain size  [nm]", r"$D_{metal}/D_{lattice}$",
+                "Figure 12 — grain boundaries: almost nothing at structural sizes")
+    return _save(fig, 12, "level4-grain-boundaries")
 
 
 def fig13():
     """Level 5: the corrections do not multiply."""
     fig, ax = _fig(
         13, "level5-not-multiplicative",
-        "A trap that produces a plausible wrong answer. Having measured the oxide "
-        "defect correction and the metal microstructure correction separately, it is "
-        "natural to multiply them. The true Level 5 result is not that product, "
-        "because the two corrections both act through the interface pressure and so "
-        "are coupled. The grey bar is the wrong answer; the red bar is the right one.",
+        "A trap that produces a plausible wrong answer. Having measured the effect "
+        "of oxide defects and the effect of a slower metal separately, it is natural "
+        "to multiply them. The true result is not that product, because the two "
+        "changes both act through the interface pressure and so are coupled. The "
+        "grey bar is the wrong answer; the red bar is the right one.",
         figsize=(7.4, 4.2),
     )
     base = calculate_oxide_metal_system(
@@ -792,7 +739,7 @@ def fig13():
     )["flux_total"]
 
     metal_slow = ex.metal_props()
-    metal_slow["D_metal"] = ex.exact_D_eff_trapping()
+    metal_slow["D_metal"] = ex.D_M / 4.0      # a slower metal, e.g. another alloy
     J_metal = calculate_oxide_metal_system(
         ex.P_UP, ex.P_DOWN, ex.oxide_props(), metal_slow
     )["flux"]
@@ -805,7 +752,7 @@ def fig13():
     labels = ["L2b\nbaseline", "oxide defects\nonly", "slow metal\nonly",
               "naive\nproduct", "true L5"]
     values = [base, J_defects, J_metal, J_naive, J_true]
-    colors = [C["L2b"], C["L3"], C["L4_both"], RULE, C["L5"]]
+    colors = [C["L2b"], C["L3"], C["L4_gb"], RULE, C["L5"]]
     bars = ax.bar(labels, values, color=colors, edgecolor="white", width=0.68)
     bars[3].set_hatch("//")
 
@@ -903,7 +850,7 @@ def fig15():
 
     rows = [
         ("1  intrinsic", "nothing", r"$D_m K_s$,  $D_{ox}K_{ox}$", C["L1"], True),
-        ("2  effective layer", "nothing", r"$D_{eff}K_s$,  $\Phi_{ox,eff}$", C["L4_both"], True),
+        ("2  effective layer", "nothing", r"$D_{eff}K_s$,  $\Phi_{ox,eff}$", C["L4_gb"], True),
         ("3  stack", r"$L$", r"$\Phi_{transport}$ — Model 2 only", C["L2b"], False),
         ("4  apparent", r"$L$ and $P$", r"$\Phi_{app}$ from the solved flux", C["L5"], False),
     ]

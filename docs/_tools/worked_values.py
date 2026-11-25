@@ -58,7 +58,7 @@ def report() -> str:
     from calculations.interface_solver import calculate_oxide_metal_system
     from calculations.parallel_oxide_defect_paths import (
         calculate_parallel_path_flux, calculate_PRF)
-    from calculations.defective_metal import combined_microstructure_model
+    from calculations.defective_metal import calculate_gb_enhanced_diffusivity
     from calculations.surface_kinetics import solve_steady_state_flux_L1L6
     from calculations.sensitivity import level5_model_wrapper, level5L6_model_wrapper
 
@@ -117,15 +117,12 @@ def report() -> str:
             w(f"  {k:<26} {prf[k]:.6e}")
 
     w()
-    w("[L4 microstructure] defective_metal.combined_microstructure_model")
-    w("  (lattice_concentration=10.0, as in container/model_smoke_test.py)")
-    m = combined_microstructure_model(mp["D_metal"], T, dict(MICROSTRUCTURE),
-                                      lattice_concentration=10.0,
-                                      lattice_density=MICROSTRUCTURE["lattice_density"])
-    for k in ("D_lattice", "D_eff", "overall_factor"):
+    w("[L4 microstructure] defective_metal.calculate_gb_enhanced_diffusivity")
+    m = calculate_gb_enhanced_diffusivity(mp["D_metal"], T, MICROSTRUCTURE["grain_size"],
+                                          gb_thickness=MICROSTRUCTURE["gb_thickness"],
+                                          gb_type=MICROSTRUCTURE["gb_type"])
+    for k in ("D_bulk", "D_eff", "enhancement_ratio", "gb_enhancement_factor", "f_gb"):
         w(f"  {k:<26} {m[k]:.6e}")
-    w(f"  {'trapping.theta_total':<26} {m['trapping']['theta_total']:.6e}")
-    w(f"  {'dominant_effect':<26} {m['dominant_effect']}")
     w(f"  {'regime':<26} {m['regime']}")
 
     w()
