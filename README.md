@@ -94,6 +94,35 @@ the documentation pages used. `--run-notebooks` writes the executed copies to
 `calculations/report_text.py`; a renamed docs page or heading fails
 `tests/test_report.py`. Needs LaTeX (`latexmk`, `pdflatex`).
 
+### Figures
+
+Every figure the notebooks write is drawn by the package in one house style
+(`calculations/house_style.py`): each panel is its own figure, 180 mm wide at final size, with a
+thick black frame, 17/20 pt black text (TeX Gyre Heros, or Nimbus Sans where TeX is missing), no
+titles or grids, a key below the plot and fitted values (E_a and pre-factors, exponents, slopes,
+R²) on the second line of each key entry. Colours keep one meaning in every figure: a model level
+its level hue (L1 black, L2a orange, L2b blue, L3 green, L4 sky blue, L5 vermillion; a +L6 level
+keeps its hue, dashed with squares), a limiting step its step hue (oxide diffusion vermillion,
+metal diffusion blue, metal surface purple, oxide surface green, mixed grey); fits, limits and
+thresholds are grey dashed lines.
+
+A notebook computes its data and hands it to a plot function, which returns the panels;
+`calculations.figures.save_panels` writes each one into the notebook's results folder as
+`<figure>-<panel>.pdf`, a 600 dpi `.png` and `<figure>-<panel>_caption.tex`, a LaTeX caption
+whose numbers come from the run, and removes what an earlier run left for that figure.
+
+| Module | Draws |
+| --- | --- |
+| `calculations/level_figures.py` | `Proposal`: Levels 1 to 5 |
+| `calculations/surface_figures.py` | `Surface_proposal`: the surface-kinetics (+L6) levels |
+| `calculations/sweep_figures.py` | the four `effect-of-*` notebooks and `Comparisons/study-comparison` |
+| `calculations/sensitivity.py` | `sensitivity_regime_L5` and `sensitivity_regime_L5L6` |
+
+A new study folder gets the same figures by copying the notebooks; nothing about the style lives
+in a notebook or a study file. The interactive parallel-coordinates pages
+(`regime_parallel_coords*-results/*.html`) are plotly and keep their own look.
+`calculations/research_style.py` is a copy of the research-plots style module (don't edit it).
+
 ---
 
 ## Repository Structure

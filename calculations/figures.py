@@ -17,32 +17,29 @@ Usage, in the notebook's first cell::
     from calculations.figures import results_dir, save_figure
     FIGS = results_dir("Proposal")
 
-and then, wherever a figure is finished::
+and then, wherever a figure's panels are drawn (each a ``Panel`` from a house-style
+plot function, calculations/house_style.py)::
 
-    save_figure(fig, "Level1_Perfect_Metal", FIGS)
+    save_panels(level1_panels(...), "Level1_Perfect_Metal", FIGS)
 
-The sensitivity plotters in ``calculations.sensitivity`` all return their figure, so
-they wrap directly::
-
-    save_figure(plot_givendata_results(gd, reg, 'flux', PARAMS), f"givendata_{reg}", FIGS)
+Each panel is written as ``<name>-<panel>.pdf``, a 600 dpi ``.png`` and
+``<name>-<panel>_caption.tex``, a LaTeX caption with the numbers filled in. What an earlier
+run wrote for the same figure (the old one-file figure, panels no longer drawn) is removed.
+A single finished figure goes through ``save_figure``.
 """
 
+import os
 import pathlib
+import re
 
 import matplotlib.pyplot as plt
 
 #: Appended to a notebook's name to make its results folder.
 RESULTS_SUFFIX = "-results"
 
-#: Raster resolution. Was 300, copied from the plt.savefig calls this module replaced.
-#: Raised to 450 for sharper figures on a high-density display.
-#:
-#: There is a ceiling. Matplotlib refuses an image above 2**16 px in either direction,
-#: which at 450 dpi is 145.6 inches -- down from 218 at 300 dpi. That is normally vast
-#: next to a 14-inch figure, but `bbox_inches="tight"` sizes the output from the
-#: ARTISTS, not from figsize, so one annotation on a near-flat log axis can ask for
-#: thousands of inches. It has happened: the Level 4 grain-size panel demanded 7415.
-DPI = 450
+#: Raster resolution of the PNG: 600 dpi at the figure's final printed size (180 mm wide), as the
+#: house style asks. The figures are drawn at that size, so they are never scaled later.
+DPI = 600
 
 #: Written beside the PNG, sharp at any zoom. PDF rather than SVG because these figures
 #: carry scatter and parallel-coordinate plots with thousands of elements, which SVG
@@ -87,51 +84,6 @@ def _sharpen_inline_display(fmt=INLINE_FORMAT):
         pass
 
 
-#: Weight and frame settings applied through rcParams rather than at the call sites.
-#: The notebooks pass an explicit ``fontsize=`` to every label -- which is why the sizes
-#: live in ``PLOT_STYLE`` -- but they pass no ``fontweight``, so rcParams is the only
-#: lever that reaches them, and it reaches all of them at once.
-TEXT_STYLE = {
-    "font.weight":        "bold",
-    "axes.labelweight":   "bold",
-    "axes.titleweight":   "bold",
-    "figure.titleweight": "bold",
-    # A heavier frame and longer ticks, so the axes read as a drawn box rather than a
-    # hairline. Matplotlib's defaults are 0.8 and 3.5.
-    "axes.linewidth":      1.4,
-    "xtick.major.width":   1.4,
-    "ytick.major.width":   1.4,
-    "xtick.major.size":    6.0,
-    "ytick.major.size":    6.0,
-    "xtick.minor.width":   0.9,
-    "ytick.minor.width":   0.9,
-    # The legend is load-bearing here: several of the validated hues sit under 3:1
-    # contrast on white, and the palette's relief rule is satisfied by a legible
-    # legend rather than by colour alone.
-    "legend.framealpha":   0.95,
-    "legend.edgecolor":    "0.55",
-}
-
-
-def apply_text_style(overrides=None):
-    """Make every figure's text bold and its axes frame heavier.
-
-    Applied on import for the same reason as the inline format: every notebook already
-    imports this module, so there is one place to change and nothing to keep in sync
-    across the four studies.
-
-    Sizes are NOT set here. They come from ``PLOT_STYLE`` in model_config, because the
-    notebooks pass ``fontsize=`` explicitly at each call and an explicit argument beats
-    an rcParam.
-    """
-    settings = dict(TEXT_STYLE)
-    if overrides:
-        settings.update(overrides)
-    plt.rcParams.update(settings)
-
-
-apply_text_style()
-
 _sharpen_inline_display()
 
 
@@ -160,39 +112,34 @@ def results_dir(notebook, base=None):
 
 
 def save_figure(fig, name, folder=None, dpi=DPI, close=True, verbose=False,
-                vector=VECTOR_FORMAT):
-    """Write ``fig`` into ``folder`` as a PNG and a vector copy, and close it.
+                vector=VECTOR_FORMAT, caption=None, module="a notebook"):
+    """Write one finished figure into ``folder`` as a PNG and a vector copy, and close it.
+
+    For a figure drawn in the house style at its final size (``house_style.new_figure``); a
+    figure with several panels is written panel by panel with :func:`save_panels` instead.
 
     Parameters
     ----------
     fig : matplotlib.figure.Figure or None
-        ``None`` is accepted and does nothing. The sensitivity plotters return it for a
-        plot they declined to draw — ``plot_givendata_results`` when a regime was
-        skipped, ``plot_regime_comparison_heatmap`` on an empty matrix — and wrapping
-        those calls must not turn a skipped plot into a crash.
+        ``None`` is accepted and does nothing: a plotter that declined to draw returns it.
     name : str
         Filename without extension. ``.png`` is appended unless already present.
     folder : str or pathlib.Path, optional
         Defaults to the working directory, but pass the ``results_dir`` you made in the
-        first cell — that is the point of this module.
+        first cell.
     dpi : int
         Raster resolution, defaulting to :data:`DPI`.
     vector : str or None
-        Extension of a vector copy written beside the PNG, defaulting to
-        :data:`VECTOR_FORMAT`. ``None`` writes the raster alone. The vector file
-        carries no dpi: it is resolution-independent, which is the point.
+        Extension of a vector copy written beside the PNG (:data:`VECTOR_FORMAT`).
     close : bool
-        Close the figure once written. On by default: a notebook run saves dozens of
-        figures and nothing else closes them, so they would all stay open for the life
-        of the kernel. The figure has normally been displayed by the plotter's own
-        ``plt.show()`` before this is called, so closing costs nothing visible.
+        Close the figure once written (a notebook run saves dozens of figures).
+    caption : str, optional
+        LaTeX caption text; written beside the figure as ``<name>_caption.tex``.
 
     Returns
     -------
     pathlib.Path or None
-        Where the PNG was written, or ``None`` if there was no figure. The vector
-        copy sits beside it with the same stem; the PNG path is returned because
-        callers and tests treat it as the figure's identity.
+        Where the PNG was written, or ``None`` if there was no figure.
     """
     if fig is None:
         return None
@@ -202,12 +149,60 @@ def save_figure(fig, name, folder=None, dpi=DPI, close=True, verbose=False,
 
     name = str(name)
     path = folder / (name if name.endswith(".png") else f"{name}.png")
-    fig.savefig(path, dpi=dpi, bbox_inches="tight", facecolor="white")
+    stem = str(path)[:-4]                      # not with_suffix: '1e-7Pa' in a name is not an extension
+    fig.savefig(path, dpi=dpi, facecolor="white")
     if vector:
-        fig.savefig(path.with_suffix(f".{vector.lstrip('.')}"),
-                    bbox_inches="tight", facecolor="white")
+        fig.savefig(f"{stem}.{vector.lstrip('.')}", facecolor="white")
+    if caption is not None:
+        from calculations.house_style import caption_tex
+        with open(f"{stem}_caption.tex", "w") as fh:
+            fh.write(caption_tex(os.path.basename(stem), module, caption))
     if close:
         plt.close(fig)
     if verbose:
         print(f"  saved figure -> {path}")
     return path
+
+
+class Panel:
+    """One figure of what used to be a multi-panel figure, written as <name>-<panel>.pdf, .png and
+    _caption.tex. name: the panel's part of the file name ('flux', '600C-flux'); caption: LaTeX text
+    with the numbers filled in; x, y: the data drawn, checked to lie inside the axes; keyed: the
+    figure has a key below the plot (expected, not a problem)."""
+
+    def __init__(self, name, fig, ax, caption, x=None, y=None, keyed=False):
+        self.name, self.fig, self.ax, self.caption = name, fig, ax, caption
+        self.x, self.y, self.keyed = x, y, keyed
+
+
+def panel_files_pattern(base):
+    """What an earlier run may have written for figure `base`: base.png/.pdf, and its panels
+    base-<panel>.png/.pdf/_caption.tex (group 1: the panel's stem)."""
+    return re.compile("(" + re.escape(base) + "|" + re.escape(base) + r"-.+?)(?:\.(?:png|pdf)|_caption\.tex)")
+
+
+def save_panels(panels, name, folder=None, module="a notebook", log=print):
+    """Write each panel of the figure ``name`` into ``folder`` and close it. Files an earlier run
+    wrote for this figure that are not written now (the old one-file figure, panels no longer
+    drawn) are removed. Problems found by the checks are printed, never raised. Returns the PNG
+    paths, in drawing order."""
+    from calculations.house_style import finish
+    panels = [p for p in (panels or []) if p is not None]
+    folder = pathlib.Path(folder) if folder is not None else pathlib.Path.cwd()
+    folder.mkdir(parents=True, exist_ok=True)
+    base = pathlib.Path(str(name)).name
+    base = base[:-4] if base.endswith((".png", ".pdf")) else base
+    keep = {f"{base}-{p.name}" for p in panels}
+    old = panel_files_pattern(base)
+    for f in os.listdir(folder):
+        m = old.fullmatch(f)
+        if m and m.group(1) not in keep:
+            os.remove(folder / f)
+    written = []
+    for p in panels:
+        files, problems = finish(p.fig, p.ax, str(folder / f"{base}-{p.name}"), module, p.caption,
+                                 p.x, p.y, p.keyed)
+        written.append(pathlib.Path(files[1]))
+        for problem in problems:
+            log(f"  ! {base}-{p.name}: {problem}")
+    return written

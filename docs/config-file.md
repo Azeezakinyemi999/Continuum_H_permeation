@@ -60,7 +60,9 @@ like an exception and is not.
 There used to be two more sections — **4. Derived** (the `DEFAULT_PARAMS_*`,
 `build_simulation_config`, `get_surface_kinetics_from_config`) and
 **5. Presentation** (`PLOT_STYLE`, `COLORS`, `CURVE_STYLES`, `apply_style`). They
-were byte-identical in all four studies, 408 lines duplicated four ways, and they
+were byte-identical in all four studies, 408 lines duplicated four ways. The
+presentation names are gone: every figure now takes its style from
+`calculations/house_style.py` (see the README, "Figures"). The derived names
 have moved into
 [`calculations/config/model_config.py`](https://github.com/Azeezakinyemi999/Continuum_H_permeation/blob/main/calculations/config/model_config.py).
 
@@ -385,15 +387,6 @@ The temperatures of the isothermal sweep. Temperature is pinned rather than
 sampled because, allowed to vary, it monopolises the variance of the log flux
 and pushes every other parameter to the noise floor.
 
-### `PLOT_STYLE`, `COLORS`, `CURVE_STYLES`
-
-*Defined in `calculations/config/model_config.py`, not in the study file — shared by every study. Imported from `model_config` exactly as before.*
-
-Presentation only, but part of the export contract, so a study file must define
-all three. `CURVE_STYLES` gives every level and mode a combination of colour,
-linestyle and marker that is distinguishable by any one of the three alone;
-`apply_style` applies one by name.
-
 ### Helper functions
 
 *Defined in `calculations/config/model_config.py`, not in the study file — shared by every study. Imported from `model_config` exactly as before.*
@@ -405,7 +398,6 @@ linestyle and marker that is distinguishable by any one of the three alone;
   `OXIDE_DEFECTS` fractions into the per-path `defect_config` the Level 3
   solvers expect. A path with a zero area fraction is *omitted*, not
   zero-weighted, so setting a fraction to zero removes that transport path.
-- `apply_style` — plots a curve with a named entry from `CURVE_STYLES`.
 
 ```{note}
 `build_simulation_config` applies its overrides with `or`, so a falsy `0` takes

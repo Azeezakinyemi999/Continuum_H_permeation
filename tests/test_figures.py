@@ -15,7 +15,7 @@ matplotlib.use("Agg")                     # no window server in a test run
 import matplotlib.pyplot as plt           # noqa: E402
 import pytest                             # noqa: E402
 
-from calculations.figures import RESULTS_SUFFIX, results_dir, save_figure  # noqa: E402
+from calculations.figures import RESULTS_SUFFIX, Panel, results_dir, save_figure, save_panels  # noqa: E402
 from conftest import ROOT                 # noqa: E402
 
 def _not_ignored(paths):
@@ -129,6 +129,76 @@ def test_save_figure_creates_a_missing_folder(tmp_path):
 
 
 # --------------------------------------------------------------------------
+# save_panels: one figure per panel, in the house style
+# --------------------------------------------------------------------------
+
+def test_save_panels_writes_each_panel_and_clears_what_an_earlier_run_left(tmp_path):
+    """Each panel becomes <name>-<panel>.pdf, .png (180 mm wide at 600 dpi) and _caption.tex; the
+    old one-file figure and panels no longer drawn go; other figures stay."""
+    from PIL import Image
+    from calculations import house_style as hs
+    for name in ("L3_arrhenius.png", "L3_arrhenius.pdf", "L3_arrhenius-gone.png", "L3_arrhenius-gone_caption.tex",
+                 "L3_arrhenius_3P.png", "L5_arrhenius-flux.png"):
+        (tmp_path / name).write_text("")
+    panels = []
+    for name in ("flux", "1e-7Pa-phi"):
+        fig, ax = hs.new_figure()
+        ax.plot([1, 2], [1, 3])
+        panels.append(Panel(name, fig, ax, "The caption, 600~K.", [1, 2], [1, 3]))
+    printed = []
+    written = save_panels(panels, "L3_arrhenius", tmp_path, module="tests", log=printed.append)
+    assert [p.name for p in written] == ["L3_arrhenius-flux.png", "L3_arrhenius-1e-7Pa-phi.png"]
+    assert sorted(p.name for p in tmp_path.iterdir()) == [
+        "L3_arrhenius-1e-7Pa-phi.pdf", "L3_arrhenius-1e-7Pa-phi.png", "L3_arrhenius-1e-7Pa-phi_caption.tex",
+        "L3_arrhenius-flux.pdf", "L3_arrhenius-flux.png", "L3_arrhenius-flux_caption.tex",
+        "L3_arrhenius_3P.png", "L5_arrhenius-flux.png"]
+    caption = (tmp_path / "L3_arrhenius-flux_caption.tex").read_text()
+    assert r"\includegraphics[width=180mm]{L3_arrhenius-flux.pdf}" in caption and "600~K" in caption
+    with Image.open(tmp_path / "L3_arrhenius-flux.png") as im:
+        assert abs(im.size[0] - round(180 / 25.4 * 600)) <= 2
+    assert not [p for p in printed if "outside" in p]
+    assert not plt.get_fignums()                            # every panel is closed
+
+
+def test_save_panels_tolerates_a_plot_that_drew_nothing(tmp_path):
+    assert save_panels([], "skipped", tmp_path) == []
+
+
+def test_house_colours_keep_one_meaning():
+    """A +L6 level keeps its level's hue; the limiting-step colours of wall_labels are the house ones."""
+    from calculations import house_style as hs
+    from calculations.wall_labels import STEP_STYLE
+    assert hs.level_style("L3L6")["color"] == hs.level_style("L3")["color"] and hs.level_style("L3L6")["ls"] == "--"
+    for step, colour in hs.STEP_COLOURS.items():
+        assert STEP_STYLE[step][1].lower() == colour.lower(), step
+
+
+def test_report_groups_a_figures_panels_in_drawing_order(tmp_path):
+    """The study report shows each panel of a figure, in the order save_panels wrote them."""
+    import os
+    import time
+    from types import SimpleNamespace
+    from calculations import report, report_latex
+    folder = tmp_path / "effect-of-temperature-results"
+    folder.mkdir()
+    for k, name in enumerate(("L3_arrhenius-phi", "L3_arrhenius-flux", "L3_arrhenius-1e-7Pa-flux")):
+        for ext in ("pdf", "png"):
+            path = folder / f"{name}.{ext}"
+            path.write_text("")
+            t = time.time() - 100 + k
+            os.utime(path, (t, t))
+    (folder / "L1_arrhenius.png").write_text("")
+    rep = SimpleNamespace(out=str(tmp_path))
+    rep.files = lambda f, pattern="*": report.StudyReport.files(rep, f, pattern)
+    figs = report.StudyReport.figures(rep, folder.name)
+    assert figs["L1_arrhenius"] == "effect-of-temperature-results/L1_arrhenius.png"
+    assert [os.path.basename(f) for f in figs["L3_arrhenius"]] == [
+        "L3_arrhenius-phi.pdf", "L3_arrhenius-flux.pdf", "L3_arrhenius-1e-7Pa-flux.pdf"]
+    assert report_latex.panel_note("x/L3_arrhenius-1e-7Pa-flux.pdf") == "Panel: 1e-7 Pa, flux."
+    assert report_latex.panel_note("x/L1_arrhenius.png") == ""
+
+
+# --------------------------------------------------------------------------
 # the convention, across every notebook
 # --------------------------------------------------------------------------
 
@@ -160,6 +230,15 @@ def test_every_notebook_declares_its_results_folder(nb_path):
 
 
 @pytest.mark.parametrize("nb_path", NOTEBOOKS, ids=lambda p: f"{p.parent.name}/{p.name}")
+def test_no_notebook_sets_its_own_style(nb_path):
+    """Every figure takes the house style from calculations/house_style.py: no notebook brings back
+    its own rcParams, palettes or the old PLOT_STYLE / COLORS / CURVE_STYLES settings."""
+    code = _code(nb_path)
+    old = re.findall(r"\b(PLOT_STYLE|CURVE_STYLES|apply_style|rcParams\.update|INK, GREY)\b|\bCOLORS\[", code)
+    assert not old, f"old style settings still in the notebook: {sorted(set(old))}"
+
+
+@pytest.mark.parametrize("nb_path", NOTEBOOKS, ids=lambda p: f"{p.parent.name}/{p.name}")
 def test_every_notebook_cell_still_parses(nb_path):
     """The figure saves were inserted by script; none of them may break a cell."""
     nb = json.loads(nb_path.read_text())
@@ -173,22 +252,31 @@ def test_every_notebook_cell_still_parses(nb_path):
 # --------------------------------------------------------------------------
 
 def _save_sites(nb_path):
-    """(cell index, line number, name expression, names it interpolates, scope)."""
+    """(cell index, line number, name expression, names it interpolates, scope) of every
+    save_figure(...) and save_panels(...) call whose name is a string or an f-string."""
     nb = json.loads(nb_path.read_text())
     out = []
     for ci, cell in enumerate(nb["cells"]):
         if cell["cell_type"] != "code":
             continue
         src = "".join(cell["source"])
-        if "save_figure(" not in src:
+        if "save_figure(" not in src and "save_panels(" not in src:
             continue
         tree = ast.parse(src)
         assigned = {t.id for n in ast.walk(tree) if isinstance(n, ast.Assign)
                     for t in n.targets if isinstance(t, ast.Name)}
-        for ln, line in enumerate(src.splitlines(), start=1):
-            m = re.search(r'save_figure\([^,]+,\s*f?"([^"]+)"', line)
-            if not m:
+        for call in ast.walk(tree):
+            if not (isinstance(call, ast.Call) and getattr(call.func, "id", None) in ("save_figure", "save_panels")
+                    and len(call.args) >= 2):
                 continue
+            arg = call.args[1]
+            if isinstance(arg, ast.Constant) and isinstance(arg.value, str):
+                name = arg.value
+            elif isinstance(arg, ast.JoinedStr):
+                name = ast.get_source_segment(src, arg)[2:-1]
+            else:
+                continue
+            ln = call.lineno
             loops = {n.target.id for n in ast.walk(tree)
                      if isinstance(n, ast.For) and isinstance(n.target, ast.Name)
                      and n.lineno <= ln <= (n.end_lineno or n.lineno)}
@@ -197,8 +285,7 @@ def _save_sites(nb_path):
                       if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))
                       and n.lineno <= ln <= (n.end_lineno or n.lineno)
                       for a in (*n.args.posonlyargs, *n.args.args, *n.args.kwonlyargs)}
-            out.append((ci, ln, m.group(1),
-                        set(re.findall(r"\{(\w+)", m.group(1))), loops | assigned | params))
+            out.append((ci, ln, name, set(re.findall(r"\{(\w+)", name)), loops | assigned | params))
     return out
 
 

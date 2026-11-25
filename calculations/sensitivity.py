@@ -1124,46 +1124,198 @@ def partition_by_regime(df, regime_col='regime', min_cluster=300,
 # -----------------------------------------------------------------------------
 # Phase 1 — Step 5: Descriptive plots
 # -----------------------------------------------------------------------------
+# Figures: the house style (calculations/house_style.py), one figure per panel.
+# Every plotter returns a list of calculations.figures.Panel, written by
+# calculations.figures.save_panels as <name>-<panel>.pdf, .png and _caption.tex.
+# -----------------------------------------------------------------------------
+
+#: Parameter -> its name on a figure. Reference values carry a "ref" subscript (the user's rule).
+PARAM_LABELS = {
+    "D_ref": r"Metal $D_\mathrm{ref}$", "E_D": r"Metal $E_D$", "K_s_ref": r"Metal $K_{s,\mathrm{ref}}$",
+    "H_s": r"Metal $\Delta H_s$", "D_ox_ref": r"Oxide $D_\mathrm{ref}$", "E_D_ox": r"Oxide $E_D$",
+    "K_ox_ref": r"Oxide $K_\mathrm{ref}$", "H_sol_ox": r"Oxide $\Delta H_\mathrm{sol}$",
+    "metal_thickness": "Metal thickness", "oxide_thickness": "Oxide thickness", "P_upstream": "Upstream pressure",
+    "f_pinhole": "Pinhole fraction", "f_crack": "Crack fraction", "f_gb_defect": "Oxide GB fraction",
+    "crack_thickness_factor": "Crack width factor", "gb_diffusivity_factor": "GB diffusivity factor",
+    "grain_size": "Grain size", "gb_thickness": "GB width", "lattice_density": "Lattice site density",
+    "trap_dislocation_E_b": r"Dislocation trap $E_b$", "trap_dislocation_N_T": r"Dislocation trap $N_T$",
+    "trap_gb_E_b": r"GB trap $E_b$", "trap_gb_N_T": r"GB trap $N_T$", "trap_vacancy_E_b": r"Vacancy trap $E_b$",
+    "trap_vacancy_N_T": r"Vacancy trap $N_T$", "trap_carbide_E_b": r"Carbide trap $E_b$",
+    "trap_carbide_N_T": r"Carbide trap $N_T$", "k_diss_ref": r"Oxide $k_\mathrm{diss,ref}$",
+    "E_diss": r"Oxide $E_\mathrm{diss}$", "K_eq_ref": r"Oxide $K_\mathrm{eq,ref}$", "H_eq": r"Oxide $\Delta H_\mathrm{eq}$",
+    "k_diss_metal_ref": r"Metal $k_\mathrm{diss,ref}$", "E_diss_metal": r"Metal $E_\mathrm{diss}$",
+    "K_eq_metal_ref": r"Metal $K_\mathrm{eq,ref}$", "H_eq_metal": r"Metal $\Delta H_\mathrm{eq}$",
+    "temperature": "Temperature",
+}
+#: Units only where the model's definition makes them certain; the others are in study_config.py's units.
+PARAM_UNITS = {"D_ref": r"m$^2$ s$^{-1}$", "D_ox_ref": r"m$^2$ s$^{-1}$", "P_upstream": "Pa",
+               "metal_thickness": "m", "oxide_thickness": "m", "grain_size": "m", "gb_thickness": "m",
+               "temperature": "K"}
+for _p in PARAM_LABELS:
+    if _p in ("E_D", "E_D_ox", "H_s", "H_sol_ox", "E_diss", "H_eq", "E_diss_metal", "H_eq_metal") or _p.endswith("_E_b"):
+        PARAM_UNITS.setdefault(_p, r"J mol$^{-1}$")
+METRIC_LABELS = {"flux": r"Flux $J$ (mol m$^{-2}$ s$^{-1}$)",
+                 "permeability": r"$\Phi_\mathrm{app}$ (mol m$^{-1}$ s$^{-1}$ Pa$^{-1/2}$)",
+                 "PRF": "Permeation reduction factor", "theta": r"Surface coverage $\theta$"}
+METRIC_WORDS = {"flux": "steady-state flux",
+                "permeability": r"apparent permeability $\Phi_\mathrm{app} = J\,L_\mathrm{total}/\Delta\sqrt{P}$",
+                "PRF": "permeation reduction factor (bare-metal flux over coated flux)",
+                "theta": "surface coverage on the intact path"}
+_LOG_PLOT_METRICS = {"flux", "permeability", "PRF"}
+_WALLS = {"L5": "a defective oxide on a defective metal",
+          "L5L6": "a defective oxide on a defective metal, with surface kinetics"}
+
+
+def param_label(p, unit=False):
+    """A parameter's name on a figure, with its unit in parentheses when asked and known."""
+    name = PARAM_LABELS.get(p, p.replace("_", " "))
+    return name + (f" ({PARAM_UNITS[p]})" if unit and p in PARAM_UNITS else "")
+
+
+def _regime_order(regimes):
+    """The regimes in the order the results hold them (the order the old figures used), each once."""
+    return list(dict.fromkeys(regimes))
+
+
+def _regime_name(r):
+    from calculations.house_style import SA_REGIME_STYLE
+    return SA_REGIME_STYLE[r][2] if r in SA_REGIME_STYLE else str(r).capitalize()
+
+
+def _regime_colour(r):
+    from calculations.house_style import GREY, SA_REGIME_STYLE
+    return SA_REGIME_STYLE[r][0] if r in SA_REGIME_STYLE else GREY
+
+
+def _wall(regimes):
+    """The wall a set of regime clusters belongs to: 'surface' occurs only with surface kinetics."""
+    return _WALLS["L5L6"] if "surface" in set(regimes) else _WALLS["L5"]
+
+
+def _pinned_temperature(frames):
+    """The one temperature every cluster was scanned at, or None when temperature was sampled."""
+    vals = set()
+    for df in frames:
+        if 'temperature' not in getattr(df, 'columns', ()):
+            return None
+        vals |= set(np.round(df['temperature'].dropna().unique(), 6))
+    return float(vals.pop()) if len(vals) == 1 else None
+
+
+def _at(temperature):
+    return f", at {temperature:.0f}~K" if temperature is not None else ""
+
+
+def _tnum(v, sig=3):
+    """A number for a LaTeX caption: 0.66, 18, 490, or $2.5\\times10^{4}$ outside 0.01-1000; true minus."""
+    v = float(v)
+    if not np.isfinite(v):
+        return "n/a"
+    if v == 0:
+        return "0"
+    if 0.01 <= abs(v) < 1000:
+        return f"{float(f'{v:.{sig}g}'):g}".replace("-", "$-$")
+    k = int(np.floor(np.log10(abs(v))))
+    a = float(f"{v / 10 ** k:.{sig}g}")
+    if abs(a) >= 10:                                   # 9.996e-14 rounds to 10: write 1e-13
+        a, k = a / 10, k + 1
+    body = f"10^{{{k}}}" if abs(a) == 1 else f"{abs(a):g}\\times10^{{{k}}}"
+    return f"${'-' if a < 0 else ''}{body}$"
+
+
+def _count(n):
+    return f"{int(n):,}".replace(",", "{,}")
+
+
+def _counts_text(counts):
+    from calculations.house_style import tex_join
+    return tex_join([f"{_regime_name(r).lower()} {_count(counts[r])}" for r in _regime_order(counts)])
+
+
+def _bold_num(v, sig=3):
+    """A number for a bold label on a figure: '0.0283', or a bold '1.29 x 10^3' in mathtext."""
+    import re
+    from calculations.house_style import sci
+    return re.sub(r'\$(.+?)\$', lambda m: '$\\mathbf{' + m.group(1) + '}$', sci(v, sig))
+
+
+def _show(show):
+    if show:
+        plt.show()
+
 
 def plot_regime_exploration(partition, output_metrics=('flux', 'permeability', 'theta'),
-                            scan_df=None, cross_col=None, show=True):
+                            scan_df=None, cross_col=None, show=True, temperature=None):
     """
-    Per-regime descriptive view: cluster sizes + output distributions by regime,
-    and (if scan_df given) a cross-tab of the argmax regime against the solver's
-    own categorical verdict.
+    Per-regime descriptive view: one box plot per output metric, a box per regime cluster
+    (the sample counts go in the captions, not in a figure of their own), and (if scan_df
+    given) a printed cross-tab of the argmax regime against the solver's own categorical
+    verdict.
+
+    Returns a list of calculations.figures.Panel, one per metric, named after the metric.
+    temperature : the pinned scan temperature for the captions; read from the clusters'
+    'temperature' column when not given.
 
     cross_col : str, optional
         Column holding that verdict. Defaults to whichever of
         'system_rate_limiting' (L5L6) / 'regime_hierarchy' (L5) is present.
     """
-    regimes = list(partition.keys())
-    sizes   = [len(partition[r]) for r in regimes]
-
-    n_panels = 1 + len(output_metrics)
-    fig, axes = plt.subplots(1, n_panels, figsize=(5 * n_panels, 5))
-    if n_panels == 1:
-        axes = [axes]
-
-    axes[0].bar(regimes, sizes, color='steelblue', alpha=0.85)
-    axes[0].set_title('Regime cluster sizes')
-    axes[0].set_ylabel('count')
-    axes[0].tick_params(axis='x', rotation=30)
-
-    for ax, m in zip(axes[1:], output_metrics):
-        data = []
-        for r in regimes:
-            vals = partition[r][m].replace([np.inf, -np.inf], np.nan).dropna()
-            data.append(vals.values)
-        ax.boxplot(data, showfliers=False)
-        ax.set_xticks(range(1, len(regimes) + 1))
-        ax.set_xticklabels(regimes, rotation=30)
-        all_pos = all(len(d) and np.all(d > 0) for d in data)
-        ax.set_yscale('log' if all_pos else 'linear')
-        ax.set_title(f'{m} by regime')
-
-    fig.tight_layout()
-    if show:
-        plt.show()
+    from calculations import house_style as hs
+    from calculations.figures import Panel
+    regs = _regime_order(partition) + [r for r in partition if r not in _regime_order(partition)]
+    if temperature is None:
+        temperature = _pinned_temperature(partition.values())
+    counts = {r: len(partition[r]) for r in regs}
+    wall = _wall(regs)
+    panels = []
+    for m in output_metrics:
+        if not all(m in partition[r].columns for r in regs):
+            continue
+        data = [partition[r][m].replace([np.inf, -np.inf], np.nan).dropna().to_numpy(dtype=float) for r in regs]
+        log = m in _LOG_PLOT_METRICS and all(len(d) and np.all(d > 0) for d in data)
+        if log:
+            data = [d[d > 0] for d in data]
+        shown = [(r, d) for r, d in zip(regs, data) if len(d)]
+        if not shown:
+            continue
+        fig, ax = hs.new_figure()
+        pos = np.arange(len(shown))
+        bp = ax.boxplot([d for _, d in shown], positions=pos, widths=0.55, whis=(5, 95), showfliers=False,
+                        patch_artist=True, medianprops=dict(color="black", lw=hs.OUTLINE_PT),
+                        whiskerprops=dict(color="black", lw=2.2), capprops=dict(color="black", lw=2.2),
+                        boxprops=dict(edgecolor="black", lw=2.2))
+        for patch, (r, _) in zip(bp["boxes"], shown):
+            patch.set_facecolor(_regime_colour(r))
+        lo = min(np.percentile(d, 5) for _, d in shown)
+        hi = max(np.percentile(d, 95) for _, d in shown)
+        if log:
+            hs.set_log_y(ax, [lo, hi], pad_decades=0.3, frac=0.08)
+            log = ax.get_yscale() == "log"          # values within a factor of 1.5 get a linear axis
+        elif m == "theta":
+            ax.set_ylim(-0.04, 1.08)
+        else:
+            hs.set_linear_y(ax, [lo, hi], frac=0.12)
+        for x, (r, d) in zip(pos, shown):          # each median written above its box's upper whisker
+            top = np.percentile(d, 95)
+            ax.annotate(_bold_num(np.median(d)), (x, top), xytext=(0, 6), textcoords="offset points",
+                        ha="center", va="bottom", fontsize=hs.ANNOT_PT, fontweight="bold", color="black", zorder=6)
+        y0, y1 = ax.get_ylim()                     # room above the tallest median label
+        if log:
+            ax.set_ylim(y0, 10 ** (np.log10(y1) + 0.12 * (np.log10(y1) - np.log10(y0))))
+            hs.log_ticks(ax.yaxis, *ax.get_ylim())
+        else:
+            ax.set_ylim(y0, y1 + 0.1 * (y1 - y0))
+        ax.set_xlim(-0.6, len(shown) - 0.4)
+        ax.set_xticks(pos, [_regime_name(r) for r, _ in shown])
+        ax.tick_params(axis="x", which="both", length=0)
+        ax.set_ylabel(METRIC_LABELS.get(m, m))
+        med = hs.tex_join([f"{_regime_name(r).lower()} {_tnum(np.median(d), 3)}" for r, d in shown])
+        caption = (rf"The {METRIC_WORDS.get(m, m)} of every sample in each regime cluster, for {wall}{_at(temperature)}. "
+                   r"Boxes span the 25th to 75th percentile with the median as a thick line, written above the box; "
+                   rf"whiskers span the 5th to 95th percentile; points beyond them are not drawn. Medians: {med}. "
+                   rf"Samples per regime: {_counts_text(counts)}.")
+        panels.append(Panel(m, fig, ax, caption))
+    _show(show)
 
     # Agreement check: our argmax label vs the solver's own categorical verdict.
     # L5L6 calls that 'system_rate_limiting'; L5 calls it 'regime_hierarchy'.
@@ -1175,8 +1327,7 @@ def plot_regime_exploration(partition, output_metrics=('flux', 'permeability', '
             print(f"\n  regime (argmax)  ×  {col} (solver):")
             print(pd.crosstab(valid['regime'], valid[col]).to_string())
 
-    return fig
-
+    return panels
 
 
 
@@ -1448,39 +1599,61 @@ def summarize_givendata(results, param_names):
     return pd.DataFrame(rows)
 
 
-def plot_givendata_results(results, regime, output_metric, param_names, top_n=15, show=True):
-    """Bar plots of PAWN median and Borgonovo-delta (with conf) for one regime+metric."""
+def plot_givendata_results(results, regime, output_metric, param_names, top_n=15, show=True,
+                           temperature=None):
+    """Bars of Borgonovo delta (with its 95 % confidence interval) and of the PAWN median for one
+    regime and metric, the top_n parameters by delta, each value written at its bar's end.
+
+    Returns a list of calculations.figures.Panel: 'delta' and 'pawn' (whichever were computed);
+    an empty list for a skipped regime. temperature: the scan temperature, for the captions.
+    """
+    from calculations import house_style as hs
+    from calculations.figures import Panel
     entry = results[regime][output_metric]
     if 'skipped' in entry:
         print(f"[{regime}/{output_metric}] skipped: {entry['skipped']}")
-        return None
+        return []
     names = list(param_names)
-    pawn_med = np.asarray(entry['pawn']['median']) if 'pawn' in entry else None
-    delta = np.asarray(entry['delta']['delta']) if 'delta' in entry else None
-    delta_conf = np.asarray(entry['delta']['delta_conf']) if 'delta' in entry else None
-
+    pawn_med = np.asarray(entry['pawn']['median'], dtype=float) if 'pawn' in entry else None
+    delta = np.asarray(entry['delta']['delta'], dtype=float) if 'delta' in entry else None
+    delta_conf = np.asarray(entry['delta']['delta_conf'], dtype=float) if 'delta' in entry else None
     order = np.argsort(delta if delta is not None else pawn_med)[::-1][:top_n]
-    n_panels = sum(x is not None for x in (pawn_med, delta))
-    fig, axes = plt.subplots(1, n_panels, figsize=(7 * n_panels, max(4, 0.35 * len(order))))
-    if n_panels == 1:
-        axes = [axes]
-    ax_i = 0
-    if delta is not None:
-        ax = axes[ax_i]; ax_i += 1
-        ax.barh([names[i] for i in order][::-1], delta[order][::-1],
-                xerr=delta_conf[order][::-1], color='coral', alpha=0.8)
-        ax.set_title(f'Borgonovo δ — {regime} / {output_metric}  (n={entry["n"]})')
-        ax.set_xlabel('δ (moment-independent)')
-    if pawn_med is not None:
-        ax = axes[ax_i]
-        ax.barh([names[i] for i in order][::-1], pawn_med[order][::-1],
-                color='steelblue', alpha=0.8)
-        ax.set_title(f'PAWN median — {regime} / {output_metric}')
-        ax.set_xlabel('PAWN KS (median)')
-    fig.tight_layout()
-    if show:
-        plt.show()
-    return fig
+    rows = order[::-1]                                   # the largest at the top
+    colour = _regime_colour(regime)
+    quantity = (rf"$\log_{{10}}$ of the {METRIC_WORDS.get(output_metric, output_metric)}" if entry.get('log')
+                else f"the {METRIC_WORDS.get(output_metric, output_metric)}")
+    wall = _wall(results.keys())                         # the regimes present tell the level
+    where = (f"{wall}, for the {_regime_name(regime).lower()} samples ($n$ = {_count(entry['n'])})"
+             f"{_at(temperature)}")
+    panels = []
+    for name, values, err, xlabel, words in (
+            ('delta', delta, delta_conf, r"Borgonovo $\delta$", r"Borgonovo moment-independent $\delta$"),
+            ('pawn', pawn_med, None, "PAWN median", "PAWN median (Kolmogorov--Smirnov statistic)")):
+        if values is None:
+            continue
+        fig, ax = hs.new_figure()
+        y = np.arange(len(rows))
+        ax.barh(y, values[rows], height=0.65, color=colour, edgecolor="black", linewidth=1.5, zorder=3,
+                xerr=err[rows] if err is not None else None,
+                error_kw=dict(ecolor="black", elinewidth=2.2, capsize=5, capthick=2.2))
+        ends = values[rows] + (err[rows] if err is not None else 0)
+        for yi, v, e in zip(y, values[rows], ends):
+            ax.annotate(f"{v:.3f}", (e, yi), xytext=(6, 0), textcoords="offset points", ha="left", va="center",
+                        fontsize=hs.ANNOT_PT, fontweight="bold", color="black", zorder=6)
+        ax.set_yticks(y, [param_label(names[i]) for i in rows])
+        ax.tick_params(axis="y", which="both", length=0)
+        ax.set_ylim(-0.6, len(rows) - 0.4)
+        ax.set_xlim(0, np.nanmax(ends) * 1.28)
+        ax.set_xlabel(xlabel)
+        conf = (r" Error bars: the 95~\% confidence interval of $\delta$ from bootstrap resampling."
+                if err is not None else "")
+        top = names[rows[-1]]
+        caption = (rf"{words} of {quantity} through {where}: the {len(rows)} largest of {len(names)} parameters, "
+                   rf"ranked by $\delta$, each value at the end of its bar. The largest is {param_label(top)} "
+                   rf"({values[rows[-1]]:.3f}).{conf}")
+        panels.append(Panel(name, fig, ax, caption))
+    _show(show)
+    return panels
 
 
 # -----------------------------------------------------------------------------
@@ -1542,77 +1715,87 @@ def regime_comparison_matrix(givendata_results, output_metric, param_names,
 
 def plot_regime_comparison_heatmap(givendata_results, output_metric, param_names,
                                    index='delta', top_union=12, normalize='column',
-                                   show_raw=True, show=True):
+                                   show_raw=True, show=True, temperature=None):
     """
-    Heatmap of a Route-B index across regimes (rows=params, cols=regimes).
+    Heatmap of a Route-B index across regimes (rows = parameters, columns = regimes), shaded white
+    to blue.
 
-    normalize : 'column' (default) colours each cell by its column-normalized
-        value, so every regime spans a full 0->1 scale and within-regime contrast
-        is visible. Without this, the dominant parameter (usually ``temperature``)
-        saturates the single global colour scale and everything else reads white.
-        Pass None for the raw, un-normalized heatmap.
-    show_raw : when normalizing, also print the raw value in a small box in each
-        cell's upper-right corner, so absolute magnitude is not lost. The large
-        centred number is the normalized value.
+    normalize : 'column' (default) shades each cell, and writes it as the large number, by its
+        column-normalized value, so every regime spans a full 0->1 scale and within-regime contrast
+        is visible. Without this, the dominant parameter (usually ``temperature``) saturates the
+        single global scale and everything else reads white. Pass None for the raw values.
+    show_raw : when normalizing, also write the raw value small in each cell's upper-right corner,
+        so absolute magnitude is not lost.
+
+    Returns a list with one calculations.figures.Panel, named after the metric; an empty list
+    when there is nothing to draw. temperature: the scan temperature, for the caption.
     """
+    from matplotlib.colors import LinearSegmentedColormap
+    from calculations import house_style as hs
+    from calculations.figures import Panel
     raw = regime_comparison_matrix(givendata_results, output_metric, param_names,
                                    index=index, top_union=top_union)
     if raw.empty:
         print(f"No data for metric '{output_metric}'.")
-        return None
-
+        return []
+    regs = _regime_order(raw.columns) + [r for r in raw.columns if r not in _regime_order(raw.columns)]
+    raw = raw[regs]
     normalized = (normalize == 'column')
     if normalized:
         colour_mat = _column_normalize(raw)
         # re-order rows on the normalized values, then keep raw in lockstep
-        colour_mat = colour_mat.reindex(
-            colour_mat.mean(axis=1).sort_values(ascending=False).index)
+        colour_mat = colour_mat.reindex(colour_mat.mean(axis=1).sort_values(ascending=False).index)
         raw = raw.reindex(colour_mat.index)
-        vmin, vmax = 0.0, 1.0
+        shade = colour_mat.values
     else:
         colour_mat = raw
-        vmin = vmax = None
+        top = np.nanmax(raw.values)
+        shade = raw.values / top if np.isfinite(top) and top > 0 else raw.values
         show_raw = False
-
-    # dual-annotated cells need a little more room for the corner box
-    col_w, row_h = (1.9, 0.55) if show_raw else (1.6, 0.45)
-    fig, ax = plt.subplots(figsize=(col_w * colour_mat.shape[1] + 3,
-                                    row_h * colour_mat.shape[0] + 2))
-    im = ax.imshow(colour_mat.values, cmap='YlOrRd', aspect='auto',
-                   vmin=vmin, vmax=vmax)
-    ax.set_xticks(range(colour_mat.shape[1]))
-    ax.set_xticklabels(colour_mat.columns, rotation=0)
-    ax.set_yticks(range(colour_mat.shape[0]))
-    ax.set_yticklabels(colour_mat.index)
-    cbar = plt.colorbar(im, ax=ax)
-    cbar.set_label(f'{index} (fraction of column max)' if normalized else f'{index}')
-
-    flip = (vmax if normalized else np.nanmax(colour_mat.values)) * 0.6
-    for i in range(colour_mat.shape[0]):
-        for j in range(colour_mat.shape[1]):
+    heat = LinearSegmentedColormap.from_list("white_to_blue", ["#FFFFFF", hs.COLOURS["sky"], hs.COLOURS["blue"]])
+    n_rows = colour_mat.shape[0]
+    hs.use_style()
+    fig, ax = plt.subplots(figsize=(180 * hs.MM, max(110, 22 + 13 * n_rows) * hs.MM))
+    ax.imshow(shade, cmap=heat, vmin=0, vmax=1, aspect="auto")
+    for i in range(n_rows):
+        for j in range(len(regs)):
             v = colour_mat.values[i, j]
             if not np.isfinite(v):
                 continue
-            ax.text(j, i, f'{v:.2f}', ha='center', va='center', fontsize=9,
-                    color='black' if v < flip else 'white')
-            if show_raw:
-                r = raw.values[i, j]
-                if np.isfinite(r):
-                    # translucent white box keeps black text legible on any fill
-                    ax.text(j + 0.45, i - 0.39, f'{r:.3f}', ha='right', va='top',
-                            fontsize=6.5, color='black',
-                            bbox=dict(boxstyle='round,pad=0.15', fc='white',
-                                      ec='none', alpha=0.65))
-
-    title = f'Cross-regime sensitivity ({index}) — {output_metric}'
+            ax.text(j - (0.04 if show_raw else 0), i + (0.08 if show_raw else 0), f"{v:.2f}" if normalized else f"{v:.3f}",
+                    ha="center", va="center", fontsize=hs.ANNOT_PT, fontweight="bold", color="black")
+            if show_raw and np.isfinite(raw.values[i, j]):
+                ax.text(j + 0.46, i - 0.44, f"{raw.values[i, j]:.3f}", ha="right", va="top", fontsize=14,
+                        color="black")
+    ax.set_xticks(range(len(regs)), [str(r).capitalize() for r in regs])   # short: the columns are narrow
+    ax.set_xlabel("Regime cluster")
+    ax.set_yticks(range(n_rows), [param_label(p) for p in colour_mat.index])
+    ax.tick_params(which="both", length=0)
+    ax.minorticks_off()
+    for k in range(n_rows + 1):
+        ax.axhline(k - 0.5, color="white", lw=2.2)
+    for k in range(len(regs) + 1):
+        ax.axvline(k - 0.5, color="white", lw=2.2)
+    words = {'delta': r"Borgonovo moment-independent sensitivity $\delta$",
+             'pawn_median': "PAWN median (Kolmogorov--Smirnov statistic)",
+             'S1_givendata': r"first-order index $S_1$ (given data)"}.get(index, index)
+    logged = any(givendata_results.get(r, {}).get(output_metric, {}).get('log') for r in regs)
+    quantity = (rf"$\log_{{10}}$ of the {METRIC_WORDS.get(output_metric, output_metric)}" if logged
+                else f"the {METRIC_WORDS.get(output_metric, output_metric)}")
+    counts = {r: givendata_results[r][output_metric]['n'] for r in regs
+              if 'n' in givendata_results.get(r, {}).get(output_metric, {})}
     if normalized:
-        title += ('\ncolour + large number = normalized to column max'
-                  + ('; corner = raw value' if show_raw else ''))
-    ax.set_title(title)
-    fig.tight_layout()
-    if show:
-        plt.show()
-    return fig
+        how = ("Large numbers and shading: the index as a fraction of the largest in the same regime (column), "
+               "so the strongest parameter of each regime reads 1.00"
+               + ("; small numbers in the corner: the index itself" if show_raw else "") + ".")
+    else:
+        how = "Numbers: the index itself; shading: the index as a fraction of the largest in the figure."
+    caption = (rf"{words} of {quantity} through {_wall(regs)}{_at(temperature)}, for the {n_rows} parameters among "
+               rf"the top {top_union} of any regime. {how} Columns: "
+               + hs.tex_join([f"{r} ({_regime_name(r).lower()})" for r in regs]) + "."
+               + (f" Samples per regime: {_counts_text(counts)}." if counts else ""))
+    _show(show)
+    return [Panel(output_metric, fig, ax, caption)]
 
 
 # =============================================================================
@@ -1800,21 +1983,14 @@ def _sweep_grid(lo, hi, n):
 # REGIME GEOMETRY PLOT — cluster projection in parameter space
 # =============================================================================
 
-def plot_regime_geometry(
-    clusters,
-    *,
-    axes,
-    log_x=False,
-    log_y=False,
-    figsize=(9, 6.5),
-    save_path=None,
-    title=None,
-):
+def plot_regime_geometry(clusters, *, axes, log_x=False, log_y=False, drivers_of=None,
+                         temperature=None, show=True):
     """Project the Phase 1 regime clusters onto two parameters.
 
-    Each regime's points are scattered in its own colour and outlined with the
-    10-90 percentile band of the two plotted parameters, so cluster overlap (and
-    the curvature of the true regime boundary) is visible.
+    Every regime's points are scattered in its colour (rasterized: there are thousands) and
+    outlined by a dashed box spanning the 10th to 90th percentile of the two plotted
+    parameters, so cluster overlap (and the curvature of the true regime boundary) shows. The
+    key below the plot names each regime with its sample count.
 
     Parameters
     ----------
@@ -1824,48 +2000,63 @@ def plot_regime_geometry(
         Two parameter names to project on.
     log_x, log_y : bool
         Log-scale the corresponding axis.
-    figsize, save_path, title : usual matplotlib knobs.
+    drivers_of : str, optional
+        The regime whose top-two delta drivers ``axes`` are, for the caption.
+    temperature : float, optional
+        The scan temperature, for the caption; read from the clusters when pinned.
+
+    Returns a list with one calculations.figures.Panel, named 'clusters'.
 
     Examples
     --------
     >>> plot_regime_geometry(clusters, axes=('k_diss_ref', 'P_upstream'), log_x=True)
-    >>> plot_regime_geometry(clusters, axes=regime_topk('metal')[:2])
+    >>> plot_regime_geometry(clusters, axes=regime_topk('metal')[:2], drivers_of='metal')
     """
+    from matplotlib.lines import Line2D
     from matplotlib.patches import Rectangle
-
-    # 'surface' only occurs at L5L6, 'defect' only at L5; regimes absent from
-    # `clusters` are skipped, so one map serves both levels.
-    REGIME_COLORS = {"surface": "#1D9E75", "oxide": "#7F77DD",
-                     "metal": "#D85A30", "defect": "#B5179E"}
+    from calculations import house_style as hs
+    from calculations.figures import Panel
+    # 'surface' only occurs at L5L6, 'defect' only at L5; regimes absent from `clusters` are skipped.
+    regs = _regime_order(clusters) + [r for r in clusters if r not in _regime_order(clusters)]
     P1, P2 = axes
-
-    fig, ax = plt.subplots(figsize=figsize)
-    for r, c in REGIME_COLORS.items():
-        if r not in clusters:
-            continue
+    if temperature is None:
+        temperature = _pinned_temperature(clusters.values())
+    fig, ax = hs.new_figure()
+    handles, labels, colours, xs, ys = [], [], [], [], []
+    for r in regs:
         sub = clusters[r]
-        ax.scatter(sub[P1], sub[P2], c=c, s=14, alpha=0.45, linewidths=0,
-                   label=f"{r} cluster  n={len(sub)}")
+        colour = _regime_colour(r)
+        ax.scatter(sub[P1], sub[P2], s=10, color=colour, alpha=0.35, linewidths=0, rasterized=True, zorder=2)
         lo1, hi1 = sub[P1].quantile(0.10), sub[P1].quantile(0.90)
         lo2, hi2 = sub[P2].quantile(0.10), sub[P2].quantile(0.90)
-        ax.add_patch(Rectangle((lo1, lo2), hi1 - lo1, hi2 - lo2,
-                               fill=False, edgecolor=c, linestyle="--",
-                               linewidth=1.3))
-
-    if log_x:
-        ax.set_xscale("log")
-    if log_y:
-        ax.set_yscale("log")
-    ax.set_xlabel(P1)
-    ax.set_ylabel(P2)
-    ax.set_title(title or f"Regime geometry  -  projection on ({P1}, {P2})")
-    ax.legend(loc="best", fontsize=8)
-    ax.grid(True, alpha=0.15)
-    fig.tight_layout()
-    if save_path:
-        fig.savefig(save_path, dpi=120, bbox_inches="tight")
-        plt.close(fig)
+        ax.add_patch(Rectangle((lo1, lo2), hi1 - lo1, hi2 - lo2, fill=False, edgecolor=colour, ls="--",
+                               lw=3.0, zorder=4))
+        handles.append(Line2D([], [], color=colour, ls="--", lw=3.0, marker="o", ms=9, mec=colour))
+        labels.append(f"{_regime_name(r)}, $n$ = {len(sub):,}")
+        colours.append(colour)
+        xs.append(sub[P1].to_numpy(dtype=float))
+        ys.append(sub[P2].to_numpy(dtype=float))
+    x, y = np.concatenate(xs), np.concatenate(ys)
+    # room around the data, so a box edge on a sampled range's end never hides under the frame
+    if log_x and np.all(x[np.isfinite(x)] > 0):
+        hs.set_log_x(ax, x, pad_decades=0.15, frac=0.06)
     else:
-        plt.show()
-    return fig
- 
+        span = np.nanmax(x) - np.nanmin(x) or 1.0
+        ax.set_xlim(np.nanmin(x) - 0.06 * span, np.nanmax(x) + 0.06 * span)
+    if log_y and np.all(y[np.isfinite(y)] > 0):
+        hs.set_log_y(ax, y, pad_decades=0.15, frac=0.06)
+    else:
+        hs.set_linear_y(ax, y, frac=0.06)
+    ax.set_xlabel(param_label(P1, unit=True))
+    ax.set_ylabel(param_label(P2, unit=True))
+    hs.key_below(fig, handles, labels, ncol=len(labels), colours=colours)
+    whose = (f", the two parameters with the largest $\\delta$ for the flux of the "
+             f"{_regime_name(drivers_of).lower()} samples" if drivers_of else "")
+    units_note = ("" if (P1 in PARAM_UNITS and P2 in PARAM_UNITS) else
+                  r" Axes without a unit are in the units of the study's study\_config.py.")
+    caption = (rf"Every sample for {_wall(regs)}{_at(temperature)}, on {param_label(P1)} and {param_label(P2)}"
+               rf"{whose}. Points are coloured by regime cluster; each dashed box spans the 10th to 90th percentile "
+               rf"of its cluster on both parameters, so overlap between clusters shows. Samples per regime: "
+               rf"{_counts_text({r: len(clusters[r]) for r in regs})}.{units_note}")
+    _show(show)
+    return [Panel("clusters", fig, ax, caption, x, y, keyed=True)]

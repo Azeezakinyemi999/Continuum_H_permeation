@@ -9,11 +9,29 @@ binds no study.
 """
 from __future__ import annotations
 
+
 import math
 import os
 import re
 import shutil
 import subprocess
+
+
+#: The first hyphen of a figure file name that is not an exponent's ('1e-7Pa'): it starts the panel
+#: part, <figure>-<panel> (calculations.figures.save_panels).
+PANEL_SEP = re.compile(r'(?<!\de)-')
+
+
+def panel_note(rel):
+    """'Panel: 600 C, flux.' for a panel file <figure>-<panel>, '' for a one-file figure."""
+    stem = os.path.splitext(os.path.basename(str(rel)))[0]
+    parts = PANEL_SEP.split(stem, maxsplit=1)
+    if len(parts) < 2:
+        return ''
+    words = [re.sub(r'^([\d.]+(?:e[+-]?\d+)?)(C|K|Pa|nm|um)$', r'\1 \2', w).replace('_', ' ')
+             for w in PANEL_SEP.split(parts[1])]
+    return 'Panel: ' + tex_escape(', '.join(words)) + '.'
+
 
 TEXT_WIDTH_CM = 17.4              # A4 with 1.8 cm margins
 LATEX_TIMEOUT = 900               # s
@@ -451,7 +469,13 @@ class LatexReport:
                 if part[0] == 'figure':
                     extra = part[3] if len(part) > 3 else ''
                     height = part[4] if len(part) > 4 else 0.62
-                    tex, labels = self.figure(part[2], specs[key]['caption'] + (' ' + extra if extra else ''), height)
+                    files = part[2] if isinstance(part[2], (list, tuple)) else [part[2]]
+                    tex, labels = '', []
+                    for f in files:             # a figure drawn one panel per file: one float per panel
+                        note = panel_note(f)
+                        t, lab = self.figure(f, specs[key]['caption'] + (' ' + extra if extra else '')
+                                             + (' ' + note if note else ''), height)
+                        tex, labels = (tex + '\n' + t).strip(), labels + lab
                 else:
                     tex, labels = self.figure_grid(part[2], part[3], specs[key]['caption'],
                                                    part[4] if len(part) > 4 else 3)

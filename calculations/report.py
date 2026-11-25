@@ -143,12 +143,20 @@ class StudyReport(L.LatexReport):
                       if os.path.isfile(p))
 
     def figures(self, folder):
-        """{stem: file} of a results folder, the PDF when there is one (vector), else the PNG."""
-        out = {}
+        """{figure: file} of a results folder, the PDF when there is one (vector), else the PNG. A
+        figure drawn one panel per file (<figure>-<panel>, calculations.figures.save_panels) maps to
+        the list of its panel files, in the order they were drawn."""
+        out, panels = {}, {}
         for f in self.files(folder):
             stem, ext = os.path.splitext(os.path.basename(f))
-            if ext.lower() == '.pdf' or (ext.lower() == '.png' and stem not in out):
-                out[stem] = f
+            if ext.lower() not in ('.pdf', '.png'):
+                continue
+            head = L.PANEL_SEP.split(stem, maxsplit=1)
+            into = panels.setdefault(head[0], {}) if len(head) == 2 else out
+            if ext.lower() == '.pdf' or stem not in into:
+                into[stem] = f
+        for fig, files in panels.items():
+            out[fig] = sorted(files.values(), key=lambda f: (os.stat(os.path.join(self.out, f)).st_mtime_ns, f))
         return out
 
     def outputs(self, name):
@@ -159,6 +167,11 @@ class StudyReport(L.LatexReport):
             if r['level'] == level and r['quantity'] == quantity:
                 return r['value']
         return None
+
+
+def flat_files(figs):
+    """Every file of a figures() map: one-file figures and each panel of the others."""
+    return [f for v in figs.values() for f in (v if isinstance(v, list) else [v])]
 
 
 def op_num(rep, level, quantity):
@@ -652,7 +665,8 @@ def appendix_files(rep):
             figs = rep.figures(folder)
             rows.append({'folder': folder + '/', 'kinds': ', '.join(f'{v} {k}' for k, v in sorted(kinds.items())),
                          'shown': f'{sum(f in rep.used for f in fs)} of {len(fs)}'
-                                  + (f' ({sum(f in rep.used for f in figs.values())} of {len(figs)} figures)' if figs else ''),
+                                  + (f' ({sum(f in rep.used for f in flat_files(figs))} of {len(flat_files(figs))} figures)'
+                                     if figs else ''),
                          'section': (r'\ref{sec:' + name + '}') if name in rep.built else '--'})
     return '\n\n'.join([r'\section{Notebook outputs}', r'\label{app:files}',
                         'Every results folder of the study, ' + L.tex_path(rep.out) + '. A figure is shown as its PDF '

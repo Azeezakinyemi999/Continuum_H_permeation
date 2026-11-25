@@ -283,14 +283,15 @@ def label_model2(level, result, defects=None):
 # Drawing a label
 # =============================================================================
 
-#: Limiting step -> (words, colour, marker). Colour means the step on every figure.
+#: Limiting step -> (words, colour, marker). Colour means the step on every figure: the house
+#: colours of calculations/house_style.py (Okabe-Ito; mixed and undefined grey, marks only).
 STEP_STYLE = {
-    'oxide surface':   ('oxide-surface limited (H$_2$ dissociation on the oxide)',      '#1baf7a', 'P'),
-    'metal surface':   ('metal-surface limited (H$_2$ dissociation on the bare metal)', '#8e5cc4', 'P'),
-    'oxide diffusion': ('oxide-diffusion limited',                                     '#eb6834', 's'),
-    'metal diffusion': ('metal-diffusion limited',                                     '#2a78d6', 'o'),
-    'mixed':           ('no single limiting step (not fitted)',                        '#898781', 'X'),
-    'undefined':       ('undefined (solve failed, not fitted)',                        '#898781', 'x'),
+    'oxide surface':   ('oxide-surface limited (H$_2$ dissociation on the oxide)',      '#009E73', 'P'),
+    'metal surface':   ('metal-surface limited (H$_2$ dissociation on the bare metal)', '#B4508C', 'P'),
+    'oxide diffusion': ('oxide-diffusion limited',                                     '#D55E00', 's'),
+    'metal diffusion': ('metal-diffusion limited',                                     '#0072B2', 'o'),
+    'mixed':           ('no single limiting step (not fitted)',                        '#5A5A5A', 'X'),
+    'undefined':       ('undefined (solve failed, not fitted)',                        '#5A5A5A', 'x'),
 }
 _DOMINANT_WORDS = {'intact': 'Intact oxide dominant', 'pinholes': 'Pinholes dominant',
                    'cracks': 'Cracks dominant', 'oxide GBs': 'Oxide GBs dominant'}
@@ -305,8 +306,8 @@ def describe(label):
     """
     path, step, detail = parse(label)
     if path is None and step == 'mixed':                          # no path carries more than half
-        return ('No path carries more than half the flux (not fitted)', '#898781', 'X', 'filled')
-    words, colour, marker = STEP_STYLE.get(step, (step, '#52514e', 'o'))
+        return ('No path carries more than half the flux (not fitted)', '#5A5A5A', 'X', 'filled')
+    words, colour, marker = STEP_STYLE.get(step, (step, '#5A5A5A', 'o'))
     if detail:
         words += f', {_DETAIL_WORDS[detail]}'
         marker = 'D' if detail == 'traps' else marker

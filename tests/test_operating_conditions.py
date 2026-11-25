@@ -269,6 +269,9 @@ SECTION_TITLES = [
 # Sections 4 (DERIVED) and 5 (PRESENTATION) were byte-identical in all four studies, so
 # they moved into model_config.py. A study file that grows one back has started keeping a
 # private copy of the derivation, which is how the four copies drifted the first time.
+# The presentation names (PLOT_STYLE, COLORS, CURVE_STYLES, apply_style) are gone altogether:
+# every figure takes its style from calculations/house_style.py, so a study file must not define
+# them either.
 MOVED_SECTIONS = ["4. DERIVED", "5. PRESENTATION"]
 
 MOVED_NAMES = [

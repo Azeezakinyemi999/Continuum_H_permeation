@@ -31,7 +31,8 @@ from conftest import ROOT
 NOTEBOOK = "Proposal.ipynb"
 STUDY = "Guo_etal_2025"
 # Level 1 through Level 5, one figure per level with 2a and 2b separate.
-EXPECTED_FIGURES = 6
+EXPECTED_FIGURES = 6           # Levels 1, 2a, 2b, 3, 4 and 5
+PANELS_PER_FIGURE = 4         # each old 2 x 2 figure is four figures, <figure>-<panel>
 
 
 def kernel_matching_this_interpreter():
@@ -110,6 +111,9 @@ def test_proposal_notebook_runs_and_draws_its_figures(tmp_path):
     # folder is gitignored but survives between runs, so stale PNGs would otherwise
     # satisfy a bare existence check.
     pngs = sorted(results.glob("*.png"))
-    assert len(pngs) == EXPECTED_FIGURES, f"expected {EXPECTED_FIGURES}, got {[p.name for p in pngs]}"
+    figures = {p.stem.split("-", 1)[0] for p in pngs}
+    assert len(figures) == EXPECTED_FIGURES and len(pngs) == EXPECTED_FIGURES * PANELS_PER_FIGURE, (
+        f"expected {EXPECTED_FIGURES} figures of {PANELS_PER_FIGURE} panels, got {[p.name for p in pngs]}")
+    assert all((results / f"{p.stem}_caption.tex").exists() for p in pngs), "a panel has no caption"
     stale = [p.name for p in pngs if p.stat().st_mtime < started]
     assert not stale, f"figures not rewritten by this run: {stale}"
