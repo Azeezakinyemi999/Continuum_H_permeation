@@ -99,8 +99,9 @@ the documentation pages used. `--run-notebooks` writes the executed copies to
 Every figure the notebooks write is drawn by the package in one house style
 (`calculations/house_style.py`): each panel is its own figure, 180 mm wide at final size, with a
 thick black frame, 17/20 pt black text (TeX Gyre Heros, or Nimbus Sans where TeX is missing), no
-titles or grids, a key below the plot and fitted values (E_a and pre-factors, exponents, slopes,
-R²) on the second line of each key entry. Colours keep one meaning in every figure: a model level
+titles or grids, each series labelled next to its data in its colour (a key below the plot only
+where the labels find no free space) and fitted values (E_a and pre-factors, exponents, slopes,
+R²) on the second line of each label. Colours keep one meaning in every figure: a model level
 its level hue (L1 black, L2a orange, L2b blue, L3 green, L4 sky blue, L5 vermillion; a +L6 level
 keeps its hue, dashed with squares), a limiting step its step hue (oxide diffusion vermillion,
 metal diffusion blue, metal surface purple, oxide surface green, mixed grey); fits, limits and

@@ -173,6 +173,47 @@ def test_house_colours_keep_one_meaning():
         assert STEP_STYLE[step][1].lower() == colour.lower(), step
 
 
+def _two_curves():
+    import numpy as np
+    from matplotlib.lines import Line2D
+    from calculations import house_style as hs
+    hs.use_style()
+    fig, ax = hs.new_figure()
+    x = np.linspace(0, 1, 40)
+    ax.plot(x, 0.2 + 0.1 * x, color=hs.STEP_COLOURS["metal diffusion"], lw=3)
+    ax.plot(x, 0.8 - 0.1 * x, color=hs.STEP_COLOURS["oxide diffusion"], lw=3, ls="--")
+    ax.set_xlim(0, 1)
+    ax.set_ylim(0, 1)
+    handles = [Line2D([], [], color=hs.STEP_COLOURS["metal diffusion"], lw=3),
+               Line2D([], [], color=hs.STEP_COLOURS["oxide diffusion"], lw=3, ls="--")]
+    return hs, fig, ax, handles
+
+
+def test_labels_go_inside_the_plot_next_to_their_data():
+    """Each entry is written next to its own curve, in its colour, with no key below the plot."""
+    hs, fig, ax, handles = _two_curves()
+    kind, artists = hs.labels_or_key(fig, ax, handles, ["Metal diffusion", "Oxide diffusion"],
+                                     colours=[h.get_color() for h in handles])
+    assert kind == "inside" and not fig.legends
+    fig.canvas.draw()
+    renderer = fig.canvas.get_renderer()
+    low, high = (hs.bbox_frac(ax, t, renderer) for t in artists[:2])
+    assert low.y1 < 0.55 < high.y0, "each label sits on its own curve's side of the plot"
+    plt.close(fig)
+
+
+def test_labels_fall_back_to_a_key_when_the_plot_is_full():
+    """With no free space (a dense cloud of points over the whole plot) the key goes below the plot."""
+    import numpy as np
+    hs, fig, ax, handles = _two_curves()
+    g = np.linspace(0.01, 0.99, 120)
+    gx, gy = np.meshgrid(g, g)
+    ax.plot(gx.ravel(), gy.ravel(), ls="none", marker=".", ms=2, color="0.5")
+    kind, legend = hs.labels_or_key(fig, ax, handles, ["Metal diffusion", "Oxide diffusion"])
+    assert kind == "key" and fig.legends and not [t for t in ax.texts if t.get_text()]
+    plt.close(fig)
+
+
 def test_report_groups_a_figures_panels_in_drawing_order(tmp_path):
     """The study report shows each panel of a figure, in the order save_panels wrote them."""
     import os

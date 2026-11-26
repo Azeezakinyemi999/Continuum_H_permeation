@@ -10,12 +10,14 @@ On each figure the marks show the limiting step at every point (colour = the ste
 defect path carries most of the flux, a diamond = trap control; ``house_style.regime_mark``), and
 each limiting step is fitted within each curve: an Arrhenius fit for temperature, a power law
 otherwise, drawn as a line in the step's colour (line style per curve). The fitted exponents are on
-the plot, as the second line of each limiting step's entry in the key below it. Several curves are
+the plot, as the second line of each limiting step's label, written next to its points in the step's
+colour (or in a key below the plot when the labels find no free space). Several curves are
 named at their right-hand end. Pressure figures of J carry grey reference slopes of 1 and 0.5,
 labelled; the pinhole figures a grey line for the no-pinhole limit (f -> 0) of each curve.
 
 The notebooks keep computing their own points and fit tables; nothing here changes a number.
 """
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from matplotlib.lines import Line2D
@@ -44,6 +46,11 @@ UNITS_TEX = {UNITS_SIEVERTS: r"mol m$^{-1}$ s$^{-1}$ Pa$^{-1/2}$", UNITS_HENRY: 
 MERGE_WORD = {"3T": "temperatures", "3P": "pressures", "studies": "alloys", "op": "conditions"}
 #: The thickness sweeps of a notebook figure row, as sweep keys.
 THICKNESS_KEYS = {"oxide": "oxide-thickness", "metal": "metal-thickness", "total": "total-thickness"}
+
+
+#: extra room above and below the data (fractions of the y-axis) tried in turn until the labels fit;
+#: a figure whose labels fit with none of them gets a key below the plain axes
+GROW = (0.0, 0.12, 0.25)
 
 
 def level_layers(level):
@@ -145,10 +152,14 @@ def _ticks(ax, sweep_key, xlog):
         _tidy_linear_y(ax)
 
 
-def _draw(d, sweep_key, qty, phi_units, merge_word, limits=None):
+def _draw(d, sweep_key, qty, phi_units, merge_word, limits=None, grow=0.0, last=True):
     """One figure: marks by limiting step, a fit line per step and curve, curve names at the right-hand
-    end, the reference slopes (pressure, J), the no-pinhole limits; the key below the plot carries
-    each step's fitted exponents. Returns (fig, ax, groups, guide_series, keyed)."""
+    end, the reference slopes (pressure, J), the no-pinhole limits; each step's label, next to its
+    points (or in a key below the plot), carries its fitted exponents. grow: extra room above and
+    below the data, as a fraction of the y-axis, so the labels find space; last: when False and the
+    labels do not fit, no key is drawn and kind is "none" (the caller draws again with more room).
+    Returns (fig, ax, d, groups, guide_series, kind), kind "inside" or "key" (where the labels went)
+    or "none"."""
     xlabel, xlog = SWEEP_AXES[sweep_key][:2]
     d = d.assign(y=d[qty if qty == "phi" else "J"])
     d = d[np.isfinite(d.y) & (d.y > 0)]
@@ -182,6 +193,8 @@ def _draw(d, sweep_key, qty, phi_units, merge_word, limits=None):
             ref_y.append(y0)
 
     hs.set_log_y(ax, np.r_[d.y.to_numpy(), ref_y], pad_decades=0.35)
+    if grow:
+        hs.grow_y(ax, grow)
     if xlog:
         ax.set_xscale("log")
         ax.set_xlim(*hs.log_limits(d.x, 0.15, frac=0.03))
@@ -307,8 +320,8 @@ def _draw(d, sweep_key, qty, phi_units, merge_word, limits=None):
         handles.append(Line2D([], [], color=hs.GREY, lw=2.4))
         labels.append(r"No pinholes ($f \rightarrow 0$)")
         colours.append("black")
-    hs.key_below(fig, handles, labels, ncol=2, colours=colours)
-    return fig, ax, d, groups, guide_series
+    kind, _ = hs.labels_or_key(fig, ax, handles, labels, ncol=2, colours=colours, fallback=last)
+    return fig, ax, d, groups, guide_series, kind
 
 
 # --------------------------------------------------------------------------------------------------
@@ -431,7 +444,13 @@ def sweep_panels(sweep_key, level, curves, phi_units, P_down, variant="op", allo
             limits = {c["series"]: c.get(key) for c in curves}
         if not np.isfinite(d0[qty]).any():
             continue
-        fig, ax, d, groups, guide = _draw(d0, sweep_key, qty, phi_units, merge, limits)
+        # more room above and below until the labels fit; when they never do, the plain axes and a key
+        for grow in GROW + (None,):
+            fig, ax, d, groups, guide, kind = _draw(d0, sweep_key, qty, phi_units, merge, limits,
+                                                    grow=grow or 0.0, last=grow is None)
+            if kind != "none":
+                break
+            plt.close(fig)
         caption = _caption(level, sweep_key, qty, d, groups, phi_units, variant, alloy, P_down, guide, limits)
         out.append(Panel(f"{group}-{name}" if group else name, fig, ax, caption, d.x.to_numpy(), d.y.to_numpy(),
                          keyed=True))

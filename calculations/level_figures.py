@@ -5,7 +5,8 @@ level; each returns a list of ``calculations.figures.Panel`` for ``save_panels``
 180 x 128 mm figure in the house style (``calculations.house_style``): a level in its level hue
 (``LEVEL_STYLE``; the defective-metal modes share L4's sky blue and differ by line style and marker),
 conditions (temperatures, defect fractions) told apart by marker and line style, fits, theory lines,
-limits and thresholds grey dashed, a key below the plot, no titles. The check the notebook makes on a
+limits and thresholds grey dashed, labels next to the data (a key below the plot where they do not
+fit), no titles. The check the notebook makes on a
 panel (fitted slope or energy against the expected value, R², the error of a limit check) is written on
 the panel in a clear corner, and stated as failed when it fails. Every number in a caption comes from
 the arrays passed in.
@@ -189,7 +190,8 @@ def _note(ax, lines):
 
 
 def _key(fig, entries, ncol=3):
-    """A key below the plot from [(handle kwargs or artist, label)], text in the series colour."""
+    """Labels next to the data from [(handle kwargs or artist, label)], in the series colour, or a key below
+    the plot when they do not fit (house_style.labels_or_key)."""
     handles, labels, colours = [], [], []
     for h, lab in entries:
         if isinstance(h, dict):
@@ -200,7 +202,7 @@ def _key(fig, entries, ncol=3):
         handles.append(h)
         labels.append(lab)
     colours = [c if isinstance(c, str) else BLACK for c in colours]
-    return hs.key_below(fig, handles, labels, ncol=ncol, colours=colours)
+    return hs.labels_or_key(fig, fig.axes[0], handles, labels, ncol=ncol, colours=colours)
 
 
 def _rel_err(model, ref):
@@ -234,8 +236,8 @@ def _parity(name, series, xlabel, ylabel, caption, check_lines):
     ax.set_ylim(lo, hi)
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
-    _key(fig, entries, ncol=3)
     _note(ax, check_lines)
+    _key(fig, entries, ncol=3)
     return Panel(name, fig, ax, caption, np.concatenate(xs), np.concatenate(ys), keyed=True)
 
 
@@ -273,10 +275,10 @@ def single_layer_panels(level, pressure, temperature, thickness, parity, conditi
     _log_axes(ax, p["P"], np.r_[p["J"], fit])
     ax.set_xlabel(P_UP)
     ax.set_ylabel(FLUX)
-    _key(fig, [(kw, "Model"), (ref, "Log-log fit")])
     ok = abs(p["slope"] - p["expected"]) < 0.01
     _note(ax, [_minus(f"slope {p['slope']:.3f}, expected {p['expected']:.3f}"), f"$R^2$ = {p['r2']:.4f}",
                None if ok else "check failed"])
+    _key(fig, [(kw, "Model"), (ref, "Log-log fit")])
     out.append(Panel("flux_vs_pressure", fig, ax,
                      f"Steady-state flux through {what}, {thick}, against the upstream pressure at {_degC(c['T'])} "
                      f"({hs.tex_num(p['P'][0])} to {hs.tex_num(p['P'][-1])}~Pa, {len(p['P'])} points). The grey dashed "
@@ -295,12 +297,12 @@ def single_layer_panels(level, pressure, temperature, thickness, parity, conditi
     _set_y(ax, np.r_[t["phi"], fit], pad_decades=0.3)
     sym = r"$\Phi$" if metal else r"$\Phi_\mathrm{ox}$"
     ax.set_ylabel(f"Permeability {sym} {UNITS_SIEVERTS if metal else UNITS_HENRY}")
-    _key(fig, [(kw, "Model" if metal else r"$\Phi_\mathrm{ox} = D_\mathrm{ox} K_\mathrm{ox}$"), (ref, "Arrhenius fit")])
     E, Ex = t["E"] / 1e3, t["E_expected"] / 1e3
     ok = abs(E - Ex) < 0.01 * max(1.0, abs(Ex))
     esym = r"$E_\Phi$" if metal else r"$E_{\Phi,\mathrm{ox}}$"
     _note(ax, [f"{esym} = {hs.kj(E, 2)}", _minus(f"expected {Ex:.2f}, ") + f"$R^2$ = {t['r2']:.4f}",
                None if ok else "check failed"])
+    _key(fig, [(kw, "Model" if metal else r"$\Phi_\mathrm{ox} = D_\mathrm{ox} K_\mathrm{ox}$"), (ref, "Arrhenius fit")])
     out.append(Panel("permeability_vs_T", fig, ax,
                      f"Permeability of {what} against inverse temperature ({t['T'][0]:.0f} to {t['T'][-1]:.0f}~K, "
                      f"{len(t['T'])} points). The grey dashed line is the Arrhenius fit: "
@@ -319,10 +321,10 @@ def single_layer_panels(level, pressure, temperature, thickness, parity, conditi
     _log_axes(ax, L, np.r_[k["J"], k["J_theory"]])
     ax.set_xlabel((r"Metal thickness $L$" if metal else r"Oxide thickness $\delta$") + f" ({unit})")
     ax.set_ylabel(FLUX)
-    _key(fig, [(kw, "Model"), (ref, r"Theory, $J \propto 1/L$" if metal else r"Theory, $J \propto 1/\delta$")])
     ok = abs(k["slope"] - k["expected"]) < 0.01
     _note(ax, [_minus(f"slope {k['slope']:.3f}, expected {k['expected']:.3f}"), f"$R^2$ = {k['r2']:.4f}",
                None if ok else "check failed"])
+    _key(fig, [(kw, "Model"), (ref, r"Theory, $J \propto 1/L$" if metal else r"Theory, $J \propto 1/\delta$")])
     out.append(Panel("flux_vs_thickness", fig, ax,
                      f"Steady-state flux through {what} against its thickness at {_degC(c['T'])} and "
                      f"{hs.tex_num(c['P_ref'])}~Pa upstream ({L[0]:.3g} to {L[-1]:.3g}~{unit}). The grey dashed line is "
@@ -378,9 +380,9 @@ def level2b_panels(pressure, temperature, thickness, limit, conditions):
     _log_axes(ax, p["P"], np.r_[p["J2b"], p["J1"], p["J2a"]])
     ax.set_xlabel(P_UP)
     ax.set_ylabel(FLUX)
-    _key(fig, [(k2b, "L2b, oxide + metal"), (k1, "L1, metal only"), (k2a, "L2a, oxide only")])
     lo, hi = _local_slope(p["P"], p["J2b"], "low"), _local_slope(p["P"], p["J2b"], "high")
     _note(ax, [_minus(f"L2b slope {lo:.2f} at low pressure"), _minus(f"{hi:.2f} at high pressure")])
+    _key(fig, [(k2b, "L2b, oxide + metal"), (k1, "L1, metal only"), (k2a, "L2a, oxide only")])
     out.append(Panel("flux_vs_pressure", fig, ax,
                      f"Steady-state flux through {system} (Level~2b) against the upstream pressure at {_degC(c['T'])}, "
                      f"with the metal alone (Level~1, slope 0.5) and the oxide alone (Level~2a, slope 1). The Level~2b "
@@ -397,8 +399,8 @@ def level2b_panels(pressure, temperature, thickness, limit, conditions):
     _set_y(ax, np.r_[t["J2b"], t["J1"]], pad_decades=0.3)
     ax.set_ylabel(FLUX)
     E = t["E_app"] / 1e3
-    _key(fig, [(k2b, f"L2b, oxide + metal\n$E_\\mathrm{{app}}$ = {hs.kj(E, 1)}"), (k1, "L1, metal only")], ncol=2)
     _note(ax, [f"$E_\\mathrm{{app}}$ = {hs.kj(E, 2)}", f"$R^2$ = {t['r2']:.4f}"])
+    _key(fig, [(k2b, f"L2b, oxide + metal\n$E_\\mathrm{{app}}$ = {hs.kj(E, 1)}"), (k1, "L1, metal only")], ncol=2)
     out.append(Panel("flux_vs_T", fig, ax,
                      f"Steady-state flux through {system} (Level~2b) and through the metal alone (Level~1) against "
                      f"inverse temperature at {hs.tex_num(t['P'])}~Pa upstream ({t['T'][0]:.0f} to {t['T'][-1]:.0f}~K). "
@@ -449,10 +451,10 @@ def level2b_panels(pressure, temperature, thickness, limit, conditions):
     ax.invert_xaxis()                                       # thin oxide on the right: delta -> 0
     ax.set_xlabel(r"Oxide thickness $\delta$ ($\mu$m)")
     ax.set_ylabel(r"$P_\mathrm{int}$, normalised")
-    _key(fig, entries, ncol=1)
     final = float(np.asarray(m["P_norm"])[-1])
     ok = final > 0.99
     _note(ax, [r"$\delta \to 0$: " + f"ratio {final:.4f}", "metal dominates, as Level 1" if ok else "check failed: expected 1"])
+    _key(fig, entries, ncol=1)
     out.append(Panel("limit_check", fig, ax,
                      f"Limit check of Level~2b: the interface pressure, normalised as "
                      f"$(P_\\mathrm{{int}} - P_\\mathrm{{down}})/(P_\\mathrm{{up}} - P_\\mathrm{{down}})$, as the "
@@ -556,11 +558,11 @@ def level3_panels(pressure, fraction, prf, limit, conditions):
     hs.set_linear_y(ax, np.r_[r["PRF"], r["PRF_perfect"], 1.0], include=[0.0], floor=0.0)
     ax.set_xlabel("Defect area fraction (%)")
     ax.set_ylabel(r"PRF = $J_\mathrm{L1}/J$")
-    _key(fig, [(kp, "With defects"), (rp, f"Perfect oxide, PRF = {hs.sci(r['PRF_perfect'], 3)}"), (r1, "No barrier, PRF = 1")],
-         ncol=1)
     halves = bool(np.nanmin(r["PRF"]) <= r["PRF_perfect"] / 2)
     _note(ax, [f"PRF max {hs.sci(r['PRF_perfect'], 3)}",
                f"halved at $f \\approx$ {hs.sci(r['f_half'] * 100, 2)} %" if halves else "never halved in this range"])
+    _key(fig, [(kp, "With defects"), (rp, f"Perfect oxide, PRF = {hs.sci(r['PRF_perfect'], 3)}"), (r1, "No barrier, PRF = 1")],
+         ncol=1)
     out.append(Panel("prf", fig, ax,
                      f"Permeation reduction factor of the oxide, PRF = $J_\\mathrm{{L1}}/J$ (the bare metal's flux over "
                      f"the coated one), against the defect area fraction for {system} at {_degC(c['T'])}. The perfect "
@@ -641,11 +643,11 @@ def level4_panels(pressure, temperature, grain, limit, conditions):
     _set_y(ax, np.r_[t["mod_gb"], t["mod_trap"], t["mod_both"], 1.0], pad_decades=0.2)
     ax.set_xlabel("Temperature (°C)")
     ax.set_ylabel(r"$D_\mathrm{eff}/D_\mathrm{lattice}$")
-    _key(fig, entries, ncol=2)
     both = np.asarray(t["mod_both"], float)
     crosses = bool(np.nanmin(both) < 1 < np.nanmax(both))
     _note(ax, [f"combined = 1 at {t['T_crossover'] - 273.15:.0f} °C" if crosses else
                f"combined {hs.sci(np.nanmin(both), 3)} to {hs.sci(np.nanmax(both), 3)}"])
+    _key(fig, entries, ncol=2)
     out.append(Panel("modification_vs_T", fig, ax,
                      f"Effective diffusivity of {_alloy(c['metal'])} relative to its lattice diffusivity, "
                      f"$D_\\mathrm{{eff}}/D_\\mathrm{{lattice}}$, against temperature ({TC[0]:.0f} to {TC[-1]:.0f}~$^\\circ$C; "

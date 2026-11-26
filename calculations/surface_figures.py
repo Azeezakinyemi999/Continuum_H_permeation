@@ -3,7 +3,7 @@
 Each function takes the arrays the notebook computed (the physics stays in the notebook) and returns
 a list of ``calculations.figures.Panel``; the notebook writes them with ``figures.save_panels``. Every
 figure is in the house style (``calculations/house_style.py``): 180 mm wide, black text, no titles,
-a key below the plot where labels do not fit beside the data.
+labels next to the data, or a key below the plot where they do not fit beside it (house_style.labels_or_key).
 
 Colours keep their meaning from the other figures of the project:
   - a rate-limiting step has its step colour (``house_style.STEP_COLOURS``): oxide surface green,
@@ -294,9 +294,9 @@ def regime_flux_panel(P, J, frac_surface, frac_oxide=None, frac_metal=None, surf
         colours += ["black", "black"]
     ax.set_xlabel(P_LABEL)
     ax.set_ylabel(rf"Flux $J$ ({J_UNIT})")
-    hs.key_below(fig, handles, labels, ncol=3, colours=colours)
     ns = net_slope(P, J)
     _place_note(ax, [f"net slope {ns:.2f}"], [(P[ok], J[ok])])
+    hs.labels_or_key(fig, ax, handles, labels, ncol=3, colours=colours)
     words = "; ".join(f"{STEP_WORDS[steps[r]]} slope {_slope_text(s)}" for r, s in slopes.items() if r != "mixed")
     caption = (f"Steady-state flux of {model} against upstream pressure{what}, drawn in the colour of the "
                f"rate-limiting step at each pressure (the step that holds more than half of the total "
@@ -342,13 +342,13 @@ def resistance_panel(P, fractions, crossovers=(), surface="oxide surface", model
         colours.append("black")
     ax.set_xlabel(P_LABEL)
     ax.set_ylabel("Resistance fraction (%)")
-    hs.key_below(fig, handles, labels, ncol=2, colours=colours)
     lines = list(note or [])
     if not shown:
         dominant = _dominant(fractions)
         lines.append(f"no crossover: {STEP_WORDS[steps[dominant]]} throughout" if dominant else "no crossover")
     guides = [(np.full(40, p), np.linspace(0, 100, 40)) for _, p in shown] + [(x_all, np.full(len(x_all), 50.0))]
     _place_note(ax, lines, list(zip(xs, ys)) + guides)
+    hs.labels_or_key(fig, ax, handles, labels, ncol=2, colours=colours)
     cross_words = ("; ".join(f"{n} at {_pa(p)}" for n, p in shown) if shown
                    else "no crossover in the range")
     caption = (f"Share of the total resistance of {model} held by each step against upstream pressure: "
@@ -398,8 +398,8 @@ def parity_panel(series, x_label, y_label, note, words):
     handles.append(_ref_handle(REF_DASHED)); labels.append("Perfect agreement"); colours.append("black")
     ax.set_xlabel(x_label)
     ax.set_ylabel(y_label)
-    hs.key_below(fig, handles, labels, ncol=2, colours=colours)
     _place_note(ax, note, list(zip(xs, ys)))
+    hs.labels_or_key(fig, ax, handles, labels, ncol=2, colours=colours)
     caption = words + " The grey dashed line is perfect agreement."
     return Panel("limit", fig, ax, caption, np.concatenate(xs) if xs else None,
                  np.concatenate(ys) if ys else None, keyed=True)
@@ -486,7 +486,7 @@ def _coverage_panel(P, theta, K_eq, P_crossover, level, name, cond):
         colours.append("black")
     ax.set_xlabel(P_LABEL)
     ax.set_ylabel(r"Surface coverage $\theta$")
-    hs.key_below(fig, handles, labels, ncol=3, colours=colours)
+    hs.labels_or_key(fig, ax, handles, labels, ncol=3, colours=colours)
     gap = np.nanmax(theta_eq[ok] - theta[ok])
     caption = (f"Surface coverage of {name}{cond} against upstream pressure: the steady-state coverage and the "
                r"Langmuir isotherm $\theta_\mathrm{eq} = \sqrt{K_\mathrm{eq}P}/(1+\sqrt{K_\mathrm{eq}P})$ "
@@ -599,7 +599,7 @@ def arrhenius_panel(arrhenius, name, surface="oxide surface"):
     ax.set_ylabel(rf"Flux $J$ ({J_UNIT})")
     top = hs.celsius_top_axis(ax)
     hs.set_celsius_ticks(ax, top)
-    hs.key_below(fig, handles, labels, ncol=1, colours=colours)
+    hs.labels_or_key(fig, ax, handles, labels, ncol=1, colours=colours)
     T_lo, T_hi = 1000 / x_all.max() - 273.15, 1000 / x_all.min() - 273.15
     caption = (f"Arrhenius plot of {name}: flux against inverse temperature ({T_lo:.0f} to {T_hi:.0f}~\\textdegree C) "
                "at one fixed pressure per regime, the median pressure of the range where that step holds over 90~\\% "
@@ -674,7 +674,7 @@ def _fraction_flux_panel(P, curves, slope_baseline, cond, total_fraction):
     _log_axes(ax, np.concatenate(xs), np.concatenate(ys))
     ax.set_xlabel(P_LABEL)
     ax.set_ylabel(rf"Flux $J$ ({J_UNIT})")
-    hs.key_below(fig, handles, labels, ncol=3, colours=colours)
+    hs.labels_or_key(fig, ax, handles, labels, ncol=3, colours=colours)
     caption = (f"Flux of L3+L6 (defective oxide on a perfect metal, with surface kinetics){cond} against upstream "
                f"pressure for several total defect fractions (the configured mix of defect types, "
                f"{hs.tex_num(100 * total_fraction, 2)}~\\% in total, scaled): " + hs.tex_join(words)
@@ -717,7 +717,7 @@ def _defect_panel(defects, cond):
     cap = 100.0
     lo, hi = ax.get_xlim()
     hs.log_ticks(ax.xaxis, lo, min(hi, cap))
-    hs.key_below(fig, handles, labels, ncol=2, colours=colours)
+    hs.labels_or_key(fig, ax, handles, labels, ncol=2, colours=colours)
     caption = (f"Flux of L3+L6 against the area fraction of one defect type{cond} and {_pa(defects['P'])}, each "
                "type alone (the others set to zero): " + hs.tex_join(DEFECT_NAMES.get(t, t).lower()
                                                                      for t, _ in defects["types"])
@@ -766,7 +766,7 @@ def l2l4l6_panels(P, mode_curves, mode, slope_net, frac_surface, frac_oxide, fra
     _log_axes(ax, np.concatenate(xs), np.concatenate(ys))
     ax.set_xlabel(P_LABEL)
     ax.set_ylabel(rf"Flux $J$ ({J_UNIT})")
-    hs.key_below(fig, handles, labels, ncol=2, colours=colours)
+    hs.labels_or_key(fig, ax, handles, labels, ncol=2, colours=colours)
     flux = Panel("flux", fig, ax,
                  f"Flux of {name} (a perfect oxide on a defective metal, with oxide-surface kinetics){cond} against "
                  "upstream pressure for each microstructure mode of the metal: none (the L2+L6 baseline), grain "
@@ -820,7 +820,7 @@ def _diffusivity_panel(d, name):
         colours.append("black")
     ax.set_xlabel("Temperature (°C)")
     ax.set_ylabel(r"$D_\mathrm{eff}/D_m$")
-    hs.key_below(fig, handles, labels, ncol=2, colours=colours)
+    hs.labels_or_key(fig, ax, handles, labels, ncol=2, colours=colours)
     lo = {m: np.nanmin(np.asarray(r, float)) for m, r in d["ratio"].items()}
     caption = (f"Effective diffusivity of the defective metal relative to the lattice, $D_\\mathrm{{eff}}/D_m$, against "
                f"temperature ({x_all.min():.0f} to {x_all.max():.0f}~\\textdegree C) for each microstructure mode of "
@@ -871,7 +871,7 @@ def l3l4l6_panels(P, hierarchy, fractions_full, slope_net, frac_surface, frac_ox
     _log_axes(ax, np.concatenate(xs), np.concatenate(ys))
     ax.set_xlabel(P_LABEL)
     ax.set_ylabel(rf"Flux $J$ ({J_UNIT})")
-    hs.key_below(fig, handles, labels, ncol=2, colours=colours)
+    hs.labels_or_key(fig, ax, handles, labels, ncol=2, colours=colours)
     flux = Panel("flux", fig, ax,
                  f"Flux against upstream pressure{cond} through the hierarchy of surface-kinetics levels: L2+L6 "
                  "(intact oxide, perfect metal), L3+L6 (defective oxide), L2+L4+L6 (defective metal) and L3+L4+L6 "
@@ -934,7 +934,6 @@ def _enhancement_panel(P, hierarchy, cond):
     handles.append(_ref_handle(REF_DASHED)); labels.append("E = 1, no enhancement"); colours.append("black")
     ax.set_xlabel(P_LABEL)
     ax.set_ylabel(r"Flux ratio $E$")
-    hs.key_below(fig, handles, labels, ncol=2, colours=colours)
     both, prod = E["both"], E["product"]
     m = np.isfinite(both) & np.isfinite(prod) & (prod > 0)
     behaviour, words = None, ""
@@ -948,6 +947,7 @@ def _enhancement_panel(P, hierarchy, cond):
         else:
             behaviour, words = "sub-multiplicative: one effect dominates", "sub-multiplicative"
         _place_note(ax, [behaviour], list(zip(xs, ys)))
+    hs.labels_or_key(fig, ax, handles, labels, ncol=2, colours=colours)
     rng = lambda e: f"{hs.tex_num(np.nanmin(e), 3)} to {hs.tex_num(np.nanmax(e), 3)}"   # noqa: E731
     caption = (f"Flux enhancement against upstream pressure{cond}: each defective level divided by the L2+L6 flux "
                f"of the intact system, $E_\\mathrm{{oxide}}$ ({rng(E['oxide'])}), $E_\\mathrm{{metal}}$ "

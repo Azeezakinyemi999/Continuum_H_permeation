@@ -321,65 +321,297 @@ def bbox_frac(ax, artist, renderer):
 _bbox_frac = bbox_frac
 
 
-def place_labels(ax, groups, renderer, avoid=(), margin=0.03, pad=0.018, glyph_w=0.035):
-    """Write each group's label in its colour, in free space next to its points.
+def _rgba(c):
+    try:
+        return tuple(np.round(mpl.colors.to_rgba(c), 3))
+    except (ValueError, TypeError):
+        return None
 
-    ``groups`` is [(text, colour, x, y, glyph), ...]: x and y are arrays in data units, and glyph is
-    None or a marker style (``marker``, ``mfc``, ``mec``, ``mew``) drawn just left of the label, for
-    groups that share a colour and differ only by marker. ``avoid`` holds artists (such as the end
-    labels) that no label may cover. Each label is tried on rings around its group's centre, below
-    and to the right first, and goes to the nearest spot that covers no data point and no other
-    label.
 
-    Returns ``(artists, ok)``: every text and glyph drawn, and whether all labels found a free spot.
-    When ``ok`` is False the caller should remove the artists and use a key instead.
-    """
-    all_pts = np.vstack([_to_axes(ax, g[2], g[3]) for g in groups]) if groups else np.empty((0, 2))
-    all_pts = all_pts[np.isfinite(all_pts).all(axis=1)]
-    taken = [_bbox_frac(ax, a, renderer) for a in avoid]
-    angles = np.deg2rad([-90, -60, -120, -30, -150, 0, 180, 30, 150, -75, -105, 60, 120, 90])
-    artists, ok = [], True
-    for text, colour, x, y, glyph in groups:
-        pts = _to_axes(ax, x, y)
-        pts = pts[np.isfinite(pts).all(axis=1)]
-        centre = np.median(pts, axis=0) if len(pts) else np.array([0.5, 0.5])
-        t = ax.text(0, 0, text, transform=ax.transAxes, color=colour, fontsize=ANNOT_PT,
-                    fontweight="bold", zorder=6, linespacing=1.15)
-        artists.append(t)
-        gw = glyph_w if glyph else 0.0
-        t.set_position((0.5, 0.5)); t.set_ha("left"); t.set_va("bottom")
-        size = _bbox_frac(ax, t, renderer)
-        w, h = size.width, size.height
-        found = None
-        for r in np.arange(0.05, 1.2, 0.025):
-            for a in angles:
-                dx, dy = np.cos(a), np.sin(a)
-                cx, cy = centre[0] + r * dx, centre[1] + r * dy
-                left = cx + gw if dx > 0.3 else (cx - w if dx < -0.3 else cx - (w + gw) / 2 + gw)
-                bottom = cy if dy > 0.3 else (cy - h if dy < -0.3 else cy - h / 2)
-                x0, x1, y0, y1 = left - gw - pad, left + w + pad, bottom - pad, bottom + h + pad
-                if x0 + pad < margin or x1 - pad > 1 - margin or y0 + pad < margin or y1 - pad > 1 - margin:
-                    continue
-                if len(all_pts) and ((all_pts[:, 0] > x0) & (all_pts[:, 0] < x1)
-                                     & (all_pts[:, 1] > y0) & (all_pts[:, 1] < y1)).any():
-                    continue
-                if any(not (x1 < o.x0 or x0 > o.x1 or y1 < o.y0 or y0 > o.y1) for o in taken):
-                    continue
-                t.set_position((left, bottom))
-                t.set_multialignment("right" if (dx < -0.3 and not glyph) else "left")
-                found = _bbox_frac(ax, t, renderer)
-                break
-            if found is not None:
-                break
-        if found is None:
-            ok = False
+def _drawn_line(a):
+    """Whether a Line2D is drawn with a visible line (not only markers)."""
+    return a.get_linestyle() not in ("None", "none", "", " ") and a.get_linewidth() > 0
+
+
+def _drawn_marker(a):
+    return a.get_marker() not in (None, "None", "none", "", " ")
+
+
+def _draws(handle, a):
+    """Whether the artist a on the axes is (part of) what the key handle stands for: the same colour,
+    and the handle's marker (with its fill) or its line style. A scatter matches by colour when the
+    handle has a marker."""
+    from matplotlib.collections import PathCollection
+    if not isinstance(handle, Line2D) or not a.get_visible():
+        return False
+    if isinstance(a, PathCollection):
+        colours = {_rgba(c) for c in list(a.get_facecolor()) + list(a.get_edgecolor())}
+        rgb = _rgba(handle.get_color())
+        return _drawn_marker(handle) and any(c is not None and c[:3] == rgb[:3] for c in colours)
+    if not isinstance(a, Line2D) or _rgba(handle.get_color()) != _rgba(a.get_color()):
+        return False
+    marker = _drawn_marker(handle) and _drawn_marker(a) and a.get_marker() == handle.get_marker() \
+        and _rgba(a.get_markerfacecolor()) == _rgba(handle.get_markerfacecolor())
+    line = _drawn_line(handle) and _drawn_line(a) and a.get_linestyle() == handle.get_linestyle()
+    return marker or line
+
+
+def _axes_points(ax, a, step=0.004):
+    """An artist's points in axes fractions; along a drawn line, every ``step`` of the axes, so a label
+    can be kept off the line between the points as well as off the points."""
+    if isinstance(a, Line2D):
+        xy, trans = np.asarray(a.get_xydata(), float), a.get_transform()
+    else:                                                   # a scatter collection
+        xy, trans = np.asarray(a.get_offsets(), float), a.get_offset_transform()
+    if xy.ndim != 2 or not len(xy):
+        return np.empty((0, 2))
+    with np.errstate(all="ignore"):
+        pts = ax.transAxes.inverted().transform(trans.transform(xy))
+    pts = pts[np.isfinite(pts).all(axis=1)]
+    if isinstance(a, Line2D) and _drawn_line(a) and len(pts) > 1:
+        dense = [pts[:1]]
+        for p, q in zip(pts[:-1], pts[1:]):
+            n = int(np.ceil(np.hypot(*(q - p)) / step))
+            dense.append(p + (q - p) * np.linspace(0, 1, max(n, 1) + 1)[1:, None])
+        pts = np.vstack(dense)
+    return pts[(pts[:, 0] > -0.02) & (pts[:, 0] < 1.02) & (pts[:, 1] > -0.02) & (pts[:, 1] < 1.02)]
+
+
+def _obstacles(ax, renderer):
+    """What a label inside the plot must not cover: the points of every line, mark and scatter (in axes
+    fractions), and the boxes of every text and filled patch. None when an image or mesh fills the
+    plot (a heatmap): there is no free space to write in."""
+    from matplotlib.collections import PathCollection, QuadMesh
+    if ax.images or any(isinstance(c, QuadMesh) for c in ax.collections):
+        return None
+    pts = [_axes_points(ax, a) for a in ax.lines]
+    pts += [_axes_points(ax, c) for c in ax.collections if isinstance(c, PathCollection)]
+    boxes = [bbox_frac(ax, t, renderer) for t in ax.texts if t.get_visible() and t.get_text().strip()]
+    for patch in ax.patches:
+        b = bbox_frac(ax, patch, renderer)
+        if patch.get_fill():
+            boxes.append(b)
+        else:                                               # an outline: its edges only
+            u = np.linspace(0, 1, 60)
+            pts.append(np.vstack([np.c_[b.x0 + u * b.width, np.full_like(u, b.y0)],
+                                  np.c_[b.x0 + u * b.width, np.full_like(u, b.y1)],
+                                  np.c_[np.full_like(u, b.x0), b.y0 + u * b.height],
+                                  np.c_[np.full_like(u, b.x1), b.y0 + u * b.height]]))
+    pts = [p for p in pts if len(p)]
+    return (np.vstack(pts) if pts else np.empty((0, 2))), boxes
+
+
+def _break_points(line):
+    """Where a line may break for a label inside the plot: after ', ', '; ' or ': ' and before ' (',
+    never inside $...$ math. Returns [(piece, separator before it)], the first separator ''."""
+    pieces, cur, sep, math, i = [], "", "", False, 0
+    while i < len(line):
+        ch = line[i]
+        if ch == "$":
+            math = not math
+        hit = next((t for t in (", ", "; ", ": ", " (") if not math and line.startswith(t, i)), None)
+        if hit:
+            pieces.append((cur, sep))
+            cur, sep = ("(" if hit == " (" else ""), hit
+            i += len(hit)
             continue
-        taken.append(found)
-        if glyph:
-            line_h = found.height / (text.count("\n") + 1)
-            artists += ax.plot([found.x0 - gw / 2], [found.y1 - line_h / 2], ls="none", ms=9,
-                               transform=ax.transAxes, clip_on=False, zorder=6, **glyph)
-    return artists, ok
+        cur += ch
+        i += 1
+    return pieces + [(cur, sep)]
+
+
+def _inside_text(label, width=26):
+    """A key label rewritten for the plot: each line longer than about ``width`` characters breaks at
+    its commas, semicolons, colons and brackets ('Intact oxide, metal-diffusion limited' -> 'Intact
+    oxide' over 'metal-diffusion limited'), so the label is narrower and finds room more easily. The
+    separator at a break is dropped; pieces that stay on one line keep theirs."""
+    visible = lambda t: len(re.sub(r"\$[^$]*\$", "xx", t))   # noqa: E731
+    out = []
+    for line in str(label).split("\n"):
+        if visible(line) <= width:
+            out.append(line)
+            continue
+        broken = []
+        for part, sep in _break_points(line):
+            joined = (broken[-1] + (" " if sep == " (" else sep) + part) if broken else None
+            if joined is not None and visible(joined) <= width:
+                broken[-1] = joined
+            else:
+                broken.append(part)
+        out += broken
+    return "\n".join(out)
+
+
+def _glyph(ax, handle, x_right, y, gw):
+    """The handle's mark (and line) drawn just left of a label, in axes fractions."""
+    kw = dict(color=handle.get_color(), transform=ax.transAxes, clip_on=False, zorder=6)
+    out = []
+    if _drawn_line(handle):
+        out += ax.plot([x_right - gw, x_right - 0.008], [y, y], ls=handle.get_linestyle(),
+                       lw=handle.get_linewidth(), solid_capstyle="butt", **kw)
+    if _drawn_marker(handle):
+        out += ax.plot([x_right - (gw + 0.008) / 2 if _drawn_line(handle) else x_right - gw / 2], [y], ls="none",
+                       marker=handle.get_marker(), ms=min(handle.get_markersize(), 10),
+                       mfc=handle.get_markerfacecolor(), mec=handle.get_markeredgecolor(),
+                       mew=handle.get_markeredgewidth(), **kw)
+    return out
+
+
+def _occupancy(pts, boxes, n):
+    """A summed-area table of an n x n grid over the axes: a cell counts when a point or box is in it."""
+    occ = np.zeros((n, n))
+    if len(pts):
+        ij = np.clip((pts * n).astype(int), 0, n - 1)
+        occ[ij[:, 1], ij[:, 0]] = 1
+    for b in boxes:
+        i0, i1 = int(np.clip(np.floor(b.x0 * n), 0, n)), int(np.clip(np.ceil(b.x1 * n), 0, n))
+        j0, j1 = int(np.clip(np.floor(b.y0 * n), 0, n)), int(np.clip(np.ceil(b.y1 * n), 0, n))
+        occ[j0:j1, i0:i1] = 1
+    return np.pad(occ.cumsum(0).cumsum(1), ((1, 0), (1, 0)))
+
+
+def place_labels(ax, entries, renderer, margin=0.025, pad=0.014, n=200, step=0.01, keep=400, max_tries=40000):
+    """Write each label in its colour, in bold, in free space next to its own data.
+
+    ``entries`` is [(text, colour, home, glyph), ...]: home holds the entry's points in axes fractions
+    (None for an entry nothing on the plot draws: it goes to the clearest corner), glyph is None or the
+    key handle whose mark is drawn left of the label (for entries that share a colour, whose text colour
+    is not the series colour, or that draw nothing). Every position on a grid over the plot that
+    covers no line, mark or text is a free spot; its cost is its distance to the nearest point of the
+    label's own data. The labels take the free spots with the least total cost that do not overlap each
+    other. Returns (artists, ok); when ok is False nothing is left on the axes and the caller uses a key
+    below instead."""
+    found_obstacles = _obstacles(ax, renderer)
+    if found_obstacles is None:
+        return [], False
+    pts, boxes = found_obstacles
+    sat = _occupancy(pts, boxes, n)
+    texts, spots = [], []
+    for text, colour, home, glyph in entries:
+        t = ax.text(0.5, 0.5, text, transform=ax.transAxes, color=colour, fontsize=ANNOT_PT, fontweight="bold",
+                    ha="left", va="bottom", zorder=6, linespacing=1.15)
+        texts.append(t)
+        size = bbox_frac(ax, t, renderer)
+        w, h = size.width, size.height
+        gw = 0.0 if glyph is None else (0.075 if _drawn_line(glyph) else 0.035)
+        lefts = np.arange(margin + gw, 1 - margin - w + 1e-9, step)
+        bottoms = np.arange(margin, 1 - margin - h + 1e-9, step)
+        if not len(lefts) or not len(bottoms):
+            spots.append([])
+            continue
+        L, B = (a.ravel() for a in np.meshgrid(lefts, bottoms))
+        x0, x1, y0, y1 = L - gw - pad, L + w + pad, B - pad, B + h + pad
+        i0, i1 = np.clip(np.floor(x0 * n), 0, n).astype(int), np.clip(np.ceil(x1 * n), 0, n).astype(int)
+        j0, j1 = np.clip(np.floor(y0 * n), 0, n).astype(int), np.clip(np.ceil(y1 * n), 0, n).astype(int)
+        free = (sat[j1, i1] - sat[j0, i1] - sat[j1, i0] + sat[j0, i0]) == 0
+        if not free.any():
+            spots.append([])
+            continue
+        L, B, x0, x1, y0, y1 = (a[free] for a in (L, B, x0, x1, y0, y1))
+        hp = (np.array([[0.0, 0.0], [0.0, 1.0], [1.0, 0.0], [1.0, 1.0]]) if home is None
+              else home[:: max(1, len(home) // 400)] if len(home) else np.array([[0.5, 0.5]]))
+        dx = np.maximum(np.maximum(x0[:, None] - hp[None, :, 0], hp[None, :, 0] - x1[:, None]), 0)
+        dy = np.maximum(np.maximum(y0[:, None] - hp[None, :, 1], hp[None, :, 1] - y1[:, None]), 0)
+        cost = np.hypot(dx, dy).min(axis=1)
+        mine = []
+        for k in np.argsort(cost, kind="stable"):
+            if any(abs(L[k] - m[0]) < 0.025 and abs(B[k] - m[1]) < 0.025 for m in mine):
+                continue                                    # nearly the same spot as a better one
+            mine.append((L[k], B[k], x0[k], x1[k], y0[k], y1[k], cost[k]))
+            if len(mine) >= keep:
+                break
+        spots.append(np.array(mine) if mine else np.empty((0, 7)))
+
+    if not all(len(sp) for sp in spots):
+        for t in texts:
+            t.remove()
+        return [], False
+
+    # The least total cost with no two labels overlapping: a depth-first search that places the label
+    # with the fewest spots left first, drops every spot that would overlap it from the other labels'
+    # lists (backing off at once when a list empties), and abandons a branch that cannot beat the best.
+    best, tries = [np.inf, None], [0]
+
+    def search(remaining, chosen, total):
+        if not remaining:
+            best[:] = [total, dict(chosen)]
+            return
+        floor = {j: spots[j][idx[0], 6] for j, idx in remaining.items()}
+        if total + sum(floor.values()) >= best[0] or tries[0] > max_tries:
+            return
+        i = min(remaining, key=lambda j: len(remaining[j]))
+        others = sum(v for j, v in floor.items() if j != i)
+        for m in remaining[i]:
+            tries[0] += 1
+            c = total + spots[i][m, 6]
+            if c + others >= best[0] or tries[0] > max_tries:
+                break                                       # spots are sorted by cost: none better follows
+            bx0, bx1, by0, by1 = spots[i][m, 2:6]
+            left, ok = {}, True
+            for j, idx in remaining.items():
+                if j == i:
+                    continue
+                o = spots[j][idx]
+                keep_j = idx[(o[:, 3] < bx0) | (o[:, 2] > bx1) | (o[:, 5] < by0) | (o[:, 4] > by1)]
+                if not len(keep_j):
+                    ok = False
+                    break
+                left[j] = keep_j
+            if ok:
+                chosen[i] = m
+                search(left, chosen, c)
+                del chosen[i]
+
+    search({i: np.arange(len(sp)) for i, sp in enumerate(spots)}, {}, 0.0)
+    if best[1] is None:
+        for t in texts:
+            t.remove()
+        return [], False
+    artists = list(texts)
+    for i, (text, colour, home, glyph) in enumerate(entries):
+        left, bottom = spots[i][best[1][i], :2]
+        texts[i].set_position((left, bottom))
+        if glyph is not None:
+            box = bbox_frac(ax, texts[i], renderer)
+            gw = 0.075 if _drawn_line(glyph) else 0.035
+            line_h = box.height / (text.count("\n") + 1)
+            artists += _glyph(ax, glyph, box.x0 - 0.006, box.y1 - line_h / 2, gw - 0.006)
+    return artists, True
+
+
+def labels_or_key(fig, ax, handles, labels, ncol=4, colours=None, fallback=True):
+    """Each key entry's label inside the plot next to its own data (research-plots: labels next to the
+    data, not a key), or, when one does not find free space, the whole key below the plot instead.
+
+    The data of an entry are the artists on ``ax`` its handle draws (same colour, marker and line
+    style); an entry nothing draws goes to the clearest corner. Call after the axes limits, ticks and any
+    notes are final. Returns ("inside", artists) or ("key", legend); with fallback=False a figure whose
+    labels do not fit gets no key and ("none", None) comes back, so the caller can make room and retry."""
+    if not labels:
+        return "inside", []
+    if ax is None:
+        ax = fig.axes[0]
+    texts = ["black" if c in (GREY, None, "white") else c
+             for c in (colours or [getattr(h, "get_color", lambda: "black")() for h in handles])]
+    texts = [c if isinstance(c, str) else mpl.colors.to_hex(c) for c in texts]
+    fig.canvas.draw()                                       # the constrained layout has placed the axes
+    renderer = fig.canvas.get_renderer()
+    entries = []
+    for h, lab, ink in zip(handles, labels, texts):
+        home = [_axes_points(ax, a) for a in list(ax.lines) + list(ax.collections) if _draws(h, a)]
+        home = [p for p in home if len(p)]
+        series = mpl.colors.to_hex(h.get_color())
+        shared = sum(t.lower() == ink.lower() for t in texts) > 1 or ink.lower() != series.lower()
+        # an entry nothing on the plot draws (an explanation such as 'Open: over half of the resistance')
+        # carries its mark and goes to a clear corner: its home is the four corners of the plot
+        home = np.vstack(home) if home else None
+        entries.append((_inside_text(lab), ink, home, h if (shared or home is None) else None))
+    artists, ok = place_labels(ax, entries, renderer)
+    if ok:
+        return "inside", artists
+    if not fallback:
+        return "none", None
+    return "key", key_below(fig, handles, labels, ncol=ncol, colours=colours)
 
 
 # --------------------------------------------------------------------------------------------------
@@ -522,6 +754,24 @@ def set_linear_y(ax, values, frac=0.07, include=(), floor=None, ceiling=None):
     ax.set_ylim(lo, hi)
 
 
+def grow_y(ax, frac):
+    """Extend the y-axis by ``frac`` of its height above and below (in decades on a log axis), with
+    the ticks redone for the new range; room for labels inside the plot."""
+    lo, hi = ax.get_ylim()
+    if ax.get_yscale() == "log":
+        u0, u1 = np.log10(lo), np.log10(hi)
+        lo, hi = 10 ** (u0 - frac * (u1 - u0)), 10 ** (u1 + frac * (u1 - u0))
+        ax.set_ylim(lo, hi)
+        log_ticks(ax.yaxis, lo, hi)
+    else:
+        span = hi - lo
+        lo, hi = lo - frac * span, hi + frac * span
+        ax.set_ylim(lo, hi)
+        if isinstance(ax.yaxis.get_major_locator(), FixedLocator):
+            ax.set_yticks([t for t in MaxNLocator(6).tick_values(lo, hi) if lo <= t <= hi])
+            ax.set_ylim(lo, hi)
+
+
 def reference_line(ax, y, vertical=False, **kw):
     """A grey dashed reference line (a fit, limit or threshold), named in the key by the caller."""
     style = {**REF_LINE, **kw}
@@ -591,7 +841,7 @@ def level_key(fig, levels, names=None, values=None, extra=(), markers=True, ncol
     labels = [(names or {}).get(lv, lv) + (f"\n{values[lv]}" if values and values.get(lv) else "")
               for lv in levels] + [lab for _, lab in extra]
     colours = [level_style(lv)["color"] for lv in levels] + ["black"] * len(extra)
-    return key_below(fig, handles, labels, ncol=ncol, colours=colours)
+    return labels_or_key(fig, fig.axes[0], handles, labels, ncol=ncol, colours=colours)
 
 
 def sci(v, sig=3):

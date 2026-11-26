@@ -1990,7 +1990,7 @@ def plot_regime_geometry(clusters, *, axes, log_x=False, log_y=False, drivers_of
     Every regime's points are scattered in its colour (rasterized: there are thousands) and
     outlined by a dashed box spanning the 10th to 90th percentile of the two plotted
     parameters, so cluster overlap (and the curvature of the true regime boundary) shows. The
-    key below the plot names each regime with its sample count.
+    label next to each cluster (or a key below the plot) names each regime with its sample count.
 
     Parameters
     ----------
@@ -2049,7 +2049,7 @@ def plot_regime_geometry(clusters, *, axes, log_x=False, log_y=False, drivers_of
         hs.set_linear_y(ax, y, frac=0.06)
     ax.set_xlabel(param_label(P1, unit=True))
     ax.set_ylabel(param_label(P2, unit=True))
-    hs.key_below(fig, handles, labels, ncol=len(labels), colours=colours)
+    hs.labels_or_key(fig, ax, handles, labels, ncol=len(labels), colours=colours)
     whose = (f", the two parameters with the largest $\\delta$ for the flux of the "
              f"{_regime_name(drivers_of).lower()} samples" if drivers_of else "")
     units_note = ("" if (P1 in PARAM_UNITS and P2 in PARAM_UNITS) else
