@@ -1,6 +1,6 @@
 """The container gate's `--emit` mode, which regenerates its own reference values.
 
-`container/model_smoke_test.py` asserts 13 pinned values per study. Whenever the
+`container/model_smoke_test.py` asserts 12 pinned values per study. Whenever the
 operating point changes those values have to be re-measured, and there is no other tool
 that does it — `container/revalidate_reference.py` is a cross-interpreter diff script
 with its own hardcoded inputs.

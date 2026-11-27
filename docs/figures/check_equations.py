@@ -42,10 +42,7 @@ from calculations import oxide_permeation as ox  # noqa: E402
 from calculations import permeability as perm  # noqa: E402
 from calculations import permeation_calc as pc  # noqa: E402
 from calculations import surface_kinetics as sk  # noqa: E402
-from calculations.defective_metal import (  # noqa: E402
-    calculate_effective_diffusivity_trapping,
-    trap_occupancy,
-)
+from calculations.defective_metal import metal_diffusivity  # noqa: E402
 from calculations.interface_solver import (  # noqa: E402
     calculate_oxide_metal_system,
     solve_interface_pressure,
@@ -237,63 +234,34 @@ def check_level3_limit():
 
 
 # -----------------------------------------------------------------------------
-# Part II.5 -- Level 4 trapping
+# Part II.5 -- Level 4 grain-boundary enhancement
 # -----------------------------------------------------------------------------
 
-def check_level4_trapping():
-    """Oriani: K = exp(E_b/RT) and D_eff = D_L/(1 + sum_i N_Ti K_i / N_L)."""
-    C_L = ex.K_S_M * math.sqrt(ex.P_UP)
-    occ = trap_occupancy(
-        temperature=ex.T_K,
-        binding_energy=ex.TRAP["binding_energy"],
-        trap_density=ex.TRAP["density"],
-        lattice_density=ex.N_L,
-        lattice_concentration=C_L,
-    )
-    K_expected = math.exp(ex.TRAP["binding_energy"] / (ex.R_GAS * ex.T_K))
-    check("L4: K = exp(E_b/RT)", occ["K_equilibrium"], K_expected, rtol=1e-6)
+def _example_microstructure(gb_type="HAGB", grain_size=None):
+    return {"grain_size": grain_size or ex.GRAIN_SIZE, "gb_thickness": ex.GB_THICKNESS,
+            "grain_shape": "equiaxed", "gb_type": gb_type}
 
+
+def check_level4_gb():
+    """L4 is Fick + Sieverts with D_metal = (1-f)D_L + f*D_gb, f = 3*delta/d."""
+    ms = _example_microstructure(grain_size=50e-9)   # fine enough to matter
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
-        res = calculate_effective_diffusivity_trapping(
-            D_lattice=ex.D_M,
-            temperature=ex.T_K,
-            trap_list=ex.trap_list(),
-            lattice_concentration=C_L,
-            lattice_density=ex.N_L,
-        )
-    check(
-        "L4: trapping term = sum N_T*K/N_L",
-        res["trapping_term"],
-        ex.exact_trapping_term(),
-        rtol=1e-6,
-    )
-    check(
-        "L4: D_eff = D_L/(1 + trapping term)",
-        res["D_eff"],
-        ex.exact_D_eff_trapping(),
-        rtol=1e-6,
-    )
-    check_true(
-        "L4: trapping RETARDS (D_eff < D_lattice)",
-        res["D_eff"] < ex.D_M,
-        f"D_eff={res['D_eff']:.6g} < D_L={ex.D_M:.6g}",
-    )
+        D_gb = metal_diffusivity(ex.D_M, ex.T_K, ms)
+        r = pc.calculate_defective_metal_flux(
+            ex.D_M, ex.K_S_M, ex.L_M, ex.P_UP, ex.P_DOWN, ex.T_K, ms)
+    check_true("L4: D_metal > D_lattice for a fine HAGB grain", D_gb > ex.D_M,
+               f"D_metal/D_L = {D_gb / ex.D_M:.6g}")
+    expected = D_gb * ex.K_S_M * (math.sqrt(ex.P_UP) - math.sqrt(ex.P_DOWN)) / ex.L_M
+    check("L4: J = D_metal*K_s*(sqrt(P_up)-sqrt(P_down))/L", r["flux"], expected)
 
 
 def check_level4_limit():
-    """With no traps, D_eff must be exactly D_lattice."""
-    C_L = ex.K_S_M * math.sqrt(ex.P_UP)
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore")
-        res = calculate_effective_diffusivity_trapping(
-            D_lattice=ex.D_M,
-            temperature=ex.T_K,
-            trap_list=[],
-            lattice_concentration=C_L,
-            lattice_density=ex.N_L,
-        )
-    check("L4 -> L1 with an empty trap list", res["D_eff"], ex.D_M)
+    """With grain-boundary enhancement switched off, Level 4 is Level 1 exactly."""
+    r = pc.calculate_defective_metal_flux(
+        ex.D_M, ex.K_S_M, ex.L_M, ex.P_UP, ex.P_DOWN, ex.T_K,
+        _example_microstructure(), enable_gb_enhancement=False)
+    check("L4 -> L1 with GB enhancement off", r["flux"], ex.exact_level1_flux())
 
 
 # -----------------------------------------------------------------------------
@@ -452,7 +420,7 @@ CHECKS = (
     check_level2b_limit,
     check_level3,
     check_level3_limit,
-    check_level4_trapping,
+    check_level4_gb,
     check_level4_limit,
     check_arrhenius,
     check_level6,

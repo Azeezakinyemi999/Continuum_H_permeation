@@ -21,7 +21,8 @@ under a unified scheme; the "replaces" column holds the name that is real today 
 that you must use. A ✅ marks one that has since been adopted, and for those the
 canonical name is the real one.
 
-Adopted so far: the three model switches in section G; `f_gb_defect`,
+Adopted so far: the model switches in section G (three when adopted; the two
+trapping switches went with trapping, see {doc}`../STEADY_STATE`); `f_gb_defect`,
 `data_pressure_range`, `crack_thickness_ratio` and `gb_diffusivity_ratio`; and the
 `thickness` function parameters. Each was taken because the short name meant two
 different things in two places, not for tidiness. `alpha` and `beta` in
@@ -43,8 +44,8 @@ each, and a rename has to cross all three to be complete:
 * - function argument
   - the positional parameters of each level's entry point
 * - dict key
-  - inside `oxide_props`, `metal_props`, `microstructure_params`, `trap_list`
-    entries and the defect configuration
+  - inside `oxide_props`, `metal_props`, `microstructure_params` and the defect
+    configuration
 * - study configuration
   - `CONDITIONS`, `METALS`, `OXIDES`, `MICROSTRUCTURE`, `OXIDE_DEFECTS`, and the
     flat `DEFAULT_PARAMS_LEVEL5` / `DEFAULT_PARAMS_LEVEL5L6` the sensitivity
@@ -260,7 +261,7 @@ flattened forms. At the configuration layer the two models are cleanly nested:
 exactly these ten names and removing none.
 ```
 
-## E. Metal microstructure and traps
+## E. Metal microstructure
 
 ```{list-table}
 :header-rows: 1
@@ -281,33 +282,12 @@ exactly these ten names and removing none.
 * - `grain_morphology`
   - equiaxed / columnar / planar
   - `grain_shape`
-* - `lattice_site_density`
-  - H sites per m³
-  - `lattice_density` · `N_L` (a deliberate alias)
 * - `metal_gb_volume_fraction`
   - 3δ/d, derived
   - `f_gb`
 * - `gb_diffusivity_ratio`
   - D_gb / D_lattice
   - `alpha` (local) · `enhancement_factor`
-* - `trap_vacancy_density`
-  - sites per m³
-  - `trap_vacancy_N_T`
-* - `trap_carbide_density`
-  - sites per m³
-  - `trap_carbide_N_T`
-* - `trap_gb_density`
-  - sites per m³
-  - `trap_gb_N_T`
-* - `trap_dislocation_density`
-  - sites per m³
-  - `trap_dislocation_N_T`
-* - `trap_<name>_binding_energy`
-  - trap depth, J/mol
-  - `trap_*_E_b`
-* - `trap_density` · `trap_binding_energy` · `trap_name`
-  - inside a `trap_list` entry
-  - `density` · `binding_energy` · `name`
 ```
 
 ## F. Oxide defects
@@ -357,24 +337,9 @@ exactly these ten names and removing none.
 * - `enable_gb_enhancement` ✅
   - grain-boundary **fast path** on/off
   - was `include_gb_enhancement` — **renamed**
-* - `enable_trapping` ✅
-  - trapping on/off
-  - was `include_trapping` — **renamed**
-* - `enable_gb_as_trap` ✅
-  - auto-add grain boundaries as a **trap** population
-  - was `include_gb_trapping` — **renamed**
-* - `microstructure_mode`
-  - the composed switch the solvers take
-  - `mode`
-* - `d_eff_averaging`
-  - average / harmonic / inlet / outlet
-  - `method` · `D_eff_method`
 * - `n_profile_points`
   - wall discretisation
   - `n_points` (function argument)
-* - `max_iterations` · `tolerance`
-  - outer-loop convergence controls
-  - unchanged
 ```
 
 ## H. Provenance — not physics
@@ -459,12 +424,12 @@ reader a moment; a collision silently produces the wrong number.
   - four scoped reference temperatures
   - one name in four dicts. The flattened sensitivity layer already splits it
     correctly; the nested configuration relies on scope
-* - `include_gb_*` ✅ **done**
+* - `include_gb_*` ✅ **done, then moot**
   - `enable_gb_enhancement` · `enable_gb_as_trap`
   - **near-identical names, opposite physics.** Enhancement speeds diffusion up
-    through a fast path; trapping slows it down by holding hydrogen still.
-    Renamed; no notebook referenced any of the three, so the change was contained
-    to `calculations/`, the four study files and one test
+    through a fast path; trapping slowed it down by holding hydrogen still.
+    Renamed; later, trapping was removed from the model altogether, so only
+    `enable_gb_enhancement` remains
 * - pressure ranges
   - `sweep_pressure_range` · `data_pressure_range`
   - `P_range` is the span the sensitivity analysis sweeps; `pressure_range` is the
@@ -473,8 +438,10 @@ reader a moment; a collision silently produces the wrong number.
 
 ## Totals
 
-**117 distinct names in use today → 86 under the proposal.** Thirty-one
-eliminated as aliases, eight split because they carry more than one meaning.
+**117 distinct names in use → 86 under the proposal**, as counted on 2026-10-06.
+Thirty-one eliminated as aliases, eight split because they carry more than one
+meaning. The removal of trapping has since deleted the trap, lattice-density and
+trapping-switch names outright, so both counts are now smaller.
 
 ---
 
@@ -535,9 +502,6 @@ argument names are not.
 * - name
   - layer
   - notebooks containing it
-* - `lattice_density`
-  - configuration
-  - 25 of 25
 * - `D_ref`
   - configuration
   - 25 of 25
@@ -574,15 +538,15 @@ against each other — but it never checks that a preset key exists in
 the defaults passes clean.
 
 The exposure is the regime presets: 36 distinct parameter names pinned across the
-three Level 5+L6 regimes, 28 across the Level 5 regimes. None are stale today. A
+three Level 5+L6 regimes, 28 across the Level 5 regimes, as counted on 2026-10-06
+(the removal of trapping has since cut both). None were stale then. A
 preset that silently stops pinning its parameter does not fail a test — it quietly
 degrades a targeted regime scan into an untargeted one, which is the whole basis
 of the regime-stratified workflow.
 
-Eight defaults have no sweep range at all, so even the working half of the check
-does not cover them: `D_eff_method`, `P_downstream`, `T_ref_metal`,
-`T_ref_oxide`, `gb_type`, `grain_shape`, `include_gb_enhancement`,
-`include_trapping`.
+Defaults with no sweep range at all are not covered even by the working half of
+the check: `P_downstream`, `T_ref_metal`, `T_ref_oxide`, `gb_type`, `grain_shape`,
+`enable_gb_enhancement`.
 ```
 
 ### Suggested order

@@ -21,7 +21,7 @@ pandas 2.3.3, SALib 1.5.0, Sphinx 7.4.7 — 2026-10-09, at commit `1fcd605`.
 Re-check it all:
 
 ```bash
-python docs/figures/check_equations.py     # 44 / 44 checks passed
+python docs/figures/check_equations.py     # 42 / 42 checks passed
 python docs/figures/make_figures.py        # 20 / 20 figures written
 python docs/_tools/verify_docs.py          # clean
 python docs/_tools/worked_values.py --check
@@ -188,7 +188,6 @@ api/index
 :maxdepth: 2
 :caption: Validation and release
 
-TRAPPING_VALIDATION
 PACKAGING_1.0.0
 references
 ```
@@ -203,7 +202,7 @@ notes, with every factual claim re-checked against the current code. That absorp
 complete — the original notes have been retired.
 
 The pages with uppercase filenames ({doc}`PARAMETERS`, {doc}`OUTPUTS`,
-{doc}`STEADY_STATE`, {doc}`TRAPPING_VALIDATION`, {doc}`PACKAGING_1.0.0`,
+{doc}`STEADY_STATE`, {doc}`PACKAGING_1.0.0`,
 {doc}`CONTAINER`) are generated or release-record documents. They stay at the repository
 root so they remain readable on GitHub, and are included here by reference rather than
 copied, so there is one source of truth for each.

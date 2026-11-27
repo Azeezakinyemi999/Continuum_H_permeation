@@ -2,7 +2,7 @@
 
 A hierarchy of steady-state analytical models for hydrogen transport through an
 oxide-coated alloy wall: perfect metal (L1), oxide layer (L2), defective oxide
-(L3), defective metal with grain-boundary enhancement and trapping (L4), the full
+(L3), defective metal with grain-boundary enhancement (L4), the full
 defective system (L5), and surface dissociation kinetics (L6).
 
 All material data and operating conditions resolve through the single switch in

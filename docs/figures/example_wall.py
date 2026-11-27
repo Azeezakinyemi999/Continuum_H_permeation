@@ -54,12 +54,6 @@ E_D_OX = 100.0e3   # J/mol, oxide diffusivity
 H_OX = 20.0e3      # J/mol, oxide solubility
 
 #: Microstructure, for the Level 4 figures.
-N_L = 1.0e29      # m^-3, interstitial lattice sites (FCC order of magnitude)
-TRAP = {
-    "name": "example_trap",
-    "binding_energy": 80.0e3,   # J/mol -- strong enough that the effect is visible
-    "density": 1.0e24,          # m^-3
-}
 GRAIN_SIZE = 20.0e-6          # m
 GB_THICKNESS = 0.5e-9         # m
 GB_DIFFUSIVITY_RATIO = 100.0  # D_gb / D_lattice
@@ -160,21 +154,6 @@ def exact_level2b_flux(P_up=P_UP, P_down=P_DOWN):
     return beta * (math.sqrt(P_int) - math.sqrt(P_down))
 
 
-def exact_trapping_term(temperature=T_K, trap=None, lattice_density=N_L):
-    r"""Oriani trapping term :math:`\sum_i N_{T,i}K_i/N_L`, with :math:`K=e^{E_b/RT}`.
-
-    The effective diffusivity is :math:`D_{eff} = D_L/(1 + \text{this})`.
-    """
-    trap = trap or TRAP
-    K = math.exp(trap["binding_energy"] / (R_GAS * temperature))
-    return trap["density"] * K / lattice_density
-
-
-def exact_D_eff_trapping(D_lattice=D_M, temperature=T_K):
-    r""":math:`D_{eff} = D_L\big/\left(1 + \sum_i N_{T,i}K_i/N_L\right)`."""
-    return D_lattice / (1.0 + exact_trapping_term(temperature))
-
-
 def exact_g_theta(theta, K_eq=K_EQ):
     r""":math:`g(\theta)=\theta/\left[(1-\theta)\sqrt{K_{eq}}\right] = \sqrt{P_{virtual}}`."""
     if theta >= 1.0:
@@ -201,11 +180,6 @@ def defect_params(area_fraction=F_DEFECT, defect_type=DEFECT_TYPE):
     return {"area_fraction": area_fraction, "type": defect_type}
 
 
-def trap_list():
-    """``trap_list`` for :func:`calculations.defective_metal.calculate_effective_diffusivity_trapping`."""
-    return [dict(TRAP)]
-
-
 # -----------------------------------------------------------------------------
 # Palette
 # -----------------------------------------------------------------------------
@@ -225,8 +199,6 @@ COLORS = {
     "L2b":     "#4a3aa7",    # violet
     "L3":      "#1baf7a",    # aqua
     "L4_gb":   "#008300",    # green
-    "L4_trap": "#eda100",    # yellow
-    "L4_both": "#2a78d6",    # blue
     "L5":      "#e34948",    # red
 }
 
@@ -241,8 +213,6 @@ CURVE_STYLES = {
     "L2_L6":   {"color": COLORS["L2b"],     "ls": "--", "marker": "s", "lw": 2.5, "ms": 6},
     "L3":      {"color": COLORS["L3"],      "ls": "-",  "marker": "o", "lw": 2.5, "ms": 6},
     "L4_gb":   {"color": COLORS["L4_gb"],   "ls": "-",  "marker": "^", "lw": 2.5, "ms": 6},
-    "L4_trap": {"color": COLORS["L4_trap"], "ls": "-",  "marker": "v", "lw": 2.5, "ms": 6},
-    "L4_both": {"color": COLORS["L4_both"], "ls": "-",  "marker": "D", "lw": 2.5, "ms": 6},
     "L5":      {"color": COLORS["L5"],      "ls": "-",  "marker": "o", "lw": 2.5, "ms": 6},
     "L5_L6":   {"color": COLORS["L5"],      "ls": "--", "marker": "s", "lw": 2.5, "ms": 6},
 }
@@ -274,8 +244,6 @@ def summary():
         "J_L2a": exact_level2a_flux(),
         "P_int": P_int,
         "J_L2b": exact_level2b_flux(),
-        "trapping_term": exact_trapping_term(),
-        "D_eff_trap": exact_D_eff_trapping(),
     }
 
 

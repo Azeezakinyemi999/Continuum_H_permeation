@@ -17,7 +17,7 @@ transport. That claim is **conditional**, and the condition is the subject of th
 chapter.
 
 **What it cannot tell you.** The metal beneath every path is still a perfect lattice:
-no traps, no grain-boundary enhancement, a diffusivity that is a pure material constant.
+no grain-boundary enhancement, a diffusivity that is a pure material constant.
 For the active study that is the dominant remaining approximation, precisely because the
 wall is metal-limited — the layer being modelled most crudely is the one carrying 97% of
 the resistance. {doc}`level4-microstructure` addresses it. Dissociation is also still
@@ -147,7 +147,7 @@ In the order the code runs it:
 6. Sum them into `flux_total`.
 7. Compare the contributions to set `dominant_path`.
 8. Form `defect_enhancement_factor` $= J_{\text{total}}/j_{\text{intact}}$.
-9. Classify hierarchically with `classify_regime_level34`.
+9. Classify hierarchically with `classify_regime_level3`.
 
 ## Design choices
 
@@ -157,10 +157,10 @@ modified. Writing three physical models would triple the surface area for a bug 
 guarantee they drift apart; re-running the Level 2 solve with one property changed keeps
 exactly one series solver in the codebase.
 
-**Why the regime label is hierarchical.** `regime` reads
-`metal_limited/lattice_limited`: tier 1 resolved to `metal_limited` rather than
-`oxide_limited`, so the defect-versus-intact comparison was **never applied** — that
-test only subdivides an oxide-limited wall. This is intended, and
+**Why the regime label is hierarchical.** `regime` reads `metal_limited`: tier 1
+resolved to `metal_limited` rather than `oxide_limited`, so the defect-versus-intact
+comparison was **never applied** — that test only subdivides an oxide-limited wall, and
+a metal-limited wall has no second tier. This is intended, and
 {py:mod}`calculations.classify_regime` explains why, but it means a reader looking for a
 defect verdict in `regime` will not find one for this study. The answer is in
 `dominant_path`, which reports `intact_oxide`.
@@ -195,7 +195,7 @@ contribution understates the defect path by a factor of $1/f$.
 | `ValueError`: area fraction must be 0–1 | A fraction outside $[0,1]$ reached the solver |
 | `defect_enhancement_factor` is `nan` | Almost certainly the key-name trap above |
 | No defect verdict in `regime` | Expected when tier 1 is not `oxide_limited`; read `dominant_path` |
-| `D_eff_metal`, `modification_factor`, `level4_converged` are `None` | A signal that no microstructural calculation ran, not that it failed — these are the Level 3+4 keys |
+| `D_eff_metal` or `modification_factor` missing | Expected: only the Level 3+4 function, `calculate_parallel_path_flux_defective_metal`, adds them |
 | Defects report as unimportant in a sensitivity run | Check the oxide first. On a non-limiting coating this is correct and uninformative. |
 
 ```{note}
@@ -213,11 +213,11 @@ defect_enhancement_factor   1.000103
 dominant_path               intact_oxide
 PRF                         1.005318
 PRF_perfect                 1.005422
-regime                      metal_limited/lattice_limited
+regime                      metal_limited
 ```
 
 ## Level 4 metal underneath
 
-`calculate_parallel_path_flux_defective_metal` and `calculate_PRF_defective_metal` are
-the Level 3+4 versions, which replace the perfect-lattice metal beneath each path with
-the microstructural model of {doc}`level4-microstructure`.
+`calculate_parallel_path_flux_defective_metal` is the Level 3+4 version. It replaces the
+lattice diffusivity of the metal beneath every path with the grain-boundary-enhanced one
+of {doc}`level4-microstructure` and then runs exactly this calculation.

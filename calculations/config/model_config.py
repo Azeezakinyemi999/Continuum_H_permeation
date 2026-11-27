@@ -113,7 +113,7 @@ def _available_folder_studies():
 # There are two reasons a name lands here, and they are not the same reason. Most are
 # required because something imports them from this module. The first group is required
 # because the DERIVED block at the bottom of THIS file reads them out of the study
-# namespace — nothing imports MODEL_OPTIONS anywhere, but a study without it would fail
+# namespace — a study without them would fail
 # as a bare NameError raised from inside the loader, which is precisely the failure this
 # check exists to replace.
 REQUIRED_EXPORTS = frozenset({
@@ -355,14 +355,6 @@ _SA_OS = _SA_O['surface_kinetics']          # oxide surface kinetics
 
 _SA_DC = OXIDE_DEFECTS['components']
 
-def _sa_trap(name):
-    """MICROSTRUCTURE trap entry by name (case-insensitive — config uses 'Carbides')."""
-    for t in MICROSTRUCTURE['trap_list']:
-        if t['name'].lower() == name.lower():
-            return t
-    raise KeyError(f"no trap named {name!r} in MICROSTRUCTURE['trap_list']; "
-                   f"have {[t['name'] for t in MICROSTRUCTURE['trap_list']]}")
-
 # -----------------------------------------------------------------------------
 # LEVEL 5 defaults — defective oxide (L3) + defective metal microstructure (L4)
 #
@@ -415,23 +407,9 @@ DEFAULT_PARAMS_LEVEL5 = {
     'grain_shape':     MICROSTRUCTURE['grain_shape'],
     'gb_type':         MICROSTRUCTURE['gb_type'],
     'gb_thickness':    MICROSTRUCTURE['gb_thickness'],     # m
-    'lattice_density': MICROSTRUCTURE['lattice_density'],  # m⁻³
-
-    # Level 4: traps  (MICROSTRUCTURE['trap_list'])
-    # Lu 2022 binding energies + Young 1997 carbide density
-    'trap_dislocation_E_b': _sa_trap('dislocations')['binding_energy'],      # J/mol
-    'trap_dislocation_N_T': _sa_trap('dislocations')['density'],             # m⁻³
-    'trap_gb_E_b':          _sa_trap('grain_boundaries')['binding_energy'],  # J/mol
-    'trap_gb_N_T':          _sa_trap('grain_boundaries')['density'],         # m⁻³
-    'trap_vacancy_E_b':     _sa_trap('vacancies')['binding_energy'],         # J/mol
-    'trap_vacancy_N_T':     _sa_trap('vacancies')['density'],                # m⁻³
-    'trap_carbide_E_b':     _sa_trap('carbides')['binding_energy'],          # J/mol
-    'trap_carbide_N_T':     _sa_trap('carbides')['density'],                 # m⁻³
 
     # Model options — how to run the model, not what it is; no config source
     'enable_gb_enhancement': MODEL_OPTIONS['enable_gb_enhancement'],
-    'enable_trapping':       MODEL_OPTIONS['enable_trapping'],
-    'D_eff_method':           MODEL_OPTIONS['D_eff_method'],
 }
 
 # -----------------------------------------------------------------------------
@@ -646,8 +624,7 @@ PLOT_STYLE = {
 #
 # What the old set got wrong. 'cyan' is #00FFFF -- almost invisible on white. 'crimson'
 # and 'red' sat on L4_both and L5, which share a panel, at a normal-vision separation
-# far under the floor. And 'orange' against 'green', the L4 trapping and GB curves on
-# one axes, came to deltaE 3.2 for a protan reader: indistinguishable.
+# far under the floor.
 #
 # Checked per PANEL rather than globally, because what must be separable is what is
 # drawn together. The binding case is the Level 5 summary, six hues at once, which
@@ -662,8 +639,6 @@ COLORS = {
     'L2b':      '#4a3aa7',      # violet   (was purple)
     'L3':       '#1baf7a',      # aqua     (was cyan -- the worst offender)
     'L4_gb':    '#008300',      # green
-    'L4_trap':  '#eda100',      # yellow   (was orange, which clashed with green)
-    'L4_both':  '#2a78d6',      # blue     (was crimson, which clashed with L5 red)
     'L5':       '#e34948',      # red
 }
 
@@ -683,8 +658,6 @@ CURVE_STYLES = {
     'L3':       {'color': '#1baf7a',    'ls': '-',    'marker': 'o',  'lw': 2.5, 'ms': 6},
     'L3_L6':    {'color': '#1baf7a',    'ls': '--',   'marker': 's',  'lw': 2.5, 'ms': 6},
     'L4_gb':    {'color': '#008300',   'ls': '-',    'marker': '^',  'lw': 2.5, 'ms': 6},
-    'L4_trap':  {'color': '#eda100',  'ls': '-',    'marker': 'v',  'lw': 2.5, 'ms': 6},
-    'L4_both':  {'color': '#2a78d6', 'ls': '-',    'marker': 'D',  'lw': 2.5, 'ms': 6},
     'L5':       {'color': '#e34948',     'ls': '-',    'marker': 'o',  'lw': 2.5, 'ms': 6},
     'L3_L4_L6': {'color': '#e34948',     'ls': '--',   'marker': 's',  'lw': 2.5, 'ms': 6},
 

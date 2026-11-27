@@ -10,26 +10,27 @@ Generated against `ACTIVE_STUDY = 'Guo_etal_2025_316L'`.
 
 These are the two top-level entry points the sensitivity analysis calls. **Verified by execution**, not just parsed.
 
-### `level5_model_wrapper(params_dict)` → 20 keys
+### `level5_model_wrapper(params_dict)` → 21 keys
 
 [`sensitivity.py`](https://github.com/Azeezakinyemi999/Continuum_H_permeation/blob/main/calculations/sensitivity.py) — `level5_model_wrapper`
 
 | Key | Example | Units | Meaning |
 |---|---|---|---|
-| `flux` | 3.197e-06 | mol m⁻² s⁻¹ | **total permeation flux** |
-| `permeability` | 4.0e-15 | mol m⁻¹ s⁻¹ Pa⁻⁰·⁵ | effective system permeability |
-| `PRF` | 1.0 | – | permeation reduction factor |
-| `D_eff` | 1.747e-10 | m²/s | effective metal diffusivity after GB + trapping |
-| `D_modification` | 0.7389 | – | $D_{eff}/D_{lattice}$ |
-| `modification_factor` | 0.7389 | – | duplicate of `D_modification` |
-| `P_interface` | 9.996e+04 | Pa | pressure at the oxide/metal interface |
-| `flux_intact` | 3.133e-06 | mol m⁻² s⁻¹ | flux through intact oxide |
-| `flux_defect` | 6.395e-08 | mol m⁻² s⁻¹ | flux through defect paths |
-| `flux_bare_metal` | 3.197e-06 | mol m⁻² s⁻¹ | reference flux, no oxide |
-| `defect_enhancement` | 1.0 | – | defect path enhancement |
-| `frac_oxide` | 3.758e-04 | – | fraction of total resistance in oxide |
-| `frac_metal` | 0.9796 | – | fraction in metal |
-| `frac_defect` | 0.02 | – | fraction in defect paths |
+| `flux` | 4.305e-06 | mol m⁻² s⁻¹ | **total permeation flux** |
+| `permeability` | 1.363e-11 | mol m⁻¹ s⁻¹ Pa⁻⁰·⁵ | apparent permeability, $J L_{tot}/\Delta\sqrt{P}$ |
+| `permeance` | 1.361e-08 | mol m⁻² s⁻¹ Pa⁻⁰·⁵ | $J/\Delta\sqrt{P}$ |
+| `PRF` | 1.005 | – | permeation reduction factor |
+| `D_eff` | 2.364e-10 | m²/s | metal diffusivity with grain-boundary enhancement |
+| `D_modification` | 1.000011 | – | $D_{eff}/D_{lattice}$, ≥ 1 |
+| `modification_factor` | 1.000011 | – | duplicate of `D_modification` |
+| `P_interface` | 9.892e+04 | Pa | pressure at the oxide/metal interface |
+| `flux_intact` | 4.218e-06 | mol m⁻² s⁻¹ | flux through intact oxide |
+| `flux_defect` | 8.653e-08 | mol m⁻² s⁻¹ | flux through defect paths |
+| `flux_bare_metal` | 4.328e-06 | mol m⁻² s⁻¹ | reference flux, no oxide |
+| `defect_enhancement` | 1.000103 | – | defect path enhancement |
+| `frac_oxide` | 1.054e-02 | – | fraction of total resistance in oxide |
+| `frac_metal` | 0.9694 | – | fraction in metal |
+| `frac_defect` | 0.0201 | – | fraction in defect paths |
 | `regime` | `'metal'` | – | **argmax regime label** |
 | `D_metal` | 2.364e-10 | m²/s | lattice diffusivity at T |
 | `K_s_metal` | 0.05789 | mol m⁻³ Pa⁻⁰·⁵ | Sieverts constant at T |
@@ -39,16 +40,18 @@ These are the two top-level entry points the sensitivity analysis calls. **Verif
 
 With `return_full_record=True`, adds 2 more: `regime_hierarchy`, `dominant_path`.
 
-### `level5L6_model_wrapper(params_dict)` → 22 keys
+### `level5L6_model_wrapper(params_dict)` → 25 keys
 
 [`sensitivity.py`](https://github.com/Azeezakinyemi999/Continuum_H_permeation/blob/main/calculations/sensitivity.py) — `level5L6_model_wrapper`
 
-Same as above except: **no** `flux_bare_metal`, `frac_defect`, `defect_enhancement`, `modification_factor`; **adds** these 6:
+Same as above except: **no** `flux_bare_metal`, `frac_defect`, `defect_enhancement`, `modification_factor`; **adds** these 8:
 
 | Key | Example | Units | Meaning |
 |---|---|---|---|
-| `frac_surface` | 2.924e-04 | – | fraction of resistance in surface step |
-| `theta` | 0.6163 | – | **Langmuir surface coverage** |
+| `frac_surface` | 2.273e-04 | – | fraction of resistance in surface step |
+| `theta` | 0.6225 | – | **Langmuir surface coverage** |
+| `Phi_transport` | 3.099e-12 | mol m⁻¹ s⁻¹ Pa⁻⁰·⁵ | tier-3 transport permeability |
+| `eta_surf` | 0.9856 | – | surface efficiency, $\Phi_{app}/\Phi_{transport}$ |
 | `k_diss` | 2.37e-09 | mol m⁻² s⁻¹ Pa⁻¹ | oxide dissociation rate at T |
 | `K_eq` | 2.799e-05 | Pa⁻¹ | oxide adsorption equilibrium at T |
 | `k_diss_metal` | 2.498e-10 | mol m⁻² s⁻¹ Pa⁻¹ | metal dissociation rate at T |
@@ -67,24 +70,17 @@ With `return_full_record=True`, adds 2 more: `system_rate_limiting`, `dominant_p
 | `sieverts_concentration()` | scalar: `concentration` [mol/m³] |
 | `fick_flux()` | scalar: `flux` [mol m⁻² s⁻¹] |
 | `calculate_simple_metal_flux()` | **7 keys:** `flux`, `C_up`, `C_down`, `permeability`, `Diffusivity`, `solubility`, `units` |
-| `calculate_defective_metal_flux()` | **14 keys:** `flux`, `C_up`, `C_down`, `permeability`, `D_eff`, `D_lattice`, `modification_factor`, `regime_classification`, `regime`, `regime_base`, `regime_detail`, `microstructure_details`, `profiles`, `units` |
-| `calculate_defective_metal_flux_sieverts()` | scalar flux (expression) |
-
-`profiles` is a nested dict holding the spatial arrays — `x_array`, `C_array`, `D_array`, `theta_array`, `gb_factor_array`.
+| `calculate_defective_metal_flux()` | **9 keys:** `flux`, `C_up`, `C_down`, `permeability`, `D_eff`, `D_lattice`, `modification_factor`, `regime` (always `'metal_limited'`), `units` |
 
 ## 3. `defective_metal.py` — microstructure (Level 4)
 
 | Function | Returns |
 |---|---|
-| `trap_occupancy()` | **6 keys:** `theta`, `K_equilibrium`, `approximation_used`, `theta_lattice`, `saturation_warning`, `trap_concentration` |
-| `grain_boundary_density()` | **7 keys:** `trap_density`, `volume_fraction`, `surface_per_volume`, `mean_intercept`, `shape_factor`, `dimensionality`, `warnings` |
 | `gb_enhancement_factor()` | **7 keys:** `enhancement_factor`, `uncertainty`, `interpolation_method`, `temperature_K`, `temperature_C`, `gb_type_factor`, `data_range_K` |
-| `vacancy_concentration()` | **10 keys:** `concentration`, `site_fraction`, `formation_energy`, `lattice_sites`, `is_equilibrium`, `effective_temperature`, `minimum_concentration`, `material`, `melting_point`, `warnings` |
-| `calculate_effective_diffusivity_trapping()` | **10 keys:** `D_eff`, `D_lattice`, `trapping_term`, `theta_total`, `trap_contributions`, `reduction_factor`, `dominant_trap`, `mobile_fraction`, `saturation_warnings`, `temperature` |
 | `calculate_gb_enhanced_diffusivity()` | **14 keys:** `D_eff`, `D_bulk`, `D_gb`, `f_gb`, `f_bulk`, `enhancement_ratio`, `gb_enhancement_factor`, `regime`, `model_used`, `percolation_warning`, `grain_size`, `gb_thickness`, `gb_type`, `temperature` |
-| `combined_microstructure_model()` | **16 keys:** `D_eff`, `D_lattice`, `D_gb_enhanced`, `gb_enhancement`, `trapping`, `overall_factor`, `dominant_effect`, `regime`, `mode`, `calculation_sequence`, `parameters`, `warnings`, `theta_total`, `trap_details`, `gb_enhancement_factor`, `trapping_reduction_factor` |
+| `metal_diffusivity()` | scalar: the metal diffusivity every Level 4/5 solver uses (`D_eff` above, or `D_lattice` with enhancement off) |
 
-`trap_contributions` is a **list of per-trap dicts**, each with 7 keys: `name`, `theta`, `binding_energy`, `density`, `trapped_concentration`, `K_equilibrium`, `trapping_contribution`.
+There is no trapping output: trapping does not change steady-state flux and was removed from the model (see [STEADY_STATE.md](STEADY_STATE.md)).
 
 ## 4. `oxide_permeation.py` — oxide transport (Levels 2–3)
 
@@ -106,19 +102,16 @@ With `return_full_record=True`, adds 2 more: `system_rate_limiting`, `dominant_p
 | `calculate_metal_flux_sieverts()` | scalar: `flux` |
 | `solve_interface_pressure()` | **7 keys:** `P_interface`, `P_upstream`, `P_downstream`, `flux`, `flux_error`, `converged`, `P_interface_normalized` |
 | `calculate_concentration_profile()` | **8 keys:** `x_oxide`, `C_oxide`, `x_metal`, `C_metal`, `x_all`, `C_all`, `P_interface`, `C_discontinuity` |
-| `solve_interface_pressure_defective_metal()` | **14 keys:** the 7 above **+** `D_eff`, `D_lattice`, `modification_factor`, `level4_iterations`, `level4_converged`, `microstructure_details`, `temperature` |
 | `calculate_oxide_metal_system()` | `solution` dict |
-| `calculate_oxide_defective_metal_system()` | `solution` dict |
 
 ## 6. `parallel_oxide_defect_paths.py` — defect paths (Level 3)
 
 | Function | Returns |
 |---|---|
 | `calculate_defect_path_flux()` | scalar: `flux_defect` |
-| `calculate_parallel_path_flux()` | **18 keys:** `flux_total`, `flux_intact_contribution`, `flux_defect_contribution`, `flux_intact_per_area`, `flux_defect_per_area`, `dominant_path`, `defect_enhancement_factor`, `area_fraction_defect`, `D_eff_metal`, `modification_factor`, `level4_converged`, `P_interface_intact`, `regime_intact`, `regime_classification`, `regime`, `regime_base`, `regime_detail`, `microstructure_details` |
-| `calculate_parallel_path_flux_defective_metal()` | same **18 keys** |
+| `calculate_parallel_path_flux()` | **14 keys:** `flux_total`, `flux_intact_contribution`, `flux_defect_contribution`, `flux_intact_per_area`, `flux_defect_per_area`, `dominant_path`, `defect_enhancement_factor`, `area_fraction_defect`, `P_interface_intact`, `regime_intact`, `regime_classification`, `regime`, `regime_base`, `regime_detail` |
+| `calculate_parallel_path_flux_defective_metal()` | **16 keys:** the 14 above **+** `D_eff_metal`, `modification_factor` |
 | `calculate_PRF()` | **8 keys:** `PRF`, `PRF_perfect`, `efficiency`, `regime`, `test_pressure`, `flux_bare_metal`, `flux_with_oxide`, `flux_reduction_factor` |
-| `calculate_PRF_defective_metal()` | **13 keys:** the 8 above **+** `D_eff_bare_metal`, `modification_factor_bare`, `D_eff_with_oxide`, `modification_factor_oxide`, `microstructure_details` |
 
 ## 7. `surface_kinetics.py` — surface steps (Level 6)
 
@@ -132,11 +125,11 @@ With `return_full_record=True`, adds 2 more: `system_rate_limiting`, `dominant_p
 | `solve_steady_state_flux_L2aL6()` | **6 keys:** `theta`, `P_surf`, `J_ss`, `alpha`, `rate_limiting`, `resistances` |
 | `solve_steady_state_flux()` | **10 keys:** `theta`, `P_int`, `J_ss`, `J_surface`, `J_oxide`, `J_metal`, `alpha`, `beta`, `rate_limiting`, `resistances` |
 | `solve_steady_state_flux_direct()` | same **10 keys** |
-| `calculate_defective_metal_flux_L6()` | **22 keys:** `flux`, `J_surface`, `J_oxide`, `J_metal`, `theta_surface`, `P_int`, `C_up`, `C_down`, `alpha`, `beta_lattice`, `beta_eff`, `D_eff`, `D_lattice`, `modification_factor`, `microstructure_details`, `flux_balance`, `profiles`, `rate_limiting`, `resistances`, `convergence`, `error`, `convergence_history` |
+| `calculate_defective_metal_flux_L6()` | **19 keys:** the 10 of `solve_steady_state_flux_direct()` **+** `flux`, `theta_surface`, `C_up`, `C_down`, `beta_lattice`, `beta_eff`, `D_eff`, `D_lattice`, `modification_factor` |
 | `calculate_path_flux_L6()` | **11 keys:** `flux`, `theta`, `P_int`, `path_type`, `alpha`, `beta`, `kinetics_used`, `flux_balance`, `resistances`, `rate_limiting`, `error` |
 | `calculate_parallel_path_flux_L6()` | **16 keys:** `J_total`, `enhancement_factor`, `dominant_path`, `fraction_intact`, `fraction_defect`, `flux_from_intact`, `flux_from_defect`, `fraction_from_defect`, `intact_path`, `defect_path`, `alpha_intact`, `alpha_defect`, `alpha_ratio`, `defect_type`, `thickness_factor`, `diffusivity_factor` |
 | `calculate_mixed_defect_flux_L6()` | **14 keys:** `J_total`, `enhancement_factor`, `dominant_path`, `dominant_fraction`, `flux_breakdown`, `fraction_intact`, `total_defect_fraction`, `intact_path`, `defect_paths`, `system_rate_limiting`, `dominant_resistances`, `alpha_intact`, `defect_config`, `error` |
-| `calculate_path_flux_L346_v2()` | **19 keys:** `flux`, `theta`, `P_int`, `path_type`, `kinetics_used`, `alpha`, `beta_lattice`, `beta_eff`, `D_eff`, `D_lattice`, `modification_factor`, `microstructure`, `flux_balance`, `resistances`, `rate_limiting`, `convergence`, `profiles`, `error`, `iteration` |
+| `calculate_path_flux_L346_v2()` | **14 keys:** `flux`, `theta`, `P_int`, `path_type`, `kinetics_used`, `alpha`, `beta_lattice`, `beta_eff`, `D_eff`, `D_lattice`, `modification_factor`, `flux_balance`, `resistances`, `rate_limiting` (on failure, an `error` key and NaNs instead) |
 | `calculate_full_model_flux_L346_v2()` | **18 keys:** `J_total`, `enhancement_vs_intact`, `dominant_path`, `dominant_fraction`, `flux_breakdown`, `fraction_intact`, `total_defect_fraction`, `intact_path`, `defect_paths`, `D_eff_avg`, `D_lattice`, `overall_modification_factor`, `system_rate_limiting`, `system_resistances`, `alpha_intact`, `defect_config`, `microstructure_params`, `flux_weighted_resistances` |
 
 ## 8. `classify_regime.py` — regime labels
@@ -145,12 +138,10 @@ With `return_full_record=True`, adds 2 more: `system_rate_limiting`, `dominant_p
 |---|---|
 | `classify_regime_level2()` | **6 keys:** `model_level`, `base_regime`, `regime_hierarchy`, `regime_detail`, `regime_subdetail`, `classification_depth` |
 | `classify_regime_level3()` | the 6 above **+** `flux_ratio_defect_to_intact` |
-| `classify_regime_level4_metal()` | **4 keys:** `metal_regime_detail`, `modification_factor`, `trapping_significant`, `trapping_reduction_percent` |
-| `classify_regime_level14()` | **9 keys** — the 6 base **+** `modification_factor`, `trapping_significant`, `trapping_reduction_percent` |
-| `classify_regime_level24()` | same **9 keys** |
-| `classify_regime_level34()` | **10 keys** — the 9 above **+** `flux_ratio_defect_to_intact` |
 
-**Regime label vocabulary.** `base_regime`: `surface_limited`, `oxide_limited`, `metal_limited`. `regime_detail`: `defect_limited`, `regime_intact_oxide`, `traps_defect_limited`, `lattice_limited`. `regime` (argmax, used by the SA): `surface`, `oxide`, `metal`, `defect`.
+Level 4 and Level 5 use these too: a metal-limited wall is labelled `metal_limited`, with no second tier.
+
+**Regime label vocabulary.** `base_regime`: `surface_limited`, `oxide_limited`, `metal_limited`. `regime_detail` (oxide-limited walls only): `defect_limited`, `regime_intact_oxide`. `regime` (argmax, used by the SA): `surface`, `oxide`, `metal`, `defect`.
 
 ## 9. `sensitivity.py` — SA outputs
 
@@ -191,11 +182,10 @@ Metrics available: **L5** `['flux', 'permeability', 'PRF']`, **L5L6** `['flux', 
 | Barrier effectiveness | `PRF`, `PRF_perfect`, `efficiency`, `flux_reduction_factor` |
 | Which step limits transport | `regime`, `rate_limiting`, `system_rate_limiting`, `limiting_mechanism` |
 | Resistance split | `frac_surface`, `frac_oxide`, `frac_metal`, `frac_defect`, `resistances` |
-| Effective diffusivity | `D_eff`, `D_modification`, `reduction_factor`, `mobile_fraction` |
-| Trapping detail | `trapping_term`, `theta_total`, `trap_contributions`, `dominant_trap` |
+| Effective diffusivity | `D_eff`, `D_modification`, `modification_factor`, `enhancement_ratio` |
 | Surface coverage | `theta`, `theta_surface` |
-| Spatial profiles | `profiles`, `x_all`, `C_all`, `C_array`, `D_array`, `theta_array` |
+| Spatial profiles | `x_all`, `C_all`, `x_metal`, `C_metal` (`calculate_concentration_profile`) |
 | Interface pressure | `P_interface`, `P_int`, `C_discontinuity` |
 | Intact vs defect split | `flux_intact`, `flux_defect`, `dominant_path`, `flux_breakdown` |
-| Numerical health | `converged`, `convergence`, `flux_error`, `flux_balance`, `error`, `warnings` |
+| Numerical health | `converged`, `flux_error`, `flux_balance`, `error`, `warnings` |
 | Sensitivity ranking | `delta`, `pawn_median`, `delta_over_floor` |

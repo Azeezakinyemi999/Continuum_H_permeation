@@ -328,9 +328,13 @@ def level5_model_wrapper(params_dict, return_full_record=False):
 
     Note
     ----
-    'regime' holds the argmax label used to build the regime clusters. The older
-    hierarchical L3/L4 string (e.g. 'metal_limited/traps_defect_limited') moved to
-    'regime_hierarchy' so that partition_by_regime() can key on 'regime' unchanged.
+    'regime' holds the argmax label used to build the regime clusters. The
+    hierarchical Level 3 string from the solver (e.g. 'oxide_limited/defect_limited')
+    is in 'regime_hierarchy', so partition_by_regime() can key on 'regime' unchanged.
+
+    'D_eff' is the metal diffusivity the solve used (lattice, raised by
+    grain-boundary fast paths) and 'D_modification' is D_eff / D_lattice >= 1.
+    Trapping is not modelled: it does not change steady-state flux.
     """
     from calculations.parallel_oxide_defect_paths import (
         calculate_parallel_path_flux_defective_metal,
@@ -366,44 +370,14 @@ def level5_model_wrapper(params_dict, return_full_record=False):
             'thickness': full_params['metal_thickness'],
         }
 
-        # Build trap list
-        trap_list = []
-        if full_params.get('trap_dislocation_N_T', 0) > 0:
-            trap_list.append({
-                'name': 'dislocations',
-                'binding_energy': full_params['trap_dislocation_E_b'],
-                'density': full_params['trap_dislocation_N_T'],
-            })
-        if full_params.get('trap_vacancy_N_T', 0) > 0:
-            trap_list.append({
-                'name': 'vacancies',
-                'binding_energy': full_params['trap_vacancy_E_b'],
-                'density': full_params['trap_vacancy_N_T'],
-            })
-
         grain_size   = full_params['grain_size']
         gb_thickness = full_params['gb_thickness']
-        N_T_gb       = full_params.get('trap_gb_N_T', 0)
-        if full_params.get('trap_gb_E_b', 0) > 0 and N_T_gb > 0:
-            trap_list.append({
-                'name': 'grain_boundaries',
-                'binding_energy': full_params['trap_gb_E_b'],
-                'density': N_T_gb,
-            })
-        N_T_carbide = full_params.get('trap_carbide_N_T', 0)
-        if full_params.get('trap_carbide_E_b', 0) > 0 and N_T_carbide > 0:
-            trap_list.append({
-                'name': 'carbides',
-                'binding_energy': full_params['trap_carbide_E_b'],
-                'density': N_T_carbide,
-            })
 
         microstructure_params = {
             'grain_size':            grain_size,
             'grain_shape':           full_params['grain_shape'],
             'gb_type':               full_params['gb_type'],
             'gb_thickness':          gb_thickness,
-            'trap_list':             trap_list,
         }
 
         f_pin = full_params.get('f_pinhole', 0.0)
@@ -421,21 +395,9 @@ def level5_model_wrapper(params_dict, return_full_record=False):
             'diffusivity_factor': full_params.get('gb_diffusivity_factor', 10.0),
         }
 
-        P_upstream      = full_params['P_upstream']
-        P_downstream    = full_params['P_downstream']
-        lattice_density = full_params['lattice_density']
-        method          = full_params.get('D_eff_method', 'average')
-
+        P_upstream   = full_params['P_upstream']
+        P_downstream = full_params['P_downstream']
         include_gb   = full_params.get('enable_gb_enhancement', True)
-        include_trap = full_params.get('enable_trapping', True)
-        if include_gb and include_trap:
-            mode = 'both'
-        elif include_gb:
-            mode = 'gb_only'
-        elif include_trap:
-            mode = 'trapping_only'
-        else:
-            mode = 'none'
 
         result_l5 = calculate_parallel_path_flux_defective_metal(
             P_upstream=P_upstream,
@@ -445,10 +407,7 @@ def level5_model_wrapper(params_dict, return_full_record=False):
             defect_params=defect_params,
             temperature=T,
             microstructure_params=microstructure_params,
-            lattice_density=lattice_density,
-            method=method,
-            n_profile_points=10,
-            mode=mode,
+            enable_gb_enhancement=include_gb,
         )
 
         result_bare = calculate_defective_metal_flux(
@@ -459,10 +418,7 @@ def level5_model_wrapper(params_dict, return_full_record=False):
             P_down=P_downstream,
             temperature=T,
             microstructure_params=microstructure_params,
-            lattice_density=lattice_density,
-            method=method,
-            n_profile_points=10,
-            mode=mode,
+            enable_gb_enhancement=include_gb,
         )
 
         flux_total = result_l5['flux_total']
@@ -741,50 +697,14 @@ def level5L6_model_wrapper(params_dict, return_full_record=False):
         # silently ignored at L5L6 while L5 applied it, leaving the two levels
         # non-comparable with nothing to signal it.
         P_down = full_params['P_downstream']
-        lattice_density = full_params['lattice_density']
-        method = full_params.get('D_eff_method', 'average')
-
-        grain_size   = full_params['grain_size']
-        gb_thickness = full_params['gb_thickness']
-        N_T_gb       = full_params.get('trap_gb_N_T', 0)
-
-        trap_list = []
-        if full_params.get('trap_dislocation_N_T', 0) > 0:
-            trap_list.append({'name': 'dislocations',
-                              'binding_energy': full_params['trap_dislocation_E_b'],
-                              'density': full_params['trap_dislocation_N_T']})
-        if full_params.get('trap_vacancy_N_T', 0) > 0:
-            trap_list.append({'name': 'vacancies',
-                              'binding_energy': full_params['trap_vacancy_E_b'],
-                              'density': full_params['trap_vacancy_N_T']})
-        if full_params.get('trap_gb_E_b', 0) > 0 and N_T_gb > 0:
-            trap_list.append({'name': 'grain_boundaries',
-                              'binding_energy': full_params['trap_gb_E_b'],
-                              'density': N_T_gb})
-        N_T_carbide = full_params.get('trap_carbide_N_T', 0)
-        if full_params.get('trap_carbide_E_b', 0) > 0 and N_T_carbide > 0:
-            trap_list.append({'name': 'carbides',
-                              'binding_energy': full_params['trap_carbide_E_b'],
-                              'density': N_T_carbide})
 
         microstructure_params = {
-            'grain_size':            grain_size,
-            'grain_shape':           full_params.get('grain_shape', 'equiaxed'),
-            'gb_type':               full_params.get('gb_type', 'LAGB'),
-            'gb_thickness':          gb_thickness,
-            'trap_list':             trap_list,
+            'grain_size':   full_params['grain_size'],
+            'grain_shape':  full_params.get('grain_shape', 'equiaxed'),
+            'gb_type':      full_params.get('gb_type', 'LAGB'),
+            'gb_thickness': full_params['gb_thickness'],
         }
-
-        include_gb   = full_params.get('enable_gb_enhancement', True)
-        include_trap = full_params.get('enable_trapping', True)
-        if include_gb and include_trap:
-            mode = 'both'
-        elif include_gb:
-            mode = 'gb_only'
-        elif include_trap:
-            mode = 'trapping_only'
-        else:
-            mode = 'none'
+        include_gb = full_params.get('enable_gb_enhancement', True)
 
         f_pin = full_params.get('f_pinhole',   0.0)
         f_cra = full_params.get('f_crack',     0.0)
@@ -812,10 +732,7 @@ def level5L6_model_wrapper(params_dict, return_full_record=False):
             D_lattice=D_metal, K_s_m=K_s_met,
             microstructure_params=microstructure_params,
             defect_config=defect_config,
-            lattice_density=lattice_density,
-            method=method,
-            n_profile_points=10,
-            mode=mode,
+            enable_gb_enhancement=include_gb,
             k_diss_metal=k_diss_metal,
             K_eq_metal=K_eq_metal,
         )

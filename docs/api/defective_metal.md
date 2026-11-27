@@ -1,4 +1,4 @@
-# `defective_metal` — Level 4: grain boundaries and trapping
+# `defective_metal` — Level 4: grain-boundary enhancement
 
 ```{eval-rst}
 .. automodule:: calculations.defective_metal

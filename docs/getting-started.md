@@ -35,7 +35,7 @@ cumulative, not alternatives.
 | 2a | A perfect oxide layer, treated as molecular (Henry's law) transport | Level 2 |
 | 2b | Oxide and metal in series, coupled through an interface pressure | Level 2 |
 | 3 | Defects short-circuiting the oxide — pinholes, cracks, grain boundaries | Level 3 |
-| 4 | Metal microstructure: grain-boundary fast paths and trapping | Level 4 |
+| 4 | Metal microstructure: grain-boundary fast paths | Level 4 |
 | 5 | The full wall — defective oxide over defective metal | Level 5 |
 | 6 | Finite-rate surface dissociation, with Langmuir coverage | Level 6 |
 
@@ -65,16 +65,16 @@ For the active study this prints:
 
 ```text
 Guo_etal_2025_316L
-flux         3.182694...e-06
+flux         4.304753...e-06
 regime       metal
-PRF          1.003924...
-frac_oxide   0.007793...
-frac_metal   0.972132...
-frac_defect  0.020074...
+PRF          1.005318...
+frac_oxide   0.010540...
+frac_metal   0.969359...
+frac_defect  0.020100...
 ```
 
-Read that as: 3.2 µmol/m²/s of hydrogen crosses the wall; the metal carries 97%
-of the resistance; and the coating reduces the flux by a factor of 1.004, which
+Read that as: 4.3 µmol/m²/s of hydrogen crosses the wall; the metal carries 97%
+of the resistance; and the coating reduces the flux by a factor of 1.005, which
 is to say **almost not at all** — at Level 5. Level 5L6, which dissociates at the
 gas/oxide surface and sends atomic H through the oxide, is oxide-limited at the same
 operating point. See {doc}`theory/equilibrium-models`.

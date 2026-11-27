@@ -152,15 +152,15 @@ averaged it away.
 
 Puy et al. also report that PAWN "especially underperformed" on test functions
 with 8 and 20 inputs, and raise this as a red flag for models with tens of
-parameters. This pipeline varies **36**. Treat PAWN rankings as corroborating
+parameters. This pipeline varies **27**. Treat PAWN rankings as corroborating
 evidence alongside δ, not as a standalone verdict.
 
 ## What is varied, and what is not
 
 | | L5 | L5L6 |
 |---|---|---|
-| parameters with defaults | 36 | 46 |
-| parameters actually swept | 28 | **36** |
+| parameters with defaults | 25 | 35 |
+| parameters actually swept | 19 | **27** |
 
 The four reference temperatures — `T_ref_metal`, `T_ref_oxide`,
 `T_ref_surface`, `T_ref_surface_metal` — are held **fixed** and appear in no

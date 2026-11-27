@@ -17,7 +17,7 @@ be solved for.
 unbroken. Real oxides crack, contain pinholes and have grain boundaries, and because the
 intact oxide is such a good barrier in most systems, those defects tend to dominate
 transport even at tiny area fractions. That is Level 3. It also assumes the metal is a
-**perfect lattice**, with no traps and no grain-boundary fast paths — Level 4. Finally
+**perfect lattice**, with no grain-boundary fast paths — Level 4. Finally
 it assumes dissociation at the gas-facing surface is infinitely fast, so the surface
 imposes no resistance at all — Level 6.
 

@@ -38,9 +38,8 @@ defined rather than breaking; the fix is usually to change what you asked for.
 |---|---|---|
 | `converged: False` with $P_{int} \approx P_{down}$ | $P_{up}$ is at or below `min_pressure` (`1e-20` Pa); the solve was approximated, not performed. | Raise $P_{up}$, or treat the result as a limit rather than a solution. |
 | `ValueError: The truth value of an array ... is ambiguous` from `arrhenius` | `arrhenius()` validates with a bare `if temperature <= 0`, so it takes **scalars only**. | Map over the array. Not documented in its docstring — see `docs/CHECKPOINT.md`, finding F2. |
-| `warnings.warn` about trap occupancy θ > 0.9 | Oriani's local-equilibrium assumption needs low occupancy. | Lower the trap density or raise the temperature, or move to a McNabb–Foster kinetic model. |
-| `warn`: total trap occupancy Σθ > 10 | Very strong trapping; the dilute-lattice simplification is past its range. | Same as above. The number is still returned — decide whether you trust it. |
-| `warn`: reduction factor < 0.01 | Diffusion essentially stopped. | Check the trap density and binding energy are not in the wrong units. |
+| `warn`: GB volume fraction > 10% | Ultrafine grains; the grain-boundary network percolates and the parallel-path rule is past its range. | Use `model='hart'`, or check `grain_size` is in metres. |
+| `warn`: overall enhancement > 100× | Grain-boundary enhancement implausibly large. | Check grain size, boundary type and temperature. |
 | Matplotlib refuses to save: image above 2¹⁶ px | `bbox_inches="tight"` sizes from the **artists**, so one annotation on a near-flat log axis can demand thousands of inches. It has reached 7415. | Widen the axis limits to a readable minimum, or drop the annotation. |
 | Extrapolation beyond the measured temperature window, silently | The canonical wrappers do not re-raise the warning. | Check the data range yourself before trusting a number; {doc}`caveats`. |
 
@@ -129,7 +128,7 @@ A result is reproducible when every line below can be answered.
 | [`calculations/oxide_permeation.py`](https://github.com/Azeezakinyemi999/Continuum_H_permeation/blob/main/calculations/oxide_permeation.py) | Level 2a: Henry transport through the oxide, layer resistances, property lookup with the extrapolation warning. |
 | [`calculations/interface_solver.py`](https://github.com/Azeezakinyemi999/Continuum_H_permeation/blob/main/calculations/interface_solver.py) | Level 2b: the flux balance and the `brentq` solve for $P_{int}$. The heart of the model. |
 | [`calculations/parallel_oxide_defect_paths.py`](https://github.com/Azeezakinyemi999/Continuum_H_permeation/blob/main/calculations/parallel_oxide_defect_paths.py) | Level 3: area-weighted parallel paths, defect types, PRF. |
-| [`calculations/defective_metal.py`](https://github.com/Azeezakinyemi999/Continuum_H_permeation/blob/main/calculations/defective_metal.py) | Level 4: Oriani trapping, grain-boundary enhancement, and their composition. The largest module. |
+| [`calculations/defective_metal.py`](https://github.com/Azeezakinyemi999/Continuum_H_permeation/blob/main/calculations/defective_metal.py) | Level 4: grain-boundary enhancement, and `metal_diffusivity`, the one metal diffusivity every Level 4/5 solver uses. |
 | [`calculations/surface_kinetics.py`](https://github.com/Azeezakinyemi999/Continuum_H_permeation/blob/main/calculations/surface_kinetics.py) | Level 6: Langmuir coverage, the surface rate law, and every L6 combination. |
 | [`calculations/permeability.py`](https://github.com/Azeezakinyemi999/Continuum_H_permeation/blob/main/calculations/permeability.py) | Tiered permeability reporting, the unit refusal, and the pressure exponent. Changes no flux. |
 | [`calculations/classify_regime.py`](https://github.com/Azeezakinyemi999/Continuum_H_permeation/blob/main/calculations/classify_regime.py) | Turns resistance fractions into regime labels, hierarchically by level. |
@@ -142,7 +141,7 @@ A result is reproducible when every line below can be answered.
 |---|---|
 | `docs/figures/example_wall.py` | The fictitious wall every figure and check runs on. Also vendors the palette. |
 | `docs/figures/make_figures.py` | Regenerates all 20 figures and `captions.md`. |
-| `docs/figures/check_equations.py` | Restates every Part II equation independently and compares. 44 checks. |
+| `docs/figures/check_equations.py` | Restates every Part II equation independently and compares. 42 checks. |
 | `docs/_tools/verify_docs.py` | Fails if a page names a function, module or parameter that does not exist. |
 | `docs/_tools/worked_values.py` | Regenerates every real number quoted in the theory chapters; `--check` diffs. |
 | `docs/_tools/verify_propagation.py` | Checks that a change propagates where it should. |

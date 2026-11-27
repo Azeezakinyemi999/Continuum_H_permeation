@@ -65,7 +65,7 @@ assumes that surface processes are infinitely fast, so transport is always
 limited by bulk diffusion through the oxide and/or metal layers. It progresses
 from a perfect metal membrane (L1) through a perfect oxide (L2a), the coupled
 oxide--metal bilayer (L2b), a defective oxide with parallel leakage paths (L3),
-a defective metal with grain-boundary transport and trapping (L4), up to the
+a defective metal with grain-boundary fast paths (L4), up to the
 full defective system (L5). \textbf{Model B} (Section~\ref{sec:modelB},
 notebook \code{Application/Surface\_proposal.ipynb}) relaxes the fast-surface
 assumption: a finite Langmuir--Hinshelwood dissociation/recombination step (L6)
@@ -96,7 +96,7 @@ $\Kox$ & oxide solubility constant (Henry form in A, & $\mathrm{mol\,m^{-3}\,Pa^
  & \quad Sieverts form in B; \S\ref{sec:oxideconvention}) & $\mathrm{mol\,m^{-3}\,Pa^{-1/2}}$ (B) & \\
 $\Lm,\,\Lox$ & metal / oxide thickness & m & Eq.~\eqref{eq:L1flux} \\
 $\Phi$ & metal permeability $\Dm\Ks$ & $\mathrm{mol\,m^{-1}\,s^{-1}\,Pa^{-1/2}}$ & Eq.~\eqref{eq:permeability} \\
-$\Deff$ & effective (microstructure-modified) diffusivity & $\mathrm{m^2\,s^{-1}}$ & Eq.~\eqref{eq:orianiDeff} \\
+$\Deff$ & metal diffusivity with grain-boundary enhancement & $\mathrm{m^2\,s^{-1}}$ & Eq.~\eqref{eq:metalD} \\
 $\theta$ & surface coverage (fraction of occupied sites) & -- & Eq.~\eqref{eq:ads} \\
 $\kdiss$ & dissociative adsorption rate constant & $\mathrm{mol\,m^{-2}\,s^{-1}\,Pa^{-1}}$ & Eq.~\eqref{eq:ads} \\
 $\Keq$ & surface equilibrium constant $\kdiss/\krec$ & $\mathrm{Pa^{-1}}$ & Eq.~\eqref{eq:des} \\
@@ -154,19 +154,16 @@ Eq. & Name & Formula & Code location & Ref. \\
 \eqref{eq:gbdefect} & Oxide-GB path & $\Dox^{\mathrm{gb}} = \delta_D\,\Dox$ & \code{parallel\_oxide\_defect\_paths.py}\newline \code{calculate\_defect\_path\_flux} & \\
 \eqref{eq:mixed} & Mixed defects & $J_{\mathrm{def}} = \sum_i w_i J_i$ & \code{parallel\_oxide\_defect\_paths.py}\newline \code{calculate\_defect\_path\_flux} & \\
 \midrule
-\multicolumn{5}{@{}l}{\emph{L4 --- defective metal (grain boundaries + traps)}}\\
-\eqref{eq:fgb} & GB volume fraction & $\fgb = 3\delta/d$ & \code{defective\_metal.py}\newline \code{grain\_boundary\_density} & \citet{underwood1970,palumbo1990} \\
+\multicolumn{5}{@{}l}{\emph{L4 --- defective metal (grain boundaries)}}\\
+\eqref{eq:fgb} & GB volume fraction & $\fgb = 3\delta/d$ & \code{defective\_metal.py}\newline \code{calculate\_gb\_enhanced\_}\newline\code{diffusivity} & \citet{underwood1970,palumbo1990} \\
 \eqref{eq:gbenh} & GB enhancement & $\alpha_{\mathrm{gb}}(T) = A\exp\!\left[\frac{Q_{\mathrm{bulk}}-Q_{\mathrm{gb}}}{RT}\right]$ & \code{defective\_metal.py}\newline \code{gb\_enhancement\_factor} & \citet{tsuru1982,brass1996} \\
 \eqref{eq:gbparallel} & GB parallel model & $D_{\mathrm{gb\text{-}enh}} = (1-\fgb)D + \fgb\,\alpha_{\mathrm{gb}}D$ & \code{defective\_metal.py}\newline \code{calculate\_gb\_enhanced\_}\newline\code{diffusivity} & \\
 \eqref{eq:hart} & Hart equation & see text & \code{defective\_metal.py}\newline \code{calculate\_gb\_enhanced\_}\newline\code{diffusivity} & \citet{hart1957} \\
-\eqref{eq:orianitheta} & Trap occupancy & $\theta_T = \frac{K\theta_L}{1+K\theta_L}$ & \code{defective\_metal.py}\newline \code{trap\_occupancy} & \citet{oriani1970,mcnabb1963} \\
-\eqref{eq:orianiDeff} & Trapping reduction & $\Deff = \frac{D}{1+\sum_i N_{T,i}K_i/N_L}$ & \code{defective\_metal.py}\newline \code{calculate\_effective\_}\newline\code{diffusivity\_trapping} & \citet{oriani1970} \\
-\eqref{eq:combined} & Combined model & $\Deff = \frac{(1-\fgb)D+\fgb\alpha_{\mathrm{gb}}D}{1+\sum_i N_{T,i}K_i/N_L}$ & \code{defective\_metal.py}\newline \code{combined\_microstructure\_}\newline\code{model} & \citet{oudriss2012} \\
-\eqref{eq:vacancy} & Vacancy concentration & $C_v = N\exp(-E_f^v/RT)$ & \code{defective\_metal.py}\newline \code{vacancy\_concentration} & \citet{kraftmakher1998} \\
+\eqref{eq:metalD} & Metal diffusivity & $\Deff = D_{\mathrm{gb\text{-}enh}}$, or $D$ with enhancement off & \code{defective\_metal.py}\newline \code{metal\_diffusivity} & \\
 \eqref{eq:L4flux} & L4 flux & $J_{\mathrm{L4}} = \frac{\Deff\Ks}{\Lm}(\sqrt{\Pup}-\sqrt{\Pdown})$ & \code{permeation\_calc.py}\newline \code{calculate\_defective\_}\newline\code{metal\_flux} & \\
 \midrule
 \multicolumn{5}{@{}l}{\emph{L5 --- full system}}\\
-\eqref{eq:closureL5} & Coupled closure & $J_{\mathrm{ox}}(\Pint) = J_{\mathrm{L4}}(\Pint;\Deff)$ & \code{interface\_solver.py}\newline \code{solve\_interface\_pressure\_}\newline\code{defective\_metal} & \\
+\eqref{eq:closureL5} & Coupled closure & $J_{\mathrm{ox}}(\Pint) = J_{\mathrm{L4}}(\Pint;\Deff)$ & \code{parallel\_oxide\_defect\_paths.py}\newline \code{calculate\_parallel\_path\_}\newline\code{flux\_defective\_metal} & \\
 \midrule
 \multicolumn{5}{@{}l}{\emph{Shared temperature dependence}}\\
 \eqref{eq:arrhenius} & Arrhenius (reference form) & $k(T) = k_{\mathrm{ref}}\exp\!\left[-\frac{E}{R}\!\left(\frac1T-\frac1{T_{\mathrm{ref}}}\right)\right]$ & \code{utils.py}\newline \code{arrhenius} & \\
@@ -392,7 +389,7 @@ types can coexist; their contribution is the normalised weighted sum
 with $w_i$ the component area fractions within the defective region.
 
 % ----------------------------------------------------------------------------
-\subsection{L4: defective metal (grain boundaries + trapping)}
+\subsection{L4: defective metal (grain boundaries)}
 % ----------------------------------------------------------------------------
 
 \paragraph{Grain-boundary volume fraction.} From stereology of a random
@@ -405,10 +402,7 @@ $S_v = s/d$ and the GB volume fraction is
 \end{equation}
 where $\delta$ is the GB thickness [m] (default $0.5\;\mathrm{nm}$), $d$ the
 mean grain diameter [m], and $s$ the dimensionality shape factor [--]. The
-same geometry supplies the GB \emph{trap} density
-$N_{\mathrm{gb}} = S_v\,\rho_{\mathrm{gb}}$ [$\mathrm{m^{-3}}$], with
-$\rho_{\mathrm{gb}} \approx 10^{19}\;\mathrm{m^{-2}}$ the areal density of
-trap sites on the boundary.
+code uses the equiaxed value, $\fgb = 3\delta/d$.
 
 \paragraph{Grain-boundary enhancement factor.} GBs are fast diffusion paths
 because their activation energy is lower ($Q_{\mathrm{gb}} \approx
@@ -443,54 +437,17 @@ matters, the Hart equation \citep{hart1957} is available instead:
   \label{eq:hart}
 \end{equation}
 
-\paragraph{Oriani trap occupancy.} Traps (dislocations, vacancies, GBs,
-precipitates) immobilise hydrogen. Under local equilibrium
-\citep{oriani1970}, each trap type $i$ has an equilibrium constant and
-occupancy
+\paragraph{Metal diffusivity.} The grain-boundary enhancement depends on
+temperature, grain size and boundary character but not on the hydrogen
+concentration, so a wall has one metal diffusivity,
 \begin{equation}
-  K_i = \exp\!\left(\frac{E_{b,i}}{RT}\right), \qquad
-  \theta_{T,i} = \frac{K_i\,\theta_L}{1 + K_i\,\theta_L}, \qquad
-  \theta_L = \frac{N_A C_L}{N_L},
-  \label{eq:orianitheta}
+  \Deff = \begin{cases} D_{\mathrm{gb\text{-}enh}} & \text{enhancement on (default)}\\
+                       D_{\mathrm{bulk}} & \text{enhancement off,} \end{cases}
+  \qquad \Deff \ge D_{\mathrm{bulk}},
+  \label{eq:metalD}
 \end{equation}
-where $E_{b,i}$ is the trap binding energy [$\mathrm{J\,mol^{-1}}$]
-(dislocations 20--30, GBs 40--50, vacancies 40--45, precipitates
-60--90~$\mathrm{kJ\,mol^{-1}}$), $\theta_L$ the lattice-site occupancy [--],
-$C_L$ the mobile (lattice) hydrogen concentration [$\mathrm{mol\,m^{-3}}$],
-$N_L$ the interstitial site density [$\mathrm{m^{-3}}$]
-($\approx 1.06\times10^{29}$ for FCC), and $N_A$ Avogadro's number. The model
-is valid for $\theta_{T,i} < 0.9$; beyond that the kinetic McNabb--Foster
-treatment \citep{mcnabb1963} is recommended.
-
-\paragraph{Trapping-reduced diffusivity.} Partitioning hydrogen between mobile
-and trapped populations gives the Oriani reduction
-\begin{equation}
-  \Deff = \frac{D}{1 + \displaystyle\sum_i \frac{N_{T,i}\,K_i}{N_L}},
-  \label{eq:orianiDeff}
-\end{equation}
-where $N_{T,i}$ is the trap density of type $i$ [$\mathrm{m^{-3}}$]. The
-denominator term $\sum_i N_{T,i}K_i/N_L$ is the ratio of trapped to mobile
-hydrogen; the critical trap density at which $\Deff = D/2$ is
-$N_T^{*} = N_L/K$.
-
-\paragraph{Combined microstructure model.} Enhancement and trapping are
-applied sequentially (GB first, then traps, assumed uniformly distributed):
-\begin{equation}
-  \Deff = \frac{(1-\fgb)\,D_{\mathrm{bulk}} + \fgb\,\alpha_{\mathrm{gb}} D_{\mathrm{bulk}}}
-               {1 + \displaystyle\sum_i \frac{N_{T,i}\,K_i}{N_L}}.
-  \label{eq:combined}
-\end{equation}
-The net modification factor $M = \Deff/D_{\mathrm{bulk}}$ can be either
-$>1$ (GB-dominated, typically coarse traps / high $T$) or $<1$
-(trapping-dominated, typically fine microstructure / low $T$)
-\citep{oudriss2012}. Thermal vacancies, one of the trap populations, follow
-\begin{equation}
-  C_v = N \exp\!\left(-\frac{E_f^{v}}{RT}\right),
-  \label{eq:vacancy}
-\end{equation}
-with $E_f^{v}$ the vacancy formation energy [$\mathrm{J\,mol^{-1}}$]
-($140\;\mathrm{kJ\,mol^{-1}}$ for Incoloy~800) and $N$ the lattice site
-density [$\mathrm{m^{-3}}$] \citep{kraftmakher1998}.
+computed once (\code{defective\_metal.py} $\rightarrow$ \code{metal\_diffusivity}) and
+used in place of $\Dm$ by every L4 and L5 solver.
 
 \paragraph{L4 permeation flux.} The membrane flux keeps the Sieverts boundary
 conditions (solubility is a bulk thermodynamic property, unchanged by
@@ -499,32 +456,39 @@ microstructure) but replaces $D$ with $\Deff$:
   J_{\mathrm{L4}} = \frac{\Deff \Ks}{\Lm}\left(\sqrt{\Pup} - \sqrt{\Pdown}\right).
   \label{eq:L4flux}
 \end{equation}
-Because trap occupancy depends on the local concentration $C(x)$ --- the
-profile linear in $\sqrt{P}$-space, written out as Eq.~\eqref{eq:profile} ---
-$\Deff$ varies through the thickness; the code evaluates it on an $n$-point
-profile and averages (arithmetic, harmonic, inlet, or outlet --- the
-\code{method} argument) before applying Eq.~\eqref{eq:L4flux}.
+This is the L1 flux, Eq.~\eqref{eq:L1flux}, with $\Dm \rightarrow \Deff$.
+
+\paragraph{Why hydrogen trapping is excluded.} Traps (dislocations, vacancies,
+grain boundaries, precipitates) hold hydrogen but do not carry it: only lattice
+hydrogen is mobile, so $J = -D_L\,\partial C_L/\partial x$. Under local equilibrium
+\citep{oriani1970} trapping slows the approach to steady state through an effective
+diffusivity $D_L/(1 + \mathrm{d}C_T/\mathrm{d}C_L)$, and kinetic trapping
+\citep{mcnabb1963} does the same; but at steady state the traps exchange no net
+hydrogen and $J = D_L\,\Delta C_L/\Lm$ whatever the trap density, binding energy or
+occupancy. The steady-state permeation flux is therefore independent of trapping,
+and trapping is not part of this model. (Earlier versions applied the Oriani
+diffusivity to the lattice concentration difference, which counts trapping twice.)
+Trapping governs the time lag and the hydrogen inventory, which are outside the
+scope of a steady-state permeation model; see \code{STEADY\_STATE.md}.
 
 % ----------------------------------------------------------------------------
 \subsection{L5: full system (defective oxide + defective metal)}
 % ----------------------------------------------------------------------------
 
 L5 has no separate physics: it composes the L3 oxide description with the L4
-metal description through the same flux-continuity closure as L2b, now with a
-concentration-dependent $\Deff$:
+metal description through the same flux-continuity closure as L2b, with the
+metal diffusivity of Eq.~\eqref{eq:metalD}:
 \begin{equation}
   \frac{\Dox\Kox}{\Lox}\bigl(\Pup - \Pint\bigr)
   =
-  \frac{\Deff(\Pint)\,\Ks}{\Lm}\bigl(\sqrt{\Pint} - \sqrt{\Pdown}\bigr).
+  \frac{\Deff\,\Ks}{\Lm}\bigl(\sqrt{\Pint} - \sqrt{\Pdown}\bigr).
   \label{eq:closureL5}
 \end{equation}
-Since $\Deff$ depends on the concentration profile, which depends on $\Pint$,
-the solver iterates: guess $\Pint$, evaluate $\Deff$ on the resulting profile,
-re-solve Eq.~\eqref{eq:closureL5} by Brent's method, and repeat until $\Pint$
-converges (\code{interface\_solver.py} $\rightarrow$
-\code{solve\_interface\_pressure\_defective\_metal}). The defective-oxide
-variant applies this closure per parallel path of Eq.~\eqref{eq:L3parallel};
-the assembly is orchestrated in \code{Application/Proposal.ipynb}. Regime
+Since $\Deff$ does not depend on $\Pint$, this is the L2b closure with
+$\Dm \rightarrow \Deff$, solved once by Brent's method with no outer iteration. The
+defective-oxide variant applies this closure per parallel path of
+Eq.~\eqref{eq:L3parallel} (\code{parallel\_oxide\_defect\_paths.py} $\rightarrow$
+\code{calculate\_parallel\_path\_flux\_defective\_metal}). Regime
 classification reuses Eq.~\eqref{eq:chi} with $\Rmet$ evaluated at $\Deff$.
 
 % ----------------------------------------------------------------------------
@@ -556,7 +520,7 @@ parameters ($D_{\mathrm{ref}}$, $E_D$, $K_{s,\mathrm{ref}}$, $H_s$, oxide
 analogues, surface kinetics) live in \code{calculations/config/model\_config.py}
 and \code{data/}; Section~\ref{sec:parameters} lists every value with its
 default, sensitivity range, and literature source
-\citep{schmidt1985,nemanic2023,stover1986,chen2011,grant1988,zhu2021,lu2022,young1997}.
+\citep{schmidt1985,nemanic2023,stover1986,chen2011,grant1988,zhu2021}.
 
 % ============================================================================
 \section{Model B: surface-kinetics extension (L6 and combinations)}
@@ -847,24 +811,22 @@ with $f_i$ the area fraction of defect type $i$ [--].
 \subsection{L2+L4+L6: oxide + defective metal + surface kinetics}
 % ----------------------------------------------------------------------------
 
-The L2+L6 solver is wrapped in a self-consistency loop over the metal
-diffusivity. The metal permeance becomes
+The L2+L6 solver is run with the metal diffusivity of Eq.~\eqref{eq:metalD}.
+The metal permeance becomes
 \begin{equation}
   \beta_{\mathrm{eff}} = \frac{\Deff \Ks}{\Lm},
   \label{eq:betaeff}
 \end{equation}
-with $\Deff$ from the combined microstructure model
-(Eq.~\eqref{eq:combined}). Because trap occupancy depends on the local
-concentration, $\Deff$ is evaluated on the through-thickness profile
+with $\Deff$ from Eq.~\eqref{eq:metalD}. Because $\Deff$ does not depend on the
+concentration, no self-consistency loop is needed. The lattice concentration falls
+linearly in $\sqrt{P}$-space through the metal,
 \begin{equation}
   C(x) = \Ks\left[\sqrt{\Pint} - \bigl(\sqrt{\Pint} - \sqrt{\Pdown}\bigr)\frac{x}{\Lm}\right],
   \qquad 0 \le x \le \Lm,
   \label{eq:profile}
 \end{equation}
-averaged (arithmetic/harmonic/inlet/outlet), and iterated: solve
-Eq.~\eqref{eq:tripleflux} with the current $\beta_{\mathrm{eff}}$, rebuild the
-profile, update $\Deff$, repeat until the relative change in $\Deff$ falls
-below tolerance. Outputs include the modification factor
+and Eq.~\eqref{eq:tripleflux} is solved once with $\beta_{\mathrm{eff}}$ in place of
+$\beta$. Outputs include the modification factor
 $M = \Deff/D_{\mathrm{lattice}}$ and the resistance fractions of
 Eq.~\eqref{eq:fractions} evaluated with $\beta_{\mathrm{eff}}$.
 
@@ -875,13 +837,13 @@ Eq.~\eqref{eq:fractions} evaluated with $\beta_{\mathrm{eff}}$.
 The most complete configuration composes everything: each oxide path of
 Eq.~\eqref{eq:alphapaths} is solved as an L2+L4+L6 problem (surface kinetics
 $\rightarrow$ path-specific $\alpha$ $\rightarrow$ defective metal with
-iterated $\Deff$), then area-weighted:
+$\Deff$), then area-weighted:
 \begin{equation}
   J_{\mathrm{total}} = f_{\mathrm{intact}}\,J_{\mathrm{intact}}^{\mathrm{L2+L4+L6}}
                      + \sum_i f_i\, J_i^{\mathrm{L2+L4+L6}}.
   \label{eq:L346}
 \end{equation}
-Each path carries its own $\theta_i$, $\Pint{}_{,i}$, and $\Deff{}_{,i}$; the
+Each path carries its own $\theta_i$ and $\Pint{}_{,i}$, and shares one $\Deff$; the
 system-level rate-limiting step is taken from the path that dominates the
 total flux (or reported as \emph{mixed} if no path contributes more than
 70\%).
@@ -896,9 +858,8 @@ Both models are driven by a single unified configuration,
 (Incoloy~802) with transport data from \citet{schmidt1985}, the oxide is
 $\mathrm{Cr_2O_3}$ (``sample~4'', the undamaged-chromia limit) assembled from
 \citet{nemanic2023,stover1986,chen2011}, surface kinetics are the 316-steel
-measurements of \citet{grant1988}, and the metal microstructure (grain size,
-trap spectrum) is parameterised for Hastelloy-N-class Ni alloys from
-\citet{zhu2021,lu2022,young1997}. Tables~\ref{tab:paramsA}--\ref{tab:paramsC}
+measurements of \citet{grant1988}, and the metal microstructure (grain size)
+is parameterised for Hastelloy-N-class Ni alloys from \citet{zhu2021}. Tables~\ref{tab:paramsA}--\ref{tab:paramsC}
 list every parameter with its default, the range explored in the sensitivity
 analyses (\code{data/sensitivity\_parameters.csv}), the source, and why that
 range was chosen. Entries marked \textsc{placeholder} have no literature
@@ -956,9 +917,7 @@ $T$ \code{T\_operating} & $873\;\mathrm{K}$ & $[573,\,1273]\;\mathrm{K}$ & Model
 {\footnotesize
 \setlength{\tabcolsep}{4pt}
 \begin{longtable}{@{}l l l >{\raggedright\arraybackslash}p{5.2cm}@{}}
-\caption{Defect and microstructure parameters. Trap binding energies are
-stored in \code{model\_config.py} as $\mathrm{eV}\times F$ with
-$F = 96\,485\;\mathrm{C\,mol^{-1}}$.}
+\caption{Defect and microstructure parameters.}
 \label{tab:paramsB}\\
 \toprule
 Parameter & Default & Range & Source and range justification \\
@@ -977,20 +936,9 @@ $f_{\mathrm{gb,defect}}$ & $0.005$ & $[10^{-5},\,0.1]$ & Model default (\code{OX
 $\gamma$ \code{thickness\_factor} & $0.1$ & $[0.01,\,0.5]$ & Model default: crack retains 10\% of oxide thickness (Eq.~\eqref{eq:crack}); range from near-through-crack to half-thickness. \\
 $\delta_D$ \code{diffusivity\_factor} & $10$ & $[1,\,100]$ & Model default: oxide-GB fast path (Eq.~\eqref{eq:gbdefect}); bounded by no enhancement and the fast-path limit. \\
 \midrule
-\multicolumn{4}{@{}l}{\emph{Metal microstructure (L4) --- $d$, $\delta$, $N_L$ in Eqs.~\eqref{eq:fgb}--\eqref{eq:combined}}}\\
+\multicolumn{4}{@{}l}{\emph{Metal microstructure (L4) --- $d$, $\delta$ in Eqs.~\eqref{eq:fgb}--\eqref{eq:metalD}}}\\
 $d$ \code{grain\_size} & $10^{-4}\;\mathrm{m}$ & $[10^{-5},\,5\times10^{-4}]$ & \citet{zhu2021}: Hastelloy-N equiaxed grains 50--150\,$\mu$m (EBSD); default is the midpoint, range extends to fine-grained condition. \\
 $\delta$ \code{gb\_thickness} & $5\times10^{-10}\;\mathrm{m}$ & $[3\times10^{-10},\,10^{-9}]$ & Nominal high-angle boundary width; no Hastelloy-N measurement available. \\
-$N_L$ \code{lattice\_density} & $8.774\times10^{28}\;\mathrm{m^{-3}}$ & $[8\times10^{28},\,1.2\times10^{29}]$ & Fe BCC estimate (model default); range spans BCC to FCC interstitial site densities. \\
-\midrule
-\multicolumn{4}{@{}l}{\emph{Trap spectrum (L4) --- $E_{b,i}$, $N_{T,i}$ in Eqs.~\eqref{eq:orianitheta}--\eqref{eq:orianiDeff}}}\\
-$E_b$ dislocations & $19\,297\;\mathrm{J\,mol^{-1}}$ (0.20\,eV) & $[15,\,25]\;\mathrm{kJ\,mol^{-1}}$ & \citet{lu2022}: Alloy~625 TDS Peak~1, 0.186--0.215\,eV (dislocation elastic field); default is the mean. \\
-$N_T$ dislocations & $8.16\times10^{12}\;\mathrm{m^{-3}}$ & $[8.2\times10^{10},\,8.2\times10^{14}]$ & \citet{zhu2021}: GND density from EBSD; $\pm2$ decades covers annealed to cold-worked states. \\
-$E_b$ grain boundaries & $26\,051\;\mathrm{J\,mol^{-1}}$ (0.27\,eV) & $[25,\,30]\;\mathrm{kJ\,mol^{-1}}$ & \citet{lu2022}: TDS Peak~2, 0.258--0.281\,eV (GB + carbide interface). \\
-$N_T$ grain boundaries & $6\times10^{14}\;\mathrm{m^{-3}}$ & $[6\times10^{12},\,6\times10^{16}]$ & Geometric estimate $3\rho_{\mathrm{gb}}/d$ for the 100\,$\mu$m equiaxed grain (Eq.~\eqref{eq:fgb}); $\pm2$ decades tracks the grain-size range. \\
-$E_b$ vacancies & $41\,489\;\mathrm{J\,mol^{-1}}$ (0.43\,eV) & $[35,\,50]\;\mathrm{kJ\,mol^{-1}}$ & Ni estimate; no Hastelloy-N vacancy trap measurement. \\
-$N_T$ vacancies & $10^{26}\;\mathrm{m^{-3}}$ & $[10^{24},\,10^{28}]$ & Model default; no measurement --- deliberately wide. \\
-$E_b$ carbides ($\mathrm{M_6C}$) & $26\,051\;\mathrm{J\,mol^{-1}}$ (0.27\,eV) & $[20,\,40]\;\mathrm{kJ\,mol^{-1}}$ & \citet{lu2022}: M$_6$C TDS, 0.258--0.281\,eV; upper range allows for incoherent interfaces. \\
-$N_T$ carbides & $2\times10^{25}\;\mathrm{m^{-3}}$ & $[2\times10^{23},\,2\times10^{27}]$ & \citet{young1997}: carbide trap density upper bound in Ni-17Cr-8Fe (TDS). \\
 \end{longtable}
 }
 
@@ -1051,8 +999,7 @@ Fick's law \eqref{eq:fick} & \checkmark & \checkmark & unchanged bulk transport 
 Henry's law \eqref{eq:henry} & \checkmark & replaced & oxide carries atomic H --- Sieverts-form $\Kox$, $\sqrt{P}$ driving force (\S\ref{sec:oxideconvention}) \\
 Arrhenius form \eqref{eq:arrhenius} & \checkmark & \checkmark & also applied to $\kdiss$, $\Keq$ \\
 Parallel paths \eqref{eq:L3parallel} & \checkmark & \checkmark & per-path L2+L6 solves \eqref{eq:L3L6total} \\
-Oriani trapping \eqref{eq:orianiDeff} & \checkmark & \checkmark & inside $\beta_{\mathrm{eff}}$ iteration \eqref{eq:betaeff} \\
-GB enhancement \eqref{eq:gbparallel} & \checkmark & \checkmark & inside $\beta_{\mathrm{eff}}$ iteration \\
+GB enhancement \eqref{eq:gbparallel} & \checkmark & \checkmark & sets $\beta_{\mathrm{eff}}$ \eqref{eq:betaeff} \\
 Interface closure \eqref{eq:closureL2b} & \checkmark & replaced & analytic $\sqrt{\Pint}(\theta)$ \eqref{eq:PintTheta} \\
 Regime ratio $\chi$ \eqref{eq:chi} & \checkmark & generalised & three-way fractions \eqref{eq:fractions} \\
 Surface kinetics \eqref{eq:ads}--\eqref{eq:Rsurface} & --- & \checkmark & the new series element \\

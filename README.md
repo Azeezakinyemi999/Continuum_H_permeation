@@ -13,7 +13,7 @@ Level 1  — Perfect metal (bulk diffusion + Sieverts solubility)
 Level 2a — Perfect oxide layer on metal
 Level 2b — Oxide + metal in series
 Level 3  — Defective oxide (pinholes, cracks, grain boundaries)
-Level 4  — Defective metal (grain boundary enhancement, trapping)
+Level 4  — Defective metal (grain boundary enhancement)
 Level 5  — Full system: defective oxide + defective metal
 Level 6  — Surface kinetics: dissociation / recombination (Langmuir coverage)
 ```
@@ -38,7 +38,7 @@ Entry points are the six notebooks each study folder carries; `Guo_etal_2025/` i
 
 | Notebook | What it does |
 |---|---|
-| `Proposal.ipynb` | Main walkthrough — Levels 1 through 5 (bulk transport, defective oxide, trapping) |
+| `Proposal.ipynb` | Main walkthrough — Levels 1 through 5 (bulk transport, defective oxide, grain boundaries) |
 | `Surface_proposal.ipynb` | Adds Level 6 surface kinetics (dissociation, Langmuir coverage) |
 | `sensitivity_regime_L5L6.ipynb` | Regime-stratified SA, Level 5L6 — regimes surface / oxide / metal |
 | `sensitivity_regime_L5.ipynb` | Regime-stratified SA, Level 5 — regimes oxide / metal / defect |
@@ -68,7 +68,7 @@ calculations/           Physics modules
   permeation_calc.py      Sieverts/diffusion core (Levels 1–2)
   oxide_permeation.py     Oxide molecular transport (Levels 2–3)
   parallel_oxide_defect_paths.py  Parallel-path assembly (Level 3)
-  defective_metal.py      Grain boundary enhancement + Oriani trapping (Level 4)
+  defective_metal.py      Grain boundary enhancement (Level 4)
   interface_solver.py     Oxide–metal interface pressure solve
   surface_kinetics.py     Dissociation kinetics (Level 6)
   classify_regime.py      Hierarchical regime labels (Levels 1–4)
@@ -143,7 +143,6 @@ notebooks and a `study_config.py` in it — is documented in
 | [PARAMETERS.md](PARAMETERS.md) | Every model input, by physical category, with units and provenance |
 | [OUTPUTS.md](OUTPUTS.md) | Every returned quantity, function by function |
 | [STEADY_STATE.md](STEADY_STATE.md) | Why the model needs no time axis, and what would invalidate that |
-| [TRAPPING_VALIDATION.md](TRAPPING_VALIDATION.md) | Zero-free-parameter TDS validation of the trapping block, plus equation appendices |
 | [PACKAGING_1.0.0.md](PACKAGING_1.0.0.md) | Scope and acceptance record for the container release |
 | `latex/Model_Equations.tex` | Every equation transcribed, with its `file → function` location |
 
@@ -201,10 +200,8 @@ pinned reference values through the real solvers and is study-aware.
 | Nemanic et al. 2023 | Cr₂O₃ transport properties |
 | Stover 1986 | Cr₂O₃ activation energies |
 | Grant et al. 1988 | Surface dissociation rate constants |
-| Lu et al. 2022 | Trap binding energies (TDS) |
-| Zhu et al. 2021 | Grain size and dislocation density (EBSD) |
-| Young et al. 1997 | M₆C carbide trap density |
-| Oriani 1970 | Local-equilibrium trapping model |
+| Zhu et al. 2021 | Grain size (EBSD) |
+| Oriani 1970 | Local-equilibrium trapping; why it leaves steady flux unchanged ([STEADY_STATE.md](STEADY_STATE.md)) |
 | Strehlow & Savage 1974 | Parallel-path transport through defective coatings |
 
 Full bibliography in `latex/references.bib` (32 entries).

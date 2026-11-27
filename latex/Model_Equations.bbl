@@ -1,4 +1,4 @@
-\begin{thebibliography}{28}
+\begin{thebibliography}{24}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -60,12 +60,6 @@ G.~W. Hollenberg, E.~P. Simonen, G.~Kalinin, and A.~Terlain.
 \newblock \emph{Fusion Engineering and Design}, 28:\penalty0 190--208, 1995.
 \newblock \doi{10.1016/0920-3796(95)90039-X}.
 
-\bibitem[Kraftmakher(1998)]{kraftmakher1998}
-Yaakov Kraftmakher.
-\newblock Equilibrium vacancies and thermophysical properties of metals.
-\newblock \emph{Physics Reports}, 299\penalty0 (2--3):\penalty0 79--188, 1998.
-\newblock \doi{10.1016/S0370-1573(97)00082-3}.
-
 \bibitem[Langmuir(1918)]{langmuir1918}
 Irving Langmuir.
 \newblock The adsorption of gases on plane surfaces of glass, mica and
@@ -73,14 +67,6 @@ Irving Langmuir.
 \newblock \emph{Journal of the American Chemical Society}, 40\penalty0
   (9):\penalty0 1361--1403, 1918.
 \newblock \doi{10.1021/ja02242a004}.
-
-\bibitem[Lu et~al.(2022)Lu, Depover, and Johnsen]{lu2022}
-X.~Lu, T.~Depover, and R.~Johnsen.
-\newblock Evaluation of hydrogen diffusion and trapping in nickel {Alloy~625}
-  by thermal desorption spectroscopy.
-\newblock \emph{International Journal of Hydrogen Energy}, 47:\penalty0
-  31673--31683, 2022.
-\newblock \doi{10.1016/j.ijhydene.2022.07.094}.
 
 \bibitem[McNabb and Foster(1963)]{mcnabb1963}
 A.~McNabb and P.~K. Foster.
@@ -103,15 +89,6 @@ R.~A. Oriani.
 \newblock The diffusion and trapping of hydrogen in steel.
 \newblock \emph{Acta Metallurgica}, 18\penalty0 (1):\penalty0 147--157, 1970.
 \newblock \doi{10.1016/0001-6160(70)90078-7}.
-
-\bibitem[Oudriss et~al.(2012)Oudriss, Creus, Bouhattate, Conforto, Berziou,
-  Savall, and Feaugas]{oudriss2012}
-A.~Oudriss, J.~Creus, J.~Bouhattate, E.~Conforto, C.~Berziou, C.~Savall, and
-  X.~Feaugas.
-\newblock Grain size and grain-boundary effects on diffusion and trapping of
-  hydrogen in pure nickel.
-\newblock \emph{Acta Materialia}, 60\penalty0 (19):\penalty0 6814--6828, 2012.
-\newblock \doi{10.1016/j.actamat.2012.09.004}.
 
 \bibitem[Palumbo and Aust(1990)]{palumbo1990}
 G.~Palumbo and K.~T. Aust.
@@ -180,13 +157,6 @@ W.~R. Wampler.
 \newblock \emph{Applied Physics Letters}, 48\penalty0 (6):\penalty0 405--407,
   1986.
 \newblock \doi{10.1063/1.96521}.
-
-\bibitem[Young and Scully(1997)]{young1997}
-G.~A. Young and J.~R. Scully.
-\newblock Evidence that carbide precipitation produces hydrogen traps in
-  {Ni-17Cr-8Fe} alloys.
-\newblock \emph{Scripta Materialia}, 36\penalty0 (6):\penalty0 713--719, 1997.
-\newblock \doi{10.1016/S1359-6462(96)00440-X}.
 
 \bibitem[Zarchy and Axtmann(1979)]{zarchy1979}
 A.~S. Zarchy and R.~C. Axtmann.
