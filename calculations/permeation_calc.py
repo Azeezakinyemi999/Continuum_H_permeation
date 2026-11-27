@@ -202,6 +202,10 @@ def calculate_defective_metal_flux(D_lattice, K_s, metal_thickness, P_up, P_down
     if temperature <= 0:
         raise ValueError(f"Temperature must be positive: {temperature} K")
 
+    if D_lattice <= 0:
+        raise ValueError(f"Diffusion coefficient must be positive: {D_lattice} m²/s")
+    if K_s <= 0:
+        raise ValueError(f"Solubility constant must be positive: {K_s}")
     D_eff = metal_diffusivity(D_lattice, temperature, microstructure_params,
                               enable_gb_enhancement)
     result = calculate_simple_metal_flux(D_eff, K_s, metal_thickness, P_up, P_down)
